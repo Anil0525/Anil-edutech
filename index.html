@@ -421,6 +421,7 @@
     border-top: 2px solid var(--border);
     display: flex; align-items: center; gap: 12px;
     background: #FAFBFF;
+    flex-wrap: wrap;
   }
   [data-theme="dark"] .ge-inst-footer { background: #161B22; }
   .ge-agree-check {
@@ -2202,6 +2203,18 @@
     nav .hamburger { display: flex !important; flex-shrink: 0 !important; }
     nav > div:last-child { flex-shrink: 0 !important; overflow: visible !important; }
     /* Mobile touch targets — buttons min 44px (mobile only) */
+    /* FIX: Instructions agree area — visible on mobile */
+    .ge-inst-footer {
+      position: sticky !important;
+      bottom: 0 !important;
+      padding: 12px 16px !important;
+      flex-wrap: wrap !important;
+      gap: 8px !important;
+      z-index: 10 !important;
+      box-shadow: 0 -4px 12px rgba(0,0,0,.08) !important;
+    }
+    .ge-agree-check { font-size: 11px !important; }
+    #ge-start-btn { width: 100% !important; margin-top: 4px !important; }
     .cat-card { min-height: 72px !important; }
     .btn, .tab-btn, .nav-tab { min-height: 44px !important; }
     /* Mobile dropdown — prevent off-screen */
@@ -2393,11 +2406,14 @@
 
   /* mobile: stack vertically */
   @media (max-width: 640px) {
-    .pw-box { flex-direction: column; width: 94vw; height: auto; border-radius: 18px; }
-    .pw-left { flex: none; padding: 28px 24px; min-height: 160px; }
-    .pw-hello { font-size: 24px; }
-    .pw-right { padding: 28px 24px; }
+    .pw-box { flex-direction: column; width: 94vw; height: auto; border-radius: 18px; max-height: 90vh; overflow-y: auto; }
+    .pw-left { flex: none; padding: 20px 24px !important; min-height: unset !important; }
+    .pw-hello { font-size: 22px !important; }
+    .pw-hello-sub { font-size: 12px !important; display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical; overflow: hidden; }
+    .pw-right { padding: 24px 20px !important; }
     .pw-brand-footer { display: none; }
+    /* Make login form fit on screen */
+    .pw-overlay { align-items: flex-start !important; padding-top: 60px; }
   }
   @keyframes shake {
     0%,100%{ transform: translateX(0); }
@@ -3278,7 +3294,11 @@
     .exam-card .start-btn { width: 100%; text-align: center; }
 
     /* EXAM PAGE */
-    .exam-header { padding: 12px 16px; flex-wrap: wrap; gap: 10px; }
+    .exam-header { padding: 8px 12px !important; flex-wrap: nowrap !important; gap: 6px !important; align-items: center !important; }
+    .exam-header-title { font-size: 13px !important; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; max-width: 140px; }
+    .exam-header-sub { font-size: 10px !important; margin-top: 1px !important; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; max-width: 140px; }
+    .exam-header > div:first-child { flex: 1; min-width: 0; overflow: hidden; }
+    .timer-box { font-size: 18px !important; padding: 6px 14px !important; flex-shrink: 0; }
     .exam-header-title { font-size: 13px; }
     .timer-box { font-size: 18px !important; padding: 8px 16px !important; }
     .exam-body { padding: 20px 16px; }
@@ -3697,6 +3717,11 @@ html {
   text-size-adjust: 100%;
 }
 </style>
+
+<!-- Google AdSense -->
+<script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-4249412359624560"
+     crossorigin="anonymous"></script>
+
 </head>
 <body>
 <!-- ⚡ INSTANT LOADING SCREEN — inline in body, first paint -->
@@ -4370,16 +4395,117 @@ html {
       Free Mock Tests for TSPSC · SSC · RRB · Banking · Current Affairs &amp; More
     </div>
     <div style="display:flex;justify-content:center;gap:10px;flex-wrap:wrap;margin-bottom:12px;">
-      <a href="https://www.youtube.com/@AnilEduTechYT" target="_blank" style="color:#f57c00;text-decoration:none;font-size:11.5px;font-weight:700;display:flex;align-items:center;gap:4px;background:rgba(245,124,0,.1);border:1px solid rgba(245,124,0,.2);padding:4px 11px;border-radius:20px;">▶ YouTube</a>
-      <button onclick="goExams()" style="color:#10C980;background:rgba(16,201,128,.1);border:1px solid rgba(16,201,128,.2);padding:4px 11px;border-radius:20px;font-size:11.5px;font-weight:700;cursor:pointer;font-family:inherit;">📝 Exams</button>
-      <button onclick="openSubModal()" style="color:#4F7CFF;background:rgba(79,124,255,.1);border:1px solid rgba(79,124,255,.2);padding:4px 11px;border-radius:20px;font-size:11.5px;font-weight:700;cursor:pointer;font-family:inherit;">👤 Login</button>
-      <button onclick="goSupport()" style="color:#00B894;background:rgba(0,184,148,.1);border:1px solid rgba(0,184,148,.2);padding:4px 11px;border-radius:20px;font-size:11.5px;font-weight:700;cursor:pointer;font-family:inherit;">🆘 Support</button>
       <button onclick="goBadges()" style="color:#F59E0B;background:rgba(245,158,11,.1);border:1px solid rgba(245,158,11,.2);padding:4px 11px;border-radius:20px;font-size:11.5px;font-weight:700;cursor:pointer;font-family:inherit;">🏅 Badges</button>
       <button onclick="goDaily()" style="color:#8B5CF6;background:rgba(139,92,246,.1);border:1px solid rgba(139,92,246,.2);padding:4px 11px;border-radius:20px;font-size:11.5px;font-weight:700;cursor:pointer;font-family:inherit;">⚡ Daily</button>
       <button onclick="goReferral()" style="color:#EC4899;background:rgba(236,72,153,.1);border:1px solid rgba(236,72,153,.2);padding:4px 11px;border-radius:20px;font-size:11.5px;font-weight:700;cursor:pointer;font-family:inherit;">🎁 Refer</button>
+      <a href="https://www.instagram.com/anilsagaram" target="_blank" style="color:#E1306C;text-decoration:none;font-size:11.5px;font-weight:700;display:flex;align-items:center;gap:4px;background:rgba(225,48,108,.1);border:1px solid rgba(225,48,108,.2);padding:4px 11px;border-radius:20px;">📸 Instagram</a>
+      <a href="https://www.facebook.com/anilsagaram" target="_blank" style="color:#1877F2;text-decoration:none;font-size:11.5px;font-weight:700;display:flex;align-items:center;gap:4px;background:rgba(24,119,242,.1);border:1px solid rgba(24,119,242,.2);padding:4px 11px;border-radius:20px;">📘 Facebook</a>
+      <a href="https://t.me/AnilEduTechYt" target="_blank" style="color:#29B6F6;text-decoration:none;font-size:11.5px;font-weight:700;display:flex;align-items:center;gap:4px;background:rgba(41,182,246,.1);border:1px solid rgba(41,182,246,.2);padding:4px 11px;border-radius:20px;">✈️ Telegram</a>
     </div>
-    <div style="font-size:10px;opacity:.35;letter-spacing:1px;text-transform:uppercase;border-top:1px solid rgba(255,255,255,.08);padding-top:10px;">© 2026 Anil EduTech. All Rights Reserved. | Made with ❤️ in India</div>
+    <div style="font-size:10px;letter-spacing:1px;text-transform:uppercase;border-top:1px solid rgba(255,255,255,.08);padding-top:10px;opacity:.5;">
+      © 2026 Anil EduTech. All Rights Reserved. | Made with ❤️ in India
+      &nbsp;|&nbsp;
+      <span onclick="goPrivacy()" style="cursor:pointer;color:#4F7CFF;text-decoration:underline;opacity:1;">Privacy Policy</span>
+    </div>
   </footer>
+</div>
+
+<!-- PRIVACY POLICY PAGE -->
+<div id="page-privacy" class="page">
+  <div class="section">
+    <div class="section-title">🔒 Privacy Policy</div>
+    <div class="section-sub" id="privacy-sub">మీ privacy మాకు చాలా important — దయచేసి చదవండి.</div>
+
+    <!-- Language Toggle -->
+    <div style="display:flex;justify-content:center;gap:10px;margin-bottom:20px;">
+      <button id="pp-btn-te" onclick="privacyLang('te')" style="padding:8px 22px;border-radius:30px;border:2px solid var(--primary);background:var(--primary);color:#fff;font-size:13px;font-weight:800;cursor:pointer;font-family:inherit;transition:all .2s;">తెలుగు</button>
+      <button id="pp-btn-en" onclick="privacyLang('en')" style="padding:8px 22px;border-radius:30px;border:2px solid var(--primary);background:transparent;color:var(--primary);font-size:13px;font-weight:800;cursor:pointer;font-family:inherit;transition:all .2s;">English</button>
+    </div>
+
+    <div style="background:var(--card);border:1.5px solid var(--border);border-radius:var(--radius);padding:28px;line-height:1.9;color:var(--text);font-size:14px;">
+
+      <p style="color:var(--text-muted);font-size:12px;margin-bottom:20px;">Last updated: January 2026</p>
+
+      <!-- TELUGU CONTENT -->
+      <div id="pp-te">
+        <h3 style="color:var(--primary);font-size:16px;font-weight:900;margin:0 0 10px;">1. మేము Collect చేసే Information</h3>
+        <p style="margin-bottom:20px;">మీరు Anil EduTech లో register చేసుకున్నప్పుడు మేము మీ <strong>పేరు, Gmail ID</strong> మరియు <strong>exam scores</strong> మాత్రమే collect చేస్తాం. మీ personal financial information ఏదీ collect చేయబడదు.</p>
+
+        <h3 style="color:var(--primary);font-size:16px;font-weight:900;margin:0 0 10px;">2. మేము Information ఎలా వాడతాం</h3>
+        <ul style="padding-left:20px;margin-bottom:20px;">
+          <li style="margin-bottom:8px;">మీ exam results మరియు progress track చేయడానికి</li>
+          <li style="margin-bottom:8px;">Leaderboard మరియు certificates generate చేయడానికి</li>
+          <li style="margin-bottom:8px;">మీకు better exam experience provide చేయడానికి</li>
+          <li style="margin-bottom:8px;">Important updates మరియు notifications పంపడానికి</li>
+        </ul>
+
+        <h3 style="color:var(--primary);font-size:16px;font-weight:900;margin:0 0 10px;">3. Data Sharing</h3>
+        <p style="margin-bottom:20px;">మీ personal data ఏ third party కి అమ్మబడదు లేదా share చేయబడదు. మీ information పూర్తిగా <strong>safe మరియు confidential</strong>గా ఉంటుంది.</p>
+
+        <h3 style="color:var(--primary);font-size:16px;font-weight:900;margin:0 0 10px;">4. Cookies</h3>
+        <p style="margin-bottom:20px;">మేము basic cookies వాడతాం — ఇవి మీ login session మరియు preferences save చేయడానికి మాత్రమే. ఇవి మీ device ని track చేయవు.</p>
+
+        <h3 style="color:var(--primary);font-size:16px;font-weight:900;margin:0 0 10px;">5. మీ Rights</h3>
+        <ul style="padding-left:20px;margin-bottom:20px;">
+          <li style="margin-bottom:8px;">మీ account మరియు data delete చేసుకోవడానికి request చేయవచ్చు</li>
+          <li style="margin-bottom:8px;">మీ personal information access చేయవచ్చు</li>
+          <li style="margin-bottom:8px;">ఏ సమయంలోనైనా account నుండి logout చేసుకోవచ్చు</li>
+        </ul>
+
+        <h3 style="color:var(--primary);font-size:16px;font-weight:900;margin:0 0 10px;">6. Security</h3>
+        <p style="margin-bottom:20px;">మీ data protect చేయడానికి మేము industry-standard security measures వాడతాం. అయినప్పటికీ, internet transmission పూర్తిగా secure guarantee చేయలేము.</p>
+
+        <h3 style="color:var(--primary);font-size:16px;font-weight:900;margin:0 0 10px;">7. Contact చేయండి</h3>
+        <p style="margin-bottom:6px;">Privacy గురించి ఏమైనా questions ఉంటే మాకు email చేయండి:</p>
+        <a href="mailto:anilthipparalla@gmail.com" style="color:var(--primary);font-weight:800;font-size:14px;">📧 anilthipparalla@gmail.com</a>
+        <div style="margin-top:28px;padding:16px;background:rgba(79,124,255,.08);border:1px solid rgba(79,124,255,.2);border-radius:12px;text-align:center;">
+          <span style="font-size:13px;color:var(--text-muted);">ఈ app ని use చేయడం ద్వారా మీరు ఈ Privacy Policy కి agree అవుతున్నారు.</span>
+        </div>
+      </div>
+
+      <!-- ENGLISH CONTENT -->
+      <div id="pp-en" style="display:none;">
+        <h3 style="color:var(--primary);font-size:16px;font-weight:900;margin:0 0 10px;">1. Information We Collect</h3>
+        <p style="margin-bottom:20px;">When you register on Anil EduTech, we collect only your <strong>Name, Gmail ID</strong> and <strong>exam scores</strong>. No personal financial information is collected at any time.</p>
+
+        <h3 style="color:var(--primary);font-size:16px;font-weight:900;margin:0 0 10px;">2. How We Use Your Information</h3>
+        <ul style="padding-left:20px;margin-bottom:20px;">
+          <li style="margin-bottom:8px;">To track your exam results and progress</li>
+          <li style="margin-bottom:8px;">To generate leaderboard rankings and certificates</li>
+          <li style="margin-bottom:8px;">To provide you with a better exam experience</li>
+          <li style="margin-bottom:8px;">To send important updates and notifications</li>
+        </ul>
+
+        <h3 style="color:var(--primary);font-size:16px;font-weight:900;margin:0 0 10px;">3. Data Sharing</h3>
+        <p style="margin-bottom:20px;">Your personal data is never sold or shared with any third party. Your information remains completely <strong>safe and confidential</strong>.</p>
+
+        <h3 style="color:var(--primary);font-size:16px;font-weight:900;margin:0 0 10px;">4. Cookies</h3>
+        <p style="margin-bottom:20px;">We use basic cookies only to save your login session and preferences. These cookies do not track your device or browsing activity.</p>
+
+        <h3 style="color:var(--primary);font-size:16px;font-weight:900;margin:0 0 10px;">5. Your Rights</h3>
+        <ul style="padding-left:20px;margin-bottom:20px;">
+          <li style="margin-bottom:8px;">You can request deletion of your account and data</li>
+          <li style="margin-bottom:8px;">You can access your personal information at any time</li>
+          <li style="margin-bottom:8px;">You can logout of your account at any time</li>
+        </ul>
+
+        <h3 style="color:var(--primary);font-size:16px;font-weight:900;margin:0 0 10px;">6. Security</h3>
+        <p style="margin-bottom:20px;">We use industry-standard security measures to protect your data. However, we cannot fully guarantee the security of internet transmissions.</p>
+
+        <h3 style="color:var(--primary);font-size:16px;font-weight:900;margin:0 0 10px;">7. Contact Us</h3>
+        <p style="margin-bottom:6px;">If you have any questions about this Privacy Policy, please email us:</p>
+        <a href="mailto:anilthipparalla@gmail.com" style="color:var(--primary);font-weight:800;font-size:14px;">📧 anilthipparalla@gmail.com</a>
+        <div style="margin-top:28px;padding:16px;background:rgba(79,124,255,.08);border:1px solid rgba(79,124,255,.2);border-radius:12px;text-align:center;">
+          <span style="font-size:13px;color:var(--text-muted);">By using this app, you agree to this Privacy Policy.</span>
+        </div>
+      </div>
+
+    </div>
+
+    <div style="text-align:center;margin-top:20px;">
+      <button onclick="goHome()" style="background:var(--primary);color:#fff;border:none;padding:12px 28px;border-radius:var(--radius2);font-size:14px;font-weight:800;cursor:pointer;font-family:inherit;">🏠 Home కి వెళ్ళండి</button>
+    </div>
+  </div>
 </div>
 
 <!-- SUPPORT PAGE -->
@@ -4408,10 +4534,10 @@ html {
       </div>
 
       <!-- Email -->
-      <div style="background:linear-gradient(135deg,#1A73E8,#0EA5E9);border-radius:var(--radius);padding:24px;text-align:center;box-shadow:0 8px 28px rgba(26,115,232,.35);cursor:pointer;transition:transform .22s;" onclick="window.open('mailto:support@aniledutech.com?subject=Support%20Request','_blank')" onmouseover="this.style.transform='translateY(-4px)'" onmouseout="this.style.transform=''">
+      <div style="background:linear-gradient(135deg,#1A73E8,#0EA5E9);border-radius:var(--radius);padding:24px;text-align:center;box-shadow:0 8px 28px rgba(26,115,232,.35);cursor:pointer;transition:transform .22s;" onclick="window.open('mailto:anilthipparalla@gmail.com?subject=Support%20Request','_blank')" onmouseover="this.style.transform='translateY(-4px)'" onmouseout="this.style.transform=''">
         <div style="font-size:40px;margin-bottom:10px;">📧</div>
         <div style="color:#fff;font-size:17px;font-weight:900;margin-bottom:6px;">Email Support</div>
-        <div style="color:rgba(255,255,255,.8);font-size:12.5px;font-weight:600;">support@aniledutech.com<br>24 గంటల్లో reply</div>
+        <div style="color:rgba(255,255,255,.8);font-size:12.5px;font-weight:600;">anilthipparalla@gmail.com<br>24 గంటల్లో reply</div>
         <div style="margin-top:14px;background:rgba(255,255,255,.2);border-radius:10px;padding:8px;color:#fff;font-size:13px;font-weight:800;">✉️ Email పంపండి →</div>
       </div>
     </div>
@@ -8401,6 +8527,17 @@ function retakeExam() {
 function renderLeaderboard() {
   const el = document.getElementById('leaderboard-list');
   if (!el) return;
+
+  // ── Daily Auto-Clear ──────────────────────────────────────────
+  const todayKey = new Date().toISOString().slice(0, 10); // "YYYY-MM-DD"
+  const lastClear = _ls.getItem('ae_scores_last_clear');
+  if (lastClear !== todayKey) {
+    _ls.removeItem('ae_scores');
+    _ls.setItem('ae_scores_last_clear', todayKey);
+    gsAPI({ action: 'clearScores' });
+  }
+  // ─────────────────────────────────────────────────────────────
+
   const scores = JSON.parse(_ls.getItem('ae_scores') || '[]');
   if (!scores.length) {
     el.innerHTML = `<div class="lb-empty">
@@ -10552,6 +10689,37 @@ function goSupport() {
   document.querySelectorAll('.nav-btn').forEach(b => b.classList.remove('active'));
   const nb = document.getElementById('nav-support');
   if (nb) nb.classList.add('active');
+}
+
+function goPrivacy() {
+  stopTimer();
+  showPage('privacy');
+  document.querySelectorAll('.nav-btn').forEach(b => b.classList.remove('active'));
+}
+
+function privacyLang(lang) {
+  const te = document.getElementById('pp-te');
+  const en = document.getElementById('pp-en');
+  const btnTe = document.getElementById('pp-btn-te');
+  const btnEn = document.getElementById('pp-btn-en');
+  const sub  = document.getElementById('privacy-sub');
+  if (lang === 'en') {
+    te.style.display = 'none';
+    en.style.display = 'block';
+    btnEn.style.background = 'var(--primary)';
+    btnEn.style.color = '#fff';
+    btnTe.style.background = 'transparent';
+    btnTe.style.color = 'var(--primary)';
+    sub.textContent = 'Your privacy is very important to us — please read carefully.';
+  } else {
+    en.style.display = 'none';
+    te.style.display = 'block';
+    btnTe.style.background = 'var(--primary)';
+    btnTe.style.color = '#fff';
+    btnEn.style.background = 'transparent';
+    btnEn.style.color = 'var(--primary)';
+    sub.textContent = 'మీ privacy మాకు చాలా important — దయచేసి చదవండి.';
+  }
 }
 
 function toggleFaq(el) {

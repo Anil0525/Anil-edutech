@@ -2179,8 +2179,31 @@
 
   @media (max-width: 640px) {
     .mob-bottom-nav { display: block; }
-    body { padding-bottom: 62px; }
-    nav { display: none !important; }
+    body { padding-bottom: 62px; padding-top: 52px; }
+    /* Show slim mobile header — logo + hamburger only */
+    nav {
+      display: flex !important;
+      height: 52px !important;
+      padding: 0 14px !important;
+      position: fixed !important;
+      top: 0; left: 0; right: 0;
+      z-index: 9999;
+      background: #fff;
+      border-bottom: 2px solid #1A73E8;
+      box-shadow: 0 2px 12px rgba(26,115,232,.15);
+    }
+    [data-theme="dark"] nav {
+      background: #0D1117 !important;
+      border-bottom-color: #1A73E8 !important;
+    }
+    /* Hide desktop nav links on mobile — hamburger handles them */
+    nav .nav-links { display: none; }
+    /* Show hamburger on mobile */
+    nav .hamburger { display: flex !important; }
+    /* Show logo text (site name) */
+    nav .logo-text { display: flex !important; }
+    nav .logo-text span:first-child { font-size: 15px !important; font-weight: 900 !important; }
+    nav .logo-text span:last-child { display: none; }
   }
 
   /* ─── RESPONSIVE ─── */
@@ -3611,6 +3634,64 @@
   .prog-bar-fill  { height: 100%; border-radius: 5px; transition: width 1s cubic-bezier(.4,0,.2,1); }
   .prog-empty { text-align: center; padding: 48px 28px; color: var(--text3); font-size: 14px; font-weight: 600; }
   .prog-empty-icon { font-size: 48px; display: block; margin-bottom: 12px; }
+
+/* ══════════════════════════════════════════
+   📱 MOBILE UX FIXES
+══════════════════════════════════════════ */
+
+/* Fix 1: Fast tap — remove 300ms delay on all clickable elements */
+* { -webkit-tap-highlight-color: rgba(26,115,232,.15); }
+a, button, [onclick], .cat-card, .exam-card, .nav-item,
+.mob-nav-item, .btn, [role="button"] {
+  touch-action: manipulation;
+}
+
+/* Fix 2: iOS input zoom prevention — font-size must be >= 16px */
+input, select, textarea {
+  font-size: 16px !important;
+}
+
+/* Fix 3: Tiny font sizes — minimum readable size on mobile */
+.lb-rank-num   { font-size: 11px !important; }
+._p_brand-sub  { font-size: 10px !important; }
+
+/* Fix 4: Touch targets — anything clickable min 44px tall */
+.mob-nav-item {
+  min-height: 44px !important;
+  display: flex; align-items: center; justify-content: center;
+}
+.cat-card {
+  min-height: 72px !important;
+}
+.btn, button:not(.icon-only) {
+  min-height: 44px !important;
+  padding-top: 10px !important;
+  padding-bottom: 10px !important;
+}
+.nav-tab, .tab-btn {
+  min-height: 44px !important;
+}
+
+/* Fix 5: Better mobile text readability */
+@media (max-width: 480px) {
+  body { font-size: 14px; }
+  .section-title { font-size: 16px !important; }
+  .exam-card-title { font-size: 13px !important; }
+  /* Prevent tiny labels from being unreadable */
+  .badge, .tag, .pill, ._p_pill { font-size: 11px !important; }
+}
+
+/* Fix 6: Smooth scrolling on iOS */
+html {
+  -webkit-overflow-scrolling: touch;
+  scroll-behavior: smooth;
+}
+
+/* Fix 7: Prevent text size adjustment on rotation */
+html {
+  -webkit-text-size-adjust: 100%;
+  text-size-adjust: 100%;
+}
 </style>
 </head>
 <body>

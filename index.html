@@ -6047,11 +6047,15 @@ document.addEventListener('DOMContentLoaded', function() {
   function _hideLoader() {
     const ov = document.getElementById('_ae_loading');
     if (!ov) return;
-    // smooth fade-out
-    ov.style.transition = 'opacity .6s ease, transform .6s ease';
-    ov.style.opacity    = '0';
-    ov.style.transform  = 'scale(1.04)';
-    setTimeout(() => { if (ov) ov.remove(); }, 650);
+    if (window._p_complete) {
+      window._p_complete(() => {
+        ov.classList.add('hide-loader');
+        setTimeout(() => { if (ov) ov.remove(); }, 750);
+      });
+    } else {
+      ov.classList.add('hide-loader');
+      setTimeout(() => { if (ov) ov.remove(); }, 750);
+    }
   }
 
   function _done() {

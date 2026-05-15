@@ -2406,14 +2406,38 @@
 
   /* mobile: stack vertically */
   @media (max-width: 640px) {
-    .pw-box { flex-direction: column; width: 94vw; height: auto; border-radius: 18px; max-height: 90vh; overflow-y: auto; }
-    .pw-left { flex: none; padding: 20px 24px !important; min-height: unset !important; }
-    .pw-hello { font-size: 22px !important; }
-    .pw-hello-sub { font-size: 12px !important; display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical; overflow: hidden; }
-    .pw-right { padding: 24px 20px !important; }
+    .pw-overlay {
+      align-items: center !important;
+      padding: 16px !important;
+      overflow-y: auto !important;
+    }
+    .pw-box {
+      flex-direction: column;
+      width: 92vw !important;
+      max-width: 400px !important;
+      height: auto !important;
+      max-height: calc(100vh - 32px) !important;
+      border-radius: 20px !important;
+      overflow-y: auto !important;
+      margin: auto !important;
+    }
+    .pw-left {
+      flex: none !important;
+      padding: 20px 20px !important;
+      min-height: unset !important;
+      border-radius: 20px 20px 0 0 !important;
+    }
+    .pw-hello { font-size: 20px !important; }
+    .pw-hello-sub {
+      font-size: 12px !important;
+      display: -webkit-box;
+      -webkit-line-clamp: 2;
+      -webkit-box-orient: vertical;
+      overflow: hidden;
+    }
+    .pw-right { padding: 22px 20px !important; }
     .pw-brand-footer { display: none; }
-    /* Make login form fit on screen */
-    .pw-overlay { align-items: flex-start !important; padding-top: 60px; }
+    .pw-asterisk { font-size: 36px !important; }
   }
   @keyframes shake {
     0%,100%{ transform: translateX(0); }
@@ -3328,101 +3352,27 @@
     /* ADMIN */
     .admin-layout { padding: 20px 16px 60px; }
     .admin-page-header h2 { font-size: 20px; }
-    .admin-page-header {
-      padding: 18px 18px !important;
-      border-radius: 14px !important;
-      flex-direction: column !important;
-      align-items: flex-start !important;
-      gap: 10px !important;
-    }
-    .admin-page-header::before { display: none; }
-
-    /* Tabs — horizontal scroll */
     .admin-tabs {
       gap: 3px; padding: 4px;
       overflow-x: auto;
       -webkit-overflow-scrolling: touch;
       scrollbar-width: none;
       scroll-snap-type: x mandatory;
-      border-radius: 12px !important;
     }
     .admin-tabs::-webkit-scrollbar { display: none; }
     .admin-tab {
       flex: 0 0 auto;
-      padding: 8px 12px; font-size: 11px;
+      padding: 8px 12px; font-size: 11.5px;
       scroll-snap-align: start;
-      border-radius: 8px !important;
-      gap: 4px !important;
     }
-
-    /* Cards */
-    .admin-card {
-      border-radius: 14px !important;
-      margin-bottom: 12px !important;
-    }
-    .admin-card > h3 {
-      font-size: 13px !important;
-      padding: 14px 16px 12px !important;
-      border-radius: 14px 14px 0 0 !important;
-    }
-    .admin-card > *:not(h3),
-    .admin-card > div { padding: 14px 16px !important; }
-
-    /* Form rows — single column on mobile */
-    .arow, .arow3, .form-row,
-    .gen-options-row { grid-template-columns: 1fr !important; gap: 10px !important; }
-
-    /* Option rows */
-    .opt-row { grid-template-columns: 32px 1fr auto !important; gap: 8px !important; }
-    .opt-row2 { grid-template-columns: 32px 1fr auto !important; gap: 8px !important; }
-    .opt-label-tag, .opt-badge {
-      width: 32px !important; height: 32px !important; font-size: 12px !important;
-    }
-    .radio-wrap { font-size: 11px !important; }
-
-    /* Buttons */
-    .add-btn, .abtn {
-      width: 100% !important;
-      justify-content: center !important;
-      padding: 12px 16px !important;
-      font-size: 13px !important;
-      margin-top: 8px !important;
-    }
-    .import-btn { width: 100% !important; justify-content: center !important; }
-    .acard-body { padding: 14px !important; }
-
-    /* Tables — horizontal scroll */
-    .atable-wrap,
-    .admin-card .atable-wrap,
-    div[style*="overflow-x"] { border-radius: 10px !important; }
-    .atable th, .atable td { padding: 8px 10px !important; font-size: 11.5px !important; }
-    .questions-table th, .exams-manage-table th { font-size: 10px !important; padding: 9px 10px !important; }
-    .questions-table td, .exams-manage-table td { font-size: 12px !important; padding: 10px 10px !important; }
-    .del-btn, .edit-btn { padding: 5px 9px !important; font-size: 11px !important; }
-    .action-btns { display: flex; gap: 4px; flex-wrap: wrap; }
-
-    /* API key row */
-    .api-row { flex-direction: column !important; }
-    .api-row input { width: 100% !important; }
-
-    /* AI/Gen preview cards */
-    .ai-opts, .gen-opts { grid-template-columns: 1fr !important; }
-    .ai-q-card, .gen-q-card { padding: 12px !important; }
-    .ai-q-text, .gen-q-text { font-size: 12.5px !important; }
-
-    /* Stats grid */
-    .stats-grid, .admin-stats {
-      grid-template-columns: repeat(2, 1fr) !important;
-      gap: 10px !important;
-    }
-
-    /* Import bar */
-    .import-bar { flex-direction: column !important; align-items: stretch !important; }
-
-    /* PDF admin form */
-    #pdf-cat, #pdf-type, #pdf-title, #pdf-sub, #pdf-url, #pdf-desc {
-      font-size: 14px !important;
-    }
+    .arow, .arow3, .form-row, .gen-options-row { grid-template-columns: 1fr; }
+    .opt-row, .opt-row2 { grid-template-columns: 32px 1fr auto; }
+    .acard-body { padding: 16px; }
+    .abtn { padding: 10px 16px; font-size: 12.5px; }
+    .atable-wrap { border-radius: 8px; }
+    .atable th, .atable td { padding: 9px 10px; font-size: 12px; }
+    .api-row { flex-direction: column; }
+    .api-row input { width: 100%; }
 
     /* LEADERBOARD */
     .lb-card { padding: 12px 14px !important; gap: 10px !important; border-radius: 12px; }
@@ -3480,7 +3430,9 @@
     -webkit-backdrop-filter: blur(32px) saturate(180%);
     border: 1.5px solid rgba(255,255,255,.95);
     border-radius: 28px;
-    width: 330px; height: 360px;
+    width: 330px;
+    height: auto; /* MOBILE FIX: was fixed 360px */
+    min-height: 320px;
     padding: 26px 26px;
     box-sizing: border-box;
     box-shadow:
@@ -3638,7 +3590,27 @@
   .login-badge.show { display:inline-flex; }
 
   @media (max-width:400px) {
-    .sub-box { width:288px; height:288px; padding:20px; border-radius:22px; }
+    .sub-box {
+      width: calc(100vw - 32px) !important;
+      min-height: unset !important;
+      padding: 20px !important;
+      border-radius: 22px !important;
+    }
+    .sub-overlay {
+      align-items: center !important;
+      padding: 16px !important;
+    }
+  }
+
+  @media (max-width: 640px) {
+    .sub-overlay {
+      align-items: center !important;
+      padding: 16px !important;
+    }
+    .sub-box {
+      width: calc(100vw - 40px) !important;
+      max-width: 360px !important;
+    }
   }
 
   /* ─── LANGUAGE TOGGLE ─── */

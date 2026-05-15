@@ -10129,7 +10129,7 @@ async function addPdfItem() {
 
   const item = {
     id: 'pdf_' + Date.now(),
-    cat, type, title, sub, url, desc,
+    cat, type, title, sub, url, description: desc,
     created_at: new Date().toISOString()
   };
 
@@ -10212,7 +10212,7 @@ function renderPdfAdmin(cat) {
         <div style="display:flex;gap:6px;margin-top:4px;flex-wrap:wrap;align-items:center;">
           <span style="font-size:11px;font-weight:700;padding:2px 8px;border-radius:20px;background:${catColors[item.cat]||'#888'}22;color:${catColors[item.cat]||'#888'};">${escHtml(item.cat)}</span>
           ${item.sub ? `<span style="font-size:11px;color:var(--text3);font-weight:600;">${escHtml(item.sub)}</span>` : ''}
-          ${item.desc ? `<span style="font-size:11px;color:var(--text3);">— ${escHtml(item.desc)}</span>` : ''}
+          ${item.description ? `<span style="font-size:11px;color:var(--text3);">— ${escHtml(item.description)}</span>` : ''}
         </div>
       </div>
       <div style="display:flex;gap:6px;flex-shrink:0;">
@@ -10240,7 +10240,7 @@ function _pdfCardHtml(item) {
         <span class="meta-pill pill-blue">${typeLabel}</span>
         ${item.sub ? `<span class="meta-pill pill-green">${escHtml(item.sub)}</span>` : ''}
       </div>
-      ${item.desc ? `<div style="font-size:12px;color:var(--text3);margin-top:6px;font-weight:600;">${escHtml(item.desc)}</div>` : ''}
+      ${item.description ? `<div style="font-size:12px;color:var(--text3);margin-top:6px;font-weight:600;">${escHtml(item.description)}</div>` : ''}
     </div>
     ${safeUrl ? `<a href="${safeUrl}" target="_blank" rel="noopener noreferrer"
       style="display:inline-flex;align-items:center;gap:6px;padding:10px 18px;border-radius:10px;background:linear-gradient(135deg,${col},${col}cc);color:#fff;font-weight:800;font-size:13px;text-decoration:none;white-space:nowrap;flex-shrink:0;">

@@ -3328,27 +3328,101 @@
     /* ADMIN */
     .admin-layout { padding: 20px 16px 60px; }
     .admin-page-header h2 { font-size: 20px; }
+    .admin-page-header {
+      padding: 18px 18px !important;
+      border-radius: 14px !important;
+      flex-direction: column !important;
+      align-items: flex-start !important;
+      gap: 10px !important;
+    }
+    .admin-page-header::before { display: none; }
+
+    /* Tabs — horizontal scroll */
     .admin-tabs {
       gap: 3px; padding: 4px;
       overflow-x: auto;
       -webkit-overflow-scrolling: touch;
       scrollbar-width: none;
       scroll-snap-type: x mandatory;
+      border-radius: 12px !important;
     }
     .admin-tabs::-webkit-scrollbar { display: none; }
     .admin-tab {
       flex: 0 0 auto;
-      padding: 8px 12px; font-size: 11.5px;
+      padding: 8px 12px; font-size: 11px;
       scroll-snap-align: start;
+      border-radius: 8px !important;
+      gap: 4px !important;
     }
-    .arow, .arow3, .form-row, .gen-options-row { grid-template-columns: 1fr; }
-    .opt-row, .opt-row2 { grid-template-columns: 32px 1fr auto; }
-    .acard-body { padding: 16px; }
-    .abtn { padding: 10px 16px; font-size: 12.5px; }
-    .atable-wrap { border-radius: 8px; }
-    .atable th, .atable td { padding: 9px 10px; font-size: 12px; }
-    .api-row { flex-direction: column; }
-    .api-row input { width: 100%; }
+
+    /* Cards */
+    .admin-card {
+      border-radius: 14px !important;
+      margin-bottom: 12px !important;
+    }
+    .admin-card > h3 {
+      font-size: 13px !important;
+      padding: 14px 16px 12px !important;
+      border-radius: 14px 14px 0 0 !important;
+    }
+    .admin-card > *:not(h3),
+    .admin-card > div { padding: 14px 16px !important; }
+
+    /* Form rows — single column on mobile */
+    .arow, .arow3, .form-row,
+    .gen-options-row { grid-template-columns: 1fr !important; gap: 10px !important; }
+
+    /* Option rows */
+    .opt-row { grid-template-columns: 32px 1fr auto !important; gap: 8px !important; }
+    .opt-row2 { grid-template-columns: 32px 1fr auto !important; gap: 8px !important; }
+    .opt-label-tag, .opt-badge {
+      width: 32px !important; height: 32px !important; font-size: 12px !important;
+    }
+    .radio-wrap { font-size: 11px !important; }
+
+    /* Buttons */
+    .add-btn, .abtn {
+      width: 100% !important;
+      justify-content: center !important;
+      padding: 12px 16px !important;
+      font-size: 13px !important;
+      margin-top: 8px !important;
+    }
+    .import-btn { width: 100% !important; justify-content: center !important; }
+    .acard-body { padding: 14px !important; }
+
+    /* Tables — horizontal scroll */
+    .atable-wrap,
+    .admin-card .atable-wrap,
+    div[style*="overflow-x"] { border-radius: 10px !important; }
+    .atable th, .atable td { padding: 8px 10px !important; font-size: 11.5px !important; }
+    .questions-table th, .exams-manage-table th { font-size: 10px !important; padding: 9px 10px !important; }
+    .questions-table td, .exams-manage-table td { font-size: 12px !important; padding: 10px 10px !important; }
+    .del-btn, .edit-btn { padding: 5px 9px !important; font-size: 11px !important; }
+    .action-btns { display: flex; gap: 4px; flex-wrap: wrap; }
+
+    /* API key row */
+    .api-row { flex-direction: column !important; }
+    .api-row input { width: 100% !important; }
+
+    /* AI/Gen preview cards */
+    .ai-opts, .gen-opts { grid-template-columns: 1fr !important; }
+    .ai-q-card, .gen-q-card { padding: 12px !important; }
+    .ai-q-text, .gen-q-text { font-size: 12.5px !important; }
+
+    /* Stats grid */
+    .stats-grid, .admin-stats {
+      grid-template-columns: repeat(2, 1fr) !important;
+      gap: 10px !important;
+    }
+
+    /* Import bar */
+    .import-bar { flex-direction: column !important; align-items: stretch !important; }
+
+    /* PDF admin form */
+    #pdf-cat, #pdf-type, #pdf-title, #pdf-sub, #pdf-url, #pdf-desc {
+      font-size: 14px !important;
+    }
 
     /* LEADERBOARD */
     .lb-card { padding: 12px 14px !important; gap: 10px !important; border-radius: 12px; }
@@ -5583,7 +5657,7 @@ html {
         <div class="form-row">
           <div class="form-group">
             <label>Exam Name</label>
-            <input type="text" id="exam-name" placeholder="e.g. TSPSC Group-2 Mock Test 1" maxlength="100">
+            <input type="text" id="exam-name" placeholder="e.g. TSPSC Group-2 Mock Test 1">
           </div>
           <div class="form-group">
             <label>Category</label>
@@ -5700,29 +5774,29 @@ html {
         </div>
         <div class="form-group">
           <label>Question Text</label>
-          <textarea id="q-text-input" rows="3" placeholder="Question type చేయండి... (Telugu లేదా English)" maxlength="1000"></textarea>
+          <textarea id="q-text-input" rows="3" placeholder="Question type చేయండి... (Telugu లేదా English)"></textarea>
         </div>
         <div class="form-group">
           <label>Options — సరైన answer దగ్గర ✓ select చేయండి</label>
           <div class="opt-inputs">
             <div class="opt-row">
               <div class="opt-label-tag">A</div>
-              <input type="text" id="opt-a" placeholder="Option A" maxlength="300">
+              <input type="text" id="opt-a" placeholder="Option A">
               <label class="radio-wrap"><input type="radio" name="correct-ans" value="A"> Correct</label>
             </div>
             <div class="opt-row">
               <div class="opt-label-tag">B</div>
-              <input type="text" id="opt-b" placeholder="Option B" maxlength="300">
+              <input type="text" id="opt-b" placeholder="Option B">
               <label class="radio-wrap"><input type="radio" name="correct-ans" value="B"> Correct</label>
             </div>
             <div class="opt-row">
               <div class="opt-label-tag">C</div>
-              <input type="text" id="opt-c" placeholder="Option C" maxlength="300">
+              <input type="text" id="opt-c" placeholder="Option C">
               <label class="radio-wrap"><input type="radio" name="correct-ans" value="C"> Correct</label>
             </div>
             <div class="opt-row">
               <div class="opt-label-tag">D</div>
-              <input type="text" id="opt-d" placeholder="Option D" maxlength="300">
+              <input type="text" id="opt-d" placeholder="Option D">
               <label class="radio-wrap"><input type="radio" name="correct-ans" value="D"> Correct</label>
             </div>
           </div>
@@ -7903,7 +7977,7 @@ function selectCat(el, cat) {
   const topics = CAT_TOPICS[cat] || [];
   document.getElementById('topics-cat-label').textContent = '📌 ' + cat + ' — Topics';
   document.getElementById('topics-grid').innerHTML = topics.map(t =>
-    `<button class="topic-chip" onclick="goExams('${escHtml(cat)}');event.stopPropagation()">${escHtml(t)}</button>`
+    `<button class="topic-chip" onclick="goExams('${cat}');event.stopPropagation()">${t}</button>`
   ).join('');
 
   const panel = document.getElementById('topics-panel');
@@ -8009,35 +8083,16 @@ function showAdminForgot() {
     rk ? rk.slice(0,2) + '****' + rk.slice(-2) : 'Not set';
 }
 
-// SECURITY FIX: Admin brute force protection
-const _adminLoginAttempts = { count: 0, lockedUntil: 0 };
-
 function checkAdminPw() {
-  const now = Date.now();
-  const errEl = document.getElementById('pw-err');
-
-  // Check lockout
-  if (_adminLoginAttempts.lockedUntil > now) {
-    const secs = Math.ceil((_adminLoginAttempts.lockedUntil - now) / 1000);
-    errEl.textContent = `🔒 చాలా attempts చేశారు. ${secs} seconds తర్వాత try చేయండి.`;
-    return;
-  }
-
   const uname = document.getElementById('admin-username').value.trim();
   const pw    = document.getElementById('pw-input').value;
+  const errEl = document.getElementById('pw-err');
 
   if (!uname) { errEl.textContent = '❌ Username enter చేయండి.'; return; }
   if (!pw)    { errEl.textContent = '❌ Password enter చేయండి.'; return; }
 
   if (uname !== ADMIN_USERNAME || pw !== ADMIN_PW) {
-    _adminLoginAttempts.count++;
-    if (_adminLoginAttempts.count >= 5) {
-      _adminLoginAttempts.lockedUntil = Date.now() + 60000; // 1 min lockout
-      _adminLoginAttempts.count = 0;
-      errEl.textContent = '🔒 చాలా తప్పు attempts. 60 seconds lockout!';
-    } else {
-      errEl.textContent = `❌ Username లేదా Password తప్పు. (${5 - _adminLoginAttempts.count} tries మిగిలాయి)`;
-    }
+    errEl.textContent = '❌ Username లేదా Password తప్పు.';
     const inp = document.getElementById('pw-input');
     inp.classList.add('shake');
     inp.value = '';
@@ -8045,9 +8100,6 @@ function checkAdminPw() {
     return;
   }
 
-  // Success — reset attempts
-  _adminLoginAttempts.count = 0;
-  _adminLoginAttempts.lockedUntil = 0;
   closePwModal();
   stopTimer();
   _adminAuthenticated = true; // SECURITY: allow showPage('admin')
@@ -8082,22 +8134,6 @@ function doAdminForgotReset() {
   document.getElementById('admin-new-pw').value = '';
   setTimeout(() => showAdminLogin(), 1800);
 }
-
-// SECURITY FIX: Admin auto-logout after 30 minutes inactivity
-let _adminInactivityTimer = null;
-function _resetAdminTimer() {
-  if (!_adminAuthenticated) return;
-  clearTimeout(_adminInactivityTimer);
-  _adminInactivityTimer = setTimeout(() => {
-    if (_adminAuthenticated) {
-      toast('⏰ 30 min inactivity — Admin auto logout అయింది.', 'warn');
-      adminSignOut();
-    }
-  }, 30 * 60 * 1000);
-}
-['click','keydown','mousemove','touchstart'].forEach(ev =>
-  document.addEventListener(ev, _resetAdminTimer, { passive: true })
-);
 
 function adminSignOut() {
   if (!confirm('Admin panel నుండి Sign Out అవ్వాలా?')) return;
@@ -9244,12 +9280,12 @@ function renderAIPreview() {
       const L = String.fromCharCode(65+oi);
       const sel = q.ans === L;
       return `<div class="ai-opt${sel?' correct-opt':''}" style="cursor:pointer" onclick="setAIAns('${q._id}','${L}')" title="Correct answer గా select చేయండి">
-        <span style="font-weight:700">${L})</span> ${escHtml(o)} ${sel ? '<span style="float:right">✓</span>' : ''}
+        <span style="font-weight:700">${L})</span> ${o} ${sel ? '<span style="float:right">✓</span>' : ''}
       </div>`;
     }).join('');
     return `<div class="ai-q-card" id="aiq-${q._id}">
       <div class="ai-q-top">
-        <div class="ai-q-text">${i+1}. ${escHtml(q.q)}</div>
+        <div class="ai-q-text">${i+1}. ${q.q}</div>
         <button class="ai-q-remove" onclick="removeAIQ('${q._id}')" title="Remove">✕</button>
       </div>
       <div style="font-size:11px;color:var(--text3);margin-bottom:5px;font-weight:600">👆 Correct answer click చేయండి</div>
@@ -9449,11 +9485,11 @@ function renderGenPreview() {
   list.innerHTML = genExtracted.map((q, i) => {
     const optsHtml = (q.opts || []).map((o, oi) => {
       const L = String.fromCharCode(65 + oi);
-      return `<div class="gen-opt${q.ans === L ? ' correct-opt' : ''}">${L}) ${escHtml(o)}</div>`;
+      return `<div class="gen-opt${q.ans === L ? ' correct-opt' : ''}">${L}) ${o}</div>`;
     }).join('');
     return `<div class="gen-q-card" id="genq-${q._id}">
       <div class="gen-q-top">
-        <div class="gen-q-text">${i + 1}. ${escHtml(q.q)}</div>
+        <div class="gen-q-text">${i + 1}. ${q.q}</div>
         <button class="gen-q-remove" onclick="removeGenQ('${q._id}')" title="Remove">✕</button>
       </div>
       <div class="gen-opts">${optsHtml}</div>
@@ -9533,10 +9569,10 @@ function renderExamsManageTable() {
     const qc = DB.questions.filter(q => q.examId === e.id).length;
     return `<tr>
       <td style="color:var(--text3);font-weight:700">${i+1}</td>
-      <td style="color:var(--text);font-weight:700;max-width:200px;word-break:break-word">${escHtml(e.name)}</td>
-      <td><span class="meta-pill ${catPill[escHtml(e.cat)]||'pill-blue'}">${escHtml(e.cat)}</span></td>
-      <td style="color:var(--text)">${parseInt(e.time)||0} min</td>
-      <td><span class="meta-pill ${diffPill[escHtml(e.diff)]||'pill-green'}">${escHtml(e.diff)}</span></td>
+      <td style="color:var(--text);font-weight:700;max-width:200px;word-break:break-word">${e.name}</td>
+      <td><span class="meta-pill ${catPill[e.cat]||'pill-blue'}">${e.cat}</span></td>
+      <td style="color:var(--text)">${e.time} min</td>
+      <td><span class="meta-pill ${diffPill[e.diff]||'pill-green'}">${e.diff}</span></td>
       <td><span class="meta-pill pill-blue">📝 ${qc}</span></td>
       <td><div class="action-btns">
         <button class="edit-btn" onclick="openEditExamModal(${e.id})">✏️ Edit</button>
@@ -11005,15 +11041,6 @@ function _appInit() {
   ADMIN_USERNAME = _ls.getItem('ae_admin_uname')    || 'admin';
   ADMIN_RECOVERY = _ls.getItem('ae_admin_recovery') || 'ANIL2025RESET';
 
-  // SECURITY FIX: Warn admin if still using default credentials
-  if (!_ls.getItem('ae_admin_pw') || !_ls.getItem('ae_admin_uname')) {
-    setTimeout(() => {
-      if (_adminAuthenticated) {
-        toast('⚠️ Default credentials వాడుతున్నారు! Admin → Credentials లో password మార్చండి.', 'warn');
-      }
-    }, 3000);
-  }
-
   // DB
   try {
     const saved = _ls.getItem('anil_edutech_db');
@@ -11114,7 +11141,7 @@ function _appInit() {
       const used = JSON.parse(_ls.getItem('ae_used_ref_codes')||'[]');
       if (!used.includes(urlRef)) {
         _ls.setItem('ae_pending_ref', urlRef);
-        setTimeout(()=>toast(`🎁 Referral code "${escHtml(urlRef)}" detected! Register/Login చేసి apply చేయండి.`,'info'), 1500);
+        setTimeout(()=>toast(`🎁 Referral code "${urlRef}" detected! Register/Login చేసి apply చేయండి.`,'info'), 1500);
       }
     }
   } catch(e) {}
@@ -12128,16 +12155,9 @@ function _getCurrentUser() {
 }
 
 function _onPaymentSuccess(response, plan, amount, user) {
-  // SECURITY NOTE: razorpay_payment_id is client-side only.
-  // Admin panel లో manually verify చేయండి — Razorpay Dashboard లో confirm చేసిన తర్వాతే premium ఇవ్వండి.
-  // For full security: backend webhook తో server-side verification add చేయాలి (future upgrade).
-  if (!response.razorpay_payment_id) {
-    toast('❌ Invalid payment response. Admin కి contact చేయండి.', 'error');
-    return;
-  }
   const record = {
     id: response.razorpay_payment_id,
-    name: user ? escHtml(user.name) : 'Guest',
+    name: user ? user.name : 'Guest',
     gmail: user ? user.gmail : '',
     plan: plan,
     amount: amount,

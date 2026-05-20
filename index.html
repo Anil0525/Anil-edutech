@@ -14130,9 +14130,9 @@ async function loadCAPdfs(tab) {
   loading.style.display = 'block';
   empty.style.display   = 'none';
   var folder = CA_FOLDERS[tab] || tab;
-  var url = CA_SUPABASE_URL + '/storage/v1/object/list/' + CA_BUCKET + '?prefix=' + folder + '/&limit=100&offset=0&sortBy=created_at&order=desc';
+  var url = CA_SUPABASE_URL + '/storage/v1/object/list/' + CA_BUCKET;
   try {
-    var res  = await fetch(url, { headers: { 'apikey': CA_SUPABASE_KEY, 'Authorization': 'Bearer ' + CA_SUPABASE_KEY } });
+    var res  = await fetch(url, { method: 'POST', headers: { 'apikey': CA_SUPABASE_KEY, 'Authorization': 'Bearer ' + CA_SUPABASE_KEY, 'Content-Type': 'application/json' }, body: JSON.stringify({ prefix: folder + '/', limit: 100, offset: 0, sortBy: { column: 'created_at', order: 'desc' } }) });
     var data = await res.json();
     loading.style.display = 'none';
     var pdfs = (Array.isArray(data) ? data : []).filter(function(f) { return f.name && f.name.toLowerCase().endsWith('.pdf'); });

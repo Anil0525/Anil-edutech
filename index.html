@@ -14135,7 +14135,7 @@ async function loadCAPdfs(tab) {
     var res  = await fetch(url, { method: 'POST', headers: { 'apikey': CA_SUPABASE_KEY, 'Authorization': 'Bearer ' + CA_SUPABASE_KEY, 'Content-Type': 'application/json' }, body: JSON.stringify({ prefix: folder + '/', limit: 100, offset: 0, sortBy: { column: 'created_at', order: 'desc' } }) });
     var data = await res.json();
     loading.style.display = 'none';
-    var pdfs = (Array.isArray(data) ? data : []).filter(function(f) { return f.name && f.name.toLowerCase().endsWith('.pdf'); });
+    var pdfs = (Array.isArray(data) ? data : []).filter(function(f) { return f.name && (f.name.toLowerCase().endsWith('.pdf') || f.name.toLowerCase().endsWith('.html')); });
     if (!pdfs.length) { empty.style.display = 'block'; return; }
     pdfs.forEach(function(file) {
       var publicUrl = CA_SUPABASE_URL + '/storage/v1/object/public/' + CA_BUCKET + '/' + folder + '/' + file.name;
@@ -14182,7 +14182,11 @@ function openCAViewer(encodedUrl, title) {
   var url = decodeURIComponent(encodedUrl);
   document.getElementById('ca-viewer-title').textContent = title;
   document.getElementById('ca-viewer-download').href = url;
-  document.getElementById('ca-pdf-iframe').src = 'https://docs.google.com/viewer?url=' + encodeURIComponent(url) + '&embedded=true';
+  // HTML files load directly; PDFs use Google Docs viewer
+  var src = url.toLowerCase().endsWith('.html')
+    ? url
+    : 'https://docs.google.com/viewer?url=' + encodeURIComponent(url) + '&embedded=true';
+  document.getElementById('ca-pdf-iframe').src = src;
   var overlay = document.getElementById('ca-viewer-overlay');
   overlay.style.display = 'flex';
   document.body.style.overflow = 'hidden';

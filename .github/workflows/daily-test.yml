@@ -1,0 +1,46 @@
+name: Daily Mock Test Scheduler
+
+on:
+  schedule:
+    # Runs at 6:30 PM UTC = 12:00 AM IST (midnight)
+    - cron: '30 18 * * *'
+  workflow_dispatch: # Manual trigger option also available
+
+jobs:
+  activate-daily-test:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Activate today's test in Supabase
+        env:
+          SUPABASE_URL: ${{ secrets.SUPABASE_URL }}
+          SUPABASE_SERVICE_KEY: ${{ secrets.SUPABASE_SERVICE_KEY }}
+        run: |
+          TODAY=$(TZ='Asia/Kolkata' date '+%Y-%m-%d')
+          echo "Activating test for date: $TODAY"
+
+          # 1. Deactivate yesterday's test
+          curl -s -X PATCH \
+            "$SUPABASE_URL/rest/v1/daily_tests?is_active=eq.true" \
+            -H "apikey: $SUPABASE_SERVICE_KEY" \
+            -H "Authorization: Bearer $SUPABASE_SERVICE_KEY" \
+            -H "Content-Type: application/json" \
+            -d '{"is_active": false}'
+
+          echo "Yesterday's test deactivated."
+
+          # 2. Activate today's test
+          RESPONSE=$(curl -s -o /dev/null -w "%{http_code}" -X PATCH \
+            "$SUPABASE_URL/rest/v1/daily_tests?test_date=eq.$TODAY" \
+            -H "apikey: $SUPABASE_SERVICE_KEY" \
+            -H "Authorization: Bearer $SUPABASE_SERVICE_KEY" \
+            -H "Content-Type: application/json" \
+            -d '{"is_active": true}')
+
+          echo "Activate response code: $RESPONSE"
+
+          if [ "$RESPONSE" = "204" ]; then
+            echo "✅ Today's test ($TODAY) activated successfully!"
+          else
+            echo "⚠️ No test found for $TODAY — check if questions are added in Supabase."
+          fi

@@ -4261,10 +4261,7 @@ html {
         <button class="btn-primary" onclick="goExams()">🚀 Exams Start చేయండి</button>
         <button class="btn-outline" onclick="openYT()">▶ YouTube Subscribe</button>
         <button class="btn-outline" onclick="requestNotifications()" title="Daily reminders">🔔 Notify Me</button>
-        <a class="btn-outline" href="https://wa.me/919999999999?text=Anil%20EduTech%20Mock%20Tests%20గురించి%20తెలుసుకోవాలి" target="_blank" rel="noopener" style="display:inline-flex;align-items:center;gap:6px;text-decoration:none;">
-          <svg width="16" height="16" viewBox="0 0 24 24" fill="#25D366"><path d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.669-.51-.173-.008-.371-.01-.57-.01-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.077 4.487.709.306 1.262.489 1.694.625.712.227 1.36.195 1.871.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413-.074-.124-.272-.198-.57-.347m-5.421 7.403h-.004a9.87 9.87 0 01-5.031-1.378l-.361-.214-3.741.982.998-3.648-.235-.374a9.86 9.86 0 01-1.51-5.26c.001-5.45 4.436-9.884 9.888-9.884 2.64 0 5.122 1.03 6.988 2.898a9.825 9.825 0 012.893 6.994c-.003 5.45-4.437 9.884-9.885 9.884m8.413-18.297A11.815 11.815 0 0012.05 0C5.495 0 .16 5.335.157 11.892c0 2.096.547 4.142 1.588 5.945L.057 24l6.305-1.654a11.882 11.882 0 005.683 1.448h.005c6.554 0 11.89-5.335 11.893-11.893a11.821 11.821 0 00-3.48-8.413z"/></svg>
-          WhatsApp Join
-        </a>
+
       </div>
       <div class="stats-row">
         <div><div class="stat-num" id="stat-subscribers">0</div><div class="stat-label">👥 Subscribers</div></div>
@@ -4983,48 +4980,352 @@ html {
 
 <!-- CURRENT AFFAIRS PAGE -->
 <div id="page-current-affairs" class="page">
+  <style>
+    .ca-hero-section {
+      background: linear-gradient(135deg, #0D47A1 0%, #1565C0 50%, #1976D2 100%);
+      border-radius: 20px;
+      padding: 28px 24px 22px;
+      margin-bottom: 20px;
+      position: relative;
+      overflow: hidden;
+    }
+    .ca-hero-section::before {
+      content: '';
+      position: absolute;
+      top: -50px; right: -50px;
+      width: 200px; height: 200px;
+      border-radius: 50%;
+      background: rgba(255,255,255,0.06);
+    }
+    .ca-hero-section::after {
+      content: '';
+      position: absolute;
+      bottom: -30px; left: 35%;
+      width: 140px; height: 140px;
+      border-radius: 50%;
+      background: rgba(255,255,255,0.04);
+    }
+    .ca-back-btn {
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      background: rgba(255,255,255,0.12);
+      border: 1px solid rgba(255,255,255,0.2);
+      border-radius: 10px;
+      padding: 6px 14px;
+      font-family: inherit;
+      font-size: 13px;
+      font-weight: 700;
+      color: rgba(255,255,255,0.9);
+      cursor: pointer;
+      margin-bottom: 16px;
+      transition: background 0.2s;
+    }
+    .ca-back-btn:hover { background: rgba(255,255,255,0.2); }
+    .ca-hero-title {
+      font-size: 28px;
+      font-weight: 900;
+      color: #fff;
+      letter-spacing: -0.5px;
+      margin-bottom: 4px;
+    }
+    .ca-hero-sub { font-size: 13px; color: rgba(255,255,255,0.65); margin-bottom: 18px; }
+    .ca-tabs-row { display: flex; gap: 6px; }
+    .ca-tab-btn {
+      padding: 8px 20px;
+      font-family: inherit;
+      font-size: 13px;
+      font-weight: 700;
+      border: none;
+      border-radius: 10px;
+      cursor: pointer;
+      transition: all 0.2s;
+    }
+    .ca-tab-btn.ca-active { background: #fff; color: #1A73E8; }
+    .ca-tab-btn:not(.ca-active) { background: rgba(255,255,255,0.12); color: rgba(255,255,255,0.8); }
+    .ca-tab-btn:not(.ca-active):hover { background: rgba(255,255,255,0.22); color: #fff; }
+    .ca-streak-badge {
+      position: absolute;
+      top: 20px; right: 20px;
+      background: rgba(255,255,255,0.12);
+      border: 1px solid rgba(255,255,255,0.2);
+      border-radius: 12px;
+      padding: 10px 16px;
+      text-align: center;
+    }
+    .ca-streak-num { font-size: 20px; font-weight: 900; color: #FFD54F; display: block; }
+    .ca-streak-label { font-size: 10px; color: rgba(255,255,255,0.65); display: block; letter-spacing: 0.5px; }
+    .ca-section-label {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      font-size: 11px;
+      font-weight: 700;
+      letter-spacing: 1.4px;
+      text-transform: uppercase;
+      color: var(--text3);
+      margin-bottom: 12px;
+    }
+    .ca-section-label::after {
+      content: '';
+      flex: 1;
+      height: 1px;
+      background: var(--border);
+    }
+    .ca-pdf-card-new {
+      background: var(--surface);
+      border: 1.5px solid var(--border);
+      border-radius: 16px;
+      overflow: hidden;
+      transition: transform 0.18s, border-color 0.18s, box-shadow 0.18s;
+      cursor: pointer;
+      position: relative;
+    }
+    .ca-pdf-card-new:hover {
+      transform: translateY(-3px);
+      border-color: #1A73E8;
+      box-shadow: 0 8px 24px rgba(26,115,232,0.12);
+    }
+    .ca-pdf-card-new.ca-yesterday:hover { border-color: #7B1FA2; box-shadow: 0 8px 24px rgba(123,31,162,0.12); }
+    .ca-card-top-bar {
+      height: 4px;
+      background: linear-gradient(90deg, #1A73E8, #42A5F5);
+    }
+    .ca-card-top-bar.ca-purple { background: linear-gradient(90deg, #7B1FA2, #AB47BC); }
+    .ca-card-body { padding: 16px 18px; }
+    .ca-card-badge-new {
+      display: inline-flex;
+      align-items: center;
+      gap: 5px;
+      font-size: 11px;
+      font-weight: 700;
+      padding: 3px 10px;
+      border-radius: 20px;
+      margin-bottom: 10px;
+      background: #E8F0FE;
+      color: #1A73E8;
+    }
+    .ca-card-badge-new.ca-purple-badge { background: #F3E5F5; color: #7B1FA2; }
+    .ca-card-date-new {
+      font-size: 12px;
+      color: var(--text3);
+      margin-bottom: 6px;
+    }
+    .ca-card-name {
+      font-size: 14px;
+      font-weight: 800;
+      color: var(--text);
+      margin-bottom: 12px;
+      line-height: 1.4;
+    }
+    .ca-card-meta-row {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      font-size: 11px;
+      color: var(--text3);
+      margin-bottom: 14px;
+      padding-bottom: 14px;
+      border-bottom: 1px solid var(--border);
+    }
+    .ca-card-actions { display: flex; gap: 8px; }
+    .ca-read-btn {
+      flex: 1;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 7px;
+      padding: 10px 14px;
+      border-radius: 10px;
+      border: none;
+      font-family: inherit;
+      font-size: 13px;
+      font-weight: 800;
+      cursor: pointer;
+      transition: background 0.18s, transform 0.1s;
+      background: #1A73E8;
+      color: #fff;
+    }
+    .ca-read-btn:hover { background: #1557B0; }
+    .ca-read-btn:active { transform: scale(0.97); }
+    .ca-read-btn.ca-purple-btn { background: #7B1FA2; }
+    .ca-read-btn.ca-purple-btn:hover { background: #6A1B9A; }
+    .ca-dl-btn {
+      width: 38px;
+      height: 38px;
+      border-radius: 10px;
+      border: 1.5px solid var(--border);
+      background: var(--bg);
+      color: var(--text3);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      cursor: pointer;
+      font-size: 16px;
+      transition: all 0.18s;
+      text-decoration: none;
+      flex-shrink: 0;
+    }
+    .ca-dl-btn:hover { border-color: var(--text2); color: var(--text); }
+    .ca-tip-box {
+      background: var(--bg);
+      border: 1.5px solid var(--border);
+      border-radius: 14px;
+      padding: 14px 16px;
+      display: flex;
+      align-items: flex-start;
+      gap: 12px;
+      margin-top: 8px;
+    }
+    .ca-tip-icon {
+      width: 36px;
+      height: 36px;
+      border-radius: 10px;
+      background: #E8F0FE;
+      color: #1A73E8;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 18px;
+      flex-shrink: 0;
+    }
+    .ca-tip-text { font-size: 13px; color: var(--text2); line-height: 1.6; }
+    .ca-tip-text strong { color: var(--text); font-weight: 800; }
+    /* Loading redesign */
+    .ca-loading-new {
+      text-align: center;
+      padding: 56px 20px;
+    }
+    .ca-loading-spinner {
+      width: 44px; height: 44px;
+      border: 3px solid var(--border);
+      border-top-color: #1A73E8;
+      border-radius: 50%;
+      margin: 0 auto 16px;
+      animation: ca-spin 0.8s linear infinite;
+    }
+    @keyframes ca-spin { to { transform: rotate(360deg); } }
+    /* Empty state redesign */
+    .ca-empty-new { text-align: center; padding: 56px 20px; }
+    .ca-empty-icon {
+      width: 64px; height: 64px;
+      background: #E8F0FE;
+      border-radius: 20px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 28px;
+      margin: 0 auto 16px;
+    }
+    /* Viewer modal redesign */
+    .ca-viewer-new {
+      background: var(--surface);
+      border-radius: 20px;
+      width: 100%;
+      max-width: 880px;
+      height: 90vh;
+      display: flex;
+      flex-direction: column;
+      overflow: hidden;
+    }
+    .ca-viewer-header {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      padding: 16px 20px;
+      border-bottom: 1.5px solid var(--border);
+      flex-shrink: 0;
+      background: var(--surface);
+    }
+    .ca-viewer-close {
+      display: flex;
+      align-items: center;
+      gap: 6px;
+      background: var(--bg);
+      border: 1.5px solid var(--border);
+      border-radius: 10px;
+      padding: 8px 14px;
+      font-family: inherit;
+      font-size: 13px;
+      font-weight: 800;
+      cursor: pointer;
+      color: var(--text2);
+      white-space: nowrap;
+      transition: all 0.18s;
+    }
+    .ca-viewer-close:hover { border-color: var(--text2); color: var(--text); }
+    .ca-viewer-download-btn {
+      background: linear-gradient(135deg, #1A73E8, #4F7CFF);
+      color: #fff;
+      border: none;
+      border-radius: 10px;
+      padding: 9px 18px;
+      font-family: inherit;
+      font-size: 13px;
+      font-weight: 800;
+      cursor: pointer;
+      text-decoration: none;
+      white-space: nowrap;
+      display: flex;
+      align-items: center;
+      gap: 6px;
+    }
+  </style>
+
   <div class="section" style="max-width:800px;margin:0 auto;">
-    <!-- Header -->
-    <div style="display:flex;align-items:center;gap:12px;margin-bottom:8px;">
-      <button onclick="goHome()" style="background:none;border:none;font-size:22px;cursor:pointer;padding:4px 8px;border-radius:8px;color:var(--primary);">← వెనక్కి</button>
-      <div>
-        <div class="section-title" id="ca-page-title" style="margin:0;font-size:22px;">Daily Current Affairs</div>
-        <div class="section-sub" id="ca-page-sub" style="margin:0;">PDFs చదవండి</div>
+
+    <!-- Beautiful Hero Header -->
+    <div class="ca-hero-section">
+      <div class="ca-streak-badge">
+        <span class="ca-streak-num">🔥 5</span>
+        <span class="ca-streak-label">Day Streak</span>
+      </div>
+      <button class="ca-back-btn" onclick="goHome()">← వెనక్కి</button>
+      <div class="ca-hero-title" id="ca-page-title">Daily Current Affairs</div>
+      <div class="ca-hero-sub" id="ca-page-sub">PDFs చదవండి · Telugu & English</div>
+      <div class="ca-tabs-row">
+        <button id="ca-tab-daily" class="ca-tab-btn ca-active" onclick="switchCATab('daily')">📰 Daily CA</button>
+        <button id="ca-tab-monthly" class="ca-tab-btn" onclick="switchCATab('monthly')">📅 Monthly Magazine</button>
       </div>
     </div>
 
-    <!-- Tabs -->
-    <div style="display:flex;gap:10px;margin-bottom:20px;border-bottom:2px solid var(--border);padding-bottom:0;">
-      <button id="ca-tab-daily" onclick="switchCATab('daily')" style="padding:10px 22px;border:none;background:none;font-family:inherit;font-size:14px;font-weight:800;cursor:pointer;color:var(--primary);border-bottom:3px solid var(--primary);margin-bottom:-2px;transition:all .2s;">📰 Daily CA</button>
-      <button id="ca-tab-monthly" onclick="switchCATab('monthly')" style="padding:10px 22px;border:none;background:none;font-family:inherit;font-size:14px;font-weight:800;cursor:pointer;color:var(--text3);border-bottom:3px solid transparent;margin-bottom:-2px;transition:all .2s;">📅 Monthly Magazine</button>
-    </div>
+    <!-- Section label -->
+    <div class="ca-section-label" id="ca-section-label">🗓 Recent Issues</div>
 
     <!-- Loading -->
-    <div id="ca-loading" style="text-align:center;padding:48px 20px;display:none;">
-      <div style="font-size:36px;margin-bottom:12px;">⏳</div>
-      <div style="font-size:14px;font-weight:700;color:var(--text3);">PDFs load అవుతున్నాయి...</div>
+    <div id="ca-loading" style="display:none;">
+      <div class="ca-loading-new">
+        <div class="ca-loading-spinner"></div>
+        <div style="font-size:14px;font-weight:700;color:var(--text3);">PDFs load అవుతున్నాయి...</div>
+      </div>
     </div>
 
     <!-- Empty state -->
-    <div id="ca-empty" style="text-align:center;padding:48px 20px;display:none;">
-      <div style="font-size:48px;margin-bottom:12px;">📭</div>
-      <div style="font-size:16px;font-weight:800;color:var(--text2);margin-bottom:6px;">ఇంకా PDFs లేవు</div>
-      <div style="font-size:13px;color:var(--text3);">త్వరలో add చేస్తాం!</div>
+    <div id="ca-empty" style="display:none;">
+      <div class="ca-empty-new">
+        <div class="ca-empty-icon">📭</div>
+        <div style="font-size:16px;font-weight:900;color:var(--text2);margin-bottom:6px;">ఇంకా PDFs లేవు</div>
+        <div style="font-size:13px;color:var(--text3);">త్వరలో add చేస్తాం!</div>
+      </div>
     </div>
 
     <!-- PDF Grid -->
-    <div id="ca-pdf-grid" style="display:grid;grid-template-columns:repeat(auto-fill,minmax(260px,1fr));gap:16px;"></div>
+    <div id="ca-pdf-grid" style="display:grid;grid-template-columns:repeat(auto-fill,minmax(280px,1fr));gap:16px;"></div>
+
+    <!-- Tip box -->
+    <div class="ca-tip-box" id="ca-tip-box">
+      <div class="ca-tip-icon">💡</div>
+      <div class="ca-tip-text"><strong>Pro Tip:</strong> రోజూ Current Affairs చదివితే TSPSC & SSC exams లో GK section లో better marks వస్తాయి. Streak maintain చేయండి! 💪</div>
+    </div>
 
     <!-- PDF Viewer Modal -->
-    <div id="ca-viewer-overlay" style="display:none;position:fixed;inset:0;z-index:9999;background:rgba(0,0,0,.7);backdrop-filter:blur(6px);align-items:center;justify-content:center;padding:16px;">
-      <div style="background:var(--surface);border-radius:20px;width:100%;max-width:860px;height:90vh;display:flex;flex-direction:column;overflow:hidden;box-shadow:0 32px 80px rgba(0,0,0,.4);">
-        <!-- Viewer Header -->
-        <div style="display:flex;align-items:center;gap:12px;padding:16px 20px;border-bottom:2px solid var(--border);flex-shrink:0;">
-          <button onclick="closeCAViewer()" style="background:var(--bg);border:2px solid var(--border);border-radius:10px;padding:7px 14px;font-family:inherit;font-size:13px;font-weight:800;cursor:pointer;color:var(--text2);">✕ Close</button>
+    <div id="ca-viewer-overlay" style="display:none;position:fixed;inset:0;z-index:9999;background:rgba(0,0,0,.75);backdrop-filter:blur(8px);align-items:center;justify-content:center;padding:16px;">
+      <div class="ca-viewer-new">
+        <div class="ca-viewer-header">
+          <button class="ca-viewer-close" onclick="closeCAViewer()">✕ Close</button>
           <div id="ca-viewer-title" style="font-size:15px;font-weight:900;color:var(--text);flex:1;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;"></div>
-          <a id="ca-viewer-download" href="#" download target="_blank" style="background:linear-gradient(135deg,var(--primary),#4F7CFF);color:#fff;border:none;border-radius:10px;padding:8px 16px;font-family:inherit;font-size:13px;font-weight:800;cursor:pointer;text-decoration:none;white-space:nowrap;">⬇ Download</a>
+          <a id="ca-viewer-download" class="ca-viewer-download-btn" href="#" download target="_blank">⬇ Download</a>
         </div>
-        <!-- PDF iframe -->
         <iframe id="ca-pdf-iframe" src="" style="flex:1;border:none;width:100%;"></iframe>
       </div>
     </div>
@@ -5708,6 +6009,7 @@ html {
       <button class="admin-tab" onclick="switchAdminTab('payments',this)">💳 Payments</button>
       <button class="admin-tab" onclick="switchAdminTab('bulkimport',this)">📥 Bulk Import</button>
       <button class="admin-tab" onclick="switchAdminTab('analytics',this)">📊 Analytics</button>
+      <button class="admin-tab" onclick="switchAdminTab('dailymock',this)">📅 Daily Mock</button>
       <button class="admin-tab" onclick="switchAdminTab('scheduled',this)">🗓 Scheduled</button>
       <button class="admin-tab" onclick="switchAdminTab('settings',this)">🔧 Settings</button>
     </div>
@@ -6316,6 +6618,103 @@ html {
     <!-- ══════════════════════════════════
          🗓 TAB: SCHEDULED EXAMS
     ══════════════════════════════════ -->
+    <!-- ══════════════════════════════════
+         📅 TAB: DAILY MOCK TEST
+    ══════════════════════════════════ -->
+    <div id="atab-dailymock" class="admin-panel">
+
+      <!-- Stats row -->
+      <div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(160px,1fr));gap:12px;margin-bottom:20px;">
+        <div class="admin-card" style="padding:16px;text-align:center;margin:0;">
+          <div style="font-size:26px;font-weight:900;color:var(--primary)" id="dm-stat-total">-</div>
+          <div style="font-size:12px;color:var(--text3);font-weight:700;margin-top:4px;">Total Scheduled</div>
+        </div>
+        <div class="admin-card" style="padding:16px;text-align:center;margin:0;">
+          <div style="font-size:26px;font-weight:900;color:#16a34a" id="dm-stat-today">-</div>
+          <div style="font-size:12px;color:var(--text3);font-weight:700;margin-top:4px;">Today Active</div>
+        </div>
+        <div class="admin-card" style="padding:16px;text-align:center;margin:0;">
+          <div style="font-size:26px;font-weight:900;color:#f59e0b" id="dm-stat-upcoming">-</div>
+          <div style="font-size:12px;color:var(--text3);font-weight:700;margin-top:4px;">Upcoming</div>
+        </div>
+        <div class="admin-card" style="padding:16px;text-align:center;margin:0;">
+          <div style="font-size:26px;font-weight:900;color:#8b5cf6" id="dm-stat-qbank">-</div>
+          <div style="font-size:12px;color:var(--text3);font-weight:700;margin-top:4px;">Question Bank</div>
+        </div>
+      </div>
+
+      <!-- Auto Pick -->
+      <div class="admin-card" style="border-left:4px solid #8b5cf6;">
+        <h3>🎲 Auto Pick — Question Bank నుండి</h3>
+        <div style="font-size:13px;color:var(--text2);margin-bottom:16px;">మీ existing questions నుండి randomly pick చేసి daily test create అవుతుంది. Super easy!</div>
+        <div class="form-row">
+          <div class="form-group">
+            <label>Date</label>
+            <input type="date" id="dm-auto-date" style="padding:10px;border:2px solid var(--border);border-radius:10px;font-family:inherit;font-size:13px;background:var(--bg);color:var(--text);width:100%;outline:none;box-sizing:border-box;">
+          </div>
+          <div class="form-group">
+            <label>Test Title</label>
+            <input type="text" id="dm-auto-title" placeholder="e.g. Daily Mock Test - May 23" style="padding:10px;border:2px solid var(--border);border-radius:10px;font-family:inherit;font-size:13px;background:var(--bg);color:var(--text);width:100%;outline:none;box-sizing:border-box;">
+          </div>
+        </div>
+        <div class="form-row">
+          <div class="form-group">
+            <label>Category Filter</label>
+            <select id="dm-auto-cat" style="padding:10px;border:2px solid var(--border);border-radius:10px;font-family:inherit;font-size:13px;background:var(--bg);color:var(--text);width:100%;outline:none;">
+              <option value="">All Categories</option>
+              <option value="GK">GK</option>
+              <option value="TSPSC">TSPSC</option>
+              <option value="SSC">SSC</option>
+              <option value="Banking">Banking</option>
+              <option value="Math">Math</option>
+              <option value="Current Affairs">Current Affairs</option>
+            </select>
+          </div>
+          <div class="form-group">
+            <label>Questions Count</label>
+            <input type="number" id="dm-auto-count" value="10" min="5" max="50" style="padding:10px;border:2px solid var(--border);border-radius:10px;font-family:inherit;font-size:13px;background:var(--bg);color:var(--text);width:100%;outline:none;box-sizing:border-box;">
+          </div>
+        </div>
+        <div style="display:flex;gap:10px;flex-wrap:wrap;">
+          <button class="add-btn" style="background:linear-gradient(135deg,#8b5cf6,#6d28d9);" onclick="dmAutoPickCreate()">🎲 Auto Pick &amp; Schedule</button>
+          <button class="add-btn" style="background:linear-gradient(135deg,#06b6d4,#0891b2);margin:0;" onclick="dmAutoPickWeek()">📅 ఈ Week Auto Fill</button>
+        </div>
+      </div>
+
+      <!-- Manual Form -->
+      <div class="admin-card" style="border-left:4px solid var(--primary);">
+        <h3>✏️ Manually Questions Type చేయండి</h3>
+        <div style="font-size:13px;color:var(--text2);margin-bottom:16px;">మీరే questions రాయండి — simple form లో fill చేయండి.</div>
+        <div class="form-row">
+          <div class="form-group">
+            <label>Date</label>
+            <input type="date" id="dm-man-date" style="padding:10px;border:2px solid var(--border);border-radius:10px;font-family:inherit;font-size:13px;background:var(--bg);color:var(--text);width:100%;outline:none;box-sizing:border-box;">
+          </div>
+          <div class="form-group">
+            <label>Test Title</label>
+            <input type="text" id="dm-man-title" placeholder="e.g. Daily Mock Test - May 23" style="padding:10px;border:2px solid var(--border);border-radius:10px;font-family:inherit;font-size:13px;background:var(--bg);color:var(--text);width:100%;outline:none;box-sizing:border-box;">
+          </div>
+        </div>
+        <div id="dm-questions-list" style="display:flex;flex-direction:column;gap:14px;margin-bottom:16px;"></div>
+        <div style="display:flex;gap:10px;flex-wrap:wrap;">
+          <button class="add-btn" style="background:linear-gradient(135deg,#f59e0b,#d97706);margin:0;" onclick="dmAddQuestion()">➕ Question Add చేయండి</button>
+          <button class="add-btn" style="margin:0;" onclick="dmManualSave()">💾 Save &amp; Schedule</button>
+        </div>
+      </div>
+
+      <!-- Scheduled List -->
+      <div class="admin-card">
+        <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:14px;flex-wrap:wrap;gap:8px;">
+          <h3 style="margin:0;">📋 Scheduled Daily Tests</h3>
+          <button onclick="dmLoadList()" style="background:var(--bg);border:2px solid var(--border);border-radius:10px;padding:7px 14px;font-family:inherit;font-size:12px;font-weight:700;cursor:pointer;color:var(--text2);">🔄 Refresh</button>
+        </div>
+        <div id="dm-list-wrap">
+          <div style="text-align:center;padding:32px;color:var(--text3);font-size:13px;">Tab open అయినప్పుడు load అవుతుంది...</div>
+        </div>
+      </div>
+
+    </div><!-- end atab-dailymock -->
+
     <div id="atab-scheduled" class="admin-panel">
 
       <!-- Create scheduled exam -->
@@ -9218,6 +9617,7 @@ function switchAdminTab(tab, btnEl) {
   if (tab === 'settings')    { if(typeof loadEmailJSConfig==='function') loadEmailJSConfig(); if(typeof renderPwResetRequests==='function') renderPwResetRequests(); }
   if (tab === 'analytics')   { setTimeout(function(){ if(typeof _renderAnalytics==='function') _renderAnalytics(); }, 50); }
   if (tab === 'scheduled')   { setTimeout(function(){ if(typeof _populateSchedSelect==='function') _populateSchedSelect(); if(typeof _renderSchedList==='function') _renderSchedList(); }, 50); }
+  if (tab === 'dailymock')   { setTimeout(function(){ if(typeof dmInit==='function') dmInit(); }, 50); }
   if (tab === 'payments')    { if(typeof renderPaymentsTable==='function') renderPaymentsTable(); if(typeof renderPaymentStats==='function') renderPaymentStats(); }
 }
 
@@ -14111,14 +14511,11 @@ function switchCATab(tab) {
   ['daily','monthly'].forEach(function(t) {
     var btn = document.getElementById('ca-tab-' + t);
     if (!btn) return;
-    if (t === tab) {
-      btn.style.color = 'var(--primary)';
-      btn.style.borderBottom = '3px solid var(--primary)';
-    } else {
-      btn.style.color = 'var(--text3)';
-      btn.style.borderBottom = '3px solid transparent';
-    }
+    if (t === tab) { btn.classList.add('ca-active'); }
+    else { btn.classList.remove('ca-active'); }
   });
+  var label = document.getElementById('ca-section-label');
+  if (label) label.textContent = tab === 'daily' ? '🗓 Recent Issues' : '📚 Monthly Editions';
   loadCAPdfs(tab);
 }
 
@@ -14149,31 +14546,28 @@ async function loadCAPdfs(tab) {
 }
 
 function _caCreateCard(file, publicUrl, tab) {
-  var name = file.name.replace(/\.pdf$/i,'').replace(/[-_]/g,' ');
+  var name = file.name.replace(/\.pdf$/i,'').replace(/\.html$/i,'').replace(/[-_]/g,' ');
   var dateMatch = file.name.match(/(\d{4}[-_]\d{2}[-_]\d{2})/);
   var dateStr = '';
   if (dateMatch) {
     try { var d = new Date(dateMatch[1].replace(/_/g,'-')); dateStr = d.toLocaleDateString('te-IN',{day:'2-digit',month:'long',year:'numeric'}); } catch(e) { dateStr = dateMatch[1]; }
   }
-  var iconColor = tab === 'daily' ? '#e53935' : '#8e24aa';
-  var icon      = tab === 'daily' ? '📰' : '📅';
-  var card = document.createElement('div');
-  card.style.cssText = 'background:var(--card);border:1.5px solid var(--border);border-radius:16px;padding:18px;cursor:pointer;transition:all .2s;display:flex;flex-direction:column;gap:10px;';
-  card.onmouseenter = function(){ this.style.boxShadow='0 8px 28px rgba(26,115,232,.14)';this.style.borderColor=iconColor;this.style.transform='translateY(-2px)'; };
-  card.onmouseleave = function(){ this.style.boxShadow='';this.style.borderColor='var(--border)';this.style.transform=''; };
+  var isMonthly = tab === 'monthly';
   var safeUrl  = encodeURIComponent(publicUrl);
   var safeName = name.replace(/\\/g,'\\\\').replace(/'/g,"\\'");
+  var card = document.createElement('div');
+  card.className = 'ca-pdf-card-new' + (isMonthly ? ' ca-yesterday' : '');
   card.innerHTML =
-    '<div style="display:flex;align-items:center;gap:10px;">' +
-      '<div style="width:44px;height:44px;border-radius:12px;background:'+iconColor+'18;display:flex;align-items:center;justify-content:center;font-size:22px;flex-shrink:0;">'+icon+'</div>' +
-      '<div style="flex:1;min-width:0;">' +
-        '<div style="font-size:13.5px;font-weight:800;color:var(--text);line-height:1.3;overflow:hidden;display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical;">'+name+'</div>' +
-        (dateStr ? '<div style="font-size:11px;color:var(--text3);font-weight:600;margin-top:3px;">📅 '+dateStr+'</div>' : '') +
+    '<div class="ca-card-top-bar' + (isMonthly ? ' ca-purple' : '') + '"></div>' +
+    '<div class="ca-card-body">' +
+      '<div class="ca-card-badge-new' + (isMonthly ? ' ca-purple-badge' : '') + '">' + (isMonthly ? '📅 Monthly' : '⭐ Daily CA') + '</div>' +
+      (dateStr ? '<div class="ca-card-date-new">📅 ' + dateStr + '</div>' : '') +
+      '<div class="ca-card-name">' + name + '</div>' +
+      '<div class="ca-card-meta-row">📄 PDF &nbsp;·&nbsp; Telugu + English</div>' +
+      '<div class="ca-card-actions">' +
+        '<button onclick="openCAViewer(\'' + safeUrl + '\',\'' + safeName + '\')" class="ca-read-btn' + (isMonthly ? ' ca-purple-btn' : '') + '">👁 చదవండి</button>' +
+        '<a href="' + publicUrl + '" download target="_blank" class="ca-dl-btn">⬇</a>' +
       '</div>' +
-    '</div>' +
-    '<div style="display:flex;gap:8px;margin-top:4px;">' +
-      '<button onclick="openCAViewer(\''+safeUrl+'\',\''+safeName+'\')" style="flex:1;padding:9px 12px;background:'+iconColor+';color:#fff;border:none;border-radius:10px;font-family:inherit;font-size:13px;font-weight:800;cursor:pointer;">👁 చదవండి</button>' +
-      '<a href="'+publicUrl+'" download target="_blank" style="padding:9px 12px;background:var(--bg);border:1.5px solid var(--border);border-radius:10px;font-size:13px;font-weight:800;color:var(--text2);text-decoration:none;display:flex;align-items:center;">⬇</a>' +
     '</div>';
   return card;
 }
@@ -14218,3 +14612,353 @@ document.addEventListener('DOMContentLoaded', function() {
 });
 </script>
 </html>
+
+<script>
+/* ════════════════════════════════════════════════
+   📅 DAILY MOCK TEST SYSTEM
+   - Auto Pick from question bank
+   - Manual question entry
+   - Supabase daily_tests table
+════════════════════════════════════════════════ */
+
+const DM_TABLE = 'daily_tests';
+const DM_SB_URL = typeof SB_URL !== 'undefined' ? SB_URL : '';
+const DM_SB_KEY = typeof SB_KEY !== 'undefined' ? SB_KEY : '';
+
+function dmHeaders(extra) {
+  return Object.assign({
+    'Content-Type': 'application/json',
+    'apikey': DM_SB_KEY,
+    'Authorization': 'Bearer ' + DM_SB_KEY
+  }, extra || {});
+}
+
+/* ── Init: set today's date defaults, load stats & list ── */
+function dmInit() {
+  var today = new Date().toISOString().split('T')[0];
+  var autoDate = document.getElementById('dm-auto-date');
+  var manDate  = document.getElementById('dm-man-date');
+  if (autoDate && !autoDate.value) autoDate.value = today;
+  if (manDate  && !manDate.value)  manDate.value  = today;
+
+  // Default titles
+  var autoTitle = document.getElementById('dm-auto-title');
+  var manTitle  = document.getElementById('dm-man-title');
+  var label = 'Daily Mock Test - ' + new Date().toLocaleDateString('en-IN', {day:'2-digit',month:'short',year:'numeric'});
+  if (autoTitle && !autoTitle.value) autoTitle.value = label;
+  if (manTitle  && !manTitle.value)  manTitle.value  = label;
+
+  // Start with 1 empty question in manual form
+  var qList = document.getElementById('dm-questions-list');
+  if (qList && qList.children.length === 0) dmAddQuestion();
+
+  dmLoadStats();
+  dmLoadList();
+}
+
+/* ── Stats ── */
+async function dmLoadStats() {
+  try {
+    var today = new Date().toISOString().split('T')[0];
+    var res = await fetch(DM_SB_URL + '/rest/v1/' + DM_TABLE + '?select=id,test_date,is_active&order=test_date.asc', { headers: dmHeaders() });
+    var data = await res.json();
+    if (!Array.isArray(data)) return;
+
+    var total    = data.length;
+    var isToday  = data.filter(function(d){ return d.test_date === today && d.is_active; }).length;
+    var upcoming = data.filter(function(d){ return d.test_date > today; }).length;
+
+    document.getElementById('dm-stat-total').textContent    = total;
+    document.getElementById('dm-stat-today').textContent    = isToday ? '✅' : '❌';
+    document.getElementById('dm-stat-upcoming').textContent = upcoming;
+
+    // Question bank count
+    var qres = await fetch(DM_SB_URL + '/rest/v1/questions?select=id', { headers: dmHeaders({'Prefer':'count=exact'}) });
+    var count = qres.headers.get('content-range');
+    if (count) document.getElementById('dm-stat-qbank').textContent = count.split('/')[1] || '-';
+  } catch(e) { console.error('DM stats error', e); }
+}
+
+/* ── Auto Pick from question bank ── */
+async function dmAutoPickCreate() {
+  var date  = document.getElementById('dm-auto-date').value;
+  var title = document.getElementById('dm-auto-title').value.trim();
+  var cat   = document.getElementById('dm-auto-cat').value;
+  var count = parseInt(document.getElementById('dm-auto-count').value) || 10;
+
+  if (!date)  { toast('Date select చేయండి!', 'error'); return; }
+  if (!title) { toast('Test title enter చేయండి!', 'error'); return; }
+
+  toast('Questions pick చేస్తున్నాం...', 'info');
+
+  try {
+    var url = DM_SB_URL + '/rest/v1/questions?select=id,q,opts,ans,explanation&limit=' + (count * 5);
+    if (cat) url += '&cat=eq.' + encodeURIComponent(cat);
+
+    var res  = await fetch(url, { headers: dmHeaders() });
+    var pool = await res.json();
+
+    if (!Array.isArray(pool) || pool.length === 0) {
+      toast('Question bank లో questions లేవు! ముందు questions add చేయండి.', 'error');
+      return;
+    }
+
+    // Shuffle and pick
+    var shuffled = pool.sort(function(){ return Math.random() - 0.5; });
+    var picked   = shuffled.slice(0, Math.min(count, shuffled.length));
+    var questions = picked.map(function(q, i) {
+      return { id: i + 1, q: q.q, opts: q.opts, ans: q.ans, explanation: q.explanation || '' };
+    });
+
+    await dmSaveToSupabase(date, title, questions);
+  } catch(e) {
+    toast('Error: ' + e.message, 'error');
+    console.error(e);
+  }
+}
+
+/* ── Auto Pick entire week ── */
+async function dmAutoPickWeek() {
+  if (!confirm('ఈ week (7 days) అన్నీ auto fill చేయాలా?')) return;
+  var cat   = document.getElementById('dm-auto-cat').value;
+  var count = parseInt(document.getElementById('dm-auto-count').value) || 10;
+
+  toast('Week అంతా schedule చేస్తున్నాం...', 'info');
+
+  var today = new Date();
+  var errors = 0;
+  for (var i = 0; i < 7; i++) {
+    var d = new Date(today);
+    d.setDate(today.getDate() + i);
+    var dateStr = d.toISOString().split('T')[0];
+    var label   = 'Daily Mock Test - ' + d.toLocaleDateString('en-IN', {day:'2-digit',month:'short',year:'numeric'});
+
+    try {
+      var url = DM_SB_URL + '/rest/v1/questions?select=id,q,opts,ans,explanation&limit=' + (count * 5);
+      if (cat) url += '&cat=eq.' + encodeURIComponent(cat);
+      var res  = await fetch(url, { headers: dmHeaders() });
+      var pool = await res.json();
+      if (!Array.isArray(pool) || pool.length === 0) { errors++; continue; }
+      var picked = pool.sort(function(){ return Math.random() - 0.5; }).slice(0, Math.min(count, pool.length));
+      var questions = picked.map(function(q, idx) {
+        return { id: idx + 1, q: q.q, opts: q.opts, ans: q.ans, explanation: q.explanation || '' };
+      });
+      await dmSaveToSupabase(dateStr, label, questions, true);
+    } catch(e) { errors++; }
+  }
+
+  if (errors > 0) toast('Week scheduled! ' + errors + ' days skip అయ్యాయి.', 'warning');
+  else toast('✅ Week అంతా schedule అయింది!', 'success');
+  dmLoadStats();
+  dmLoadList();
+}
+
+/* ── Manual: add question block ── */
+var _dmQCount = 0;
+function dmAddQuestion() {
+  _dmQCount++;
+  var n = _dmQCount;
+  var container = document.getElementById('dm-questions-list');
+  var div = document.createElement('div');
+  div.id = 'dm-q-' + n;
+  div.style.cssText = 'background:var(--bg);border:2px solid var(--border);border-radius:12px;padding:16px;';
+  div.innerHTML =
+    '<div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:12px;">' +
+      '<div style="font-size:13px;font-weight:800;color:var(--text2);">Q' + n + '</div>' +
+      '<button onclick="dmRemoveQuestion(' + n + ')" style="background:none;border:none;cursor:pointer;font-size:18px;color:#ef4444;padding:0 4px;">✕</button>' +
+    '</div>' +
+    '<div class="form-group" style="margin-bottom:10px;">' +
+      '<label style="font-size:12px;">Question</label>' +
+      '<textarea id="dm-q-text-' + n + '" rows="2" placeholder="Question ఇక్కడ రాయండి..." style="width:100%;padding:10px;border:2px solid var(--border);border-radius:10px;font-family:inherit;font-size:13px;background:var(--surface);color:var(--text);outline:none;resize:vertical;box-sizing:border-box;"></textarea>' +
+    '</div>' +
+    '<div style="display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-bottom:10px;">' +
+      '<div><label style="font-size:11px;color:var(--text3);font-weight:700;">Option A</label><input id="dm-q-a-' + n + '" type="text" placeholder="Option A" style="width:100%;padding:8px 10px;border:2px solid var(--border);border-radius:8px;font-family:inherit;font-size:13px;background:var(--surface);color:var(--text);outline:none;box-sizing:border-box;margin-top:4px;"></div>' +
+      '<div><label style="font-size:11px;color:var(--text3);font-weight:700;">Option B</label><input id="dm-q-b-' + n + '" type="text" placeholder="Option B" style="width:100%;padding:8px 10px;border:2px solid var(--border);border-radius:8px;font-family:inherit;font-size:13px;background:var(--surface);color:var(--text);outline:none;box-sizing:border-box;margin-top:4px;"></div>' +
+      '<div><label style="font-size:11px;color:var(--text3);font-weight:700;">Option C</label><input id="dm-q-c-' + n + '" type="text" placeholder="Option C" style="width:100%;padding:8px 10px;border:2px solid var(--border);border-radius:8px;font-family:inherit;font-size:13px;background:var(--surface);color:var(--text);outline:none;box-sizing:border-box;margin-top:4px;"></div>' +
+      '<div><label style="font-size:11px;color:var(--text3);font-weight:700;">Option D</label><input id="dm-q-d-' + n + '" type="text" placeholder="Option D" style="width:100%;padding:8px 10px;border:2px solid var(--border);border-radius:8px;font-family:inherit;font-size:13px;background:var(--surface);color:var(--text);outline:none;box-sizing:border-box;margin-top:4px;"></div>' +
+    '</div>' +
+    '<div class="form-group">' +
+      '<label style="font-size:12px;">Correct Answer</label>' +
+      '<select id="dm-q-ans-' + n + '" style="padding:8px 10px;border:2px solid var(--border);border-radius:8px;font-family:inherit;font-size:13px;background:var(--bg);color:var(--text);width:100%;outline:none;margin-top:4px;">' +
+        '<option value="0">A — Option A</option>' +
+        '<option value="1">B — Option B</option>' +
+        '<option value="2">C — Option C</option>' +
+        '<option value="3">D — Option D</option>' +
+      '</select>' +
+    '</div>';
+  container.appendChild(div);
+}
+
+function dmRemoveQuestion(n) {
+  var el = document.getElementById('dm-q-' + n);
+  if (el) el.remove();
+}
+
+/* ── Manual Save ── */
+async function dmManualSave() {
+  var date  = document.getElementById('dm-man-date').value;
+  var title = document.getElementById('dm-man-title').value.trim();
+  if (!date)  { toast('Date select చేయండి!', 'error'); return; }
+  if (!title) { toast('Test title enter చేయండి!', 'error'); return; }
+
+  var questions = [];
+  var blocks = document.querySelectorAll('#dm-questions-list > div[id^="dm-q-"]');
+  var valid = true;
+
+  blocks.forEach(function(block, idx) {
+    var n   = block.id.replace('dm-q-', '');
+    var q   = (document.getElementById('dm-q-text-' + n) || {}).value || '';
+    var a   = (document.getElementById('dm-q-a-' + n) || {}).value || '';
+    var b   = (document.getElementById('dm-q-b-' + n) || {}).value || '';
+    var c   = (document.getElementById('dm-q-c-' + n) || {}).value || '';
+    var d   = (document.getElementById('dm-q-d-' + n) || {}).value || '';
+    var ans = parseInt((document.getElementById('dm-q-ans-' + n) || {}).value || '0');
+
+    if (!q.trim() || !a.trim() || !b.trim()) { valid = false; return; }
+    questions.push({ id: idx + 1, q: q.trim(), opts: [a.trim(), b.trim(), c.trim(), d.trim()], ans: ans });
+  });
+
+  if (!valid || questions.length === 0) {
+    toast('కనీసం 1 question పూర్తిగా fill చేయండి!', 'error');
+    return;
+  }
+
+  await dmSaveToSupabase(date, title, questions);
+}
+
+/* ── Core save to Supabase ── */
+async function dmSaveToSupabase(date, title, questions, silent) {
+  try {
+    // Check if date already exists
+    var checkRes = await fetch(DM_SB_URL + '/rest/v1/' + DM_TABLE + '?test_date=eq.' + date + '&select=id', { headers: dmHeaders() });
+    var existing = await checkRes.json();
+
+    var method, url, body;
+    if (Array.isArray(existing) && existing.length > 0) {
+      // Update existing
+      method = 'PATCH';
+      url    = DM_SB_URL + '/rest/v1/' + DM_TABLE + '?test_date=eq.' + date;
+      body   = JSON.stringify({ title: title, questions: questions, is_active: false });
+    } else {
+      // Insert new
+      method = 'POST';
+      url    = DM_SB_URL + '/rest/v1/' + DM_TABLE;
+      body   = JSON.stringify({ test_date: date, title: title, questions: questions, is_active: false });
+    }
+
+    var res = await fetch(url, {
+      method: method,
+      headers: dmHeaders({ 'Prefer': 'return=minimal' }),
+      body: body
+    });
+
+    if (res.ok || res.status === 204) {
+      if (!silent) {
+        toast('✅ ' + date + ' కి test scheduled!', 'success');
+        dmLoadStats();
+        dmLoadList();
+      }
+    } else {
+      var err = await res.text();
+      if (!silent) toast('Save error: ' + err, 'error');
+    }
+  } catch(e) {
+    if (!silent) toast('Error: ' + e.message, 'error');
+    console.error(e);
+  }
+}
+
+/* ── Load & render scheduled list ── */
+async function dmLoadList() {
+  var wrap = document.getElementById('dm-list-wrap');
+  if (!wrap) return;
+  wrap.innerHTML = '<div style="text-align:center;padding:24px;color:var(--text3);font-size:13px;">⏳ Loading...</div>';
+
+  try {
+    var today = new Date().toISOString().split('T')[0];
+    var res  = await fetch(DM_SB_URL + '/rest/v1/' + DM_TABLE + '?select=id,test_date,title,is_active&order=test_date.desc&limit=30', { headers: dmHeaders() });
+    var data = await res.json();
+
+    if (!Array.isArray(data) || data.length === 0) {
+      wrap.innerHTML = '<div style="text-align:center;padding:32px;color:var(--text3);font-size:13px;">ఇంకా scheduled tests లేవు. పై form లో add చేయండి!</div>';
+      return;
+    }
+
+    var rows = data.map(function(row) {
+      var isPast     = row.test_date < today;
+      var isToday    = row.test_date === today;
+      var statusBadge = row.is_active
+        ? '<span style="background:#dcfce7;color:#16a34a;padding:3px 10px;border-radius:20px;font-size:11px;font-weight:700;">✅ Active</span>'
+        : isToday
+          ? '<span style="background:#fef9c3;color:#ca8a04;padding:3px 10px;border-radius:20px;font-size:11px;font-weight:700;">⏳ Today</span>'
+          : isPast
+            ? '<span style="background:#f1f5f9;color:#94a3b8;padding:3px 10px;border-radius:20px;font-size:11px;font-weight:700;">✓ Done</span>'
+            : '<span style="background:#eff6ff;color:#3b82f6;padding:3px 10px;border-radius:20px;font-size:11px;font-weight:700;">📅 Upcoming</span>';
+
+      return '<tr style="border-bottom:1px solid var(--border);">' +
+        '<td style="padding:10px 8px;font-size:13px;font-weight:700;color:var(--text);">' + row.test_date + '</td>' +
+        '<td style="padding:10px 8px;font-size:13px;color:var(--text2);">' + escHtml(row.title) + '</td>' +
+        '<td style="padding:10px 8px;">' + statusBadge + '</td>' +
+        '<td style="padding:10px 8px;">' +
+          '<div style="display:flex;gap:6px;">' +
+            (row.is_active
+              ? '<button onclick="dmToggleActive(\'' + row.id + '\',false)" style="padding:5px 10px;background:#fee2e2;color:#ef4444;border:none;border-radius:6px;font-size:11px;font-weight:700;cursor:pointer;">Deactivate</button>'
+              : '<button onclick="dmToggleActive(\'' + row.id + '\',true)" style="padding:5px 10px;background:#dcfce7;color:#16a34a;border:none;border-radius:6px;font-size:11px;font-weight:700;cursor:pointer;">Activate</button>') +
+            '<button onclick="dmDelete(\'' + row.id + '\',\'' + row.test_date + '\')" style="padding:5px 10px;background:#fee2e2;color:#ef4444;border:none;border-radius:6px;font-size:11px;font-weight:700;cursor:pointer;">🗑</button>' +
+          '</div>' +
+        '</td>' +
+      '</tr>';
+    }).join('');
+
+    wrap.innerHTML =
+      '<div style="overflow-x:auto;">' +
+      '<table style="width:100%;border-collapse:collapse;">' +
+        '<thead><tr style="background:var(--bg);">' +
+          '<th style="padding:10px 8px;text-align:left;font-size:12px;color:var(--text3);font-weight:700;">Date</th>' +
+          '<th style="padding:10px 8px;text-align:left;font-size:12px;color:var(--text3);font-weight:700;">Title</th>' +
+          '<th style="padding:10px 8px;text-align:left;font-size:12px;color:var(--text3);font-weight:700;">Status</th>' +
+          '<th style="padding:10px 8px;text-align:left;font-size:12px;color:var(--text3);font-weight:700;">Actions</th>' +
+        '</tr></thead>' +
+        '<tbody>' + rows + '</tbody>' +
+      '</table></div>';
+  } catch(e) {
+    wrap.innerHTML = '<div style="text-align:center;padding:24px;color:#ef4444;font-size:13px;">Load error: ' + e.message + '</div>';
+  }
+}
+
+/* ── Toggle active ── */
+async function dmToggleActive(id, activate) {
+  try {
+    if (activate) {
+      // Deactivate all first, then activate this one
+      await fetch(DM_SB_URL + '/rest/v1/' + DM_TABLE + '?is_active=eq.true', {
+        method: 'PATCH',
+        headers: dmHeaders({ 'Prefer': 'return=minimal' }),
+        body: JSON.stringify({ is_active: false })
+      });
+    }
+    await fetch(DM_SB_URL + '/rest/v1/' + DM_TABLE + '?id=eq.' + id, {
+      method: 'PATCH',
+      headers: dmHeaders({ 'Prefer': 'return=minimal' }),
+      body: JSON.stringify({ is_active: activate })
+    });
+    toast(activate ? '✅ Test activated!' : '⏸ Deactivated', 'success');
+    dmLoadList();
+    dmLoadStats();
+  } catch(e) { toast('Error: ' + e.message, 'error'); }
+}
+
+/* ── Delete ── */
+async function dmDelete(id, date) {
+  if (!confirm(date + ' test delete చేయాలా?')) return;
+  try {
+    await fetch(DM_SB_URL + '/rest/v1/' + DM_TABLE + '?id=eq.' + id, {
+      method: 'DELETE',
+      headers: dmHeaders({ 'Prefer': 'return=minimal' })
+    });
+    toast('🗑 Deleted!', 'success');
+    dmLoadList();
+    dmLoadStats();
+  } catch(e) { toast('Error: ' + e.message, 'error'); }
+}
+</script>

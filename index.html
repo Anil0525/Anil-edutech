@@ -14182,11 +14182,8 @@ function openCAViewer(encodedUrl, title) {
   var url = decodeURIComponent(encodedUrl);
   document.getElementById('ca-viewer-title').textContent = title;
   document.getElementById('ca-viewer-download').href = url;
-  // HTML files load directly; PDFs use Google Docs viewer
-  var src = url.toLowerCase().endsWith('.html')
-    ? url
-    : 'https://docs.google.com/viewer?url=' + encodeURIComponent(url) + '&embedded=true';
-  document.getElementById('ca-pdf-iframe').src = src;
+  // Load directly in iframe — browser handles both HTML and PDF natively
+  document.getElementById('ca-pdf-iframe').src = url;
   var overlay = document.getElementById('ca-viewer-overlay');
   overlay.style.display = 'flex';
   document.body.style.overflow = 'hidden';

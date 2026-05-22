@@ -14182,10 +14182,27 @@ function openCAViewer(encodedUrl, title) {
   var url = decodeURIComponent(encodedUrl);
   document.getElementById('ca-viewer-title').textContent = title;
   document.getElementById('ca-viewer-download').href = url;
-  // Load directly in iframe — browser handles both HTML and PDF natively
-  document.getElementById('ca-pdf-iframe').src = url;
-  var overlay = document.getElementById('ca-viewer-overlay');
-  overlay.style.display = 'flex';
+  var iframe = document.getElementById('ca-pdf-iframe');
+
+  if (url.toLowerCase().endsWith('.html')) {
+    // Fetch HTML and inject into iframe via srcdoc
+    iframe.src = '';
+    iframe.srcdoc = '<div style="display:flex;align-items:center;justify-content:center;height:100%;font-family:Arial;color:#666;">⏳ Loading...</div>';
+    fetch(url)
+      .then(function(r){ return r.text(); })
+      .then(function(html){
+        iframe.srcdoc = html;
+      })
+      .catch(function(){
+        iframe.srcdoc = '<div style="padding:20px;font-family:Arial;color:red;">❌ Load error. <a href="'+url+'" target="_blank">ఇక్కడ click చేసి చదవండి ↗</a></div>';
+      });
+  } else {
+    // PDF: use Google Docs viewer
+    iframe.srcdoc = '';
+    iframe.src = 'https://docs.google.com/viewer?url=' + encodeURIComponent(url) + '&embedded=true';
+  }
+
+  document.getElementById('ca-viewer-overlay').style.display = 'flex';
   document.body.style.overflow = 'hidden';
 }
 

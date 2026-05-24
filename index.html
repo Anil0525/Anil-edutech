@@ -1876,379 +1876,461 @@
   .gen-preview { display: none; }
 
   /* ══════════════════════════════════════
-     ADMIN PANEL — ULTRA PREMIUM REDESIGN ✨
-  ══════════════════════════════════════ */
+     ADMIN PANEL — COLORFUL UI/UX REDESIGN 🎨
+  ══════════════════════════════════════════ */
 
   @import url('https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800;900&display=swap');
 
-  /* ── PAGE BACKGROUND ── */
+  /* ── COLOUR TOKENS ── */
   #page-admin {
-    background: #f4f6fb;
+    --ap-violet:  #7c3aed;
+    --ap-indigo:  #4f46e5;
+    --ap-blue:    #2563eb;
+    --ap-cyan:    #0891b2;
+    --ap-teal:    #0d9488;
+    --ap-green:   #059669;
+    --ap-amber:   #d97706;
+    --ap-orange:  #ea580c;
+    --ap-rose:    #e11d48;
+    --ap-pink:    #db2777;
+    --ap-grad:    linear-gradient(135deg, #4f46e5 0%, #7c3aed 50%, #db2777 100%);
+    --ap-grad2:   linear-gradient(135deg, #0891b2 0%, #059669 100%);
+    --ap-surface: #f4f6fb;
+  }
+
+  /* ── PAGE ── */
+  #page-admin {
+    background: var(--ap-surface);
     min-height: 100vh;
     font-family: 'Plus Jakarta Sans', sans-serif;
   }
-  [data-theme="dark"] #page-admin {
-    background: #0b0e17 !important;
-  }
+  [data-theme="dark"] #page-admin { background: #080c14 !important; }
 
-  /* ── ADMIN: SIDEBAR LAYOUT ── */
-  #page-admin { background: #f0f4f8; min-height: 100vh; font-family: 'Plus Jakarta Sans', sans-serif; }
-  [data-theme="dark"] #page-admin { background: #0d1117 !important; }
-
+  /* ── LAYOUT ── */
   .admin-layout {
-    display: flex; min-height: 100vh;
+    display: flex; flex-direction: column; min-height: 100vh;
   }
 
-  /* ── SIDEBAR ── */
-  .admin-tabs {
-    width: 220px; min-width: 220px; flex-shrink: 0;
-    background: #fff;
-    border-right: 1.5px solid #e8edf5;
-    display: flex; flex-direction: column;
-    padding: 0; gap: 0;
-    position: sticky; top: 0; height: 100vh;
-    overflow-y: auto; scrollbar-width: none;
-    box-shadow: 2px 0 16px rgba(0,0,0,.05);
-    z-index: 10;
-  }
-  .admin-tabs::-webkit-scrollbar { display: none; }
-  [data-theme="dark"] .admin-tabs {
-    background: #161b27 !important;
-    border-color: rgba(255,255,255,.07) !important;
-  }
-
-  /* Sidebar brand */
-  .admin-tabs::before {
-    content: '⚙️ Admin';
-    display: block;
-    font-size: 15px; font-weight: 900;
-    color: #1e293b;
-    padding: 22px 20px 18px;
-    border-bottom: 1.5px solid #f1f5f9;
-    letter-spacing: -.3px;
-    font-family: 'Plus Jakarta Sans', sans-serif;
-    flex-shrink: 0;
-  }
-  [data-theme="dark"] .admin-tabs::before {
-    color: #e2e8f0 !important;
-    border-color: rgba(255,255,255,.07) !important;
-  }
-
-  .admin-tab {
-    display: flex; align-items: center; gap: 9px;
-    padding: 11px 18px;
-    font-size: 12.5px; font-weight: 700;
-    color: #64748b; background: transparent;
-    border: none; cursor: pointer;
-    transition: all .15s;
-    font-family: 'Plus Jakarta Sans', sans-serif;
-    border-radius: 0;
-    text-align: left; white-space: nowrap;
-    border-left: 3px solid transparent;
-    letter-spacing: -.1px;
-  }
-  .admin-tab:hover { background: #f8fafc; color: #334155; }
-  .admin-tab.active {
-    background: linear-gradient(90deg, rgba(44,198,165,.12), rgba(44,198,165,.04));
-    color: #1db896;
-    border-left-color: #2cc6a5;
-    font-weight: 800;
-  }
-  [data-theme="dark"] .admin-tab { color: #64748b; }
-  [data-theme="dark"] .admin-tab:hover { background: rgba(255,255,255,.04); color: #94a3b8; }
-  [data-theme="dark"] .admin-tab.active {
-    background: rgba(44,198,165,.1) !important;
-    color: #2cc6a5 !important;
-    border-left-color: #2cc6a5 !important;
-  }
-
-  /* ── MAIN CONTENT AREA ── */
-  .admin-main-area {
-    flex: 1; min-width: 0;
-    display: flex; flex-direction: column;
-  }
-
-  /* ── TOP HEADER ── */
+  /* ════════════════════════════════
+     TOP HEADER — gradient & glowing
+  ════════════════════════════════ */
   .admin-page-header {
-    background: #fff;
-    border-bottom: 1.5px solid #e8edf5;
-    padding: 16px 28px;
-    display: flex; align-items: center; justify-content: space-between;
-    gap: 16px; position: sticky; top: 0; z-index: 9;
-    box-shadow: 0 1px 8px rgba(0,0,0,.05);
+    background: var(--ap-grad);
+    border-bottom: none;
+    padding: 0 32px;
+    display: flex; align-items: center; justify-content: space-between; gap: 16px;
+    position: sticky; top: 0; z-index: 100;
+    height: 66px; flex-shrink: 0;
+    box-shadow: 0 4px 24px rgba(79,70,229,.35), 0 1px 0 rgba(255,255,255,.1) inset;
   }
   [data-theme="dark"] .admin-page-header {
-    background: #161b27 !important;
-    border-color: rgba(255,255,255,.07) !important;
+    background: linear-gradient(135deg,#3b0764 0%,#1e1b4b 50%,#4a044e 100%) !important;
+    box-shadow: 0 4px 24px rgba(0,0,0,.5) !important;
   }
   .admin-page-header::before, .admin-page-header::after { display: none; }
+
+  /* Title */
   .admin-page-header h2 {
-    font-size: 17px; font-weight: 800; color: #1e293b;
-    letter-spacing: -.3px;
-    display: flex; align-items: center; gap: 8px;
+    font-size: 16px; font-weight: 900; color: #fff;
+    letter-spacing: -.3px; margin: 0;
+    display: flex; align-items: center; gap: 10px;
     font-family: 'Plus Jakarta Sans', sans-serif;
+    text-shadow: 0 1px 8px rgba(0,0,0,.18);
   }
   .admin-page-header h2::before {
     content: '';
-    width: 8px; height: 8px; border-radius: 50%;
-    background: #2cc6a5;
-    box-shadow: 0 0 0 3px rgba(44,198,165,.2);
+    width: 9px; height: 9px; border-radius: 50%;
+    background: #fff;
+    box-shadow: 0 0 0 3px rgba(255,255,255,.3), 0 0 12px #fff;
     animation: adminPulse 2s ease-in-out infinite;
-    display: inline-block;
+    display: inline-block; flex-shrink: 0;
   }
-  @keyframes adminPulse { 0%,100%{box-shadow:0 0 0 3px rgba(44,198,165,.2)} 50%{box-shadow:0 0 0 6px rgba(44,198,165,.08)} }
+  @keyframes adminPulse {
+    0%,100% { box-shadow: 0 0 0 3px rgba(255,255,255,.3), 0 0 12px rgba(255,255,255,.6); }
+    50%      { box-shadow: 0 0 0 7px rgba(255,255,255,.08), 0 0 6px rgba(255,255,255,.2); }
+  }
   .admin-page-header p {
-    font-size: 12px; color: #94a3b8;
-    margin-top: 2px; font-weight: 600;
-    font-family: 'Plus Jakarta Sans', sans-serif;
+    font-size: 11px; color: rgba(255,255,255,.65);
+    font-weight: 600; margin: 0;
+    display: none;
   }
-  [data-theme="dark"] .admin-page-header h2 { color: #e2e8f0 !important; }
+  [data-theme="dark"] .admin-page-header h2 { color: #fff !important; }
 
-  /* Header right side: admin badge + sign out */
-  .admin-header-right {
-    display: flex; align-items: center; gap: 12px;
-  }
+  /* Header right */
+  .admin-header-right { display: flex; align-items: center; gap: 10px; }
+
   .admin-badge {
     display: flex; align-items: center; gap: 8px;
-    background: #f8fafc; border: 1.5px solid #e2e8f0;
-    border-radius: 24px; padding: 6px 14px 6px 8px;
+    background: rgba(255,255,255,.18);
+    border: 1.5px solid rgba(255,255,255,.3);
+    border-radius: 40px; padding: 5px 14px 5px 6px;
+    backdrop-filter: blur(8px);
   }
   .admin-avatar {
     width: 30px; height: 30px; border-radius: 50%;
-    background: linear-gradient(135deg, #2cc6a5, #1db896);
+    background: rgba(255,255,255,.9);
     display: flex; align-items: center; justify-content: center;
-    font-size: 13px; color: #fff; font-weight: 900;
+    font-size: 13px; color: #4f46e5; font-weight: 900; flex-shrink: 0;
+    box-shadow: 0 2px 8px rgba(0,0,0,.15);
   }
-  .admin-badge-name { font-size: 12px; font-weight: 700; color: #334155; }
-  [data-theme="dark"] .admin-badge { background: #1e293b !important; border-color: rgba(255,255,255,.1) !important; }
-  [data-theme="dark"] .admin-badge-name { color: #94a3b8 !important; }
+  .admin-badge-name { font-size: 12px; font-weight: 700; color: #fff; }
+  [data-theme="dark"] .admin-badge { background: rgba(255,255,255,.1) !important; border-color: rgba(255,255,255,.15) !important; }
+  [data-theme="dark"] .admin-badge-name { color: #e2e8f0 !important; }
 
-  /* Sign Out button */
+  /* Sign Out */
   .admin-page-header button[onclick="adminSignOut()"] {
-    background: #fff1f2 !important;
-    color: #ef4444 !important;
-    border: 1.5px solid #fecaca !important;
-    border-radius: 10px !important;
-    padding: 8px 16px !important;
+    background: rgba(255,255,255,.15) !important;
+    color: #fff !important;
+    border: 1.5px solid rgba(255,255,255,.35) !important;
+    border-radius: 10px !important; padding: 7px 15px !important;
     font-family: 'Plus Jakarta Sans', sans-serif !important;
-    font-size: 12px !important;
-    font-weight: 700 !important;
-    cursor: pointer;
-    transition: all .2s !important;
-    box-shadow: none !important;
+    font-size: 12px !important; font-weight: 700 !important;
+    cursor: pointer; transition: all .18s !important;
+    backdrop-filter: blur(6px); box-shadow: none !important;
   }
   .admin-page-header button[onclick="adminSignOut()"]:hover {
-    background: #fee2e2 !important;
+    background: rgba(239,68,68,.5) !important;
+    border-color: rgba(239,68,68,.6) !important;
     transform: translateY(-1px) !important;
+    box-shadow: 0 4px 12px rgba(239,68,68,.3) !important;
   }
-  [data-theme="dark"] .admin-page-header button[onclick="adminSignOut()"] {
-    background: rgba(239,68,68,.1) !important;
-    color: #fca5a5 !important;
-    border-color: rgba(239,68,68,.2) !important;
+
+  /* ════════════════════════════════
+     NAV TABS — colorful pill style
+  ════════════════════════════════ */
+  .admin-tabs {
+    background: #fff;
+    border-bottom: 1.5px solid #e9ecf0;
+    display: flex; flex-direction: row; align-items: center;
+    padding: 0 20px; gap: 2px;
+    width: 100%; min-width: unset; height: auto;
+    overflow-x: auto; overflow-y: hidden; scrollbar-width: none;
+    position: sticky; top: 66px; z-index: 99;
+    box-shadow: 0 2px 12px rgba(0,0,0,.05);
+    flex-shrink: 0;
   }
+  .admin-tabs::-webkit-scrollbar { display: none; }
+  [data-theme="dark"] .admin-tabs {
+    background: #0f172a !important;
+    border-color: rgba(255,255,255,.07) !important;
+    box-shadow: 0 2px 12px rgba(0,0,0,.4) !important;
+  }
+  .admin-tabs::before { display: none !important; }
+
+  .admin-tab {
+    display: flex; align-items: center; gap: 6px;
+    padding: 10px 14px 9px;
+    font-size: 12px; font-weight: 600;
+    color: #64748b; background: transparent;
+    border: none; cursor: pointer;
+    transition: all .18s ease;
+    font-family: 'Plus Jakarta Sans', sans-serif;
+    border-radius: 0; white-space: nowrap; flex-shrink: 0;
+    border-bottom: 2.5px solid transparent;
+    letter-spacing: -.1px; position: relative;
+    margin: 4px 1px 0;
+  }
+  .admin-tab:hover {
+    color: #4f46e5;
+    background: #f0f0ff;
+    border-radius: 10px 10px 0 0;
+  }
+  .admin-tab.active {
+    color: #4f46e5; font-weight: 800;
+    border-bottom-color: #4f46e5;
+    background: linear-gradient(180deg, #eef2ff 0%, #f5f3ff 100%);
+    border-radius: 10px 10px 0 0;
+  }
+
+  /* Per-tab accent colours on active */
+  .admin-tab:nth-child(1).active  { color:#4f46e5; border-bottom-color:#4f46e5; background:linear-gradient(180deg,#eef2ff,#f5f3ff); }
+  .admin-tab:nth-child(2).active  { color:#7c3aed; border-bottom-color:#7c3aed; background:linear-gradient(180deg,#f5f3ff,#fdf4ff); }
+  .admin-tab:nth-child(3).active  { color:#0891b2; border-bottom-color:#0891b2; background:linear-gradient(180deg,#ecfeff,#f0fdfa); }
+  .admin-tab:nth-child(4).active  { color:#059669; border-bottom-color:#059669; background:linear-gradient(180deg,#ecfdf5,#f0fdf4); }
+  .admin-tab:nth-child(5).active  { color:#db2777; border-bottom-color:#db2777; background:linear-gradient(180deg,#fdf2f8,#fff1f2); }
+  .admin-tab:nth-child(6).active  { color:#d97706; border-bottom-color:#d97706; background:linear-gradient(180deg,#fffbeb,#fff7ed); }
+  .admin-tab:nth-child(7).active  { color:#2563eb; border-bottom-color:#2563eb; background:linear-gradient(180deg,#eff6ff,#eef2ff); }
+  .admin-tab:nth-child(8).active  { color:#0d9488; border-bottom-color:#0d9488; background:linear-gradient(180deg,#f0fdfa,#ecfdf5); }
+  .admin-tab:nth-child(9).active  { color:#ea580c; border-bottom-color:#ea580c; background:linear-gradient(180deg,#fff7ed,#fef3c7); }
+  .admin-tab:nth-child(10).active { color:#4f46e5; border-bottom-color:#4f46e5; background:linear-gradient(180deg,#eef2ff,#f5f3ff); }
+  .admin-tab:nth-child(11).active { color:#7c3aed; border-bottom-color:#7c3aed; background:linear-gradient(180deg,#f5f3ff,#fdf4ff); }
+  .admin-tab:nth-child(12).active { color:#0891b2; border-bottom-color:#0891b2; background:linear-gradient(180deg,#ecfeff,#f0fdfa); }
+  .admin-tab:nth-child(13).active { color:#e11d48; border-bottom-color:#e11d48; background:linear-gradient(180deg,#fff1f2,#fdf2f8); }
+
+  [data-theme="dark"] .admin-tab { color: #475569; }
+  [data-theme="dark"] .admin-tab:hover { background: rgba(99,102,241,.1) !important; color: #a5b4fc !important; border-radius: 10px 10px 0 0; }
+  [data-theme="dark"] .admin-tab.active { background: rgba(99,102,241,.15) !important; color: #818cf8 !important; border-bottom-color: #818cf8 !important; }
+
+  /* ── MAIN AREA ── */
+  .admin-main-area { flex: 1; min-width: 0; display: flex; flex-direction: column; }
 
   /* ── CONTENT WRAPPER ── */
-  .admin-content-wrap {
-    flex: 1; padding: 24px 28px 60px;
-    overflow-y: auto;
-  }
-  @media (max-width: 768px) {
-    .admin-layout { flex-direction: column; }
-    .admin-tabs { width: 100%; height: auto; min-width: unset; flex-direction: row; overflow-x: auto; overflow-y: hidden; position: relative; border-right: none; border-bottom: 1.5px solid #e8edf5; padding: 8px 8px; flex-wrap: nowrap; }
-    .admin-tabs::before { display: none; }
-    .admin-tab { border-left: none; border-bottom: 3px solid transparent; padding: 8px 12px; border-radius: 10px; flex-shrink: 0; }
-    .admin-tab.active { border-bottom-color: #2cc6a5; border-left-color: transparent; background: rgba(44,198,165,.1); }
-    .admin-content-wrap { padding: 16px 14px 60px; }
-    .admin-page-header { padding: 12px 16px; position: relative; }
-  }
+  .admin-content-wrap { flex: 1; padding: 28px 32px 60px; }
 
-  /* ── CARDS ── */
+  /* ════════════════════════════════
+     CARDS — colourful top accent
+  ════════════════════════════════ */
   .admin-card {
     background: #fff;
-    border: 1.5px solid #e8edf5;
-    border-radius: 20px;
-    margin-bottom: 16px;
+    border: 1.5px solid #e9ecf0;
+    border-radius: 18px;
+    margin-bottom: 22px;
     overflow: hidden;
-    box-shadow: 0 1px 12px rgba(0,0,0,.05), 0 4px 24px rgba(0,0,0,.03);
+    box-shadow: 0 2px 8px rgba(0,0,0,.04), 0 8px 32px rgba(0,0,0,.04);
     transition: box-shadow .22s, transform .22s;
+    position: relative;
+  }
+  .admin-card::before {
+    content: '';
+    position: absolute; top: 0; left: 0; right: 0; height: 3px;
+    background: var(--ap-grad);
+    border-radius: 18px 18px 0 0;
   }
   .admin-card:hover {
-    box-shadow: 0 4px 24px rgba(79,70,229,.1), 0 1px 4px rgba(0,0,0,.06);
-    transform: translateY(-1px);
+    box-shadow: 0 8px 32px rgba(79,70,229,.14), 0 2px 8px rgba(0,0,0,.06);
+    transform: translateY(-2px);
   }
   [data-theme="dark"] .admin-card {
     background: #0f172a !important;
     border-color: rgba(255,255,255,.07) !important;
-    box-shadow: 0 1px 12px rgba(0,0,0,.4) !important;
+    box-shadow: 0 4px 24px rgba(0,0,0,.5) !important;
   }
+  [data-theme="dark"] .admin-card::before { opacity: .7; }
 
-  /* Card inner header bar */
+  /* Card h3 header */
   .admin-card > h3 {
-    font-size: 13px; font-weight: 800;
-    color: #1e293b;
-    font-family: 'Plus Jakarta Sans', sans-serif;
-    display: flex; align-items: center; gap: 8px;
-    padding: 15px 22px 13px;
+    font-size: 13.5px; font-weight: 800;
+    color: #111827; font-family: 'Plus Jakarta Sans', sans-serif;
+    display: flex; align-items: center; gap: 9px;
+    padding: 16px 22px 14px;
     border-bottom: 1.5px solid #f1f5f9;
     margin-bottom: 0 !important;
-    background: linear-gradient(135deg, #fafbff 0%, #f8faff 100%);
-    border-radius: 20px 20px 0 0;
+    background: linear-gradient(135deg,#fafbff,#f5f3ff 60%,#fdf4ff);
+    border-radius: 18px 18px 0 0;
     letter-spacing: -.2px;
   }
   [data-theme="dark"] .admin-card > h3 {
-    background: linear-gradient(135deg, #1e293b 0%, #162032 100%) !important;
+    background: linear-gradient(135deg,#1e1b4b,#1a0d2e) !important;
     border-bottom-color: rgba(255,255,255,.06) !important;
     color: #e2e8f0 !important;
   }
-  /* Wrap inner content with padding */
+
   .admin-card > *:not(h3) { padding: 18px 22px; }
   .admin-card > div { padding: 18px 22px; }
-  /* form-row and form-group as direct children need full padding */
   .admin-card > .form-row  { padding: 18px 22px !important; }
   .admin-card > .form-group { padding: 18px 22px !important; }
   .admin-card > .add-btn,
   .admin-card > .gen-btn,
   .admin-card > button { display: block; margin: -10px 22px 18px !important; }
-  /* nested: no double-padding */
   .admin-card .form-row .form-group,
   .admin-card > div > .form-row,
   .admin-card > div > .form-group,
   .admin-card > div > .opt-inputs,
   .admin-card .form-row .opt-inputs { padding: 0 !important; }
 
-  /* ── FORM FIELDS ── */
-  .form-group { margin-bottom: 14px; }
+  /* ── FORM FIELDS — colourful focus ── */
   .form-group label {
-    display: block; font-size: 10.5px; font-weight: 800;
-    color: #64748b; margin-bottom: 6px;
+    background: linear-gradient(90deg, #4f46e5, #7c3aed);
+    -webkit-background-clip: text; -webkit-text-fill-color: transparent;
+    background-clip: text;
+    font-size: 10.5px; font-weight: 800;
+    display: block; margin-bottom: 6px;
     text-transform: uppercase; letter-spacing: 1px;
-    font-family: 'Plus Jakarta Sans', sans-serif;
+  }
+  [data-theme="dark"] .form-group label {
+    background: linear-gradient(90deg, #a5b4fc, #c084fc);
+    -webkit-background-clip: text; background-clip: text;
   }
   .form-group input, .form-group select, .form-group textarea {
     width: 100%; padding: 11px 14px;
     border: 1.5px solid #e2e8f0; border-radius: 12px;
     font-family: 'Plus Jakarta Sans', sans-serif; font-size: 13.5px;
-    color: #1e293b; background: #f8fafc;
-    transition: all .18s; resize: vertical;
+    color: #1e293b; background: #f8faff;
+    transition: all .2s; resize: vertical;
   }
   .form-group input:focus, .form-group select:focus, .form-group textarea:focus {
-    outline: none; border-color: #4f46e5;
-    box-shadow: 0 0 0 3px rgba(79,70,229,.1); background: #fff;
+    outline: none;
+    border-color: #7c3aed;
+    box-shadow: 0 0 0 3px rgba(124,58,237,.12), 0 1px 4px rgba(124,58,237,.08);
+    background: #fff;
   }
   [data-theme="dark"] .form-group input,
   [data-theme="dark"] .form-group select,
   [data-theme="dark"] .form-group textarea {
-    background: #1e293b !important; border-color: rgba(255,255,255,.1) !important;
-    color: #e2e8f0 !important;
+    background: #1e293b !important; border-color: rgba(255,255,255,.1) !important; color: #e2e8f0 !important;
   }
   [data-theme="dark"] .form-group input:focus,
   [data-theme="dark"] .form-group select:focus,
   [data-theme="dark"] .form-group textarea:focus {
-    border-color: #6366f1 !important; background: #1e293b !important;
-    box-shadow: 0 0 0 3px rgba(99,102,241,.15) !important;
+    border-color: #7c3aed !important;
+    box-shadow: 0 0 0 3px rgba(124,58,237,.2) !important; background: #1e293b !important;
   }
-  .form-group select option { background: #fff; }
   .form-row { display: grid; grid-template-columns: 1fr 1fr; gap: 14px; }
 
-  /* ── TABLE WRAPPER ── */
+  /* ── TABLES ── */
   .admin-card .atable-wrap,
   .admin-card > div > div[style*="overflow-x"] {
     border: 1.5px solid #e8edf5 !important;
     border-radius: 14px !important; overflow: hidden !important;
   }
-
-  /* ── TABLES ── */
   .questions-table, .exams-manage-table {
     width: 100%; border-collapse: collapse; font-size: 13px;
     font-family: 'Plus Jakarta Sans', sans-serif;
   }
   .questions-table th, .exams-manage-table th {
-    text-align: left; padding: 10px 14px;
-    font-size: 10px; font-weight: 800; color: #94a3b8;
-    text-transform: uppercase; letter-spacing: 1px;
-    border-bottom: 1.5px solid #f1f5f9; background: #f8fafc;
+    text-align: left; padding: 11px 14px;
+    font-size: 10px; font-weight: 800;
+    background: linear-gradient(135deg,#f0f0ff,#fdf4ff);
+    color: #7c3aed; text-transform: uppercase; letter-spacing: 1px;
+    border-bottom: 1.5px solid #e9d5ff;
   }
   .questions-table td, .exams-manage-table td {
-    padding: 12px 14px; border-bottom: 1px solid #f1f5f9;
-    color: #475569; vertical-align: middle; font-weight: 500;
+    padding: 12px 14px; border-bottom: 1px solid #f3f4f6;
+    color: #374151; vertical-align: middle; font-weight: 500;
   }
   .questions-table tr:last-child td, .exams-manage-table tr:last-child td { border-bottom: none; }
   .questions-table tr:hover td, .exams-manage-table tr:hover td {
-    background: #f8faff;
+    background: linear-gradient(90deg,#f5f3ff,#fdf4ff);
   }
   [data-theme="dark"] .questions-table th,
-  [data-theme="dark"] .exams-manage-table th { background: #1e293b !important; border-color: rgba(255,255,255,.06) !important; color: #64748b !important; }
+  [data-theme="dark"] .exams-manage-table th { background: #1e1b4b !important; color: #a5b4fc !important; border-color: rgba(165,180,252,.15) !important; }
   [data-theme="dark"] .questions-table td,
   [data-theme="dark"] .exams-manage-table td { border-color: rgba(255,255,255,.05) !important; color: #94a3b8 !important; }
   [data-theme="dark"] .questions-table tr:hover td,
-  [data-theme="dark"] .exams-manage-table tr:hover td { background: rgba(99,102,241,.05) !important; }
+  [data-theme="dark"] .exams-manage-table tr:hover td { background: rgba(99,102,241,.07) !important; }
 
   /* ── OPTION INPUTS ── */
   .opt-inputs { display: grid; gap: 10px; }
   .opt-row { display: grid; grid-template-columns: 36px 1fr auto; gap: 10px; align-items: center; }
   .opt-label-tag {
     width: 36px; height: 36px; border-radius: 10px;
-    background: #eef2ff; color: #4f46e5;
+    background: linear-gradient(135deg,#eef2ff,#f5f3ff); color: #4f46e5;
     font-size: 13px; font-weight: 900;
     display: flex; align-items: center; justify-content: center;
-    border: 1.5px solid rgba(79,70,229,.2); flex-shrink: 0;
+    border: 1.5px solid rgba(79,70,229,.25); flex-shrink: 0;
   }
   .radio-wrap { display: flex; align-items: center; gap: 5px; font-size: 12px; font-weight: 700; color: #94a3b8; cursor: pointer; white-space: nowrap; }
-  .radio-wrap input { accent-color: #10b981; cursor: pointer; }
+  .radio-wrap input { accent-color: #7c3aed; cursor: pointer; }
 
-  /* ── BUTTONS ── */
+  /* ════════════════════════════════
+     BUTTONS — vibrant gradients
+  ════════════════════════════════ */
   .add-btn {
     display: inline-flex; align-items: center; gap: 7px;
-    padding: 11px 22px; border-radius: 12px; border: none;
+    padding: 11px 24px; border-radius: 12px; border: none;
     font-family: 'Plus Jakarta Sans', sans-serif; font-size: 13px; font-weight: 800;
-    cursor: pointer; transition: all .2s;
-    background: linear-gradient(135deg, #10b981, #059669);
-    color: #fff; box-shadow: 0 4px 16px rgba(16,185,129,.3);
+    cursor: pointer; transition: all .22s;
+    background: linear-gradient(135deg,#059669,#0d9488);
+    color: #fff; box-shadow: 0 4px 18px rgba(5,150,105,.35);
     margin-top: 6px;
   }
-  .add-btn:hover { transform: translateY(-2px); box-shadow: 0 8px 24px rgba(16,185,129,.4); }
-  .del-btn { padding: 5px 12px; border-radius: 8px; border: none; font-family: 'Plus Jakarta Sans', sans-serif; font-size: 11.5px; font-weight: 700; cursor: pointer; transition: all .15s; background: rgba(239,68,68,.08); color: #ef4444; }
-  .del-btn:hover { background: rgba(239,68,68,.16); }
-  .edit-btn { padding: 5px 12px; border-radius: 8px; border: none; font-family: 'Plus Jakarta Sans', sans-serif; font-size: 11.5px; font-weight: 700; cursor: pointer; transition: all .15s; background: rgba(79,70,229,.1); color: #4f46e5; }
-  .edit-btn:hover { background: rgba(79,70,229,.18); }
-  .import-btn { display: inline-flex; align-items: center; gap: 7px; padding: 10px 20px; border-radius: 12px; border: none; font-family: 'Plus Jakarta Sans', sans-serif; font-size: 13px; font-weight: 800; cursor: pointer; transition: all .2s; background: linear-gradient(135deg, #4f46e5, #7c3aed); color: #fff; box-shadow: 0 4px 14px rgba(79,70,229,.28); }
-  .import-btn:hover { transform: translateY(-1px); box-shadow: 0 8px 22px rgba(79,70,229,.38); }
-  .import-btn:disabled { background: #f1f5f9; color: #94a3b8; box-shadow: none; cursor: not-allowed; transform: none; }
-  .gen-btn { display: flex; align-items: center; justify-content: center; gap: 8px; width: 100%; padding: 13px 26px; border-radius: 12px; border: none; font-family: 'Plus Jakarta Sans', sans-serif; font-size: 14px; font-weight: 800; cursor: pointer; transition: all .2s; background: linear-gradient(135deg, #f59e0b, #d97706); color: #fff; box-shadow: 0 4px 16px rgba(245,158,11,.3); }
-  .gen-btn:hover { transform: translateY(-2px); box-shadow: 0 8px 22px rgba(245,158,11,.42); }
-  .gen-btn:disabled { background: #f1f5f9; color: #94a3b8; box-shadow: none; cursor: not-allowed; transform: none; }
+  .add-btn:hover { transform: translateY(-2px); box-shadow: 0 8px 28px rgba(5,150,105,.45); filter: brightness(1.05); }
+
+  .del-btn {
+    padding: 6px 13px; border-radius: 9px; border: none;
+    font-family: 'Plus Jakarta Sans', sans-serif; font-size: 11.5px; font-weight: 700;
+    cursor: pointer; transition: all .18s;
+    background: linear-gradient(135deg,#fee2e2,#fecaca); color: #dc2626;
+    box-shadow: 0 2px 8px rgba(220,38,38,.12);
+  }
+  .del-btn:hover { background: linear-gradient(135deg,#fecaca,#fca5a5); transform: translateY(-1px); box-shadow: 0 4px 12px rgba(220,38,38,.22); }
+
+  .edit-btn {
+    padding: 6px 13px; border-radius: 9px; border: none;
+    font-family: 'Plus Jakarta Sans', sans-serif; font-size: 11.5px; font-weight: 700;
+    cursor: pointer; transition: all .18s;
+    background: linear-gradient(135deg,#eef2ff,#f5f3ff); color: #4f46e5;
+    box-shadow: 0 2px 8px rgba(79,70,229,.12);
+  }
+  .edit-btn:hover { background: linear-gradient(135deg,#e0e7ff,#ede9fe); transform: translateY(-1px); box-shadow: 0 4px 12px rgba(79,70,229,.22); }
+
+  .import-btn {
+    display: inline-flex; align-items: center; gap: 7px;
+    padding: 10px 20px; border-radius: 12px; border: none;
+    font-family: 'Plus Jakarta Sans', sans-serif; font-size: 13px; font-weight: 800;
+    cursor: pointer; transition: all .22s;
+    background: linear-gradient(135deg,#4f46e5,#7c3aed,#db2777);
+    color: #fff; box-shadow: 0 4px 18px rgba(79,70,229,.35);
+  }
+  .import-btn:hover { transform: translateY(-2px); box-shadow: 0 8px 28px rgba(79,70,229,.45); filter: brightness(1.06); }
+  .import-btn:disabled { background: #f1f5f9; color: #94a3b8; box-shadow: none; cursor: not-allowed; transform: none; filter: none; }
+
+  .gen-btn {
+    display: flex; align-items: center; justify-content: center; gap: 8px;
+    width: 100%; padding: 13px 26px; border-radius: 12px; border: none;
+    font-family: 'Plus Jakarta Sans', sans-serif; font-size: 14px; font-weight: 800;
+    cursor: pointer; transition: all .22s;
+    background: linear-gradient(135deg,#f59e0b,#ea580c);
+    color: #fff; box-shadow: 0 4px 18px rgba(245,158,11,.35);
+  }
+  .gen-btn:hover { transform: translateY(-2px); box-shadow: 0 8px 28px rgba(245,158,11,.45); filter: brightness(1.05); }
+  .gen-btn:disabled { background: #f1f5f9; color: #94a3b8; box-shadow: none; cursor: not-allowed; transform: none; filter: none; }
+
+  /* misc */
   .gen-options-row { display: grid; grid-template-columns: 1fr 1fr; gap: 14px; margin-bottom: 14px; }
   .topic-input-wrap { display: flex; gap: 8px; align-items: flex-start; }
   .topic-input-wrap textarea { flex: 1; }
   .questions-table { width: 100%; border-collapse: collapse; font-size: 13px; }
-  .questions-table th { text-align: left; padding: 11px 14px; font-size: 10px; font-weight: 800; color: #94a3b8; text-transform: uppercase; letter-spacing: 1px; border-bottom: 1.5px solid #f1f5f9; background: #f8fafc; }
-  .questions-table td { padding: 12px 14px; border-bottom: 1px solid #f1f5f9; color: #475569; vertical-align: middle; font-weight: 500; }
+  .questions-table th { text-align: left; padding: 11px 14px; font-size: 10px; font-weight: 800; text-transform: uppercase; letter-spacing: 1px; border-bottom: 1.5px solid #e9d5ff; background: linear-gradient(135deg,#f0f0ff,#fdf4ff); color:#7c3aed; }
+  .questions-table td { padding: 12px 14px; border-bottom: 1px solid #f1f5f9; color: #374151; vertical-align: middle; font-weight: 500; }
   .questions-table tr:last-child td { border-bottom: none; }
-  .questions-table tr:hover td { background: #f8faff; }
+  .questions-table tr:hover td { background: linear-gradient(90deg,#f5f3ff,#fdf4ff); }
   .exams-manage-table { width: 100%; border-collapse: collapse; font-size: 13px; }
-  .exams-manage-table th { text-align: left; padding: 11px 14px; font-size: 10px; font-weight: 800; color: #94a3b8; text-transform: uppercase; letter-spacing: 1px; border-bottom: 1.5px solid #f1f5f9; background: #f8fafc; }
-  .exams-manage-table td { padding: 12px 14px; border-bottom: 1px solid #f1f5f9; color: #475569; vertical-align: middle; font-weight: 500; }
+  .exams-manage-table th { text-align: left; padding: 11px 14px; font-size: 10px; font-weight: 800; text-transform: uppercase; letter-spacing: 1px; border-bottom: 1.5px solid #e9d5ff; background: linear-gradient(135deg,#f0f0ff,#fdf4ff); color:#7c3aed; }
+  .exams-manage-table td { padding: 12px 14px; border-bottom: 1px solid #f1f5f9; color: #374151; vertical-align: middle; font-weight: 500; }
   .exams-manage-table tr:last-child td { border-bottom: none; }
-  .exams-manage-table tr:hover td { background: #f8faff; }
+  .exams-manage-table tr:hover td { background: linear-gradient(90deg,#f5f3ff,#fdf4ff); }
   .action-btns { display: flex; gap: 6px; }
   .toast { display: none; }
-  .empty-state { text-align: center; padding: 40px; color: #94a3b8; font-size: 14px; font-weight: 600; font-family: 'Plus Jakarta Sans', sans-serif; }
-  .key-card { background: linear-gradient(135deg, rgba(16,185,129,.04), #fff) !important; border-color: rgba(16,185,129,.25) !important; }
-  .key-card h3 { color: #10b981 !important; }
+  .empty-state {
+    text-align: center; padding: 48px 40px; color: #94a3b8;
+    font-size: 14px; font-weight: 600;
+    font-family: 'Plus Jakarta Sans', sans-serif;
+    background: linear-gradient(135deg,#f8faff,#fdf4ff);
+    border-radius: 14px; border: 1.5px dashed #ddd6fe;
+  }
+  .key-card { background: linear-gradient(135deg,rgba(5,150,105,.04),#fff) !important; border-color: rgba(5,150,105,.2) !important; }
+  .key-card::before { background: linear-gradient(90deg,#059669,#0d9488) !important; }
+  .key-card h3 { color: #059669 !important; background: linear-gradient(135deg,#ecfdf5,#f0fdf4) !important; }
+
   .ai-count-badge { font-size: 13px; color: #94a3b8; font-weight: 700; }
   .ai-count-badge strong { color: #1e293b; }
   .ai-import-bar { display: flex; align-items: center; justify-content: space-between; flex-wrap: wrap; gap: 10px; padding: 14px 0 0; border-top: 1.5px solid #f1f5f9; margin-top: 14px; }
   .gen-import-bar { display: flex; align-items: center; justify-content: space-between; flex-wrap: wrap; gap: 10px; padding: 14px 0 0; border-top: 1.5px solid #f1f5f9; margin-top: 10px; }
   .gen-badge { font-size: 13px; color: #94a3b8; font-weight: 700; }
   .gen-badge strong { color: #1e293b; }
+
   .ai-gen-tabs { display: flex; gap: 8px; margin-bottom: 18px; }
-  .ai-gen-tab { flex: 1; padding: 10px 14px; border-radius: 12px; border: 1.5px solid #e2e8f0; background: #f8fafc; font-family: 'Plus Jakarta Sans', sans-serif; font-size: 12.5px; font-weight: 700; cursor: pointer; transition: all .18s; color: #64748b; text-align: center; }
-  .ai-gen-tab.active { border-color: #4f46e5; background: #eef2ff; color: #4f46e5; }
-  .ai-gen-tab:hover:not(.active) { border-color: #4f46e5; color: #4f46e5; }
+  .ai-gen-tab {
+    flex: 1; padding: 10px 14px; border-radius: 12px;
+    border: 1.5px solid #e2e8f0; background: #f8fafc;
+    font-family: 'Plus Jakarta Sans', sans-serif; font-size: 12.5px; font-weight: 700;
+    cursor: pointer; transition: all .18s; color: #64748b; text-align: center;
+  }
+  .ai-gen-tab.active {
+    border-color: transparent;
+    background: linear-gradient(135deg,#4f46e5,#7c3aed);
+    color: #fff;
+    box-shadow: 0 4px 14px rgba(79,70,229,.3);
+  }
+  .ai-gen-tab:hover:not(.active) { border-color: #7c3aed; color: #7c3aed; background: #f5f3ff; }
   .ai-gen-panel { display: none; }
   .ai-gen-panel.active { display: block; }
 
+  /* ── MOBILE ── */
+  @media (max-width: 768px) {
+    .admin-page-header { padding: 0 16px; height: 58px; }
+    .admin-tabs { top: 58px; padding: 0 8px; }
+    .admin-tab { padding: 10px 10px 9px; font-size: 11.5px; }
+    .admin-content-wrap { padding: 16px 14px 60px; }
+  }
 
+  /* ── ANIMATIONS ── */
+  .admin-panel.active { animation: apFadeUp .25s ease both; }
+  @keyframes apFadeUp {
+    from { opacity: 0; transform: translateY(10px); }
+    to   { opacity: 1; transform: translateY(0); }
+  }
 
   /* ─── EDIT MODAL ─── */
   .edit-overlay {
@@ -6391,7 +6473,25 @@ html {
 <div id="page-admin" class="page">
   <div class="admin-layout">
 
-    <!-- SIDEBAR -->
+    <!-- TOP HEADER -->
+    <div class="admin-page-header">
+      <div style="display:flex;align-items:center;gap:12px;">
+        <div style="width:34px;height:34px;border-radius:10px;background:linear-gradient(135deg,#4f46e5,#7c3aed);display:flex;align-items:center;justify-content:center;font-size:16px;flex-shrink:0;">⚙️</div>
+        <div>
+          <h2>Anil EduTech Admin</h2>
+          <p id="admin-logged-label">Dashboard</p>
+        </div>
+      </div>
+      <div class="admin-header-right">
+        <div class="admin-badge">
+          <div class="admin-avatar">A</div>
+          <span class="admin-badge-name">Admin</span>
+        </div>
+        <button onclick="adminSignOut()">🚪 Sign Out</button>
+      </div>
+    </div>
+
+    <!-- TOP NAVBAR TABS -->
     <div class="admin-tabs" id="admin-tabs-bar">
       <button class="admin-tab active" onclick="switchAdminTab('exams',this)">📂 Exams</button>
       <button class="admin-tab" onclick="switchAdminTab('questions',this)">📝 Questions</button>
@@ -6410,21 +6510,6 @@ html {
 
     <!-- MAIN AREA -->
     <div class="admin-main-area">
-
-    <!-- Top Header -->
-    <div class="admin-page-header">
-      <div>
-        <h2>Admin Panel</h2>
-        <p id="admin-logged-label">Dashboard / Overview</p>
-      </div>
-      <div class="admin-header-right">
-        <div class="admin-badge">
-          <div class="admin-avatar">A</div>
-          <span class="admin-badge-name">Admin</span>
-        </div>
-        <button onclick="adminSignOut()">🚪 Sign Out</button>
-      </div>
-    </div>
 
     <!-- Content -->
     <div class="admin-content-wrap">
@@ -7522,6 +7607,144 @@ async function sbDelete(table, filter) {
   } catch(e) { _sbFails++; if (_sbFails >= 2) { _sbDead = true; setTimeout(function(){ _sbDead = false; _sbFails = 0; }, 5*60*1000); } return false; }
 }
 
+// ── SUPABASE EXAMS/QUESTIONS TABLE HELPERS ──
+
+async function sbInsert(table, data) {
+  if (_sbDead) return false;
+  try {
+    const r = await fetch(`${SB_URL}/rest/v1/${table}`, {
+      method: 'POST',
+      headers: { ...SB_HEADERS, 'Prefer': 'return=minimal' },
+      body: JSON.stringify(data)
+    });
+    if (!r.ok) { _sbFails++; if (_sbFails >= 2) { _sbDead = true; setTimeout(function(){ _sbDead = false; _sbFails = 0; }, 5*60*1000); } }
+    return r.ok;
+  } catch(e) { _sbFails++; if (_sbFails >= 2) { _sbDead = true; setTimeout(function(){ _sbDead = false; _sbFails = 0; }, 5*60*1000); } return false; }
+}
+
+async function sbPatch(table, filter, data) {
+  if (_sbDead) return false;
+  try {
+    const r = await fetch(`${SB_URL}/rest/v1/${table}?${filter}`, {
+      method: 'PATCH',
+      headers: { ...SB_HEADERS, 'Prefer': 'return=minimal' },
+      body: JSON.stringify(data)
+    });
+    if (!r.ok) { _sbFails++; if (_sbFails >= 2) { _sbDead = true; setTimeout(function(){ _sbDead = false; _sbFails = 0; }, 5*60*1000); } }
+    return r.ok;
+  } catch(e) { _sbFails++; if (_sbFails >= 2) { _sbDead = true; setTimeout(function(){ _sbDead = false; _sbFails = 0; }, 5*60*1000); } return false; }
+}
+
+// Batch insert — 50 rows at a time to avoid payload limits
+async function sbBatchInsert(table, rows) {
+  if (_sbDead || !rows.length) return false;
+  const CHUNK = 50;
+  for (let i = 0; i < rows.length; i += CHUNK) {
+    const chunk = rows.slice(i, i + CHUNK);
+    const ok = await sbInsert(table, chunk);
+    if (!ok) return false;
+  }
+  return true;
+}
+
+// ── Load exams + questions from Supabase into DB cache ──
+async function _loadDBFromSupabase() {
+  try {
+    const [exams, questions, videos, meta] = await Promise.all([
+      sbGet('ae_exams', null),
+      sbGet('ae_questions', null),
+      sbGet('ae_videos', null),
+      sbGet('ae_meta', null)
+    ]);
+
+    if (exams && Array.isArray(exams) && exams.length > 0) {
+      // Map Supabase column names back to app format
+      DB.exams = exams.map(e => ({
+        id: e.id, name: e.name, cat: e.cat,
+        time: e.time, diff: e.diff,
+        sections: e.sections || {},
+        qmark: e.qmark || 1, nmark: e.nmark || 0,
+        isPremium: e.is_premium || false,
+        isLocked: e.is_locked || false
+      }));
+    }
+
+    if (questions && Array.isArray(questions) && questions.length > 0) {
+      DB.questions = questions.map(q => ({
+        id: q.id, examId: q.exam_id,
+        q: q.q, opts: q.opts, ans: q.ans,
+        explanation: q.explanation || '',
+        section: q.section || 'ga',
+        marks: q.marks || null,
+        image: q.image || null
+      }));
+    }
+
+    if (videos && Array.isArray(videos) && videos.length > 0) {
+      DB.videos = videos.map(v => ({
+        id: v.id, title: v.title, cat: v.cat,
+        url: v.url, desc: v.description || ''
+      }));
+    }
+
+    if (meta && Array.isArray(meta)) {
+      meta.forEach(m => {
+        if (m.key === 'nextExamId') DB.nextExamId = parseInt(m.value) || DB.nextExamId;
+        if (m.key === 'nextQId')    DB.nextQId    = parseInt(m.value) || DB.nextQId;
+        if (m.key === 'nextVideoId') DB.nextVideoId = parseInt(m.value) || DB.nextVideoId;
+      });
+    }
+
+    // If Supabase tables empty → migrate DEFAULT_DB data into Supabase once
+    if (!exams || !exams.length) {
+      await _migrateDefaultDataToSupabase();
+    }
+
+    return true;
+  } catch(e) {
+    console.warn('Supabase DB load failed, using defaults:', e);
+    return false;
+  }
+}
+
+// ── Save meta (nextExamId, nextQId) to Supabase ──
+async function _saveMeta() {
+  await sbUpsert('ae_meta', [
+    { key: 'nextExamId', value: String(DB.nextExamId) },
+    { key: 'nextQId',    value: String(DB.nextQId) },
+    { key: 'nextVideoId', value: String(DB.nextVideoId || 1) }
+  ]);
+}
+
+// ── One-time migration: push DEFAULT_DB into Supabase tables ──
+async function _migrateDefaultDataToSupabase() {
+  try {
+    toast('⏳ Data migration చేస్తున్నాం...', 'info');
+    const examRows = DB.exams.map(e => ({
+      id: e.id, name: e.name, cat: e.cat || '',
+      time: e.time || 30, diff: e.diff || 'Medium',
+      sections: e.sections || {},
+      qmark: e.qmark || 1, nmark: e.nmark || 0,
+      is_premium: e.isPremium || false,
+      is_locked: e.isLocked || false
+    }));
+    const qRows = DB.questions.map(q => ({
+      id: q.id, exam_id: q.examId,
+      q: q.q, opts: q.opts, ans: q.ans,
+      explanation: q.explanation || '',
+      section: q.section || 'ga',
+      marks: q.marks || null,
+      image: q.image || null
+    }));
+    await sbBatchInsert('ae_exams', examRows);
+    await sbBatchInsert('ae_questions', qRows);
+    await _saveMeta();
+    toast('✅ Data Supabase కి migrate అయింది!', 'success');
+  } catch(e) {
+    console.warn('Migration failed:', e);
+  }
+}
+
 // ── GOOGLE SHEETS BACKUP CONFIG ──
 const GS_URL = 'https://script.google.com/macros/s/AKfycbwQfUeEtKNC2FfXuM8Eh5SjQKAGLEuJkpY4BhUgfsERnQx7LloXblbu4vCoYxGE3Ti70Q/exec';
 
@@ -7572,6 +7795,12 @@ async function _sbSave(key, value) {
       await sbUpsert('ae_db', { id: 'pending', data: value, updated_at: new Date().toISOString() });
     } else if (key === 'ae_sub_approved') {
       await sbUpsert('ae_db', { id: 'approved', data: value, updated_at: new Date().toISOString() });
+    } else if (['ae_bookmarks','ae_exam_progress','ae_daily_done','ae_daily_done_count','ae_badges_seen','ae_scores_last_clear'].includes(key)) {
+      if (value === null) {
+        await sbDelete('ae_db', `id=eq.${encodeURIComponent(key)}`);
+      } else {
+        await sbUpsert('ae_db', { id: key, data: value, updated_at: new Date().toISOString() });
+      }
     } else {
       if (value === null) {
         await sbDelete('ae_settings', `key=eq.${encodeURIComponent(key)}`);
@@ -7627,6 +7856,7 @@ async function _initStorage() {
         if (row.id === 'scores'   && row.data) _store['ae_scores']       = row.data;
         if (row.id === 'pending'  && row.data) _store['ae_sub_pending']  = row.data;
         if (row.id === 'approved' && row.data) _store['ae_sub_approved'] = row.data;
+        ['ae_bookmarks','ae_exam_progress','ae_daily_done','ae_daily_done_count','ae_badges_seen','ae_scores_last_clear'].forEach(k => { if (row.id === k && row.data) _store[k] = row.data; });
       });
     }
 
@@ -8490,6 +8720,43 @@ function getSubApproved() { try { return JSON.parse(_ls.getItem(SUB_APPROVED_KEY
 function saveSubPending(a)  { _ls.setItem(SUB_PENDING_KEY,  JSON.stringify(a)); }
 function saveSubApproved(a) { _ls.setItem(SUB_APPROVED_KEY, JSON.stringify(a)); }
 
+// ── ae_subscribers TABLE HELPERS ──
+async function sbSubGet(status) {
+  try {
+    const q = status ? `?status=eq.${status}&order=joined_at.desc` : `?order=joined_at.desc`;
+    const r = await fetch(`${SB_URL}/rest/v1/ae_subscribers${q}`, { headers: SB_HEADERS });
+    return r.ok ? await r.json() : [];
+  } catch(e) { return []; }
+}
+
+async function sbSubUpsert(sub) {
+  try {
+    await fetch(`${SB_URL}/rest/v1/ae_subscribers`, {
+      method: 'POST',
+      headers: { ...SB_HEADERS, 'Prefer': 'resolution=merge-duplicates,return=minimal' },
+      body: JSON.stringify({
+        gmail:         sub.gmail,
+        name:          sub.name,
+        pw_hash:       sub.pwHash || sub.pw_hash || '',
+        sb_user_id:    sub.sbUserId || sub.sb_user_id || '',
+        is_premium:    sub.isPremium || sub.is_premium || false,
+        premium_since: sub.premiumSince || sub.premium_since || null,
+        status:        sub.status || 'approved',
+        updated_at:    new Date().toISOString()
+      })
+    });
+  } catch(e) { console.warn('sbSubUpsert failed:', e); }
+}
+
+async function sbSubDelete(gmail) {
+  try {
+    await fetch(`${SB_URL}/rest/v1/ae_subscribers?gmail=eq.${encodeURIComponent(gmail)}`, {
+      method: 'DELETE',
+      headers: { ...SB_HEADERS, 'Prefer': 'return=minimal' }
+    });
+  } catch(e) { console.warn('sbSubDelete failed:', e); }
+}
+
 function getCurrentUser() {
   try {
     const u = JSON.parse(localStorage.getItem(SUB_SESSION_KEY) || 'null');
@@ -8814,6 +9081,7 @@ async function doRegister() {
     approved.push({ name, gmail, date: new Date().toLocaleDateString('te-IN'), sbUserId: res.user?.id });
     saveSubApproved(approved);
   }
+  await sbSubUpsert({ name, gmail, sbUserId: res.user?.id, status: 'approved' });
 
   sendEmailNotification('register', { name, gmail });
   // BUG FIX: Apply pending referral on register
@@ -8865,6 +9133,7 @@ function doGoogleLogin() {
       approved.push({ name, gmail, date: new Date().toLocaleDateString('te-IN'), sbUserId: userData.id });
       saveSubApproved(approved);
     }
+    sbSubUpsert({ name, gmail, sbUserId: userData.id, status: 'approved' });
 
     setCurrentUser(user);
     updateNavUser();
@@ -8913,8 +9182,15 @@ async function doForgotPw() {
 }
 
 // ADMIN — render subscribers
-function renderSubscriberTables() {
-  const approved = getSubApproved();
+async function renderSubscriberTables() {
+  let approved = await sbSubGet('approved');
+  if (!approved.length) approved = getSubApproved();
+  approved = approved.map(s => ({
+    ...s,
+    isPremium: s.isPremium ?? s.is_premium ?? false,
+    premiumSince: s.premiumSince ?? s.premium_since ?? null,
+    date: s.date ?? (s.joined_at ? new Date(s.joined_at).toLocaleDateString('te-IN') : '')
+  }));
 
   // Approved
   const atbody = document.getElementById('approved-table');
@@ -8950,8 +9226,9 @@ async function removeSubscriber(gmail) {
   if (idx === -1) return;
   approved.splice(idx, 1);
   saveSubApproved(approved);
+  await sbSubDelete(gmail);
 
-  // BUG FIX: Also remove premium record from Supabase
+  // Also remove premium record from Supabase
   try {
     const gmailKey = 'premium_gmail_' + gmail.replace(/[@.]/g, '_');
     await sbDelete('ae_settings', 'key=eq.' + encodeURIComponent(gmailKey));
@@ -8978,6 +9255,7 @@ async function adminGrantPremium(gmail) {
   u.isPremium = true;
   u.premiumSince = new Date().toISOString();
   saveSubApproved(approved);
+  await sbSubUpsert({ name: u.name, gmail, is_premium: true, premium_since: u.premiumSince, status: 'approved' });
 
   // 2. Write to Supabase ae_settings so user gets it on next login check
   //    Key: premium_gmail (gmail-based so no userId needed)
@@ -9011,6 +9289,7 @@ async function adminRevokePremium(gmail) {
   u.isPremium = false;
   delete u.premiumSince;
   saveSubApproved(approved);
+  await sbSubUpsert({ name: u.name, gmail, is_premium: false, status: 'approved' });
 
   try {
     await sbDelete('ae_settings', 'key=eq.premium_gmail_' + gmail.replace(/[@.]/g, '_'));
@@ -9037,16 +9316,7 @@ async function manualAddSubscriber() {
 
   approved.push({ name, gmail, date: new Date().toLocaleDateString('te-IN'), pwHash: '' });
   saveSubApproved(approved);
-
-  // BUG FIX: Sync to Supabase ae_settings for cross-device access
-  try {
-    const gmailKey = 'subscriber_gmail_' + gmail.replace(/[@.]/g, '_');
-    await sbUpsert('ae_settings', {
-      key: gmailKey,
-      value: JSON.stringify({ name, gmail, since: new Date().toISOString() }),
-      updated_at: new Date().toISOString()
-    });
-  } catch(e) { console.warn('Supabase subscriber sync failed:', e); }
+  await sbSubUpsert({ name, gmail, status: 'approved' });
 
   document.getElementById('manual-sub-name').value  = '';
   document.getElementById('manual-sub-gmail').value = '';
@@ -9131,17 +9401,70 @@ const DEFAULT_DB = {
 
 /* ---- LOCALSTORAGE DB ---- */
 function loadDB() {
-  try {
-    const saved = _ls.getItem('anil_edutech_db');
-    if (saved) return JSON.parse(saved);
-  } catch(e) {}
+  // Legacy: return DEFAULT_DB (actual load now happens via Supabase in _appInit)
   return JSON.parse(JSON.stringify(DEFAULT_DB));
 }
 
 function saveDB() {
+  // Legacy wrapper — Supabase saves are done per-operation now
+  // Still save to ae_db blob as fallback for old keys
   try {
     _ls.setItem('anil_edutech_db', JSON.stringify(DB));
   } catch(e) {}
+}
+
+// ── Supabase: Save single exam ──
+async function sbSaveExam(exam) {
+  const row = {
+    id: exam.id, name: exam.name, cat: exam.cat || '',
+    time: exam.time || 30, diff: exam.diff || 'Medium',
+    sections: exam.sections || {},
+    qmark: exam.qmark || 1, nmark: exam.nmark || 0,
+    is_premium: exam.isPremium || false,
+    is_locked: exam.isLocked || false,
+    updated_at: new Date().toISOString()
+  };
+  await sbUpsert('ae_exams', row);
+  await _saveMeta();
+}
+
+// ── Supabase: Save single question ──
+async function sbSaveQuestion(q) {
+  const row = {
+    id: q.id, exam_id: q.examId,
+    q: q.q, opts: q.opts, ans: q.ans,
+    explanation: q.explanation || '',
+    section: q.section || 'ga',
+    marks: q.marks || null,
+    image: q.image || null
+  };
+  await sbUpsert('ae_questions', row);
+  await _saveMeta();
+}
+
+// ── Supabase: Delete exam + its questions ──
+async function sbDeleteExam(examId) {
+  // questions cascade delete automatically (foreign key)
+  await sbDelete('ae_exams', `id=eq.${examId}`);
+  await _saveMeta();
+}
+
+// ── Supabase: Delete single question ──
+async function sbDeleteQuestion(qId) {
+  await sbDelete('ae_questions', `id=eq.${qId}`);
+  await _saveMeta();
+}
+
+// ── Supabase: Save video ──
+async function sbSaveVideo(v) {
+  const row = { id: v.id, title: v.title, cat: v.cat, url: v.url, description: v.desc || '' };
+  await sbUpsert('ae_videos', row);
+  await _saveMeta();
+}
+
+// ── Supabase: Delete video ──
+async function sbDeleteVideo(vId) {
+  await sbDelete('ae_videos', `id=eq.${vId}`);
 }
 
 const DB = JSON.parse(JSON.stringify(DEFAULT_DB)); // populated in _appInit
@@ -10412,7 +10735,7 @@ function createExam() {
   if (_partB) _partLabels.B = _partB;
   if (_partC) _partLabels.C = _partC;
   if (_partD) _partLabels.D = _partD;
-  DB.exams.push({
+  const _newExamObj = {
     id:   DB.nextExamId++,
     name,
     cat:  _cat,
@@ -10422,7 +10745,9 @@ function createExam() {
     partLabels: _partLabels,
     qmark: _isSSC ? 2 : 1,
     nmark: _isSSC ? 0.5 : 0,
-  });
+  };
+  DB.exams.push(_newExamObj);
+  sbSaveExam(_newExamObj); // Supabase save
   document.getElementById('exam-name').value = '';
   if(document.getElementById('exam-sec-reasoning')) document.getElementById('exam-sec-reasoning').value=0;
   if(document.getElementById('exam-sec-arithmetic')) document.getElementById('exam-sec-arithmetic').value=0;
@@ -10462,6 +10787,7 @@ function addQuestion() {
   if (marks) qObj.marks = marks;
   if (image) qObj.image = image;
   DB.questions.push(qObj);
+  sbSaveQuestion(qObj); // Supabase save
 
   document.getElementById('q-text-input').value = '';
   ['opt-a','opt-b','opt-c','opt-d'].forEach(id => document.getElementById(id).value = '');
@@ -10478,6 +10804,7 @@ function addQuestion() {
 
 function deleteQuestion(id) {
   if (!confirm('ఈ question delete చేయాలా?')) return;
+  sbDeleteQuestion(id); // Supabase delete
   DB.questions = DB.questions.filter(q => q.id !== id);
   saveDB();
   renderAdminTable();
@@ -10489,6 +10816,8 @@ function deleteAllQuestions() {
   const total = DB.questions.length;
   if (!total) { toast('Questions లేవు!', 'warn'); return; }
   if (!confirm('మొత్తం ' + total + ' questions delete చేయాలా? ఇది undo చేయలేరు!')) return;
+  // Delete all from Supabase too
+  fetch(`${SB_URL}/rest/v1/ae_questions`, { method: 'DELETE', headers: SB_HEADERS });
   DB.questions = [];
   saveDB();
   renderAdminTable();
@@ -10790,6 +11119,11 @@ function importAIQuestions() {
     });
   });
 
+  // Supabase batch insert for AI questions
+  const aiNewQs = DB.questions.slice(DB.questions.length - aiExtracted.length);
+  if (aiNewQs.length) sbBatchInsert('ae_questions', aiNewQs.map(q=>({id:q.id,exam_id:q.examId,q:q.q,opts:q.opts,ans:q.ans,explanation:q.explanation||'',section:q.section||'ga',marks:null,image:null})));
+  _saveMeta();
+
   const count = aiExtracted.length;
   saveDB();
   clearAIPreview();
@@ -10976,7 +11310,9 @@ function importGenQuestions() {
   if (!examId) { alert('Exam select చేయండి'); return; }
   const foundExam = DB.exams.find(e => e.id === examId);
   genExtracted.forEach(q => {
-    DB.questions.push({ id: DB.nextQId++, examId, q: q.q, opts: q.opts, ans: q.ans });
+    const _aiQ = { id: DB.nextQId++, examId, q: q.q, opts: q.opts, ans: q.ans };
+    DB.questions.push(_aiQ);
+    sbSaveQuestion(_aiQ);
   });
   const count = genExtracted.length;
   saveDB();
@@ -11028,7 +11364,7 @@ function renderExamsManageTable(){
     return `<tr><td style="color:var(--text3);font-weight:700">${i+1}</td><td style="color:var(--text);font-weight:700;max-width:180px;word-break:break-word">${escHtml(e.name)}</td><td><span class="meta-pill ${catPill[e.cat]||'pill-blue'}">${e.cat}</span></td><td>${e.time} min</td><td><span class="meta-pill ${diffPill[e.diff]||'pill-green'}">${e.diff}</span></td><td><span class="meta-pill pill-blue">📝 ${qc}</span></td><td>${lb}</td><td><div class="action-btns">${lbtn}<button class="edit-btn" onclick="openEditExamModal(${e.id})">✏️ Edit</button><button class="edit-btn" style="background:linear-gradient(135deg,#00B894,#077042)" onclick="copyExam(${e.id})">📋 Copy</button><button class="del-btn" onclick="deleteExam(${e.id})">Delete</button></div></td></tr>`;
   }).join('');
 }
-function toggleExamLock(id){const e=DB.exams.find(x=>x.id===id);if(!e)return;e.isPremium=!e.isPremium;saveDB();renderExamsManageTable();filterExams();toast(e.isPremium?`🔒 "${e.name}" — Premium Only!`:`🔓 "${e.name}" — Free!`,e.isPremium?'warn':'success');}
+function toggleExamLock(id){const e=DB.exams.find(x=>x.id===id);if(!e)return;e.isPremium=!e.isPremium;sbSaveExam(e);saveDB();renderExamsManageTable();filterExams();toast(e.isPremium?`🔒 "${e.name}" — Premium Only!`:`🔓 "${e.name}" — Free!`,e.isPremium?'warn':'success');}
 
 /* ---- COPY EXAM ---- */
 function copyExam(id) {
@@ -11039,14 +11375,18 @@ function copyExam(id) {
   copy.id   = newId;
   copy.name = '📋 Copy of ' + src.name;
   DB.exams.push(copy);
+  sbSaveExam(copy); // Supabase save
   // Copy all questions of this exam
   const srcQs = DB.questions.filter(q => q.examId === id);
+  const copiedQs = [];
   srcQs.forEach(q => {
     const qCopy = JSON.parse(JSON.stringify(q));
     qCopy.id     = DB.nextQId++;
     qCopy.examId = newId;
     DB.questions.push(qCopy);
+    copiedQs.push(qCopy);
   });
+  if (copiedQs.length) sbBatchInsert('ae_questions', copiedQs.map(q=>({id:q.id,exam_id:q.examId,q:q.q,opts:q.opts,ans:q.ans,explanation:q.explanation||'',section:q.section||'ga',marks:q.marks||null,image:q.image||null})));
   saveDB();
   populateAdminSelects();
   if (typeof _populateBulkExamDropdown === 'function') _populateBulkExamDropdown();
@@ -11064,6 +11404,7 @@ function deleteExam(id) {
     ? `"${ex.name}" delete చేయాలా? ఇందులో ${qc} questions కూడా delete అవుతాయి!`
     : `"${ex.name}" exam delete చేయాలా?`;
   if (!confirm(msg)) return;
+  sbDeleteExam(id); // Supabase delete (cascades questions)
   DB.exams = DB.exams.filter(e => e.id !== id);
   DB.questions = DB.questions.filter(q => q.examId !== id);
   saveDB(); populateAdminSelects(); if (typeof _populateBulkExamDropdown === 'function') _populateBulkExamDropdown(); renderAdminTable(); renderExamsManageTable(); updateStats();
@@ -11125,6 +11466,7 @@ function saveEditExam() {
   if (epb) ex.partLabels.B = epb;
   if (epc) ex.partLabels.C = epc;
   if (epd) ex.partLabels.D = epd;
+  sbSaveExam(ex); // Supabase update
   saveDB(); populateAdminSelects(); if (typeof _populateBulkExamDropdown === 'function') _populateBulkExamDropdown(); renderAdminTable(); renderExamsManageTable(); updateStats(); filterExams();
   closeEditExamModal(); toast('✓ Exam updated!', 'info');
 }
@@ -11186,6 +11528,7 @@ function saveEditQuestion() {
   const editImgEl = document.getElementById('edit-q-image-preview')?.querySelector('img');
   if (editImgEl && editImgEl.src && editImgEl.src.startsWith('data:')) q.image = editImgEl.src;
   else if (!editImgEl || !editImgEl.src) delete q.image;
+  sbSaveQuestion(q); // Supabase update
   saveDB(); renderAdminTable(); renderExamsManageTable(); closeEditQModal(); toast('✓ Question updated!', 'info');
 }
 
@@ -12522,6 +12865,10 @@ function _confirmBulkImport() {
     DB.questions.push(qObj);
     imported++;
   });
+  // Supabase batch insert for all newly imported questions
+  const newQs = DB.questions.slice(DB.questions.length - imported);
+  if (newQs.length) sbBatchInsert('ae_questions', newQs.map(q=>({id:q.id,exam_id:q.examId,q:q.q,opts:q.opts,ans:q.ans,explanation:q.explanation||'',section:q.section||'ga',marks:q.marks||null,image:q.image||null})));
+  _saveMeta();
   saveDB();
   const log = document.getElementById('bulk-log');
   log.style.display='block';
@@ -12772,93 +13119,22 @@ function _appInit() {
   ADMIN_USERNAME = _ls.getItem('ae_admin_uname')    || 'admin';
   ADMIN_RECOVERY = _ls.getItem('ae_admin_recovery') || 'ANIL2025RESET';
 
-  // DB
-  try {
-    const saved = _ls.getItem('anil_edutech_db');
-    if (saved) {
-      const parsed = JSON.parse(saved);
-      if (!parsed.exams || parsed.exams.length === 0) {
-        parsed.exams     = JSON.parse(JSON.stringify(DEFAULT_DB.exams));
-        parsed.questions = JSON.parse(JSON.stringify(DEFAULT_DB.questions));
-        parsed.nextExamId = Math.max(parsed.nextExamId || 0, DEFAULT_DB.nextExamId);
-        parsed.nextQId    = Math.max(parsed.nextQId    || 0, DEFAULT_DB.nextQId);
-      } else {
-        // CLEANUP: Remove old/duplicate SSC exams — keep only official CGL, CHSL, MTS names
-        const ALLOWED_SSC = ['SSC CGL', 'SSC CHSL', 'SSC MTS'];
-        // Rename old long names to short names
-        const renameMap = {
-          'SSC CGL Tier-1 Mock Test': 'SSC CGL',
-          'SSC CGL Practice Set 1':   'SSC CGL',
-          'SSC CHSL Tier-1 Mock Test':'SSC CHSL',
-          'SSC MTS Paper-1 Mock Test':'SSC MTS',
-        };
-        parsed.exams.forEach(e => { if (renameMap[e.name]) e.name = renameMap[e.name]; });
-        const removedIds = [];
-        parsed.exams = parsed.exams.filter(e => {
-          if (e.cat === 'SSC' && !ALLOWED_SSC.includes(e.name)) {
-            removedIds.push(e.id);
-            return false; // remove old/duplicate SSC exams
-          }
-          return true;
-        });
-        // Remove questions belonging to removed exams
-        if (removedIds.length && parsed.questions) {
-          parsed.questions = parsed.questions.filter(q => !removedIds.includes(q.examId));
-        }
-        // Inject missing official SSC exams
-        const defaultSSC = DEFAULT_DB.exams.filter(e => e.cat === 'SSC');
-        defaultSSC.forEach(de => {
-          const exists = parsed.exams.find(e => e.name === de.name);
-          if (!exists) {
-            parsed.exams.push(JSON.parse(JSON.stringify(de)));
-            const deQs = DEFAULT_DB.questions.filter(q => q.examId === de.id);
-            deQs.forEach(dq => {
-              if (!parsed.questions) parsed.questions = [];
-              if (!parsed.questions.find(q => q.id === dq.id)) {
-                parsed.questions.push(JSON.parse(JSON.stringify(dq)));
-              }
-            });
-          }
-        });
-        // Inject missing RRB exams (NTPC, Group D)
-        const defaultRRB = DEFAULT_DB.exams.filter(e => e.cat === 'RRB');
-        defaultRRB.forEach(de => {
-          const exists = parsed.exams.find(e => e.name === de.name);
-          if (!exists) {
-            parsed.exams.push(JSON.parse(JSON.stringify(de)));
-            const deQs = DEFAULT_DB.questions.filter(q => q.examId === de.id);
-            deQs.forEach(dq => {
-              if (!parsed.questions) parsed.questions = [];
-              if (!parsed.questions.find(q => q.id === dq.id)) {
-                parsed.questions.push(JSON.parse(JSON.stringify(dq)));
-              }
-            });
-          }
-        });
-        // Inject missing Banking exams (IBPS Clerk, SBI Clerk)
-        const defaultBanking = DEFAULT_DB.exams.filter(e => e.cat === 'Banking');
-        defaultBanking.forEach(de => {
-          const exists = parsed.exams.find(e => e.name === de.name);
-          if (!exists) {
-            parsed.exams.push(JSON.parse(JSON.stringify(de)));
-            const deQs = DEFAULT_DB.questions.filter(q => q.examId === de.id);
-            deQs.forEach(dq => {
-              if (!parsed.questions) parsed.questions = [];
-              if (!parsed.questions.find(q => q.id === dq.id)) {
-                parsed.questions.push(JSON.parse(JSON.stringify(dq)));
-              }
-            });
-          }
-        });
-        parsed.nextExamId = Math.max(parsed.nextExamId || 0, DEFAULT_DB.nextExamId);
-        parsed.nextQId    = Math.max(parsed.nextQId    || 0, DEFAULT_DB.nextQId);
-      }
-      if (!parsed.nextVideoId) parsed.nextVideoId = Math.max(parsed.nextVideoId || 0, DEFAULT_DB.nextVideoId);
-      if (!parsed.videos) parsed.videos = [];
-      Object.assign(DB, parsed);
-      saveDB(); // persist the cleanup
-    }
-  } catch(e) {}
+  // DB — Load from Supabase ae_exams / ae_questions tables
+  // _loadDBFromSupabase runs async; UI updates after data loads
+  _loadDBFromSupabase().then(ok => {
+    updateStats();
+    renderLeaderboard();
+    filterExams();
+    if (typeof renderAdminTable === 'function') renderAdminTable();
+    if (typeof renderExamsManageTable === 'function') renderExamsManageTable();
+    if (typeof _populateBulkExamDropdown === 'function') _populateBulkExamDropdown();
+    if (typeof populateAdminSelects === 'function') populateAdminSelects();
+  }).catch(() => {
+    // Fallback: use DEFAULT_DB in-memory
+    Object.assign(DB, JSON.parse(JSON.stringify(DEFAULT_DB)));
+    updateStats();
+    renderLeaderboard();
+  });
 
   // Notification reminder
   if (_ls.getItem('ae_notify') === '1' && typeof Notification !== 'undefined' && Notification.permission === 'granted') {
@@ -13106,7 +13382,9 @@ function addVideo() {
   if (!safeUrl) { toast('❌ URL https:// తో start కావాలి', 'warn'); return; }
 
   DB.videos = DB.videos || [];
-  DB.videos.push({ id: DB.nextVideoId++, title, cat, url: safeUrl, desc });
+  const _newVid = { id: DB.nextVideoId++, title, cat, url: safeUrl, desc };
+  DB.videos.push(_newVid);
+  sbSaveVideo(_newVid); // Supabase save
   saveDB();
   renderVideosManageTable();
   document.getElementById('vid-title').value = '';
@@ -13117,6 +13395,7 @@ function addVideo() {
 
 function deleteVideo(id) {
   if (!confirm('ఈ video delete చేయాలా?')) return;
+  sbDeleteVideo(id); // Supabase delete
   DB.videos = (DB.videos||[]).filter(v => v.id !== id);
   saveDB();
   renderVideosManageTable();

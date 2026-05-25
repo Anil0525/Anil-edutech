@@ -13528,7 +13528,15 @@ function _parseCSVText(text) {
       [examId, question, optA, optB, optC, optD, answer, explanation, sectionRaw, marksRaw, imageUrl] = cols;
     }
 
-    const ansUpper = (answer||'').trim().toUpperCase();
+    let ansUpper = (answer||'').trim().toUpperCase();
+    // Smart answer detection: if answer is not A/B/C/D, check if it matches one of the options
+    if (!['A','B','C','D'].includes(ansUpper)) {
+      const ansLower = (answer||'').trim().toLowerCase();
+      if (ansLower === (optA||'').trim().toLowerCase()) ansUpper = 'A';
+      else if (ansLower === (optB||'').trim().toLowerCase()) ansUpper = 'B';
+      else if (ansLower === (optC||'').trim().toLowerCase()) ansUpper = 'C';
+      else if (ansLower === (optD||'').trim().toLowerCase()) ansUpper = 'D';
+    }
     const examObj = overrideExam || DB.exams.find(e => e.id == parseInt(examId));
     const valid = examId && question && optA && optB && optC && optD && ['A','B','C','D'].includes(ansUpper);
     const _secMap = { reasoning:'reasoning', arithmetic:'arithmetic', ga:'ga', 'general awareness':'ga', 'general':'ga', r:'reasoning', a:'arithmetic', g:'ga', english:'english', 'english comprehension':'english', eng:'english', e:'english' };
@@ -13547,12 +13555,16 @@ function _splitCSVLine(line) {
   const result=[]; let cur=''; let inQ=false;
   for(let i=0;i<line.length;i++){
     const ch=line[i];
-    if(ch==='"'){inQ=!inQ;}
+    if(ch==='"'){
+      // Handle escaped quotes ("")
+      if(inQ && line[i+1]==='"'){cur+='"';i++;}
+      else{inQ=!inQ;}
+    }
     else if(ch===','&&!inQ){result.push(cur);cur='';}
     else{cur+=ch;}
   }
   result.push(cur);
-  return result.map(s=>s.replace(/^"|"$/g,'').trim());
+  return result.map(s=>s.replace(/^"|"$/g,'').replace(/""/g,'"').trim());
 }
 function _renderBulkPreview() {
   if (!_bulkRows.length) { toast('❌ Valid rows లేవు', 'error'); return; }

@@ -284,6 +284,7 @@
   [data-theme="dark"] .ae-toast.t-success, [data-theme="dark"] .ae-toast.t-error,
   [data-theme="dark"] .ae-toast.t-info, [data-theme="dark"] .ae-toast.t-warn { background: var(--card); color: var(--text); }
   [data-theme="dark"] .lb-card { background: var(--card); }
+  [data-theme="dark"] .lb-tab-btn { background: var(--card); color: var(--text2); border-color: var(--border2); }
   [data-theme="dark"] .lb-card.lb-gold { background: linear-gradient(135deg,#1f1a08,var(--card)); }
   [data-theme="dark"] .lb-card.lb-silver { background: linear-gradient(135deg,#1a1a1a,var(--card)); }
   [data-theme="dark"] .lb-card.lb-bronze { background: linear-gradient(135deg,#1c1108,var(--card)); }
@@ -3680,6 +3681,21 @@
     background: #fff; color: var(--text3); cursor: pointer; transition: all .2s;
   }
   .lb-clear-btn:hover { border-color: var(--red); color: var(--red); }
+  /* ── Leaderboard Tab Buttons ── */
+  .lb-tab-btn {
+    font-family: inherit; font-size: 12px; font-weight: 700;
+    padding: 6px 12px; border-radius: 20px;
+    border: 1.5px solid var(--border2);
+    background: #fff; color: var(--text3);
+    cursor: pointer; transition: all .18s;
+  }
+  .lb-tab-btn.active, .lb-tab-btn:hover {
+    background: var(--primary); color: #fff; border-color: var(--primary);
+  }
+  @keyframes lb-pulse {
+    0%,100% { opacity:1; transform:scale(1); }
+    50%      { opacity:.4; transform:scale(1.35); }
+  }
   .lb-empty {
     text-align: center; padding: 40px 20px;
     color: var(--text3); font-size: 14px; font-weight: 600;
@@ -4187,6 +4203,21 @@
   .prog-header h2 { font-size: 19px; font-weight: 900; margin-bottom: 2px; }
   .prog-header p  { font-size: 11.5px; color: rgba(255,255,255,.6); font-weight: 500; }
   .prog-body { max-width: 900px; margin: 0 auto; padding: 18px 16px 40px; }
+  .prog-tab {
+    padding: 8px 18px; border-radius: 22px; border: 2px solid rgba(255,255,255,.25);
+    background: rgba(255,255,255,.12); color: rgba(255,255,255,.85);
+    font-size: 12px; font-weight: 800; cursor: pointer; font-family: inherit;
+    transition: all .18s; backdrop-filter: blur(4px);
+  }
+  .prog-tab.active { background: #fff; color: var(--primary); border-color: #fff; }
+  .prog-tab:hover:not(.active) { background: rgba(255,255,255,.22); }
+  .prog-panel { display: none; }
+  .prog-panel.active { display: block; }
+  /* improvement badge */
+  .improve-up   { color:#00B894; font-weight:900; }
+  .improve-down { color:#E53E3E; font-weight:900; }
+  .weak-tip { background:rgba(229,62,62,.08); border:1.5px solid rgba(229,62,62,.2); border-radius:10px; padding:10px 14px; font-size:12px; color:#C53030; font-weight:700; margin-top:6px; }
+  .strong-tip { background:rgba(0,184,148,.08); border:1.5px solid rgba(0,184,148,.2); border-radius:10px; padding:10px 14px; font-size:12px; color:#0A8C5C; font-weight:700; margin-top:6px; }
   .prog-stats-grid {
     display: grid; grid-template-columns: repeat(4,1fr);
     gap: 8px; margin-bottom: 16px;
@@ -4278,6 +4309,8 @@ html {
 <!-- Google AdSense -->
 <script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-4249412359624560"
      crossorigin="anonymous"></script>
+<!-- Chart.js for Progress Dashboard -->
+<script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/4.4.1/chart.umd.min.js"></script>
 
 </head>
 <body>
@@ -4705,6 +4738,9 @@ html {
           <div class="ud-stat"><div class="ud-stat-num" id="ud-avg-score">—</div><div class="ud-stat-lbl">Avg</div></div>
         </div>
         <div class="ud-menu">
+          <button class="ud-item" onclick="showProfile();closeUserDropdown()">
+            <span class="ud-item-icon">👤</span> My Profile
+          </button>
           <button class="ud-item" onclick="goProgress();closeUserDropdown()">
             <span class="ud-item-icon">📊</span> My Progress
           </button>
@@ -4922,11 +4958,26 @@ html {
 
   <div class="lb-header" style="margin-top:0">
       <div>
-        <div class="section-title">🏆 Top Scorers</div>
+        <div class="section-title">🏆 Top Scorers &nbsp;<span id="lb-live-dot" style="display:inline-block;width:9px;height:9px;background:#06B96B;border-radius:50%;animation:lb-pulse 1.8s infinite;vertical-align:middle;margin-left:2px;" title="Live"></span></div>
         <div class="section-sub">అత్యుత్తమ విద్యార్థులు — High Score List</div>
       </div>
       <button class="lb-clear-btn" onclick="clearLeaderboard()">🗑 Clear All</button>
     </div>
+
+    <!-- Filter tabs + meta -->
+    <div style="display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:8px;margin:10px 0 14px;">
+      <div style="display:flex;gap:6px;">
+        <button class="lb-tab-btn active" data-f="all" onclick="_lbSetFilter('all')">🌐 All Time</button>
+        <button class="lb-tab-btn" data-f="today" onclick="_lbSetFilter('today')">📅 Today</button>
+        <button class="lb-tab-btn" data-f="week" onclick="_lbSetFilter('week')">📆 This Week</button>
+      </div>
+      <div style="display:flex;align-items:center;gap:10px;font-size:11px;opacity:.75;">
+        <span id="lb-source-badge">🌐 Live</span>
+        <span id="lb-last-updated" style="font-size:10px;"></span>
+        <button onclick="renderLeaderboard()" title="Refresh" style="background:none;border:none;cursor:pointer;font-size:15px;padding:2px 4px;opacity:.8;">🔄</button>
+      </div>
+    </div>
+
     <div id="leaderboard-list"></div>
   </div>
 
@@ -5330,6 +5381,78 @@ html {
       <span class="footer-link" onclick="goProgress()">📊 Progress</span>
       <span class="footer-link" onclick="openYT()">▶️ YouTube</span>
       <span class="footer-link" onclick="goAbout()">ℹ️ About Us</span>
+    </div>
+    <div class="footer-divider"></div>
+    <div class="footer-copy">Made with ❤️ by <strong>Anil EduTech</strong> &nbsp;·&nbsp; © 2026</div>
+  </div>
+</footer>
+</div>
+
+
+<!-- USER PROFILE PAGE -->
+<div id="page-profile" class="page">
+  <div style="max-width:640px;margin:0 auto;padding:20px 16px 40px;">
+
+    <!-- Header -->
+    <div style="display:flex;align-items:center;gap:12px;margin-bottom:20px;">
+      <button onclick="goHome()" style="background:var(--surface);border:1.5px solid var(--border);border-radius:10px;padding:8px 14px;font-size:13px;font-weight:800;cursor:pointer;font-family:inherit;color:var(--text);">← Back</button>
+      <div style="font-size:18px;font-weight:900;color:var(--text);">👤 My Profile</div>
+    </div>
+
+    <!-- Avatar + Info card -->
+    <div style="background:var(--card);border:1.5px solid var(--border);border-radius:20px;padding:22px;margin-bottom:16px;display:flex;align-items:center;gap:18px;">
+      <div id="pf-avatar-circle" style="width:70px;height:70px;border-radius:50%;background:linear-gradient(135deg,var(--primary),#7C3AED);display:flex;align-items:center;justify-content:center;font-size:28px;font-weight:900;color:#fff;flex-shrink:0;letter-spacing:-1px;">?</div>
+      <div style="flex:1;min-width:0;">
+        <div id="pf-name" style="font-size:20px;font-weight:900;color:var(--text);line-height:1.2;word-break:break-word;">Loading...</div>
+        <div id="pf-gmail" style="font-size:12px;color:var(--text3);margin-top:3px;word-break:break-all;"></div>
+        <div id="pf-badge-pill" style="display:inline-block;margin-top:6px;padding:3px 12px;border-radius:20px;font-size:11px;font-weight:800;background:rgba(26,115,232,.12);color:var(--primary);">⭐ Free</div>
+      </div>
+    </div>
+
+    <!-- Stats row -->
+    <div style="display:grid;grid-template-columns:repeat(3,1fr);gap:10px;margin-bottom:16px;">
+      <div style="background:var(--card);border:1.5px solid var(--border);border-radius:16px;padding:16px 10px;text-align:center;">
+        <div id="pf-total-tests" style="font-size:26px;font-weight:900;color:var(--primary);line-height:1;">0</div>
+        <div style="font-size:10px;color:var(--text3);font-weight:700;margin-top:4px;text-transform:uppercase;letter-spacing:.3px;">Tests</div>
+      </div>
+      <div style="background:var(--card);border:1.5px solid var(--border);border-radius:16px;padding:16px 10px;text-align:center;">
+        <div id="pf-best-score" style="font-size:26px;font-weight:900;color:#00B894;line-height:1;">—</div>
+        <div style="font-size:10px;color:var(--text3);font-weight:700;margin-top:4px;text-transform:uppercase;letter-spacing:.3px;">Best</div>
+      </div>
+      <div style="background:var(--card);border:1.5px solid var(--border);border-radius:16px;padding:16px 10px;text-align:center;">
+        <div id="pf-rank" style="font-size:26px;font-weight:900;color:#FF6B35;line-height:1;">—</div>
+        <div style="font-size:10px;color:var(--text3);font-weight:700;margin-top:4px;text-transform:uppercase;letter-spacing:.3px;">Rank</div>
+      </div>
+    </div>
+
+    <!-- Badges -->
+    <div style="background:var(--card);border:1.5px solid var(--border);border-radius:16px;padding:18px;margin-bottom:16px;">
+      <div style="font-size:14px;font-weight:900;color:var(--text);margin-bottom:12px;">🏅 Badges</div>
+      <div id="pf-badges" style="display:flex;flex-wrap:wrap;gap:8px;"></div>
+    </div>
+
+    <!-- Recent Test History -->
+    <div style="background:var(--card);border:1.5px solid var(--border);border-radius:16px;padding:18px;margin-bottom:16px;">
+      <div style="font-size:14px;font-weight:900;color:var(--text);margin-bottom:12px;">📝 Recent Tests</div>
+      <div id="pf-history"></div>
+    </div>
+
+    <!-- Quick links -->
+    <div style="display:grid;grid-template-columns:1fr 1fr;gap:10px;">
+      <button onclick="goProgress()" style="background:var(--surface);border:1.5px solid var(--border);border-radius:14px;padding:14px;font-size:13px;font-weight:800;cursor:pointer;font-family:inherit;color:var(--text);">📊 Full Progress</button>
+      <button onclick="goExams('')" style="background:var(--primary);border:none;border-radius:14px;padding:14px;font-size:13px;font-weight:800;cursor:pointer;font-family:inherit;color:#fff;">📝 Start Exam</button>
+    </div>
+
+  </div>
+  <footer>
+  <div class="footer-inner">
+    <div class="footer-brand">Anil <span>EduTech</span></div>
+    <div class="footer-tagline">Free Online Mock Tests</div>
+    <div class="footer-links">
+      <span class="footer-link" onclick="goHome()">🏠 Home</span>
+      <span class="footer-link" onclick="goExams()">📝 Exams</span>
+      <span class="footer-link" onclick="goProgress()">📊 Progress</span>
+      <span class="footer-link" onclick="openYT()">▶️ YouTube</span>
     </div>
     <div class="footer-divider"></div>
     <div class="footer-copy">Made with ❤️ by <strong>Anil EduTech</strong> &nbsp;·&nbsp; © 2026</div>
@@ -5999,7 +6122,11 @@ html {
     <canvas id="cert-canvas" width="680" height="480"></canvas>
     <div class="cert-actions">
       <button class="btn-primary" onclick="downloadCert()">⬇️ Download Certificate</button>
+      <button class="btn-nav" id="cert-email-btn" onclick="sendCertificateEmail()" style="background:linear-gradient(135deg,#1A73E8,#4F7CFF);color:#fff;border:none;">📧 Email Certificate</button>
       <button class="btn-nav" onclick="document.getElementById('cert-overlay').classList.remove('show')">✕ Close</button>
+    </div>
+    <div style="text-align:center;font-size:11.5px;color:rgba(255,255,255,.5);margin-top:8px;font-weight:600;">
+      Certificate మీ email కి automatically పంపబడుతుంది (50%+ score అయితే)
     </div>
   </div>
 </div>
@@ -6007,8 +6134,14 @@ html {
 <!-- PROGRESS DASHBOARD PAGE -->
 <div id="page-progress" class="page">
   <div class="prog-header">
-    <h2>📊 My Progress</h2>
+    <h2>📊 My Progress Dashboard</h2>
     <p id="prog-user-label">మీ exam history మరియు performance ఇక్కడ చూడవచ్చు</p>
+    <div style="display:flex;gap:8px;flex-wrap:wrap;justify-content:center;margin-top:14px;" id="prog-tabs">
+      <button class="prog-tab active" data-tab="overview" onclick="switchProgTab('overview',this)">📊 Overview</button>
+      <button class="prog-tab" data-tab="charts" onclick="switchProgTab('charts',this)">📈 Score Trend</button>
+      <button class="prog-tab" data-tab="subjects" onclick="switchProgTab('subjects',this)">🎯 Subjects</button>
+      <button class="prog-tab" data-tab="history" onclick="switchProgTab('history',this)">🕐 History</button>
+    </div>
   </div>
   <div class="prog-body">
     <div id="prog-content"></div>
@@ -7607,6 +7740,81 @@ async function sbDelete(table, filter) {
   } catch(e) { _sbFails++; if (_sbFails >= 2) { _sbDead = true; setTimeout(function(){ _sbDead = false; _sbFails = 0; }, 5*60*1000); } return false; }
 }
 
+// ── SUPABASE RESULTS / USER-DATA HELPERS ──
+
+async function sbSaveResult(scoreObj) {
+  try {
+    await fetch(`${SB_URL}/rest/v1/ae_results`, {
+      method: 'POST',
+      headers: { ...SB_HEADERS, 'Prefer': 'return=minimal' },
+      body: JSON.stringify({
+        user_name:  scoreObj.name,
+        user_gmail: scoreObj.gmail || '',
+        exam_id:    scoreObj.examId || null,
+        exam_name:  scoreObj.examName || '',
+        exam_cat:   scoreObj.examCat || '',
+        correct:    scoreObj.correct,
+        wrong:      scoreObj.wrong,
+        skip:       scoreObj.skip,
+        total:      scoreObj.total,
+        pct:        scoreObj.pct,
+        score:      scoreObj.score ?? scoreObj.correct,
+        max_score:  scoreObj.maxScore ?? scoreObj.total,
+        answers:    scoreObj.answers || {},
+        ts:         scoreObj.ts || Date.now()
+      })
+    });
+  } catch(e) {}
+}
+
+async function sbLoadResults(limit = 200) {
+  try {
+    const r = await fetch(`${SB_URL}/rest/v1/ae_results?order=pct.desc,correct.desc&limit=${limit}`, { headers: SB_HEADERS });
+    if (!r.ok) return [];
+    const data = await r.json();
+    return data.map(d => ({
+      name: d.user_name, gmail: d.user_gmail,
+      examName: d.exam_name, examId: d.exam_id, examCat: d.exam_cat,
+      correct: d.correct, wrong: d.wrong, skip: d.skip,
+      total: d.total, pct: d.pct, score: d.score, maxScore: d.max_score,
+      answers: d.answers || {}, ts: d.ts,
+      date: d.created_at ? new Date(d.created_at).toLocaleDateString('te-IN',{day:'2-digit',month:'short',year:'numeric'}) : ''
+    }));
+  } catch(e) { return []; }
+}
+
+async function sbSaveUserData(gmail, dataObj) {
+  if (!gmail) return;
+  try {
+    await fetch(`${SB_URL}/rest/v1/ae_user_data`, {
+      method: 'POST',
+      headers: { ...SB_HEADERS, 'Prefer': 'resolution=merge-duplicates,return=minimal' },
+      body: JSON.stringify({
+        gmail,
+        bookmarks:   dataObj.bookmarks   ?? [],
+        badges:      dataObj.badges      ?? [],
+        daily_done:  dataObj.daily_done  ?? [],
+        daily_count: dataObj.daily_count ?? 0,
+        updated_at:  new Date().toISOString()
+      })
+    });
+  } catch(e) {}
+}
+
+async function sbLoadUserData(gmail) {
+  if (!gmail) return null;
+  try {
+    const r = await fetch(`${SB_URL}/rest/v1/ae_user_data?gmail=eq.${encodeURIComponent(gmail)}&limit=1`, { headers: SB_HEADERS });
+    if (!r.ok) return null;
+    const data = await r.json();
+    return data[0] || null;
+  } catch(e) { return null; }
+}
+
+async function sbClearResults() {
+  try { await fetch(`${SB_URL}/rest/v1/ae_results`, { method: 'DELETE', headers: SB_HEADERS }); } catch(e) {}
+}
+
 // ── SUPABASE EXAMS/QUESTIONS TABLE HELPERS ──
 
 async function sbInsert(table, data) {
@@ -8235,6 +8443,157 @@ function downloadCert() {
   toast('✅ Certificate download అయింది!', 'success');
 }
 
+// ── Send Certificate Email to Student ──
+async function sendCertificateEmail() {
+  const u = getCurrentUser();
+  const r = exam._result;
+  const cfg = getEmailJSConfig();
+
+  if (!u?.gmail) {
+    toast('❌ Email పంపడానికి login చేయాలి!', 'warn');
+    return;
+  }
+  if (!cfg?.serviceId) {
+    toast('❌ EmailJS config set చేయండి!', 'warn');
+    return;
+  }
+  if (!r || r.pct < 50) {
+    toast('❌ Certificate కోసం కనీసం 50% కావాలి!', 'warn');
+    return;
+  }
+
+  const btn = document.getElementById('cert-email-btn');
+  if (btn) { btn.disabled = true; btn.textContent = '📨 Sending...'; }
+
+  const examName  = exam.current?.name || 'Online Exam';
+  const rankLabel = r.pct>=90?'S — Outstanding':r.pct>=75?'A — Excellent':r.pct>=60?'B — Good':'C — Passed';
+  const trophy    = r.pct>=90?'🏆':r.pct>=75?'🥇':r.pct>=60?'🥈':'🥉';
+  const dateStr   = new Date().toLocaleDateString('en-IN', {day:'2-digit',month:'long',year:'numeric'});
+
+  // Generate certificate as base64 image
+  // Re-draw certificate fresh to ensure latest data
+  const canvas = document.getElementById('cert-canvas');
+  const certBase64 = canvas.toDataURL('image/png');
+
+  // Build beautiful HTML email body
+  const htmlBody = `
+<!DOCTYPE html>
+<html>
+<head><meta charset="UTF-8"></head>
+<body style="margin:0;padding:0;background:#f0f4ff;font-family:Arial,sans-serif;">
+  <div style="max-width:600px;margin:0 auto;background:#fff;border-radius:16px;overflow:hidden;box-shadow:0 4px 24px rgba(0,0,0,.1);">
+
+    <!-- Header -->
+    <div style="background:linear-gradient(135deg,#0F1A35,#1A2E6B);padding:32px 24px;text-align:center;">
+      <div style="font-size:40px;margin-bottom:8px;">${trophy}</div>
+      <div style="color:#F5B731;font-size:22px;font-weight:900;letter-spacing:1px;">ANIL EDUTECH</div>
+      <div style="color:rgba(255,255,255,.7);font-size:13px;margin-top:4px;">Certificate of Achievement</div>
+    </div>
+
+    <!-- Body -->
+    <div style="padding:32px 28px;">
+      <p style="font-size:15px;color:#333;margin:0 0 8px;">నమస్కారం <strong>${escHtml(u.name)}</strong>,</p>
+      <p style="font-size:14px;color:#555;line-height:1.7;margin:0 0 24px;">
+        మీరు <strong>${escHtml(examName)}</strong> పరీక్షను విజయవంతంగా పూర్తి చేశారు! 🎉<br>
+        మీ అద్భుతమైన performance కి అభినందనలు!
+      </p>
+
+      <!-- Score Card -->
+      <div style="background:linear-gradient(135deg,#f0f4ff,#e8f0fe);border:2px solid #c7d7fc;border-radius:14px;padding:24px;margin-bottom:24px;text-align:center;">
+        <div style="font-size:42px;font-weight:900;color:#1A73E8;margin-bottom:4px;">${r.pct}%</div>
+        <div style="font-size:14px;color:#555;margin-bottom:16px;">${r.correct} / ${r.total} Correct Answers</div>
+        <div style="display:flex;justify-content:center;gap:20px;flex-wrap:wrap;">
+          <div style="text-align:center;">
+            <div style="font-size:24px;font-weight:800;color:#10B981;">${r.correct}</div>
+            <div style="font-size:11px;color:#777;font-weight:700;">✅ CORRECT</div>
+          </div>
+          <div style="text-align:center;">
+            <div style="font-size:24px;font-weight:800;color:#EF4444;">${r.wrong||0}</div>
+            <div style="font-size:11px;color:#777;font-weight:700;">❌ WRONG</div>
+          </div>
+          <div style="text-align:center;">
+            <div style="font-size:24px;font-weight:800;color:#F59E0B;">${r.skip||0}</div>
+            <div style="font-size:11px;color:#777;font-weight:700;">⏭ SKIPPED</div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Rank Badge -->
+      <div style="background:linear-gradient(135deg,#F5B731,#E8640A);border-radius:12px;padding:14px;text-align:center;margin-bottom:24px;">
+        <div style="color:#fff;font-size:16px;font-weight:900;">🏅 Rank: ${rankLabel}</div>
+        <div style="color:rgba(255,255,255,.85);font-size:12px;margin-top:4px;">Date: ${dateStr}</div>
+      </div>
+
+      <!-- Motivational Message -->
+      <div style="background:#f8f9ff;border-left:4px solid #1A73E8;padding:14px 18px;border-radius:0 10px 10px 0;margin-bottom:24px;">
+        <p style="margin:0;font-size:13px;color:#444;line-height:1.6;">
+          ${r.pct>=90
+            ? '🌟 అద్భుతం! Outstanding performance! మీరు చాలా hard work చేశారు. Keep it up!'
+            : r.pct>=75
+            ? '🥇 Excellent! మీ preparation చాలా బాగుంది. ఇంకా practice చేసి top రాండి!'
+            : r.pct>=60
+            ? '👍 Good performance! కొంచెం ఇంకా focus చేస్తే excellent score వస్తుంది!'
+            : '💪 Good start! Regular practice తో మీరు definitely improve అవుతారు!'}
+        </p>
+      </div>
+
+      <!-- CTA Button -->
+      <div style="text-align:center;margin-bottom:24px;">
+        <a href="https://aniledutech.in" style="display:inline-block;background:linear-gradient(135deg,#1A73E8,#4F7CFF);color:#fff;text-decoration:none;padding:14px 32px;border-radius:12px;font-weight:800;font-size:15px;">
+          📝 More Exams చూడండి →
+        </a>
+      </div>
+
+      <p style="font-size:12px;color:#888;text-align:center;margin:0;">
+        Certificate attached below గా పంపబడింది. Download చేసి share చేయండి! 📥
+      </p>
+    </div>
+
+    <!-- Footer -->
+    <div style="background:#f8f9ff;border-top:2px solid #eee;padding:16px 24px;text-align:center;">
+      <div style="font-size:12px;color:#aaa;">© 2026 Anil EduTech · Free Mock Tests for TSPSC, SSC, Banking</div>
+      <div style="font-size:12px;color:#aaa;margin-top:4px;">
+        <a href="https://youtube.com/@AnilEduTechYT" style="color:#1A73E8;text-decoration:none;">▶ YouTube Subscribe</a>
+      </div>
+    </div>
+  </div>
+</body>
+</html>`;
+
+  // Plain text fallback
+  const plainText = `నమస్కారం ${u.name},
+
+మీరు "${examName}" exam పూర్తి చేశారు!
+
+📊 Score: ${r.pct}%
+✅ Correct: ${r.correct}
+❌ Wrong: ${r.wrong||0}
+⏭ Skipped: ${r.skip||0}
+🏅 Rank: ${rankLabel}
+📅 Date: ${dateStr}
+
+More exams: https://aniledutech.in
+
+— Anil EduTech Team`;
+
+  try {
+    await emailjs.send(cfg.serviceId, cfg.templateId, {
+      to_email:  u.gmail,
+      subject:   `🏅 Certificate — ${examName} | ${r.pct}% Score | ${rankLabel}`,
+      message:   plainText,
+      html_message: htmlBody,
+      from_name: 'Anil EduTech'
+    }, cfg.publicKey);
+
+    if (btn) { btn.textContent = '✅ Email Sent!'; btn.style.background='linear-gradient(135deg,#10B981,#059669)'; }
+    toast(`✅ Certificate email ${u.gmail} కి పంపబడింది!`, 'success');
+  } catch(e) {
+    if (btn) { btn.disabled = false; btn.textContent = '📧 Email Certificate'; }
+    toast('❌ Email failed: ' + (e.text || e.message || 'Error'), 'error');
+    console.warn('Certificate email error:', e);
+  }
+}
+
 document.getElementById('cert-overlay').addEventListener('click', function(e){
   if(e.target===this) this.classList.remove('show');
 });
@@ -8572,11 +8931,23 @@ function renderProgressDashboard() {
   }
 
   labelEl.textContent = u.name + ' — మీ exam performance';
+  contentEl.innerHTML = `<div class="prog-empty"><span class="prog-empty-icon">⏳</span>Loading your results...</div>`;
 
-  // Load scores for this user
-  const allScores = JSON.parse(_ls.getItem('ae_scores') || '[]');
-  const myScores  = allScores.filter(s => s.gmail === u.gmail || s.name === u.name);
+  sbLoadResults(500).then(sbScores => {
+    const localAll = JSON.parse(_ls.getItem('ae_scores') || '[]');
+    const sbMy = sbScores.filter(s => s.gmail === u.gmail || s.name === u.name);
+    const localMy = localAll.filter(s => s.gmail === u.gmail || s.name === u.name);
+    const myScores = [...sbMy];
+    localMy.forEach(ls => { if (!myScores.find(m => m.ts == ls.ts)) myScores.push(ls); });
+    myScores.sort((a,b) => b.ts - a.ts);
+    _renderProgressContent(u, myScores, contentEl);
+  }).catch(() => {
+    const all = JSON.parse(_ls.getItem('ae_scores') || '[]');
+    _renderProgressContent(u, all.filter(s => s.gmail === u.gmail || s.name === u.name), contentEl);
+  });
+}
 
+function _renderProgressContent(u, myScores, contentEl) {
   if (!myScores.length) {
     contentEl.innerHTML = `<div class="prog-empty">
       <span class="prog-empty-icon">📝</span>
@@ -8587,10 +8958,27 @@ function renderProgressDashboard() {
     return;
   }
 
-  const total  = myScores.length;
-  const avgPct = Math.round(myScores.reduce((s,x)=>s+x.pct,0)/total);
-  const best   = Math.max(...myScores.map(s=>s.pct));
-  const passed = myScores.filter(s=>s.pct>=50).length;
+  const total   = myScores.length;
+  const avgPct  = Math.round(myScores.reduce((s,x)=>s+x.pct,0)/total);
+  const best    = Math.max(...myScores.map(s=>s.pct));
+  const passed  = myScores.filter(s=>s.pct>=50).length;
+  const myScoresWithTs = myScores.filter(s=>s.ts);
+  const streak  = _getStreakData(myScoresWithTs);
+  const subjects= _getSubjectStats(myScores);
+
+  // Improvement: compare last 5 vs first 5
+  const sorted = [...myScoresWithTs].sort((a,b)=>a.ts-b.ts);
+  let improvementHtml = '';
+  if (sorted.length >= 6) {
+    const early = sorted.slice(0,3).reduce((a,b)=>a+b.pct,0)/3;
+    const recent= sorted.slice(-3).reduce((a,b)=>a+b.pct,0)/3;
+    const diff  = Math.round(recent - early);
+    const cls   = diff >= 0 ? 'improve-up' : 'improve-down';
+    const icon  = diff >= 0 ? '📈' : '📉';
+    improvementHtml = `<div style="text-align:center;padding:10px;background:var(--card);border:2px solid var(--border);border-radius:12px;margin-bottom:14px;font-size:13px;">
+      ${icon} మీ score <span class="${cls}">${diff >= 0?'+':''}${diff}%</span> ${diff>=0?'improve అయింది':'తగ్గింది'} <span style="color:var(--text3);font-size:11px;">(first 3 vs last 3 exams)</span>
+    </div>`;
+  }
 
   // Exam-wise averages
   const examMap = {};
@@ -8598,117 +8986,336 @@ function renderProgressDashboard() {
     if (!examMap[s.examName]) examMap[s.examName] = [];
     examMap[s.examName].push(s.pct);
   });
+  const barColor = p => p>=75?'linear-gradient(90deg,#0A8C5C,#10C980)':p>=50?'linear-gradient(90deg,#E8640A,#F5B731)':'linear-gradient(90deg,#E53E3E,#FC8181)';
 
-  const barColor = p => p>=75?'linear-gradient(90deg,#0A8C5C,#10C980)':p>=50?'linear-gradient(90deg,#E8640A,#F5B731)':'linear-gradient(90deg,#E8640A,#F5B731)';
-
-  // Build chart data
-  const myScoresWithTs = myScores.filter(s => s.ts);
+  // Build initial chart data
   const { labels: wL, data: wD, counts: wC } = _buildChartData(myScoresWithTs, 'weekly');
-  const initSvg = _renderSvgChart(wL, wD, wC, 'weekly');
-
-  // Streak & Subject data
-  const streak   = _getStreakData(myScoresWithTs);
-  const subjects  = _getSubjectStats(myScores);
 
   contentEl.innerHTML = `
-    <div class="prog-stats-grid">
-      <div class="prog-stat">
-        <div class="prog-stat-num" style="color:var(--primary)">${total}</div>
-        <div class="prog-stat-label">📝 Exams Taken</div>
-      </div>
-      <div class="prog-stat">
-        <div class="prog-stat-num" style="color:var(--teal)">${avgPct}%</div>
-        <div class="prog-stat-label">📊 Average Score</div>
-      </div>
-      <div class="prog-stat">
-        <div class="prog-stat-num" style="color:var(--amber)">${best}%</div>
-        <div class="prog-stat-label">🏆 Best Score</div>
-      </div>
-      <div class="prog-stat">
-        <div class="prog-stat-num" style="color:var(--teal)">${passed}</div>
-        <div class="prog-stat-label">✅ Passed (≥50%)</div>
-      </div>
-    </div>
-
-    ${_renderStreakCard(streak)}
-
-    <!-- ── CHART SECTION ── -->
-    <div class="prog-section" style="background:var(--card);border:2px solid var(--border);border-radius:var(--radius);padding:20px;margin-bottom:18px;">
-      <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:14px;flex-wrap:wrap;gap:10px;">
-        <div class="prog-section-title" style="margin:0;">📈 Score Progress Chart</div>
-        <div style="display:flex;gap:6px;">
-          <button class="chart-tab active" data-mode="weekly" onclick="switchChartMode('weekly')"
-            style="padding:5px 14px;border-radius:20px;border:1.5px solid var(--border);background:var(--primary);color:#fff;font-family:inherit;font-size:12px;font-weight:800;cursor:pointer;">
-            📅 Weekly
-          </button>
-          <button class="chart-tab" data-mode="monthly" onclick="switchChartMode('monthly')"
-            style="padding:5px 14px;border-radius:20px;border:1.5px solid var(--border);background:var(--bg);color:var(--text2);font-family:inherit;font-size:12px;font-weight:700;cursor:pointer;">
-            🗓 Monthly
-          </button>
+    <!-- ── OVERVIEW PANEL ── -->
+    <div class="prog-panel active" id="prog-panel-overview">
+      <div class="prog-stats-grid">
+        <div class="prog-stat">
+          <div class="prog-stat-num" style="color:var(--primary)">${total}</div>
+          <div class="prog-stat-label">📝 Exams Taken</div>
+        </div>
+        <div class="prog-stat">
+          <div class="prog-stat-num" style="color:var(--teal)">${avgPct}%</div>
+          <div class="prog-stat-label">📊 Average Score</div>
+        </div>
+        <div class="prog-stat">
+          <div class="prog-stat-num" style="color:var(--amber)">${best}%</div>
+          <div class="prog-stat-label">🏆 Best Score</div>
+        </div>
+        <div class="prog-stat">
+          <div class="prog-stat-num" style="color:var(--teal)">${passed}</div>
+          <div class="prog-stat-label">✅ Passed (≥50%)</div>
         </div>
       </div>
-      <div id="prog-chart-svg">${initSvg}</div>
-      <div id="prog-chart-summary" style="text-align:center;font-size:12.5px;color:var(--text2);font-weight:700;margin-top:10px;padding-top:10px;border-top:1px solid var(--border);"></div>
+      ${improvementHtml}
+      ${_renderStreakCard(streak)}
+
+      <!-- Mini subject overview -->
+      <div class="prog-section" style="background:var(--card);border:2px solid var(--border);border-radius:var(--radius);padding:18px;margin-bottom:18px;">
+        <div class="prog-section-title" style="margin-bottom:14px;">🎯 Quick Subject Snapshot</div>
+        ${subjects.slice(0,4).map(s => {
+          const c = s.avg>=75?{bar:'#00B894',text:'#00B894'}:s.avg>=50?{bar:'#FF6B35',text:'#FF6B35'}:{bar:'#E53E3E',text:'#E53E3E'};
+          return `<div style="margin-bottom:10px;">
+            <div style="display:flex;justify-content:space-between;margin-bottom:4px;font-size:12.5px;font-weight:800;color:var(--text)">
+              <span>${s.cat}</span><span style="color:${c.text}">${s.avg}%</span>
+            </div>
+            <div style="height:7px;background:var(--border);border-radius:4px;overflow:hidden">
+              <div style="width:${s.avg}%;height:100%;background:${c.bar};border-radius:4px;transition:width 1s"></div>
+            </div>
+          </div>`;
+        }).join('')}
+        <button onclick="switchProgTab('subjects',document.querySelector('[data-tab=subjects]'))" style="margin-top:8px;font-size:12px;font-weight:800;color:var(--primary);background:none;border:none;cursor:pointer;padding:0;">🎯 Full Subject Analysis →</button>
+      </div>
+
+      <!-- Recent 5 exams -->
+      <div class="prog-section" style="background:var(--card);border:2px solid var(--border);border-radius:var(--radius);padding:18px;">
+        <div class="prog-section-title" style="margin-bottom:12px;">🕐 Recent Exams</div>
+        ${myScores.slice(0,5).map(s => {
+          const col = s.pct>=75?'#0A8C5C':s.pct>=50?'#1A73E8':'#E53E3E';
+          const bg  = s.pct>=75?'rgba(10,140,92,.12)':s.pct>=50?'rgba(26,115,232,.1)':'rgba(229,62,62,.1)';
+          const ico = s.pct>=90?'🏆':s.pct>=75?'🥇':s.pct>=60?'🥈':s.pct>=50?'💪':'📚';
+          return `<div class="prog-history-card">
+            <div class="prog-hist-rank" style="background:${bg};color:${col}">${ico}</div>
+            <div class="prog-hist-info">
+              <div class="prog-hist-name">${escHtml(s.examName||'Exam')}</div>
+              <div class="prog-hist-meta">✅ ${s.correct}/${s.total} &nbsp;·&nbsp; ${s.date||''}</div>
+            </div>
+            <div class="prog-hist-pct" style="color:${col}">${s.pct}%</div>
+          </div>`;
+        }).join('')}
+        <button onclick="switchProgTab('history',document.querySelector('[data-tab=history]'))" style="margin-top:8px;font-size:12px;font-weight:800;color:var(--primary);background:none;border:none;cursor:pointer;padding:0;">🕐 Full History చూడండి →</button>
+      </div>
     </div>
 
-    ${_renderSubjectWeak(subjects)}
-
-    <div class="prog-section">
-      <div class="prog-section-title">📈 Exam-wise Average Performance</div>
-      ${Object.entries(examMap).map(([name, pcts]) => {
-        const avg = Math.round(pcts.reduce((a,b)=>a+b,0)/pcts.length);
-        return `<div class="prog-bar-wrap">
-          <div class="prog-bar-label"><span>${escHtml(name)}</span><span>${avg}%</span></div>
-          <div class="prog-bar-track"><div class="prog-bar-fill" style="width:${avg}%;background:${barColor(avg)}"></div></div>
-        </div>`;
-      }).join('')}
-    </div>
-
-    <div class="prog-section">
-      <div class="prog-section-title">🕐 Recent Exam History</div>
-      ${[...myScores].reverse().slice(0,10).map(s => {
-        const col = s.pct>=75?'#0A8C5C':s.pct>=50?'#1A73E8':'#E53E3E';
-        const bg  = s.pct>=75?'rgba(10,140,92,.12)':s.pct>=50?'rgba(26,115,232,.1)':'rgba(229,62,62,.1)';
-        const ico = s.pct>=90?'🏆':s.pct>=75?'🥇':s.pct>=60?'🥈':s.pct>=50?'💪':'📚';
-        return `<div class="prog-history-card">
-          <div class="prog-hist-rank" style="background:${bg};color:${col}">${ico}</div>
-          <div class="prog-hist-info">
-            <div class="prog-hist-name">${escHtml(s.examName||'Exam')}</div>
-            <div class="prog-hist-meta">✅ ${s.correct}/${s.total} correct &nbsp;·&nbsp; 📅 ${s.date||''}</div>
+    <!-- ── SCORE TREND CHART PANEL ── -->
+    <div class="prog-panel" id="prog-panel-charts">
+      <div class="prog-section" style="background:var(--card);border:2px solid var(--border);border-radius:var(--radius);padding:20px;margin-bottom:18px;">
+        <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:14px;flex-wrap:wrap;gap:10px;">
+          <div class="prog-section-title" style="margin:0;">📈 Score Progress Over Time</div>
+          <div style="display:flex;gap:6px;">
+            <button class="chart-tab active" data-mode="weekly" onclick="switchChartMode('weekly')"
+              style="padding:5px 14px;border-radius:20px;border:1.5px solid var(--border);background:var(--primary);color:#fff;font-family:inherit;font-size:12px;font-weight:800;cursor:pointer;">
+              📅 Weekly
+            </button>
+            <button class="chart-tab" data-mode="monthly" onclick="switchChartMode('monthly')"
+              style="padding:5px 14px;border-radius:20px;border:1.5px solid var(--border);background:var(--bg);color:var(--text2);font-family:inherit;font-size:12px;font-weight:700;cursor:pointer;">
+              🗓 Monthly
+            </button>
           </div>
-          <div class="prog-hist-pct" style="color:${col}">${s.pct}%</div>
-        </div>`;
-      }).join('')}
+        </div>
+        <div style="position:relative;height:260px;">
+          <canvas id="prog-chart-canvas"></canvas>
+        </div>
+        <div id="prog-chart-summary" style="text-align:center;font-size:12.5px;color:var(--text2);font-weight:700;margin-top:12px;padding-top:10px;border-top:1px solid var(--border);"></div>
+      </div>
+
+      <!-- Exam-wise bar chart -->
+      <div class="prog-section" style="background:var(--card);border:2px solid var(--border);border-radius:var(--radius);padding:20px;margin-bottom:18px;">
+        <div class="prog-section-title" style="margin-bottom:14px;">📊 Exam-wise Average</div>
+        <div style="position:relative;height:${Math.max(180, Object.keys(examMap).length * 38)}px;">
+          <canvas id="prog-exambar-canvas"></canvas>
+        </div>
+      </div>
+
+      <!-- old SVG fallback hidden -->
+      <div id="prog-chart-svg" style="display:none"></div>
+    </div>
+
+    <!-- ── SUBJECTS PANEL ── -->
+    <div class="prog-panel" id="prog-panel-subjects">
+      ${_renderSubjectWeak(subjects)}
+      ${subjects.length && subjects.filter(s=>s.avg<50).length ? `
+      <div class="weak-tip">
+        ⚠️ <strong>Weak Areas:</strong> ${subjects.filter(s=>s.avg<50).map(s=>s.cat).join(', ')} — ఈ subjects లో ఎక్కువ practice చేయండి!
+      </div>` : ''}
+      ${subjects.filter(s=>s.avg>=75).length ? `
+      <div class="strong-tip" style="margin-top:12px;">
+        💪 <strong>Strong Areas:</strong> ${subjects.filter(s=>s.avg>=75).map(s=>s.cat).join(', ')} — మీరు ఇందులో బాగా ఉన్నారు! Keep it up!
+      </div>` : ''}
+
+      <!-- Donut chart for subject split -->
+      ${subjects.length >= 2 ? `
+      <div class="prog-section" style="background:var(--card);border:2px solid var(--border);border-radius:var(--radius);padding:20px;margin-top:18px;">
+        <div class="prog-section-title" style="margin-bottom:14px;">🥧 Subject Distribution</div>
+        <div style="position:relative;height:240px;max-width:300px;margin:0 auto;">
+          <canvas id="prog-donut-canvas"></canvas>
+        </div>
+      </div>` : ''}
+    </div>
+
+    <!-- ── HISTORY PANEL ── -->
+    <div class="prog-panel" id="prog-panel-history">
+      <div class="prog-section" style="background:var(--card);border:2px solid var(--border);border-radius:var(--radius);padding:18px;">
+        <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:14px;flex-wrap:wrap;gap:8px;">
+          <div class="prog-section-title" style="margin:0;">🕐 Full Exam History (${total} exams)</div>
+          <div style="font-size:12px;color:var(--text3);font-weight:600;">Latest first</div>
+        </div>
+        ${myScores.map((s,i) => {
+          const col = s.pct>=75?'#0A8C5C':s.pct>=50?'#1A73E8':'#E53E3E';
+          const bg  = s.pct>=75?'rgba(10,140,92,.12)':s.pct>=50?'rgba(26,115,232,.1)':'rgba(229,62,62,.1)';
+          const ico = s.pct>=90?'🏆':s.pct>=75?'🥇':s.pct>=60?'🥈':s.pct>=50?'💪':'📚';
+          return `<div class="prog-history-card">
+            <div class="prog-hist-rank" style="background:${bg};color:${col};min-width:32px;text-align:center">${ico}</div>
+            <div class="prog-hist-info">
+              <div class="prog-hist-name">${escHtml(s.examName||'Exam')}</div>
+              <div class="prog-hist-meta">✅ ${s.correct||0}/${s.total||0} correct &nbsp;·&nbsp; ❌ ${s.wrong||0} wrong &nbsp;·&nbsp; 📅 ${s.date||''}</div>
+            </div>
+            <div class="prog-hist-pct" style="color:${col};font-size:17px;font-weight:900">${s.pct}%</div>
+          </div>`;
+        }).join('')}
+      </div>
     </div>
   `;
 
-  // Fill streak calendar dots
+  // Fill streak calendar
   _fillStreakCalendar(myScoresWithTs);
 
-  // Inject "Detailed Analytics" button
+  // ── Draw Chart.js line chart ──
+  _drawProgressLineChart(myScoresWithTs, 'weekly');
+
+  // ── Draw exam-wise horizontal bar chart ──
+  _drawExamBarChart(examMap);
+
+  // ── Draw subject donut ──
+  if (subjects.length >= 2) _drawSubjectDonut(subjects);
+
+  // ── Detailed Analytics button ──
   const btnWrap = document.createElement('div');
   btnWrap.style = 'text-align:center;margin:12px 0 4px';
   btnWrap.innerHTML = '<button onclick="openDetailedAnalytics(\'' + u.gmail + '\')" style="background:linear-gradient(135deg,#1565C0,#1E88E5);color:#fff;border:none;border-radius:12px;padding:10px 22px;font-family:inherit;font-size:13px;font-weight:800;cursor:pointer;box-shadow:0 4px 16px rgba(21,101,192,.3)">🔍 Detailed Question Analytics చూడండి</button>';
   contentEl.appendChild(btnWrap);
 
-  // Render summary
-  _refreshChart();
-
-  // Style active chart tab toggle behaviour
+  // Chart tab toggle
   document.querySelectorAll('.chart-tab').forEach(t => {
     t.addEventListener('click', function() {
-      document.querySelectorAll('.chart-tab').forEach(x => {
-        x.style.background = 'var(--bg)'; x.style.color = 'var(--text2)';
-      });
-      this.style.background = 'var(--primary)'; this.style.color = '#fff';
+      document.querySelectorAll('.chart-tab').forEach(x => { x.style.background='var(--bg)'; x.style.color='var(--text2)'; });
+      this.style.background='var(--primary)'; this.style.color='#fff';
     });
   });
 }
 
 
-/* ════════════════════════════════════════
-   👥 SUBSCRIBER / LOGIN SYSTEM
-════════════════════════════════════════ */
+/* ─── PROGRESS DASHBOARD: Chart.js helpers ─── */
+let _progLineChart = null, _progBarChart = null, _progDonutChart = null;
+
+function _destroyCharts() {
+  if (_progLineChart)  { _progLineChart.destroy();  _progLineChart  = null; }
+  if (_progBarChart)   { _progBarChart.destroy();   _progBarChart   = null; }
+  if (_progDonutChart) { _progDonutChart.destroy(); _progDonutChart = null; }
+}
+
+function _isDark() { return document.documentElement.dataset.theme === 'dark'; }
+
+function _drawProgressLineChart(myScoresWithTs, mode) {
+  const canvas = document.getElementById('prog-chart-canvas');
+  if (!canvas) return;
+  if (_progLineChart) { _progLineChart.destroy(); _progLineChart = null; }
+
+  const { labels, data, counts } = _buildChartData(myScoresWithTs, mode);
+  const textColor = _isDark() ? '#94a3b8' : '#64748b';
+  const gridColor = _isDark() ? 'rgba(255,255,255,.07)' : 'rgba(0,0,0,.07)';
+
+  _progLineChart = new Chart(canvas, {
+    type: 'line',
+    data: {
+      labels,
+      datasets: [{
+        label: 'Score %',
+        data,
+        borderColor: '#1A73E8',
+        backgroundColor: 'rgba(26,115,232,.12)',
+        pointBackgroundColor: data.map(v => v===null?'transparent':v>=75?'#00B894':v>=50?'#FF6B35':'#E53E3E'),
+        pointRadius: 5, pointHoverRadius: 7,
+        fill: true, tension: 0.35, spanGaps: false,
+        borderWidth: 2.5
+      }]
+    },
+    options: {
+      responsive: true, maintainAspectRatio: false,
+      plugins: {
+        legend: { display: false },
+        tooltip: {
+          callbacks: {
+            label: (ctx) => {
+              const v = ctx.parsed.y;
+              const c = counts[ctx.dataIndex];
+              return v !== null ? `Score: ${v}% (${c} exam${c>1?'s':''})` : 'No data';
+            }
+          }
+        }
+      },
+      scales: {
+        y: { min:0, max:100, ticks:{ color:textColor, callback:v=>v+'%' }, grid:{ color:gridColor } },
+        x: { ticks:{ color:textColor }, grid:{ color:gridColor } }
+      }
+    }
+  });
+
+  // Update summary
+  const valid = data.filter(v=>v!==null);
+  const summEl = document.getElementById('prog-chart-summary');
+  if (summEl && valid.length) {
+    const avg = Math.round(valid.reduce((a,b)=>a+b,0)/valid.length);
+    const trend = valid.length>=2 ? valid[valid.length-1]-valid[0] : 0;
+    const tStr = trend>0?`<span style="color:#00B894">📈 +${trend}% improvement</span>`:trend<0?`<span style="color:#E53E3E">📉 ${trend}% decline</span>`:'➡️ Stable';
+    summEl.innerHTML = `Avg: <strong>${avg}%</strong> &nbsp;·&nbsp; ${tStr}`;
+  }
+}
+
+function _drawExamBarChart(examMap) {
+  const canvas = document.getElementById('prog-exambar-canvas');
+  if (!canvas) return;
+  if (_progBarChart) { _progBarChart.destroy(); _progBarChart = null; }
+
+  const entries = Object.entries(examMap).map(([name, pcts]) => ({
+    name: name.length > 22 ? name.slice(0,20)+'…' : name,
+    avg: Math.round(pcts.reduce((a,b)=>a+b,0)/pcts.length)
+  })).sort((a,b)=>b.avg-a.avg);
+
+  const textColor = _isDark() ? '#94a3b8' : '#64748b';
+  const gridColor = _isDark() ? 'rgba(255,255,255,.07)' : 'rgba(0,0,0,.07)';
+
+  _progBarChart = new Chart(canvas, {
+    type: 'bar',
+    data: {
+      labels: entries.map(e=>e.name),
+      datasets: [{
+        label: 'Avg Score %',
+        data: entries.map(e=>e.avg),
+        backgroundColor: entries.map(e=>e.avg>=75?'rgba(0,184,148,.75)':e.avg>=50?'rgba(255,107,53,.75)':'rgba(229,62,62,.75)'),
+        borderRadius: 6, borderSkipped: false
+      }]
+    },
+    options: {
+      indexAxis: 'y', responsive: true, maintainAspectRatio: false,
+      plugins: { legend:{ display:false }, tooltip:{ callbacks:{ label:ctx=>`${ctx.parsed.x}%` } } },
+      scales: {
+        x: { min:0, max:100, ticks:{ color:textColor, callback:v=>v+'%' }, grid:{ color:gridColor } },
+        y: { ticks:{ color:textColor } , grid:{ display:false } }
+      }
+    }
+  });
+}
+
+function _drawSubjectDonut(subjects) {
+  const canvas = document.getElementById('prog-donut-canvas');
+  if (!canvas) return;
+  if (_progDonutChart) { _progDonutChart.destroy(); _progDonutChart = null; }
+
+  const colors = ['#1A73E8','#00B894','#FF6B35','#A855F7','#E53E3E','#F59E0B'];
+  _progDonutChart = new Chart(canvas, {
+    type: 'doughnut',
+    data: {
+      labels: subjects.map(s=>s.cat),
+      datasets: [{
+        data: subjects.map(s=>s.count),
+        backgroundColor: subjects.map((_,i)=>colors[i%colors.length]),
+        borderWidth: 2, borderColor: _isDark()?'#1e293b':'#fff'
+      }]
+    },
+    options: {
+      responsive: true, maintainAspectRatio: false,
+      plugins: {
+        legend: { position:'bottom', labels:{ color: _isDark()?'#cbd5e1':'#475569', font:{ size:12, weight:'700' } } },
+        tooltip: { callbacks:{ label:ctx=>`${ctx.label}: ${ctx.parsed} exams` } }
+      }
+    }
+  });
+}
+
+/* ─── Tab switcher ─── */
+function switchProgTab(tabId, btn) {
+  document.querySelectorAll('.prog-tab').forEach(t => t.classList.remove('active'));
+  document.querySelectorAll('.prog-panel').forEach(p => p.classList.remove('active'));
+  if (btn) btn.classList.add('active');
+  const panel = document.getElementById('prog-panel-' + tabId);
+  if (panel) panel.classList.add('active');
+  // Re-draw charts when switching to chart tab (canvas size may have changed)
+  if (tabId === 'charts') {
+    const u = getCurrentUser();
+    if (u) {
+      const all = JSON.parse(_ls.getItem('ae_scores')||'[]');
+      const my  = all.filter(s=>s.gmail===u.gmail||s.name===u.name).filter(s=>s.ts);
+      _drawProgressLineChart(my, _chartMode);
+    }
+  }
+}
+
+/* ─── _refreshChart: now delegates to Chart.js ─── */
+function _refreshChart() {
+  const u = getCurrentUser();
+  if (!u) return;
+  const allScores = JSON.parse(_ls.getItem('ae_scores') || '[]');
+  const myScores = allScores.filter(s => (s.gmail === u.gmail || s.name === u.name) && s.ts);
+  _drawProgressLineChart(myScores, _chartMode);
+}
+
+/* ─── PROGRESS DASHBOARD: Chart.js helpers end ─── */
 
 // Subscriber DB keys
 const SUB_PENDING_KEY  = 'ae_sub_pending';
@@ -8775,8 +9382,17 @@ function getCurrentUser() {
 }
 function setCurrentUser(u) {
   if (u) {
-    u._loginTime = Date.now(); // for session expiry check
+    u._loginTime = Date.now();
     localStorage.setItem(SUB_SESSION_KEY, JSON.stringify(u));
+    if (u.gmail) {
+      sbLoadUserData(u.gmail).then(data => {
+        if (!data) return;
+        if (data.bookmarks?.length) _ls.setItem('ae_bookmarks', JSON.stringify(data.bookmarks));
+        if (data.badges?.length)    _ls.setItem('ae_badges_seen', JSON.stringify(data.badges));
+        if (data.daily_done?.length) _ls.setItem('ae_daily_done', JSON.stringify(data.daily_done));
+        if (data.daily_count > parseInt(_ls.getItem('ae_daily_done_count')||'0')) _ls.setItem('ae_daily_done_count', String(data.daily_count));
+      }).catch(()=>{});
+    }
   } else {
     localStorage.removeItem(SUB_SESSION_KEY);
   }
@@ -9129,7 +9745,8 @@ function doGoogleLogin() {
 
     // Save to ae_sub_approved for backward compat
     const approved = getSubApproved();
-    if (!approved.find(s => s.gmail === gmail)) {
+    const isNewUser = !approved.find(s => s.gmail === gmail);
+    if (isNewUser) {
       approved.push({ name, gmail, date: new Date().toLocaleDateString('te-IN'), sbUserId: userData.id });
       saveSubApproved(approved);
     }
@@ -9140,7 +9757,8 @@ function doGoogleLogin() {
     closeSubModal();
     filterExams();
     toast('🎉 Welcome ' + name + '!'+(user.isPremium?' 👑 Premium':''), 'success');
-    sendEmailNotification('login', { name, gmail });
+    // New user → register email to admin; existing → login email
+    sendEmailNotification(isNewUser ? 'register' : 'login', { name, gmail });
     _applyPendingReferral(user);
     if (_afterLogin) { _afterLogin(); _afterLogin = null; }
   }).catch(() => toast('Login error. Try again.', 'error'));
@@ -9587,6 +10205,7 @@ function goHome() {
   document.getElementById('nav-home').classList.add('active');
   updateStats();
   renderLeaderboard();
+  _startLbAutoRefresh();
 }
 
 /* ─── CATEGORY TOPICS DATA ─── */
@@ -9890,7 +10509,14 @@ const catPill   = { TSPSC:'pill-blue', SSC:'pill-orange', Banking:'pill-green', 
 function getBookmarks() {
   try { return JSON.parse(_ls.getItem('ae_bookmarks') || '[]'); } catch(e) { return []; }
 }
-function saveBookmarks(arr) { _ls.setItem('ae_bookmarks', JSON.stringify(arr)); }
+function saveBookmarks(arr) {
+  _ls.setItem('ae_bookmarks', JSON.stringify(arr));
+  const u = getCurrentUser();
+  if (u?.gmail) {
+    const dc = parseInt(_ls.getItem('ae_daily_done_count')||'0');
+    sbSaveUserData(u.gmail, { bookmarks: arr, badges: JSON.parse(_ls.getItem('ae_badges_seen')||'[]'), daily_done: JSON.parse(_ls.getItem('ae_daily_done')||'[]'), daily_count: dc });
+  }
+}
 function isBookmarked(examId) { return getBookmarks().includes(examId); }
 function toggleBookmark(examId) {
   let bm = getBookmarks();
@@ -10426,15 +11052,29 @@ function saveScoreAndShow() {
     qIds: (exam.questions||[]).map(q => q.id)
   });
   // Send result email
-  sendEmailNotification('result', { name, gmail: u?.gmail||'', examName, pct, correct, total });
+  sendEmailNotification('result', { name, gmail: u?.gmail||'', examName, pct, correct, wrong, skip, total });
   scores.sort((a,b) => b.pct - a.pct || b.correct - a.correct);
   if (scores.length > 50) scores.length = 50;
   _ls.setItem('ae_scores', JSON.stringify(scores));
+  // ── Supabase ae_results save ──
+  sbSaveResult({name,gmail:u?.gmail||'',examName,examId:exam.current?.id,examCat:exam.current?.cat||'',correct,wrong,skip,total,pct,score:exam._result?.score??correct,maxScore:exam._result?.maxScore??total,answers:{...exam.answers||{}},ts:Date.now()});
   _saveExamResultBackup({name,gmail:u?.gmail||'',examName,examId:exam.current?.id,examCat:exam.current?.cat||'',correct,wrong,skip,total,pct,score:exam._result?.score??correct,maxScore:exam._result?.maxScore??total});
 
   document.getElementById('name-overlay').classList.remove('show');
   toast(`🏅 ${name} — Leaderboard లో save అయింది!`, 'success');
   showResultPage();
+  // Auto-generate certificate if 50%+
+  if (pct >= 50 && u?.gmail) {
+    setTimeout(() => {
+      // Draw certificate silently and send email
+      showCertificate();
+      setTimeout(() => {
+        sendCertificateEmail();
+        // Close cert overlay after auto-send
+        setTimeout(() => document.getElementById('cert-overlay').classList.remove('show'), 1500);
+      }, 600);
+    }, 2000);
+  }
 }
 
 function skipNameEntry() {
@@ -10577,42 +11217,44 @@ function retakeExam() {
   }
 }
 
-/* ─── LEADERBOARD ─── */
-function renderLeaderboard() {
+/* ─── LEADERBOARD (Real-time) ─── */
+let _lbFilter = 'all'; // 'all' | 'today' | 'week'
+let _lbRefreshTimer = null;
+let _lbAllScores = [];
+
+function _renderLeaderboardUI(scores) {
   const el = document.getElementById('leaderboard-list');
   if (!el) return;
 
-  // ── Daily Auto-Clear ──────────────────────────────────────────
-  const todayKey = new Date().toISOString().slice(0, 10); // "YYYY-MM-DD"
-  const lastClear = _ls.getItem('ae_scores_last_clear');
-  if (lastClear !== todayKey) {
-    _ls.removeItem('ae_scores');
-    _ls.setItem('ae_scores_last_clear', todayKey);
-    gsAPI({ action: 'clearScores' });
+  // Filter
+  const now = new Date();
+  let filtered = scores;
+  if (_lbFilter === 'today') {
+    const todayStr = now.toLocaleDateString('en-CA'); // YYYY-MM-DD
+    filtered = scores.filter(s => {
+      if (!s.ts) return false;
+      return new Date(s.ts).toLocaleDateString('en-CA') === todayStr;
+    });
+  } else if (_lbFilter === 'week') {
+    const weekAgo = now.getTime() - 7*24*60*60*1000;
+    filtered = scores.filter(s => s.ts && Number(s.ts) > weekAgo);
   }
-  // ─────────────────────────────────────────────────────────────
 
-  const scores = JSON.parse(_ls.getItem('ae_scores') || '[]');
-  if (!scores.length) {
-    el.innerHTML = `<div class="lb-empty">
-      <span class="lb-empty-icon">🏅</span>
-      ఇంకా ఎవరూ score save చేయలేదు.<br>
-      Exam complete చేసి మీ పేరు enter చేయండి!
-    </div>`;
+  if (!filtered.length) {
+    const msgs = { all: 'ఇంకా ఎవరూ score save చేయలేదు.<br>Exam complete చేసి మీ పేరు enter చేయండి!', today: 'ఈ రోజు ఇంకా ఎవరూ test ఇవ్వలేదు. మీరు మొదలు పెట్టండి!', week: 'ఈ వారం ఇంకా results లేవు.' };
+    el.innerHTML = `<div class="lb-empty"><span class="lb-empty-icon">🏅</span>${msgs[_lbFilter]||msgs.all}</div>`;
     return;
   }
+
   const medals = ['🥇','🥈','🥉'];
   const cardCls = ['lb-gold','lb-silver','lb-bronze'];
-  el.innerHTML = scores.map((s, i) => {
+  el.innerHTML = filtered.map((s, i) => {
     const isTop = i < 3;
     return `<div class="lb-card ${isTop ? cardCls[i] : ''}">
-      ${isTop
-        ? `<div class="lb-rank">${medals[i]}</div>`
-        : `<div class="lb-rank-num">${i+1}</div>`
-      }
+      ${isTop ? `<div class="lb-rank">${medals[i]}</div>` : `<div class="lb-rank-num">${i+1}</div>`}
       <div class="lb-info">
         <div class="lb-name">${escHtml(s.name)}</div>
-        <div class="lb-meta">📝 ${escHtml(s.examName)} &nbsp;·&nbsp; 📅 ${s.date}</div>
+        <div class="lb-meta">📝 ${escHtml(s.examName)} &nbsp;·&nbsp; 📅 ${s.date||''}</div>
       </div>
       <div class="lb-score-wrap">
         <div class="lb-pct">${s.pct}%</div>
@@ -10620,6 +11262,83 @@ function renderLeaderboard() {
       </div>
     </div>`;
   }).join('');
+}
+
+function _lbSetFilter(f) {
+  _lbFilter = f;
+  document.querySelectorAll('.lb-tab-btn').forEach(b => b.classList.toggle('active', b.dataset.f === f));
+  _renderLeaderboardUI(_lbAllScores);
+}
+
+async function _fetchLbFromSupabase(limit) {
+  // Direct fetch bypassing _sbDead circuit breaker (leaderboard reads are low-risk)
+  try {
+    const r = await fetch(`${SB_URL}/rest/v1/ae_results?order=pct.desc,correct.desc,created_at.desc&limit=${limit}`, { headers: SB_HEADERS });
+    if (!r.ok) return [];
+    const data = await r.json();
+    return data.map(d => ({
+      name: d.user_name, gmail: d.user_gmail,
+      examName: d.exam_name, examId: d.exam_id, examCat: d.exam_cat,
+      correct: d.correct, wrong: d.wrong, skip: d.skip,
+      total: d.total, pct: d.pct, score: d.score, maxScore: d.max_score,
+      answers: d.answers || {}, ts: d.ts || new Date(d.created_at).getTime(),
+      date: d.created_at ? new Date(d.created_at).toLocaleDateString('te-IN',{day:'2-digit',month:'short',year:'numeric'}) : ''
+    }));
+  } catch(e) { return []; }
+}
+
+function _lbUpdateTimestamp() {
+  const el = document.getElementById('lb-last-updated');
+  if (el) el.textContent = 'Updated: ' + new Date().toLocaleTimeString('te-IN', {hour:'2-digit',minute:'2-digit'});
+}
+
+async function renderLeaderboard(silent) {
+  const el = document.getElementById('leaderboard-list');
+  if (!el) return;
+
+  if (!silent) el.innerHTML = `<div class="lb-empty"><span class="lb-empty-icon">⏳</span>Supabase నుండి Loading...</div>`;
+
+  const localScores = JSON.parse(_ls.getItem('ae_scores') || '[]');
+  const sbScores = await _fetchLbFromSupabase(100);
+
+  let merged = [];
+  if (sbScores.length) {
+    merged = [...sbScores];
+    // Add any local scores not in supabase (offline mode entries)
+    localScores.forEach(ls => {
+      if (!merged.find(m => m.ts == ls.ts && (m.gmail === ls.gmail || m.name === ls.name))) merged.push(ls);
+    });
+  } else {
+    merged = [...localScores];
+  }
+
+  merged.sort((a,b) => b.pct - a.pct || b.correct - a.correct);
+  if (merged.length > 100) merged.length = 100;
+
+  _lbAllScores = merged;
+  _renderLeaderboardUI(_lbAllScores);
+  _lbUpdateTimestamp();
+
+  // Show source badge
+  const badge = document.getElementById('lb-source-badge');
+  if (badge) {
+    badge.textContent = sbScores.length ? `🌐 Live — ${sbScores.length} records` : '💾 Local only';
+    badge.style.color = sbScores.length ? '#06B96B' : '#F77F00';
+  }
+}
+
+function _startLbAutoRefresh() {
+  _stopLbAutoRefresh();
+  _lbRefreshTimer = setInterval(function() {
+    const homePage = document.getElementById('page-home');
+    if (homePage && (homePage.style.display !== 'none' && homePage.offsetParent !== null)) {
+      renderLeaderboard(true); // silent refresh
+    }
+  }, 30000); // every 30 seconds
+}
+
+function _stopLbAutoRefresh() {
+  if (_lbRefreshTimer) { clearInterval(_lbRefreshTimer); _lbRefreshTimer = null; }
 }
 
 function escHtml(s) {
@@ -10642,6 +11361,7 @@ function clearLeaderboard() {
   if (!confirm('Leaderboard పూర్తిగా clear చేయాలా?')) return;
   _ls.removeItem('ae_scores');
   gsAPI({ action: 'clearScores' });
+  sbClearResults();
   renderLeaderboard();
   toast('🗑 Leaderboard clear అయింది', 'warn');
 }
@@ -10874,11 +11594,16 @@ function renderAdminTable() {
 }
 
 function updateStats() {
-  // Subscribers (approved users)
-  const approved = JSON.parse(_ls.getItem('ae_sub_approved') || '[]');
-  const subCount = approved.length;
-  const subEl = document.getElementById('stat-subscribers');
-  if (subEl) subEl.textContent = subCount > 999 ? (subCount/1000).toFixed(1)+'K' : subCount;
+  // Subscribers — fetch from Supabase ae_subscribers table
+  sbSubGet('approved').then(rows => {
+    const subCount = rows.length || JSON.parse(_ls.getItem('ae_sub_approved') || '[]').length;
+    const subEl = document.getElementById('stat-subscribers');
+    if (subEl) subEl.textContent = subCount > 999 ? (subCount/1000).toFixed(1)+'K' : subCount;
+  }).catch(() => {
+    const subCount = JSON.parse(_ls.getItem('ae_sub_approved') || '[]').length;
+    const subEl = document.getElementById('stat-subscribers');
+    if (subEl) subEl.textContent = subCount > 999 ? (subCount/1000).toFixed(1)+'K' : subCount;
+  });
 
   // Viewers — unique users who attempted any exam (real data)
   const scores = JSON.parse(_ls.getItem('ae_scores') || '[]');
@@ -12894,11 +13619,12 @@ function _renderAnalytics() {
   const el = document.getElementById('analytics-content');
   if (!el) return;
   const allScores = JSON.parse(_ls.getItem('ae_scores')||'[]');
-  const allUsers  = JSON.parse(_ls.getItem('ae_subscribers')||'[]');
-  if (!allScores.length&&!allUsers.length) {
-    el.innerHTML='<div style="text-align:center;padding:40px;color:var(--text3);">ఇంకా data లేదు.</div>'; return;
-  }
-  const totalExams=allScores.length, totalUsers=allUsers.length;
+  sbSubGet('approved').then(sbUsers => {
+    const allUsers = sbUsers.length ? sbUsers : JSON.parse(_ls.getItem('ae_subscribers')||'[]');
+    if (!allScores.length&&!allUsers.length) {
+      el.innerHTML='<div style="text-align:center;padding:40px;color:var(--text3);">ఇంకా data లేదు.</div>'; return;
+    }
+    const totalExams=allScores.length, totalUsers=allUsers.length;
   const activeUsers=new Set(allScores.map(s=>s.gmail||s.name)).size;
   const avgScore=totalExams?Math.round(allScores.reduce((a,b)=>a+b.pct,0)/totalExams):0;
   const passRate=totalExams?Math.round(allScores.filter(s=>s.pct>=50).length/totalExams*100):0;
@@ -12966,6 +13692,9 @@ function _renderAnalytics() {
         </tbody></table></div>
       ${userRows.length>30?`<div style="text-align:center;font-size:11px;color:var(--text3);margin-top:6px;">Export CSV లో అన్ని ${userRows.length} users వస్తారు</div>`:''}
     </div>`;
+  }).catch(() => {
+    el.innerHTML='<div style="text-align:center;padding:40px;color:var(--text3);">Data load చేయలేకపోయాం.</div>';
+  });
 }
 function _exportAnalyticsCSV() {
   const allScores=JSON.parse(_ls.getItem('ae_scores')||'[]');
@@ -13534,8 +14263,19 @@ function openDetailedAnalytics(gmail) {
 
 const EJS_KEY = 'ae_emailjs_config';
 
+// ── Default EmailJS config ──
+const EJS_DEFAULT = {
+  serviceId:  'service_jvuf20z',
+  templateId: 'template_mczap9j',
+  publicKey:  'i5waRakMB8mmJLAke'
+};
+
 function getEmailJSConfig() {
-  try { return JSON.parse(_ls.getItem(EJS_KEY) || 'null'); } catch(e){ return null; }
+  try {
+    const saved = JSON.parse(_ls.getItem(EJS_KEY) || 'null');
+    if (saved && saved.serviceId && saved.templateId && saved.publicKey) return saved;
+    return EJS_DEFAULT;
+  } catch(e){ return EJS_DEFAULT; }
 }
 
 function saveEmailJSConfig() {
@@ -13575,16 +14315,41 @@ async function sendEmailNotification(type, data) {
   const adminGmail = (getAdminEmail && getAdminEmail()) || '';
 
   const templates = {
-    register: { to: adminGmail, subject: 'New Registration — ' + data.name,
-      message: `New user registered!\nName: ${data.name}\nGmail: ${data.gmail}\n\nPlease approve in Admin Panel.` },
-    approved: { to: data.gmail, subject: '🎉 Anil EduTech — Account Approved!',
-      message: `Hi ${data.name},\n\nYour account has been approved! 🎉\nLogin చేసి exams start చేయండి.\n\nAnil EduTech Team` },
-    result:   { to: data.gmail, subject: `Exam Result — ${data.examName}`,
-      message: `Hi ${data.name},\n\nExam: ${data.examName}\nScore: ${data.correct}/${data.total} (${data.pct}%)\n\nKeep it up!\nAnil EduTech Team` },
-    forgot:   { to: adminGmail, subject: 'Password Reset Request — ' + data.name,
-      message: `Password reset request!\nName: ${data.name}\nGmail: ${data.gmail}\n\nPlease reset in Admin Panel → Subscribers.` },
-    login:    { to: adminGmail, subject: 'User Login — ' + data.name,
-      message: `User logged in!\nName: ${data.name}\nGmail: ${data.gmail}` },
+    register: {
+      to: adminGmail,
+      subject: '🆕 New Registration — ' + data.name,
+      message: `నమస్కారం Admin,\n\nకొత్త user register అయ్యారు!\n\n👤 Name: ${data.name}\n📧 Gmail: ${data.gmail}\n🕐 Time: ${new Date().toLocaleString('en-IN')}\n\nAdmin Panel → Subscribers లో చూడండి.\n\n— Anil EduTech`
+    },
+    approved: {
+      to: data.gmail,
+      subject: '🎉 Anil EduTech — మీ Account Approve అయింది!',
+      message: `నమస్కారం ${data.name},\n\nమీ Anil EduTech account approve అయింది! 🎉\n\n✅ ఇప్పుడు login చేసి exams start చేయండి\n🌐 Website: https://aniledutech.in\n\nAll the best for your preparation!\n\n— Anil EduTech Team`
+    },
+    result: {
+      to: data.gmail,
+      subject: `📊 Exam Result — ${data.examName} | Score: ${data.pct}%`,
+      message: `నమస్కారం ${data.name},\n\n🎯 మీ Exam Result:\n\n📝 Exam: ${data.examName}\n✅ Correct: ${data.correct}\n❌ Wrong: ${data.wrong || 0}\n⏭️ Skipped: ${data.skip || 0}\n📊 Total: ${data.correct}/${data.total}\n🏆 Score: ${data.pct}%\n\n${data.pct >= 75 ? '🌟 Excellent performance! చాలా బాగా చేశారు!' : data.pct >= 50 ? '👍 Good effort! ఇంకా practice చేయండి.' : '💪 Keep practicing! మీరు improve అవుతారు.'}\n\n${data.pct >= 50 ? '🏅 మీ Certificate separate email గా పంపబడుతోంది!' : ''}\n\nMore exams: https://aniledutech.in\n\n— Anil EduTech Team`
+    },
+    payment: {
+      to: data.gmail,
+      subject: '🌟 Anil EduTech Premium Activated!',
+      message: `నమస్కారం ${data.name},\n\nమీ Premium subscription successful! 🎉\n\n💳 Payment ID: ${data.paymentId}\n📦 Plan: ${data.plan === 'yearly' ? 'Yearly Premium' : 'Monthly Premium'}\n💰 Amount: ₹${data.amount}\n\n✅ అన్ని locked exams ఇప్పుడు open అయ్యాయి\n✅ Premium content access activated\n\nExams చూడండి: https://aniledutech.in\n\nThank you for your support!\n\n— Anil EduTech Team`
+    },
+    payment_admin: {
+      to: adminGmail,
+      subject: '💰 New Payment — ' + data.name,
+      message: `కొత్త payment వచ్చింది!\n\n👤 Name: ${data.name}\n📧 Gmail: ${data.gmail}\n💳 Payment ID: ${data.paymentId}\n📦 Plan: ${data.plan}\n💰 Amount: ₹${data.amount}\n🕐 Time: ${new Date().toLocaleString('en-IN')}\n\n— Anil EduTech`
+    },
+    forgot: {
+      to: adminGmail,
+      subject: '🔑 Password Reset Request — ' + data.name,
+      message: `Password reset request!\n\n👤 Name: ${data.name}\n📧 Gmail: ${data.gmail}\n🕐 Time: ${new Date().toLocaleString('en-IN')}\n\nAdmin Panel → Subscribers లో reset చేయండి.\n\n— Anil EduTech`
+    },
+    login: {
+      to: adminGmail,
+      subject: '🔐 User Login — ' + data.name,
+      message: `User logged in!\n\n👤 Name: ${data.name}\n📧 Gmail: ${data.gmail}\n🕐 Time: ${new Date().toLocaleString('en-IN')}\n\n— Anil EduTech`
+    },
   };
 
   const t = templates[type];
@@ -13625,7 +14390,8 @@ function getAdminEmail() {
     _ls.setItem('ae_admin_email', old);
     localStorage.removeItem('ae_admin_email');
   }
-  return _ls.getItem('ae_admin_email') || '';
+  // Fallback to hardcoded admin email
+  return _ls.getItem('ae_admin_email') || 'anilsagaram1370@gmail.com';
 }
 
 /* ════════════════════════════════════════
@@ -14744,6 +15510,11 @@ function _onPaymentSuccess(response, plan, amount, user) {
     setCurrentUser(sess);
   }
   closePricing();renderPaymentsTable();renderPaymentStats();updateNavUser();filterExams();
+  // ── Email notifications ──
+  if (user) {
+    sendEmailNotification('payment', { name: user.name, gmail: user.gmail, plan, amount, paymentId: response.razorpay_payment_id });
+    sendEmailNotification('payment_admin', { name: user.name, gmail: user.gmail, plan, amount, paymentId: response.razorpay_payment_id });
+  }
   toast('🎉 Premium activated! అన్ని exams open అయ్యాయి! 🚀','success');
   setTimeout(()=>_showPremiumSuccessModal(response.razorpay_payment_id,plan),600);
 }
@@ -16892,4 +17663,120 @@ async function dmDelete(id, date) {
     dmLoadStats();
   } catch(e) { toast('Error: ' + e.message, 'error'); }
 }
+
+/* ══ USER PROFILE PAGE ══ */
+async function showProfile() {
+  const u = getCurrentUser();
+  if (!u) { openSubModal(); return; }
+  stopTimer();
+  showPage('profile');
+
+  // Avatar initials
+  const initials = u.name ? u.name.split(' ').map(w=>w[0]).join('').slice(0,2).toUpperCase() : 'U';
+  const avatarEl = document.getElementById('pf-avatar-circle');
+  if (avatarEl) avatarEl.textContent = initials;
+
+  // Name / gmail / badge
+  const nameEl = document.getElementById('pf-name');
+  if (nameEl) nameEl.textContent = u.name || 'User';
+  const gmailEl = document.getElementById('pf-gmail');
+  if (gmailEl) gmailEl.textContent = u.gmail || '';
+  const pillEl = document.getElementById('pf-badge-pill');
+  if (pillEl) {
+    pillEl.textContent = u.isPremium ? '👑 Premium' : '⭐ Free';
+    pillEl.style.background = u.isPremium ? 'rgba(124,58,237,.12)' : 'rgba(26,115,232,.12)';
+    pillEl.style.color = u.isPremium ? '#7C3AED' : 'var(--primary)';
+  }
+
+  // Load scores from Supabase (direct fetch, bypass circuit breaker)
+  let myScores = [];
+  try {
+    const r = await fetch(
+      SB_URL + '/rest/v1/ae_results?user_gmail=eq.' + encodeURIComponent(u.gmail) +
+      '&order=created_at.desc&limit=50',
+      { headers: SB_HEADERS }
+    );
+    if (r.ok) {
+      const data = await r.json();
+      myScores = data.map(d => ({
+        examName: d.exam_name, pct: d.pct,
+        correct: d.correct, total: d.total,
+        ts: d.ts || new Date(d.created_at).getTime(),
+        date: d.created_at ? new Date(d.created_at).toLocaleDateString('te-IN',{day:'2-digit',month:'short'}) : ''
+      }));
+    }
+  } catch(e) {}
+
+  // Merge local scores too
+  const localAll = JSON.parse(_ls.getItem('ae_scores') || '[]');
+  const localMy = localAll.filter(s => s.gmail === u.gmail || s.name === u.name);
+  localMy.forEach(ls => {
+    if (!myScores.find(m => m.ts == ls.ts)) {
+      myScores.push({ examName: ls.examName||ls.name, pct: ls.pct, correct: ls.correct, total: ls.total, ts: ls.ts,
+        date: ls.date || (ls.ts ? new Date(ls.ts).toLocaleDateString('te-IN',{day:'2-digit',month:'short'}) : '') });
+    }
+  });
+  myScores.sort((a,b) => b.ts - a.ts);
+
+  // Stats
+  const totalTests = myScores.length;
+  const best = totalTests ? Math.max(...myScores.map(s => s.pct || 0)) : null;
+  const totalEl = document.getElementById('pf-total-tests');
+  const bestEl  = document.getElementById('pf-best-score');
+  if (totalEl) totalEl.textContent = totalTests;
+  if (bestEl)  bestEl.textContent  = best !== null ? best + '%' : '—';
+
+  // Leaderboard rank (from Supabase)
+  try {
+    const lr = await fetch(SB_URL + '/rest/v1/ae_results?order=pct.desc,correct.desc&limit=500', { headers: SB_HEADERS });
+    if (lr.ok) {
+      const all = await lr.json();
+      // Find best rank for this user
+      const myIdx = all.findIndex(s => s.user_gmail === u.gmail);
+      const rankEl = document.getElementById('pf-rank');
+      if (rankEl) rankEl.textContent = myIdx >= 0 ? '#' + (myIdx + 1) : '—';
+    }
+  } catch(e) {}
+
+  // Badges
+  const earned = [];
+  if (totalTests >= 1)  earned.push({ icon:'🎯', label:'First Test' });
+  if (totalTests >= 5)  earned.push({ icon:'🔥', label:'5 Tests Done' });
+  if (totalTests >= 10) earned.push({ icon:'⚡', label:'10 Tests Done' });
+  if (totalTests >= 25) earned.push({ icon:'💎', label:'25 Tests!' });
+  if (best !== null && best >= 90)  earned.push({ icon:'🏆', label:'90%+ Scorer' });
+  if (best !== null && best >= 100) earned.push({ icon:'💯', label:'Perfect Score!' });
+  if (u.isPremium) earned.push({ icon:'👑', label:'Premium Member' });
+
+  const badgesEl = document.getElementById('pf-badges');
+  if (badgesEl) {
+    if (earned.length) {
+      badgesEl.innerHTML = earned.map(b =>
+        `<span style="background:var(--surface);border:1.5px solid var(--border);border-radius:20px;padding:6px 14px;font-size:12px;font-weight:800;color:var(--text);display:inline-flex;align-items:center;gap:5px;">${b.icon} ${b.label}</span>`
+      ).join('');
+    } else {
+      badgesEl.innerHTML = '<span style="color:var(--text3);font-size:13px;">Test ఇవ్వండి — badges earn అవుతాయి! 🏅</span>';
+    }
+  }
+
+  // History
+  const histEl = document.getElementById('pf-history');
+  if (histEl) {
+    if (myScores.length) {
+      histEl.innerHTML = myScores.slice(0, 8).map(s => {
+        const col = s.pct >= 75 ? '#00B894' : s.pct >= 50 ? '#FF6B35' : '#E53E3E';
+        return `<div style="display:flex;align-items:center;justify-content:space-between;padding:10px 0;border-bottom:1px solid var(--border);">
+          <div>
+            <div style="font-size:13px;font-weight:800;color:var(--text);">${escHtml(s.examName||'—')}</div>
+            <div style="font-size:11px;color:var(--text3);margin-top:2px;">${s.correct||0}/${s.total||0} correct &nbsp;·&nbsp; ${s.date||''}</div>
+          </div>
+          <div style="font-size:18px;font-weight:900;color:${col};">${s.pct}%</div>
+        </div>`;
+      }).join('');
+    } else {
+      histEl.innerHTML = '<div style="text-align:center;padding:20px;color:var(--text3);font-size:13px;">ఇంకా exams ఇవ్వలేదు!<br>Exam చేస్తే ఇక్కడ కనిపిస్తుంది.</div>';
+    }
+  }
+}
+
 </script>

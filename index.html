@@ -13542,7 +13542,8 @@ function _parseCSVText(text) {
     const _secMap = { reasoning:'reasoning', arithmetic:'arithmetic', ga:'ga', 'general awareness':'ga', 'general':'ga', r:'reasoning', a:'arithmetic', g:'ga', english:'english', 'english comprehension':'english', eng:'english', e:'english' };
     const section = _secMap[(sectionRaw||'').trim().toLowerCase()] || 'ga';
     const marks = parseFloat(marksRaw) > 0 ? parseFloat(marksRaw) : null;
-    const image = (imageUrl||'').trim() || null;
+    const rawImage = (imageUrl||'').trim();
+    const image = (rawImage && /^https?:\/\//i.test(rawImage)) ? rawImage : null;
     return { row: i+(hasHeader?2:1), examId: parseInt(examId)||0,
       examName: examObj ? examObj.name : `❌ ID ${examId} not found`,
       question:(question||'').trim(), optA:(optA||'').trim(), optB:(optB||'').trim(),
@@ -14623,21 +14624,35 @@ async function loadBackupData() {
   if (tbody) tbody.innerHTML = '<tr><td colspan="9" style="text-align:center;color:var(--text3);padding:30px">⏳ Loading...</td></tr>';
 
   // Load from localStorage (always available)
-  const approved  = getSubApproved(); // all registered users
+  const localApproved = getSubApproved();
   const scores    = JSON.parse(localStorage.getItem('ae_scores') || '[]');
   const bkResults = JSON.parse(localStorage.getItem(BK_RESULTS_KEY) || '[]');
   const logs      = JSON.parse(localStorage.getItem(BK_LOGS_KEY) || '[]');
 
-  // Try to also load from Supabase (for cross-device data)
-  let sbUsers = [], sbResults = [], sbLogs = [];
+  // Load from Supabase (cross-device data)
+  let sbResults = [], sbLogs = [], sbApproved = [];
   try {
     const [r1, r2, r3] = await Promise.allSettled([
       sbGet('ae_user_logs', 'order=ts.desc&limit=200'),
       sbGet('ae_user_results', 'order=ts.desc&limit=500'),
+      sbSubGet('approved')
     ]);
     if (r1.status === 'fulfilled' && Array.isArray(r1.value)) sbLogs = r1.value;
     if (r2.status === 'fulfilled' && Array.isArray(r2.value)) sbResults = r2.value;
+    if (r3.status === 'fulfilled' && Array.isArray(r3.value)) sbApproved = r3.value;
   } catch(e) {}
+
+  // Merge approved users (Supabase + local, Supabase wins)
+  const approvedMap = {};
+  localApproved.forEach(u => { approvedMap[u.gmail] = u; });
+  sbApproved.forEach(u => {
+    approvedMap[u.gmail] = {
+      name: u.name, gmail: u.gmail,
+      isPremium: u.is_premium || false,
+      date: u.joined_at ? new Date(u.joined_at).toLocaleDateString('te-IN') : u.date || '—'
+    };
+  });
+  const approved = Object.values(approvedMap);
 
   // Merge logs (localStorage + Supabase, deduplicate by ts+gmail)
   const allLogs = [...logs];
@@ -15511,12 +15526,17 @@ function _onPaymentSuccess(response, plan, amount, user) {
   if (user) {
     const approved = getSubApproved();
     const u = approved.find(a => a.gmail === user.gmail);
+    const premiumSince = new Date().toISOString();
     if (u) {
       u.isPremium = true;
       u.premiumPlan = plan;
-      u.premiumSince = new Date().toISOString();
+      u.premiumSince = premiumSince;
       saveSubApproved(approved);
     }
+    // Supabase ae_subscribers premium update
+    sbSubUpsert({ name: user.name, gmail: user.gmail, is_premium: true, premium_since: premiumSince, status: 'approved' }).catch(e => console.warn('sbSubUpsert payment:', e));
+    // Supabase ae_payments save
+    sbInsert('ae_payments', { gmail: user.gmail, name: user.name, plan, amount, payment_id: response.razorpay_payment_id, status: 'paid' }).catch(e => console.warn('ae_payments:', e));
     // Update session
     const sess = { ...user, isPremium: true, premiumPlan: plan };
     setCurrentUser(sess);

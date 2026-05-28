@@ -1,0 +1,254 @@
+<!DOCTYPE html>
+<html lang="te">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta name="theme-color" content="#1A73E8">
+<title>About Us | Anil EduTech — Free Mock Tests Telugu</title>
+<meta name="description" content="Anil EduTech గురించి తెలుసుకోండి — TSPSC, SSC, Banking students కోసం free mock tests provide చేసే platform.">
+<meta name="robots" content="index, follow">
+<style>
+  :root {
+    --bg: #0A0F2C;
+    --bg2: #0D1A3A;
+    --card: #111827;
+    --border: rgba(79,142,255,0.18);
+    --primary: #4F8EFF;
+    --purple: #A855F7;
+    --cyan: #06B6D4;
+    --green: #00B894;
+    --text: #E8F0FF;
+    --text2: #94A3B8;
+    --text3: #64748B;
+  }
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+  body { background: var(--bg); color: var(--text); font-family: 'Segoe UI', system-ui, sans-serif; }
+  .topbar { height: 4px; background: linear-gradient(90deg, #4F8EFF, #A855F7, #06B6D4); }
+  header {
+    background: var(--bg2); border-bottom: 1px solid var(--border);
+    padding: 16px 24px; display: flex; align-items: center; gap: 16px;
+  }
+  .logo-box {
+    width: 44px; height: 44px;
+    background: linear-gradient(135deg, #4F8EFF, #A855F7);
+    border-radius: 12px; display: flex; align-items: center; justify-content: center;
+    font-size: 20px; font-weight: 900; color: #fff; text-decoration: none;
+  }
+  .site-name { font-size: 18px; font-weight: 800; color: var(--text); }
+  .site-tagline { font-size: 11px; color: var(--purple); letter-spacing: 1.5px; text-transform: uppercase; }
+  nav { margin-left: auto; display: flex; gap: 12px; flex-wrap: wrap; }
+  nav a {
+    color: var(--text2); text-decoration: none; font-size: 13px; font-weight: 600;
+    padding: 6px 14px; border-radius: 8px; border: 1px solid var(--border); transition: all 0.2s;
+  }
+  nav a:hover { color: var(--primary); border-color: var(--primary); background: rgba(79,142,255,0.08); }
+
+  /* Hero */
+  .hero {
+    background: linear-gradient(135deg, #0A0F2C 0%, #0D1F5C 60%, #0A1A10 100%);
+    padding: 70px 24px 60px; text-align: center; position: relative; overflow: hidden;
+  }
+  .hero::before {
+    content: ''; position: absolute; top: -80px; right: -80px;
+    width: 320px; height: 320px; border-radius: 50%;
+    background: radial-gradient(circle, rgba(79,142,255,0.2) 0%, transparent 70%);
+  }
+  .hero::after {
+    content: ''; position: absolute; bottom: -60px; left: -60px;
+    width: 260px; height: 260px; border-radius: 50%;
+    background: radial-gradient(circle, rgba(168,85,247,0.15) 0%, transparent 70%);
+  }
+  .hero-badge {
+    display: inline-block; padding: 6px 16px; border-radius: 20px;
+    background: rgba(79,142,255,0.12); border: 1px solid rgba(79,142,255,0.3);
+    font-size: 12px; color: var(--primary); letter-spacing: 2px; text-transform: uppercase;
+    margin-bottom: 20px;
+  }
+  .hero h1 {
+    font-size: clamp(28px, 5vw, 48px); font-weight: 900; margin-bottom: 16px;
+    background: linear-gradient(90deg, #fff 0%, #4F8EFF 50%, #A855F7 100%);
+    -webkit-background-clip: text; -webkit-text-fill-color: transparent;
+  }
+  .hero p { font-size: 16px; color: var(--text2); max-width: 600px; margin: 0 auto; line-height: 1.8; }
+
+  /* Stats */
+  .stats {
+    display: flex; justify-content: center; gap: 20px; flex-wrap: wrap;
+    padding: 40px 24px; background: var(--bg2); border-bottom: 1px solid var(--border);
+  }
+  .stat-card {
+    background: var(--card); border: 1px solid var(--border); border-radius: 16px;
+    padding: 24px 32px; text-align: center; min-width: 140px;
+  }
+  .stat-num { font-size: 32px; font-weight: 900; }
+  .stat-label { font-size: 12px; color: var(--text3); margin-top: 4px; text-transform: uppercase; letter-spacing: 1px; }
+
+  .container { max-width: 860px; margin: 0 auto; padding: 50px 24px 80px; }
+
+  .section {
+    background: var(--card); border: 1px solid var(--border); border-radius: 16px;
+    padding: 32px; margin-bottom: 24px;
+  }
+  .section h2 {
+    font-size: 20px; font-weight: 800; margin-bottom: 16px;
+    background: linear-gradient(90deg, #4F8EFF, #A855F7);
+    -webkit-background-clip: text; -webkit-text-fill-color: transparent;
+  }
+  .section p { font-size: 14px; color: var(--text2); line-height: 1.9; margin-bottom: 12px; }
+
+  .features-grid {
+    display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 16px;
+  }
+  .feature {
+    background: rgba(79,142,255,0.06); border: 1px solid var(--border); border-radius: 12px;
+    padding: 20px; text-align: center;
+  }
+  .feature-icon { font-size: 28px; margin-bottom: 10px; }
+  .feature-title { font-size: 13px; font-weight: 700; color: var(--text); margin-bottom: 6px; }
+  .feature-desc { font-size: 12px; color: var(--text3); line-height: 1.6; }
+
+  .exams-list { display: flex; gap: 10px; flex-wrap: wrap; margin-top: 12px; }
+  .exam-tag {
+    padding: 6px 14px; border-radius: 20px; font-size: 12px; font-weight: 700; border: 1px solid;
+  }
+  .exam-tag.blue { color: #4F8EFF; border-color: rgba(79,142,255,0.4); background: rgba(79,142,255,0.08); }
+  .exam-tag.purple { color: #C084FC; border-color: rgba(192,132,252,0.4); background: rgba(168,85,247,0.08); }
+  .exam-tag.green { color: #00D4A8; border-color: rgba(0,212,168,0.4); background: rgba(0,184,148,0.08); }
+  .exam-tag.cyan { color: #22D3EE; border-color: rgba(34,211,238,0.4); background: rgba(6,182,212,0.08); }
+
+  .mission-highlight {
+    background: linear-gradient(135deg, rgba(79,142,255,0.1), rgba(168,85,247,0.1));
+    border: 1px solid rgba(79,142,255,0.3); border-radius: 12px;
+    padding: 20px; margin-top: 16px;
+    font-size: 15px; color: var(--text); font-weight: 600; text-align: center; line-height: 1.7;
+  }
+
+  footer {
+    text-align: center; padding: 32px 24px; border-top: 1px solid var(--border);
+    color: var(--text3); font-size: 12px;
+  }
+  footer a { color: var(--primary); text-decoration: none; }
+</style>
+</head>
+<body>
+<div class="topbar"></div>
+<header>
+  <a href="index.html" class="logo-box">A</a>
+  <div>
+    <div class="site-name">Anil EduTech</div>
+    <div class="site-tagline">Online Exam Portal</div>
+  </div>
+  <nav>
+    <a href="index.html">🏠 Home</a>
+    <a href="contact.html">📞 Contact</a>
+    <a href="privacy-policy.html">🔒 Privacy</a>
+  </nav>
+</header>
+
+<div class="hero">
+  <div class="hero-badge">✦ Our Story</div>
+  <h1>Anil EduTech గురించి</h1>
+  <p>Telangana & Andhra Pradesh students కోసం — TSPSC, SSC, Banking exams లో succeed అవ్వడానికి free quality education provide చేయడమే మా లక్ష్యం.</p>
+</div>
+
+<div class="stats">
+  <div class="stat-card">
+    <div class="stat-num" style="color:#4F8EFF;">500+</div>
+    <div class="stat-label">Questions</div>
+  </div>
+  <div class="stat-card">
+    <div class="stat-num" style="color:#A855F7;">4</div>
+    <div class="stat-label">Exam Categories</div>
+  </div>
+  <div class="stat-card">
+    <div class="stat-num" style="color:#00D4A8;">100%</div>
+    <div class="stat-label">Free Access</div>
+  </div>
+  <div class="stat-card">
+    <div class="stat-num" style="color:#22D3EE;">2</div>
+    <div class="stat-label">Languages</div>
+  </div>
+</div>
+
+<div class="container">
+  <div class="section">
+    <h2>🎯 మా Mission</h2>
+    <p>Anil EduTech ని create చేసిన purpose ఒక్కటే — Telangana మరియు Andhra Pradesh లో ప్రతి student కి <strong>quality competitive exam preparation</strong> free గా అందించడం.</p>
+    <p>చాలా మంది students కి expensive coaching institutes afford చేయడం కష్టం. అందుకే మేము online లో పూర్తి free గా mock tests, practice questions మరియు performance analytics provide చేస్తున్నాం.</p>
+    <div class="mission-highlight">
+      "ప్రతి student కి government job get చేయగల opportunity ఉండాలి — money obstacle అవ్వకూడదు." 🎓
+    </div>
+  </div>
+
+  <div class="section">
+    <h2>📚 మేము Cover చేసే Exams</h2>
+    <p>మా platform ఈ competitive exams కి prepare అవ్వడానికి help చేస్తుంది:</p>
+    <div class="exams-list">
+      <span class="exam-tag blue">TSPSC Groups</span>
+      <span class="exam-tag blue">TSPSC Group-1</span>
+      <span class="exam-tag purple">SSC CGL</span>
+      <span class="exam-tag purple">SSC CHSL</span>
+      <span class="exam-tag green">Banking — SBI</span>
+      <span class="exam-tag green">Banking — RBI</span>
+      <span class="exam-tag cyan">General Knowledge</span>
+      <span class="exam-tag cyan">Speed Maths</span>
+    </div>
+  </div>
+
+  <div class="section">
+    <h2>⚡ మా Features</h2>
+    <div class="features-grid">
+      <div class="feature">
+        <div class="feature-icon">📝</div>
+        <div class="feature-title">Mock Tests</div>
+        <div class="feature-desc">Real exam pattern లో practice tests</div>
+      </div>
+      <div class="feature">
+        <div class="feature-icon">🏆</div>
+        <div class="feature-title">Leaderboard</div>
+        <div class="feature-desc">Top performers తో compare చేయండి</div>
+      </div>
+      <div class="feature">
+        <div class="feature-icon">📜</div>
+        <div class="feature-title">Certificates</div>
+        <div class="feature-desc">Completion certificates download చేయండి</div>
+      </div>
+      <div class="feature">
+        <div class="feature-icon">📊</div>
+        <div class="feature-title">Analytics</div>
+        <div class="feature-desc">మీ progress track చేయండి</div>
+      </div>
+      <div class="feature">
+        <div class="feature-icon">🌙</div>
+        <div class="feature-title">Dark Mode</div>
+        <div class="feature-desc">Eye-friendly dark theme</div>
+      </div>
+      <div class="feature">
+        <div class="feature-icon">🇮🇳</div>
+        <div class="feature-title">Bilingual</div>
+        <div class="feature-desc">Telugu & English లో questions</div>
+      </div>
+    </div>
+  </div>
+
+  <div class="section">
+    <h2>📬 మాకు Contact చేయండి</h2>
+    <p>ఏవైనా suggestions, feedback లేదా questions ఉంటే మాకు contact చేయండి. మీ feedback ద్వారా మేము better అవుతాం.</p>
+    <p>
+      <a href="contact.html" style="display:inline-block;margin-top:12px;padding:10px 24px;background:linear-gradient(90deg,#4F8EFF,#A855F7);border-radius:10px;color:#fff;text-decoration:none;font-weight:700;font-size:14px;">
+        📩 Contact Us →
+      </a>
+    </p>
+  </div>
+</div>
+
+<footer>
+  <p>© 2026 Anil EduTech. All Rights Reserved. |
+  <a href="index.html">Home</a> ·
+  <a href="about.html">About</a> ·
+  <a href="contact.html">Contact</a> ·
+  <a href="privacy-policy.html">Privacy Policy</a>
+  </p>
+</footer>
+</body>
+</html>

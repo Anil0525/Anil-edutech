@@ -4833,12 +4833,17 @@ html {
 
   <!-- STUDY GUIDES SECTION -->
   <div style="padding:24px 16px 8px; max-width:860px; margin:0 auto;">
-    <div class="section-title" style="margin-bottom:4px;">📚 Study Guides</div>
+    <div style="display:flex; align-items:center; justify-content:space-between; margin-bottom:4px;">
+      <div class="section-title" style="margin-bottom:0;">📚 Study Guides</div>
+      <span id="sg-count-badge" style="font-size:11px; color:#64748B; font-weight:700; background:rgba(79,142,255,0.1); border:1px solid rgba(79,142,255,0.2); border-radius:20px; padding:3px 10px; display:none;"></span>
+    </div>
     <div class="section-sub" style="margin-bottom:16px;">Exam preparation articles — free గా చదవండి</div>
-    <div style="display:grid; grid-template-columns:repeat(auto-fit,minmax(160px,1fr)); gap:12px;">
 
-      <a href="tspsc-groups-guide.html" style="text-decoration:none;">
-        <div style="background:#111827; border:1px solid rgba(79,142,255,0.2); border-radius:14px; padding:16px; transition:all 0.2s;" onmouseover="this.style.borderColor='#4F8EFF'" onmouseout="this.style.borderColor='rgba(79,142,255,0.2)'">
+    <div id="sg-grid" style="display:grid; grid-template-columns:repeat(auto-fit,minmax(160px,1fr)); gap:12px;">
+
+      <!-- Card 1 -->
+      <a href="tspsc-groups-guide.html" class="sg-card" data-idx="0" style="text-decoration:none;">
+        <div style="background:#111827; border:1px solid rgba(79,142,255,0.2); border-radius:14px; padding:16px; transition:all 0.2s; height:100%;" onmouseover="this.style.borderColor='#4F8EFF'" onmouseout="this.style.borderColor='rgba(79,142,255,0.2)'">
           <div style="font-size:24px; margin-bottom:8px;">🏛️</div>
           <div style="font-size:13px; font-weight:800; color:#E8F0FF; margin-bottom:4px;">TSPSC Groups</div>
           <div style="font-size:11px; color:#64748B;">Complete Guide 2026</div>
@@ -4846,17 +4851,19 @@ html {
         </div>
       </a>
 
-      <a href="ssc-cgl-guide.html" style="text-decoration:none;">
-        <div style="background:#111827; border:1px solid rgba(168,85,247,0.2); border-radius:14px; padding:16px; transition:all 0.2s;" onmouseover="this.style.borderColor='#A855F7'" onmouseout="this.style.borderColor='rgba(168,85,247,0.2)'">
+      <!-- Card 2 -->
+      <a href="ssc-cgl-guide.html" class="sg-card" data-idx="1" style="text-decoration:none;">
+        <div style="background:#111827; border:1px solid rgba(168,85,247,0.2); border-radius:14px; padding:16px; transition:all 0.2s; height:100%;" onmouseover="this.style.borderColor='#A855F7'" onmouseout="this.style.borderColor='rgba(168,85,247,0.2)'">
           <div style="font-size:24px; margin-bottom:8px;">📋</div>
           <div style="font-size:13px; font-weight:800; color:#E8F0FF; margin-bottom:4px;">SSC CGL Guide</div>
-          <div style="font-size:11px; color:#64748B;">Tier 1 & 2 Strategy</div>
+          <div style="font-size:11px; color:#64748B;">Tier 1 &amp; 2 Strategy</div>
           <div style="margin-top:10px; font-size:11px; color:#A855F7; font-weight:700;">చదవండి →</div>
         </div>
       </a>
 
-      <a href="banking-exam-guide.html" style="text-decoration:none;">
-        <div style="background:#111827; border:1px solid rgba(6,182,212,0.2); border-radius:14px; padding:16px; transition:all 0.2s;" onmouseover="this.style.borderColor='#06B6D4'" onmouseout="this.style.borderColor='rgba(6,182,212,0.2)'">
+      <!-- Card 3 -->
+      <a href="banking-exam-guide.html" class="sg-card" data-idx="2" style="text-decoration:none;">
+        <div style="background:#111827; border:1px solid rgba(6,182,212,0.2); border-radius:14px; padding:16px; transition:all 0.2s; height:100%;" onmouseover="this.style.borderColor='#06B6D4'" onmouseout="this.style.borderColor='rgba(6,182,212,0.2)'">
           <div style="font-size:24px; margin-bottom:8px;">🏦</div>
           <div style="font-size:13px; font-weight:800; color:#E8F0FF; margin-bottom:4px;">Banking Exams</div>
           <div style="font-size:11px; color:#64748B;">SBI, IBPS, RBI Guide</div>
@@ -4864,17 +4871,19 @@ html {
         </div>
       </a>
 
-      <a href="speed-maths-guide.html" style="text-decoration:none;">
-        <div style="background:#111827; border:1px solid rgba(0,184,148,0.2); border-radius:14px; padding:16px; transition:all 0.2s;" onmouseover="this.style.borderColor='#00B894'" onmouseout="this.style.borderColor='rgba(0,184,148,0.2)'">
+      <!-- Card 4 -->
+      <a href="speed-maths-guide.html" class="sg-card" data-idx="3" style="text-decoration:none;">
+        <div style="background:#111827; border:1px solid rgba(0,184,148,0.2); border-radius:14px; padding:16px; transition:all 0.2s; height:100%;" onmouseover="this.style.borderColor='#00B894'" onmouseout="this.style.borderColor='rgba(0,184,148,0.2)'">
           <div style="font-size:24px; margin-bottom:8px;">⚡</div>
           <div style="font-size:13px; font-weight:800; color:#E8F0FF; margin-bottom:4px;">Speed Maths</div>
-          <div style="font-size:11px; color:#64748B;">Tricks & Shortcuts</div>
+          <div style="font-size:11px; color:#64748B;">Tricks &amp; Shortcuts</div>
           <div style="margin-top:10px; font-size:11px; color:#00B894; font-weight:700;">చదవండి →</div>
         </div>
       </a>
 
-      <a href="gk-guide.html" style="text-decoration:none;">
-        <div style="background:#111827; border:1px solid rgba(251,191,36,0.2); border-radius:14px; padding:16px; transition:all 0.2s;" onmouseover="this.style.borderColor='#FBBF24'" onmouseout="this.style.borderColor='rgba(251,191,36,0.2)'">
+      <!-- Card 5 -->
+      <a href="gk-guide.html" class="sg-card" data-idx="4" style="text-decoration:none;">
+        <div style="background:#111827; border:1px solid rgba(251,191,36,0.2); border-radius:14px; padding:16px; transition:all 0.2s; height:100%;" onmouseover="this.style.borderColor='#FBBF24'" onmouseout="this.style.borderColor='rgba(251,191,36,0.2)'">
           <div style="font-size:24px; margin-bottom:8px;">🌍</div>
           <div style="font-size:13px; font-weight:800; color:#E8F0FF; margin-bottom:4px;">GK Study Guide</div>
           <div style="font-size:11px; color:#64748B;">History, Polity, Science</div>
@@ -4882,8 +4891,238 @@ html {
         </div>
       </a>
 
+      <!-- Card 6 -->
+      <a href="rrb-ntpc-guide.html" class="sg-card" data-idx="5" style="text-decoration:none;">
+        <div style="background:#111827; border:1px solid rgba(239,68,68,0.2); border-radius:14px; padding:16px; transition:all 0.2s; height:100%;" onmouseover="this.style.borderColor='#EF4444'" onmouseout="this.style.borderColor='rgba(239,68,68,0.2)'">
+          <div style="font-size:24px; margin-bottom:8px;">🚂</div>
+          <div style="font-size:13px; font-weight:800; color:#E8F0FF; margin-bottom:4px;">RRB NTPC Guide</div>
+          <div style="font-size:11px; color:#64748B;">Complete Preparation 2026</div>
+          <div style="margin-top:10px; font-size:11px; color:#EF4444; font-weight:700;">చదవండి →</div>
+        </div>
+      </a>
+
+      <!-- Card 7 -->
+      <a href="tspsc-group1-syllabus.html" class="sg-card" data-idx="6" style="text-decoration:none;">
+        <div style="background:#111827; border:1px solid rgba(79,142,255,0.2); border-radius:14px; padding:16px; transition:all 0.2s; height:100%;" onmouseover="this.style.borderColor='#4F8EFF'" onmouseout="this.style.borderColor='rgba(79,142,255,0.2)'">
+          <div style="font-size:24px; margin-bottom:8px;">🏛️</div>
+          <div style="font-size:13px; font-weight:800; color:#E8F0FF; margin-bottom:4px;">TSPSC Group 1 Syllabus</div>
+          <div style="font-size:11px; color:#64748B;">Detailed Syllabus & Strategy</div>
+          <div style="margin-top:10px; font-size:11px; color:#4F8EFF; font-weight:700;">చదవండి →</div>
+        </div>
+      </a>
+
+      <!-- Card 8 -->
+      <a href="english-grammar-guide.html" class="sg-card" data-idx="7" style="text-decoration:none;">
+        <div style="background:#111827; border:1px solid rgba(168,85,247,0.2); border-radius:14px; padding:16px; transition:all 0.2s; height:100%;" onmouseover="this.style.borderColor='#A855F7'" onmouseout="this.style.borderColor='rgba(168,85,247,0.2)'">
+          <div style="font-size:24px; margin-bottom:8px;">📝</div>
+          <div style="font-size:13px; font-weight:800; color:#E8F0FF; margin-bottom:4px;">English Grammar</div>
+          <div style="font-size:11px; color:#64748B;">SSC & Banking కోసం</div>
+          <div style="margin-top:10px; font-size:11px; color:#A855F7; font-weight:700;">చదవండి →</div>
+        </div>
+      </a>
+
+      <!-- Card 9 -->
+      <a href="reasoning-tricks-guide.html" class="sg-card" data-idx="8" style="text-decoration:none;">
+        <div style="background:#111827; border:1px solid rgba(6,182,212,0.2); border-radius:14px; padding:16px; transition:all 0.2s; height:100%;" onmouseover="this.style.borderColor='#06B6D4'" onmouseout="this.style.borderColor='rgba(6,182,212,0.2)'">
+          <div style="font-size:24px; margin-bottom:8px;">🧠</div>
+          <div style="font-size:13px; font-weight:800; color:#E8F0FF; margin-bottom:4px;">Reasoning Tricks</div>
+          <div style="font-size:11px; color:#64748B;">Logical & Verbal Reasoning</div>
+          <div style="margin-top:10px; font-size:11px; color:#06B6D4; font-weight:700;">చదవండి →</div>
+        </div>
+      </a>
+
+      <!-- Card 10 -->
+      <a href="telangana-history-guide.html" class="sg-card" data-idx="9" style="text-decoration:none;">
+        <div style="background:#111827; border:1px solid rgba(0,184,148,0.2); border-radius:14px; padding:16px; transition:all 0.2s; height:100%;" onmouseover="this.style.borderColor='#00B894'" onmouseout="this.style.borderColor='rgba(0,184,148,0.2)'">
+          <div style="font-size:24px; margin-bottom:8px;">🗺️</div>
+          <div style="font-size:13px; font-weight:800; color:#E8F0FF; margin-bottom:4px;">Telangana History</div>
+          <div style="font-size:11px; color:#64748B;">TSPSC Special Topic</div>
+          <div style="margin-top:10px; font-size:11px; color:#00B894; font-weight:700;">చదవండి →</div>
+        </div>
+      </a>
+
+      <!-- Card 11 -->
+      <a href="polity-guide.html" class="sg-card" data-idx="10" style="text-decoration:none;">
+        <div style="background:#111827; border:1px solid rgba(251,191,36,0.2); border-radius:14px; padding:16px; transition:all 0.2s; height:100%;" onmouseover="this.style.borderColor='#FBBF24'" onmouseout="this.style.borderColor='rgba(251,191,36,0.2)'">
+          <div style="font-size:24px; margin-bottom:8px;">⚖️</div>
+          <div style="font-size:13px; font-weight:800; color:#E8F0FF; margin-bottom:4px;">Indian Polity</div>
+          <div style="font-size:11px; color:#64748B;">Constitution & Governance</div>
+          <div style="margin-top:10px; font-size:11px; color:#FBBF24; font-weight:700;">చదవండి →</div>
+        </div>
+      </a>
+
+      <!-- Card 12 -->
+      <a href="computer-awareness-guide.html" class="sg-card" data-idx="11" style="text-decoration:none;">
+        <div style="background:#111827; border:1px solid rgba(79,142,255,0.2); border-radius:14px; padding:16px; transition:all 0.2s; height:100%;" onmouseover="this.style.borderColor='#4F8EFF'" onmouseout="this.style.borderColor='rgba(79,142,255,0.2)'">
+          <div style="font-size:24px; margin-bottom:8px;">💻</div>
+          <div style="font-size:13px; font-weight:800; color:#E8F0FF; margin-bottom:4px;">Computer Awareness</div>
+          <div style="font-size:11px; color:#64748B;">Banking Exams కోసం</div>
+          <div style="margin-top:10px; font-size:11px; color:#4F8EFF; font-weight:700;">చదవండి →</div>
+        </div>
+      </a>
+
+      <!-- Card 13 -->
+      <a href="economy-guide.html" class="sg-card" data-idx="12" style="text-decoration:none;">
+        <div style="background:#111827; border:1px solid rgba(168,85,247,0.2); border-radius:14px; padding:16px; transition:all 0.2s; height:100%;" onmouseover="this.style.borderColor='#A855F7'" onmouseout="this.style.borderColor='rgba(168,85,247,0.2)'">
+          <div style="font-size:24px; margin-bottom:8px;">💹</div>
+          <div style="font-size:13px; font-weight:800; color:#E8F0FF; margin-bottom:4px;">Indian Economy</div>
+          <div style="font-size:11px; color:#64748B;">Budget, GDP, Banking</div>
+          <div style="margin-top:10px; font-size:11px; color:#A855F7; font-weight:700;">చదవండి →</div>
+        </div>
+      </a>
+
+      <!-- Card 14 -->
+      <a href="science-guide.html" class="sg-card" data-idx="13" style="text-decoration:none;">
+        <div style="background:#111827; border:1px solid rgba(6,182,212,0.2); border-radius:14px; padding:16px; transition:all 0.2s; height:100%;" onmouseover="this.style.borderColor='#06B6D4'" onmouseout="this.style.borderColor='rgba(6,182,212,0.2)'">
+          <div style="font-size:24px; margin-bottom:8px;">🔬</div>
+          <div style="font-size:13px; font-weight:800; color:#E8F0FF; margin-bottom:4px;">General Science</div>
+          <div style="font-size:11px; color:#64748B;">Physics, Chemistry, Biology</div>
+          <div style="margin-top:10px; font-size:11px; color:#06B6D4; font-weight:700;">చదవండి →</div>
+        </div>
+      </a>
+
+      <!-- Card 15 -->
+      <a href="ssc-chsl-guide.html" class="sg-card" data-idx="14" style="text-decoration:none;">
+        <div style="background:#111827; border:1px solid rgba(239,68,68,0.2); border-radius:14px; padding:16px; transition:all 0.2s; height:100%;" onmouseover="this.style.borderColor='#EF4444'" onmouseout="this.style.borderColor='rgba(239,68,68,0.2)'">
+          <div style="font-size:24px; margin-bottom:8px;">📋</div>
+          <div style="font-size:13px; font-weight:800; color:#E8F0FF; margin-bottom:4px;">SSC CHSL Guide</div>
+          <div style="font-size:11px; color:#64748B;">Tier 1 Complete Strategy</div>
+          <div style="margin-top:10px; font-size:11px; color:#EF4444; font-weight:700;">చదవండి →</div>
+        </div>
+      </a>
+
+      <!-- Card 16 -->
+      <a href="ibps-po-guide.html" class="sg-card" data-idx="15" style="text-decoration:none;">
+        <div style="background:#111827; border:1px solid rgba(0,184,148,0.2); border-radius:14px; padding:16px; transition:all 0.2s; height:100%;" onmouseover="this.style.borderColor='#00B894'" onmouseout="this.style.borderColor='rgba(0,184,148,0.2)'">
+          <div style="font-size:24px; margin-bottom:8px;">🏦</div>
+          <div style="font-size:13px; font-weight:800; color:#E8F0FF; margin-bottom:4px;">IBPS PO Guide</div>
+          <div style="font-size:11px; color:#64748B;">Prelims & Mains Strategy</div>
+          <div style="margin-top:10px; font-size:11px; color:#00B894; font-weight:700;">చదవండి →</div>
+        </div>
+      </a>
+
+      <!-- Card 17 -->
+      <a href="ap-history-guide.html" class="sg-card" data-idx="16" style="text-decoration:none;">
+        <div style="background:#111827; border:1px solid rgba(251,191,36,0.2); border-radius:14px; padding:16px; transition:all 0.2s; height:100%;" onmouseover="this.style.borderColor='#FBBF24'" onmouseout="this.style.borderColor='rgba(251,191,36,0.2)'">
+          <div style="font-size:24px; margin-bottom:8px;">🌿</div>
+          <div style="font-size:13px; font-weight:800; color:#E8F0FF; margin-bottom:4px;">AP History & Culture</div>
+          <div style="font-size:11px; color:#64748B;">APPSC Special Topic</div>
+          <div style="margin-top:10px; font-size:11px; color:#FBBF24; font-weight:700;">చదవండి →</div>
+        </div>
+      </a>
+
+      <!-- Card 18 -->
+      <a href="current-affairs-strategy.html" class="sg-card" data-idx="17" style="text-decoration:none;">
+        <div style="background:#111827; border:1px solid rgba(79,142,255,0.2); border-radius:14px; padding:16px; transition:all 0.2s; height:100%;" onmouseover="this.style.borderColor='#4F8EFF'" onmouseout="this.style.borderColor='rgba(79,142,255,0.2)'">
+          <div style="font-size:24px; margin-bottom:8px;">📰</div>
+          <div style="font-size:13px; font-weight:800; color:#E8F0FF; margin-bottom:4px;">Current Affairs Strategy</div>
+          <div style="font-size:11px; color:#64748B;">రోజువారీ Preparation Tips</div>
+          <div style="margin-top:10px; font-size:11px; color:#4F8EFF; font-weight:700;">చదవండి →</div>
+        </div>
+      </a>
+
+      <!-- Card 19 -->
+      <a href="time-management-guide.html" class="sg-card" data-idx="18" style="text-decoration:none;">
+        <div style="background:#111827; border:1px solid rgba(168,85,247,0.2); border-radius:14px; padding:16px; transition:all 0.2s; height:100%;" onmouseover="this.style.borderColor='#A855F7'" onmouseout="this.style.borderColor='rgba(168,85,247,0.2)'">
+          <div style="font-size:24px; margin-bottom:8px;">⏰</div>
+          <div style="font-size:13px; font-weight:800; color:#E8F0FF; margin-bottom:4px;">Time Management</div>
+          <div style="font-size:11px; color:#64748B;">Exam లో Score పెంచుకోండి</div>
+          <div style="margin-top:10px; font-size:11px; color:#A855F7; font-weight:700;">చదవండి →</div>
+        </div>
+      </a>
+
+      <!-- Card 20 -->
+      <a href="study-plan-guide.html" class="sg-card" data-idx="19" style="text-decoration:none;">
+        <div style="background:#111827; border:1px solid rgba(6,182,212,0.2); border-radius:14px; padding:16px; transition:all 0.2s; height:100%;" onmouseover="this.style.borderColor='#06B6D4'" onmouseout="this.style.borderColor='rgba(6,182,212,0.2)'">
+          <div style="font-size:24px; margin-bottom:8px;">📅</div>
+          <div style="font-size:13px; font-weight:800; color:#E8F0FF; margin-bottom:4px;">90-Day Study Plan</div>
+          <div style="font-size:11px; color:#64748B;">Competitive Exams కోసం</div>
+          <div style="margin-top:10px; font-size:11px; color:#06B6D4; font-weight:700;">చదవండి →</div>
+        </div>
+      </a>
+
+    </div>
+
+    <!-- View All / Show Less button — only shown when cards > 5 -->
+    <div id="sg-viewall-wrap" style="display:none; text-align:center; margin-top:16px;">
+      <button id="sg-viewall-btn" onclick="sgToggleAll()" style="
+        background:transparent;
+        border:1.5px solid rgba(79,142,255,0.4);
+        border-radius:24px;
+        color:#4F8EFF;
+        font-size:13px;
+        font-weight:800;
+        padding:9px 24px;
+        cursor:pointer;
+        transition:all 0.2s;
+        letter-spacing:0.3px;
+      " onmouseover="this.style.background='rgba(79,142,255,0.1)';this.style.borderColor='#4F8EFF';"
+         onmouseout="this.style.background='transparent';this.style.borderColor='rgba(79,142,255,0.4)';">
+        అన్నీ చూడు → <span id="sg-hidden-count"></span>
+      </button>
     </div>
   </div>
+
+  <script>
+  (function(){
+    var SG_LIMIT = 5;
+    var sgExpanded = false;
+
+    function sgInit(){
+      var cards = document.querySelectorAll('.sg-card');
+      var total = cards.length;
+      var hidden = total - SG_LIMIT;
+
+      // Update badge
+      var badge = document.getElementById('sg-count-badge');
+      if(badge){ badge.textContent = total + ' Guides'; badge.style.display = 'inline-block'; }
+
+      if(hidden <= 0) return; // 5 or fewer — nothing to do
+
+      // Hide extra cards
+      cards.forEach(function(c, i){
+        if(i >= SG_LIMIT){
+          c.style.display = 'none';
+          c.setAttribute('data-sg-hidden','1');
+        }
+      });
+
+      // Show button
+      var wrap = document.getElementById('sg-viewall-wrap');
+      var countSpan = document.getElementById('sg-hidden-count');
+      if(wrap){ wrap.style.display = 'block'; }
+      if(countSpan){ countSpan.textContent = '(+' + hidden + ' మరిన్ని)'; }
+    }
+
+    window.sgToggleAll = function(){
+      sgExpanded = !sgExpanded;
+      var cards = document.querySelectorAll('.sg-card[data-sg-hidden]');
+      var btn = document.getElementById('sg-viewall-btn');
+      var countSpan = document.getElementById('sg-hidden-count');
+      var hidden = cards.length;
+
+      cards.forEach(function(c){
+        c.style.display = sgExpanded ? '' : 'none';
+      });
+
+      if(btn){
+        if(sgExpanded){
+          btn.innerHTML = 'తక్కువగా చూపించు ↑ ';
+          if(countSpan){ btn.appendChild(countSpan); countSpan.textContent=''; }
+        } else {
+          btn.innerHTML = 'అన్నీ చూడు → <span id="sg-hidden-count">(+' + hidden + ' మరిన్ని)</span>';
+        }
+      }
+    };
+
+    // Run after DOM ready
+    if(document.readyState === 'loading'){
+      document.addEventListener('DOMContentLoaded', sgInit);
+    } else {
+      sgInit();
+    }
+  })();
+  </script>
   <!-- END STUDY GUIDES -->
 
   <!-- LEADERBOARD -->

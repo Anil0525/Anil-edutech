@@ -10182,7 +10182,7 @@ document.getElementById('sub-overlay').addEventListener('click', function(e) {
 ════════════════════════════════════════ */
 const DEFAULT_DB = {
   exams: [
-    { id:1, name:'TSPSC Group-2 Mock Test 1', cat:'TSPSC',   time:30, diff:'Medium', sections:{reasoning:1,arithmetic:1,ga:1}, qmark:1, nmark:0 },
+    { id:1, name:'TSPSC Group-2 Mock Test 1', cat:'TSPSC',   time:30, diff:'Medium', sections:{reasoning:24,arithmetic:26,ga:25,english:25}, qmark:1, nmark:0 },
     { id:2, name:'SSC CGL',  cat:'SSC',     time:60, diff:'Medium', sections:{reasoning:25,arithmetic:25,ga:25,english:25}, qmark:2, nmark:0.5 },
     { id:3, name:'SSC CHSL', cat:'SSC',     time:60, diff:'Easy',   sections:{reasoning:25,arithmetic:25,ga:25,english:25}, qmark:2, nmark:0.5 },
     { id:4, name:'SSC MTS',  cat:'SSC',     time:90, diff:'Easy',   sections:{reasoning:20,arithmetic:20,ga:20,english:20}, qmark:1, nmark:0 },
@@ -10987,13 +10987,26 @@ function _restartExam(examId) {
 }
 
 function _beginFreshExam(e, qs) {
-  // Sort questions by section order so English is always last
+  // Auto-assign sections based on exam.sections config if questions lack section info
+  const _secOrdList = ['reasoning','arithmetic','ga','english','science'];
+  const hasSections = qs.some(q => q.section && q.section !== 'ga');
+  if (!hasSections && e.sections) {
+    // Assign sections sequentially based on counts
+    let qsCopy = [...qs];
+    let idx = 0;
+    for (const sec of _secOrdList) {
+      const count = e.sections[sec] || 0;
+      for (let i = 0; i < count && idx < qsCopy.length; i++, idx++) {
+        qsCopy[idx] = { ...qsCopy[idx], section: sec };
+      }
+    }
+    qs = qsCopy;
+  }
+
+  // Sort questions by section order
   const _secOrd = { reasoning: 0, arithmetic: 1, ga: 2, english: 3, science: 4 };
-  qs = [...qs].sort((a, b) => {
-    const sa = _secOrd[a.section || 'ga'] ?? 2;
-    const sb = _secOrd[b.section || 'ga'] ?? 2;
-    return sa - sb;
-  });
+  qs = [...qs].sort((a, b) => (_secOrd[a.section||'ga'] ?? 2) - (_secOrd[b.section||'ga'] ?? 2));
+
   exam.current   = e;
   exam.questions = qs;
   exam.idx       = 0;

@@ -1078,8 +1078,11 @@
     top: 0;
     z-index: 100;
     box-shadow: 0 2px 20px rgba(26,115,232,.12);
-
+    transition: opacity .2s;
   }
+  /* Hide navbar when exam is running */
+  body.exam-active nav { display: none !important; }
+  body.exam-active .mob-bottom-nav { display: none !important; }
 
   .logo { display: flex; align-items: center; gap: 8px; text-decoration: none; cursor: pointer; }
   .logo-icon {
@@ -1549,7 +1552,20 @@
     padding:3px 12px; border-radius:20px; letter-spacing:.3px;
     flex-shrink: 0; align-self: flex-start;
   }
-  .q-dots { display: flex; gap: 5px; flex-wrap: wrap; margin-bottom: 10px; flex-shrink: 0; }
+  .q-dots-wrap { flex-shrink: 0; margin-bottom: 8px; }
+  .q-dots {
+    display: flex; gap: 5px; flex-wrap: wrap;
+    max-height: 38px; overflow: hidden;
+    transition: max-height .3s ease;
+  }
+  .q-dots.expanded { max-height: 300px; }
+  .q-dots-toggle {
+    background: none; border: none; cursor: pointer;
+    font-size: 11px; font-weight: 700; color: var(--primary);
+    padding: 2px 0; margin-top: 4px; display: block;
+    font-family: inherit;
+  }
+  .q-dots-toggle:hover { text-decoration: underline; }
   .q-dot {
     width: 32px; height: 32px;
     border-radius: 8px;
@@ -6134,7 +6150,10 @@ html {
     <div class="fullscreen-hint" id="fs-hint" style="display:none">🛡️ Anti-Cheat Mode active — Tab switch చేయకండి, లేకుంటే exam submit అవుతుంది!</div>
     <div class="section-tabs-bar" id="section-tabs-bar" style="display:none"></div>
     <div class="section-label-pill" id="section-label-pill" style="display:none"></div>
-    <div class="q-dots" id="q-dots"></div>
+    <div class="q-dots-wrap">
+      <div class="q-dots" id="q-dots"></div>
+      <button class="q-dots-toggle" id="q-dots-toggle" onclick="toggleQDots()" style="display:none">▼ అన్ని Questions చూడండి</button>
+    </div>
     <div class="q-counter" id="q-counter">Question 1 of 10</div>
     <div class="q-text" id="q-text"></div>
     <div class="options-list" id="options-list"></div>
@@ -10302,6 +10321,8 @@ function showPage(name, _skipHistory) {
   }
   // Disable body scroll when exam is running (page-exam), restore otherwise
   document.body.style.overflow = (name === 'exam') ? 'hidden' : '';
+  // Hide navbar when exam is active
+  document.body.classList.toggle('exam-active', name === 'exam');
   const nb = document.getElementById('nav-' + name);
   if (nb) nb.classList.add('active');
   window.scrollTo({top:0, behavior:'smooth'});
@@ -11104,10 +11125,27 @@ function renderDots() {
   const qs = exam.questions;
   renderSectionTabs();
   const filtered = _filteredDotQuestions();
-  document.getElementById('q-dots').innerHTML = filtered.map(({q,i}) => {
+  const dotsEl = document.getElementById('q-dots');
+  dotsEl.innerHTML = filtered.map(({q,i}) => {
     const cls = i===exam.idx ? 'current' : exam.answers[q.id] ? 'answered' : '';
     return `<button class="q-dot ${cls}" onclick="goToQ(${i})">${i+1}</button>`;
   }).join('');
+  // Show toggle only if dots overflow (>19 questions)
+  const toggleBtn = document.getElementById('q-dots-toggle');
+  if (toggleBtn) {
+    const overflow = filtered.length > 19;
+    toggleBtn.style.display = overflow ? 'block' : 'none';
+    const expanded = dotsEl.classList.contains('expanded');
+    toggleBtn.textContent = expanded ? '▲ మూసివేయి' : `▼ అన్నీ చూడండి (${filtered.length})`;
+  }
+}
+
+function toggleQDots() {
+  const d = document.getElementById('q-dots');
+  const btn = document.getElementById('q-dots-toggle');
+  if (!d) return;
+  d.classList.toggle('expanded');
+  btn.textContent = d.classList.contains('expanded') ? '▲ మూసివేయి' : `▼ అన్నీ చూడండి`;
 }
 
 function pick(L, qid) { exam.answers[qid] = L; renderQ(); }

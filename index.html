@@ -11155,14 +11155,14 @@ function renderDots() {
   if (!rightDots) return;
 
   if (hasMultipleSections) {
-    // Render per-section blocks
+    // Render per-section blocks with section-relative numbering
     let html = '';
     secOrder.forEach(s => {
       if (!secMap[s]) return;
       const meta = SECTION_META[s] || { short: s };
-      const dotsHtml = secMap[s].map(({q,i}) => {
+      const dotsHtml = secMap[s].map(({q,i}, secIdx) => {
         const cls = i === exam.idx ? 'current' : exam.answers[q.id] ? 'answered' : '';
-        return `<button class="q-dot ${cls}" onclick="goToQ(${i})" title="Q${i+1}">${i+1}</button>`;
+        return `<button class="q-dot ${cls}" onclick="goToQ(${i})" title="Q${i+1}">${secIdx+1}</button>`;
       }).join('');
       html += `<div class="right-section-block">
         <div class="right-section-title">${meta.short}</div>
@@ -11171,7 +11171,7 @@ function renderDots() {
     });
     rightDots.innerHTML = html;
   } else {
-    // Single section — one block
+    // Single section — show 1,2,3...
     const allDots = qs.map((q,i) => {
       const cls = i === exam.idx ? 'current' : exam.answers[q.id] ? 'answered' : '';
       return `<button class="q-dot ${cls}" onclick="goToQ(${i})" title="Q${i+1}">${i+1}</button>`;

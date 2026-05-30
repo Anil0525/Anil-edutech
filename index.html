@@ -11080,20 +11080,21 @@ function renderQ() {
     </div>`;
   }).join('');
 
-  // Submit only on the last question of the last available section (secOrder)
+  // Submit on the last question of the last available section
   const secOrder2 = ['reasoning','arithmetic','ga','english','science'];
   const availSections = secOrder2.filter(s => exam.questions.some(q => (q.section||'ga') === s));
   const lastSection   = availSections[availSections.length - 1] || 'ga';
   const lastSectionQs = exam.questions.map((q,i)=>({q,i})).filter(({q})=>(q.section||'ga')===lastSection);
   const lastGlobalIdx = lastSectionQs.length ? lastSectionQs[lastSectionQs.length-1].i : exam.questions.length-1;
-  const last          = exam.idx === lastGlobalIdx;
+  // Fallback: if only 1 section found (all same section), use global last
+  const last = exam.idx === lastGlobalIdx || exam.idx === exam.questions.length - 1;
   const isLastInView  = exam.idx === tot - 1;
   const btnPrev = document.getElementById('btn-prev');
   const btnNext = document.getElementById('btn-next');
   const btnSub  = document.getElementById('btn-submit');
   if (btnPrev) btnPrev.disabled      = exam.idx === 0;
   if (btnNext) btnNext.style.display = '';
-  if (btnNext) btnNext.disabled      = isLastInView;
+  if (btnNext) btnNext.disabled      = last;
   if (btnSub)  btnSub.style.display  = last ? '' : 'none';
   renderDots();
 }

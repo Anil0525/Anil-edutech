@@ -11080,14 +11080,15 @@ function renderQ() {
     </div>`;
   }).join('');
 
-  const last = exam.idx === tot-1;
+  const last       = exam.idx === exam.questions.length - 1;   // globally last Q only
+  const isLastInView = exam.idx === tot - 1;                    // last in current section view
   const btnPrev = document.getElementById('btn-prev');
   const btnNext = document.getElementById('btn-next');
   const btnSub  = document.getElementById('btn-submit');
-  if (btnPrev) btnPrev.disabled           = exam.idx === 0;
-  if (btnNext) btnNext.style.display      = '';           // always visible
-  if (btnNext) btnNext.disabled           = last;         // disabled on last Q
-  if (btnSub)  btnSub.style.display       = last ? '' : 'none';
+  if (btnPrev) btnPrev.disabled      = exam.idx === 0;
+  if (btnNext) btnNext.style.display = '';
+  if (btnNext) btnNext.disabled      = isLastInView;           // disabled at end of current view
+  if (btnSub)  btnSub.style.display  = last ? '' : 'none';     // only on Q100 (global last)
   renderDots();
 }
 

@@ -1468,122 +1468,173 @@
     border: 2px solid var(--border);
   }
 
-  /* ─── EXAM RUNNING ─── */
-  .exam-header {
-    background: #fff;
-    border-bottom: 2px solid var(--border);
-    padding: 8px 20px;
-    display: flex; align-items: center;
-    justify-content: space-between; flex-wrap: nowrap; gap: 10px;
-    box-shadow: var(--shadow-sm);
-    flex-shrink: 0;
-  }
-  .exam-header-title { font-size: 14px; font-weight: 800; color: var(--text); }
-  .exam-header-sub { font-size: 12px; color: var(--text2); margin-top: 2px; }
+  /* ─── EXAM 2-PANEL LAYOUT ─── */
+  #page-exam.active { display: flex !important; flex-direction: column; height: 100vh; overflow: hidden; }
 
-  .timer-box {
-    background: linear-gradient(135deg, #EEF2FF, #F0FDF4);
-    border: 2px solid var(--border2);
-    color: var(--primary);
-    font-size: 22px; font-weight: 900;
-    padding: 7px 20px; border-radius: var(--radius2);
-    font-variant-numeric: tabular-nums; letter-spacing: 2px;
-    transition: all .3s; flex-shrink: 0;
+  /* Top bar */
+  .exam-topbar {
+    background: #fff; border-bottom: 2px solid var(--border);
+    padding: 0 20px; height: 52px; flex-shrink: 0;
+    display: flex; align-items: center; justify-content: space-between; gap: 12px;
+    box-shadow: 0 2px 12px rgba(0,0,0,.06);
   }
-  .timer-box.warning { background: rgba(247,127,0,.08); border-color: rgba(247,127,0,.4); color: var(--amber); }
-  .timer-box.danger  { background: rgba(239,35,60,.08); border-color: rgba(239,35,60,.4); color: var(--red); animation: blink .8s infinite; }
-  @keyframes blink { 0%,100%{opacity:1} 50%{opacity:.4} }
+  .exam-topbar-left  { display: flex; align-items: center; gap: 10px; min-width: 0; flex: 1; }
+  .exam-topbar-right { display: flex; align-items: center; gap: 10px; flex-shrink: 0; }
+  .exam-topbar-title { font-size: 15px; font-weight: 800; color: var(--text); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; max-width: 400px; }
 
   .progress-bar { height: 3px; background: var(--border); flex-shrink: 0; }
   .progress-fill { height: 100%; background: linear-gradient(90deg, var(--primary), var(--teal)); transition: width .4s ease; }
 
-  .exam-body {
-    max-width: 760px; margin: 0 auto;
-    padding: 8px 22px 4px;
+  /* 2-panel wrapper */
+  .exam-layout {
     flex: 1; min-height: 0;
+    display: flex; gap: 0;
+    overflow: hidden;
+  }
+
+  /* ── LEFT panel ── */
+  .exam-left {
+    flex: 1; min-width: 0;
     display: flex; flex-direction: column;
-    width: 100%; box-sizing: border-box;
-    overflow-y: auto;
-    overflow-x: hidden;
+    border-right: 2px solid var(--border);
+    overflow: hidden;
   }
+  .exam-left-inner {
+    flex: 1; min-height: 0;
+    padding: 20px 28px 12px;
+    overflow-y: auto; overflow-x: hidden;
+  }
+  .exam-running-sub-inline { font-size: 12px; color: var(--text3); margin-bottom: 10px; font-weight: 600; }
 
-  /* ── SECTION TABS ── */
-  .section-tabs-bar {
-    display: flex; gap: 5px; flex-wrap: wrap;
-    margin-bottom: 7px; flex-shrink: 0;
-  }
-  .sec-tab {
-    padding: 5px 12px; border-radius: 20px;
-    border: 2px solid var(--border);
-    background: var(--card); color: var(--text2);
-    font-family: inherit; font-size: 12px; font-weight: 800;
+  .q-counter { font-size: 11px; font-weight: 700; color: var(--text3); margin-bottom: 6px; text-transform: uppercase; letter-spacing: 1px; }
+  .q-text    { font-size: 17px; font-weight: 700; line-height: 1.6; margin-bottom: 18px; color: var(--text); }
+
+  .options-list { display: grid; gap: 10px; }
+  .option {
+    background: #fff; border: 2px solid var(--border); border-radius: 12px;
+    padding: 12px 16px; display: flex; align-items: center; gap: 12px;
     cursor: pointer; transition: all .18s;
-    display: flex; align-items: center; gap: 5px;
+    font-size: 15px; font-weight: 600; color: var(--text2);
+    box-shadow: 0 1px 4px rgba(0,0,0,.04);
   }
-  .sec-tab:hover { border-color: var(--primary); color: var(--primary); }
-  .sec-tab.active { background: var(--primary); border-color: var(--primary); color: #fff; box-shadow: 0 3px 10px rgba(26,115,232,.3); }
-  .sec-tab .sec-badge { background: rgba(255,255,255,.25); color: inherit; border-radius: 10px; padding: 0 5px; font-size: 10px; font-weight: 900; }
-  .sec-tab:not(.active) .sec-badge { background: var(--primary-soft); color: var(--primary); }
+  .option:hover   { border-color: var(--primary); background: var(--primary-soft); color: var(--text); transform: translateX(3px); }
+  .option.selected{ border-color: var(--primary); background: linear-gradient(135deg,rgba(67,97,238,.09),rgba(124,58,237,.05)); color: var(--text); box-shadow: 0 3px 12px rgba(67,97,238,.12); }
+  .opt-letter {
+    width: 32px; height: 32px; border-radius: 8px; flex-shrink: 0;
+    background: var(--bg); border: 2px solid var(--border2);
+    display: flex; align-items: center; justify-content: center;
+    font-size: 13px; font-weight: 800; color: var(--text3); transition: all .18s;
+  }
+  .option.selected .opt-letter { background: var(--primary); color: #fff; border-color: var(--primary); box-shadow: 0 3px 10px rgba(67,97,238,.3); }
 
-  .section-label-pill {
-    display: inline-block; margin-bottom: 4px;
-    background: linear-gradient(135deg,var(--primary),#7C3AED);
-    color:#fff; font-size:10px; font-weight:800;
-    padding:2px 10px; border-radius:20px; letter-spacing:.3px;
-    flex-shrink: 0; align-self: flex-start;
+  /* Bottom nav bar (left panel) */
+  .exam-nav-bar {
+    padding: 10px 20px; border-top: 2px solid var(--border);
+    display: flex; justify-content: space-between; align-items: center;
+    gap: 10px; flex-shrink: 0; background: #fff;
+  }
+  .btn-mark-review {
+    background: #fff; border: 2px solid var(--border2); color: var(--text2);
+    font-family: inherit; font-size: 13px; font-weight: 700;
+    padding: 9px 16px; border-radius: 12px; cursor: pointer; transition: all .2s;
+  }
+  .btn-mark-review:hover { border-color: #E53E3E; color: #E53E3E; }
+
+  .btn-nav {
+    background: #fff; border: 2px solid var(--border2); color: var(--text2);
+    font-family: inherit; font-size: 14px; font-weight: 700;
+    padding: 9px 20px; border-radius: 12px;
+    cursor: pointer; transition: all .2s; white-space: nowrap;
+  }
+  .btn-nav:hover { border-color: var(--primary); color: var(--primary); background: var(--primary-soft); }
+  .btn-nav:disabled { opacity: .3; cursor: not-allowed; }
+
+  /* ── RIGHT panel ── */
+  .exam-right {
+    width: 260px; flex-shrink: 0;
+    display: flex; flex-direction: column;
+    background: #F8FAFE; overflow-y: auto;
+    padding: 16px 14px 16px;
+    gap: 14px;
   }
 
-  .q-dots-wrap { flex-shrink: 0; margin-bottom: 5px; }
-  .q-dots {
-    display: flex; gap: 4px; flex-wrap: wrap;
-    max-height: 32px; overflow: hidden;
-    transition: max-height .3s ease;
+  /* Timer card */
+  .exam-timer-card {
+    background: #fff; border: 2px solid var(--border);
+    border-radius: 16px; padding: 14px 16px; text-align: center;
+    box-shadow: 0 2px 12px rgba(0,0,0,.06);
   }
-  .q-dots.expanded { max-height: 260px; }
-  .q-dots-toggle {
-    background: none; border: none; cursor: pointer;
-    font-size: 10px; font-weight: 700; color: var(--primary);
-    padding: 1px 0; margin-top: 2px; display: block;
-    font-family: inherit;
+  .exam-timer-label { font-size: 11px; font-weight: 800; color: var(--text3); text-transform: uppercase; letter-spacing: 1px; margin-bottom: 6px; }
+  .exam-timer-display {
+    font-size: 32px; font-weight: 900; letter-spacing: 3px;
+    color: var(--primary); font-variant-numeric: tabular-nums;
+    transition: color .3s;
   }
-  .q-dots-toggle:hover { text-decoration: underline; }
+  .exam-timer-display.warning { color: var(--amber); }
+  .exam-timer-display.danger  { color: var(--red); animation: blink .8s infinite; }
+  @keyframes blink { 0%,100%{opacity:1} 50%{opacity:.4} }
+
+  /* Section dots on right panel */
+  .exam-right-dots { display: flex; flex-direction: column; gap: 12px; }
+  .right-section-block { background: #fff; border: 2px solid var(--border); border-radius: 14px; overflow: hidden; }
+  .right-section-title {
+    padding: 8px 12px; font-size: 12px; font-weight: 800; color: #fff;
+    background: linear-gradient(135deg, var(--primary), #4F8EFF);
+    letter-spacing: .3px;
+  }
+  .right-section-dots { display: flex; flex-wrap: wrap; gap: 5px; padding: 10px 10px 10px; }
+
+  /* Q-dots (right panel style) */
   .q-dot {
-    width: 28px; height: 28px; border-radius: 7px;
+    width: 30px; height: 30px; border-radius: 8px;
     background: #fff; border: 2px solid var(--border);
     font-size: 11px; font-weight: 800;
     cursor: pointer; transition: all .15s;
     font-family: inherit; color: var(--text3);
-  }
-  .q-dot:hover { border-color: var(--primary); color: var(--primary); }
-  .q-dot.answered { background: rgba(6,185,107,.1); border-color: rgba(6,185,107,.5); color: var(--teal); }
-  .q-dot.current  { background: var(--primary); border-color: var(--primary); color: #fff; box-shadow: 0 3px 10px rgba(67,97,238,.3); }
-
-  .q-counter { font-size: 11px; font-weight: 700; color: var(--text3); margin-bottom: 4px; text-transform: uppercase; letter-spacing: 1px; flex-shrink: 0; }
-  .q-text    { font-size: 17px; font-weight: 700; line-height: 1.5; margin-bottom: 9px; color: var(--text); flex-shrink: 0; }
-
-  .options-list { display: grid; gap: 6px; margin-bottom: 4px; flex-shrink: 0; }
-  .option {
-    background: #fff; border: 2px solid var(--border); border-radius: 10px;
-    padding: 8px 14px; display: flex; align-items: center; gap: 10px;
-    cursor: pointer; transition: all .15s;
-    font-size: 15px; font-weight: 600; color: var(--text2);
-  }
-  .option:hover  { border-color: var(--primary); background: var(--primary-soft); color: var(--text); transform: translateX(2px); }
-  .option.selected { border-color: var(--primary); background: linear-gradient(135deg, rgba(67,97,238,.08), rgba(124,58,237,.05)); color: var(--text); }
-  .opt-letter {
-    width: 30px; height: 30px; border-radius: 8px;
-    background: var(--bg); border: 2px solid var(--border2);
     display: flex; align-items: center; justify-content: center;
-    font-size: 12px; font-weight: 800; flex-shrink: 0; transition: all .15s; color: var(--text3);
   }
-  .option.selected .opt-letter { background: var(--primary); color: #fff; border-color: var(--primary); box-shadow: 0 3px 10px rgba(67,97,238,.3); }
+  .q-dot:hover   { border-color: var(--primary); color: var(--primary); transform: scale(1.1); }
+  .q-dot.answered{ background: #0A8C5C; border-color: #0A8C5C; color: #fff; }
+  .q-dot.current { background: var(--primary); border-color: var(--primary); color: #fff; box-shadow: 0 3px 10px rgba(67,97,238,.35); transform: scale(1.1); }
+  .q-dot.skipped { background: #FF9F1C; border-color: #FF9F1C; color: #fff; }
 
-  .nav-row {
-    display: flex; justify-content: space-between; align-items: center;
-    gap: 8px; flex-wrap: nowrap;
-    margin-top: auto; padding: 7px 0 2px;
-    border-top: 2px solid var(--border); flex-shrink: 0;
+  /* Legend */
+  .exam-legend { display: flex; flex-wrap: wrap; gap: 8px; }
+  .legend-item  { display: flex; align-items: center; gap: 5px; font-size: 11px; font-weight: 700; color: var(--text2); }
+  .legend-dot   { width: 14px; height: 14px; border-radius: 4px; flex-shrink: 0; }
+  .ld-current   { background: var(--primary); }
+  .ld-answered  { background: #0A8C5C; }
+  .ld-unanswered{ background: #fff; border: 2px solid var(--border); }
+
+  /* Fullscreen hint compact */
+  .fullscreen-hint {
+    background: rgba(27,45,94,.08); border: 1.5px dashed var(--primary);
+    border-radius: 8px; padding: 4px 10px; font-size: 11px;
+    color: var(--primary); font-weight: 700; white-space: nowrap;
+    overflow: hidden; text-overflow: ellipsis; max-width: 300px;
   }
+
+  /* Submit button */
+  .btn-submit {
+    background: linear-gradient(135deg, #FF416C, #FF4B2B);
+    border: none; color: #fff;
+    font-family: inherit; font-size: 14px; font-weight: 800;
+    padding: 9px 22px; border-radius: 12px;
+    cursor: pointer; transition: all .2s;
+    box-shadow: 0 3px 12px rgba(255,65,108,.3);
+    white-space: nowrap;
+  }
+  .btn-submit:hover { transform: translateY(-2px); box-shadow: 0 6px 20px rgba(255,65,108,.4); }
+
+  /* Dark mode */
+  [data-theme="dark"] .exam-topbar   { background: var(--card); }
+  [data-theme="dark"] .exam-right    { background: #0A0F1A; }
+  [data-theme="dark"] .exam-timer-card { background: var(--card); }
+  [data-theme="dark"] .right-section-block { background: var(--card); }
+  [data-theme="dark"] .exam-nav-bar  { background: var(--card); }
+  [data-theme="dark"] .option        { background: var(--card); }
+  [data-theme="dark"] .btn-nav, [data-theme="dark"] .btn-mark-review { background: var(--card); }
+  [data-theme="dark"] .q-dot         { background: var(--card); }
 
   .btn-clear-resp {
     background: #fff;
@@ -3852,23 +3903,34 @@
     .exam-card { flex-direction: column; align-items: flex-start; gap: 12px; border-radius: 14px !important; }
     .exam-card .start-btn { width: 100%; text-align: center; }
 
-    /* EXAM PAGE */
-    .exam-header { padding: 7px 12px !important; flex-wrap: nowrap !important; gap: 6px !important; align-items: center !important; }
-    .exam-header-title { font-size: 12px !important; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; max-width: 130px; }
-    .exam-header-sub { font-size: 10px !important; margin-top: 1px !important; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; max-width: 130px; }
-    .exam-header > div:first-child { flex: 1; min-width: 0; overflow: hidden; }
-    .timer-box { font-size: 17px !important; padding: 5px 12px !important; flex-shrink: 0; }
-    .exam-body { padding: 7px 12px 4px; }
-    .q-dots { gap: 3px; overflow-x: auto; flex-wrap: nowrap; padding-bottom: 2px; }
-    .q-dot { width: 24px; height: 24px; font-size: 9px; border-radius: 6px; flex-shrink: 0; }
-    .q-text { font-size: 13.5px; margin-bottom: 7px; }
-    .options-list { gap: 5px; margin-bottom: 4px; }
-    .option { padding: 8px 10px; font-size: 12.5px; gap: 8px; }
-    .opt-letter { width: 26px; height: 26px; font-size: 11px; }
-    .nav-row { gap: 5px; padding: 6px 0 2px; }
-    .btn-clear-resp { padding: 7px 10px; font-size: 11px; }
-    .btn-nav { padding: 7px 12px; font-size: 12px; }
-    .btn-submit { padding: 7px 14px; font-size: 12px; }
+    /* EXAM PAGE - 2 panel */
+    .exam-topbar { padding: 0 12px; height: 46px; }
+    .exam-topbar-title { font-size: 13px !important; max-width: 150px; }
+    .exam-layout { flex-direction: column; }
+    .exam-right {
+      width: 100% !important; flex-direction: row !important;
+      padding: 8px 12px !important; gap: 10px !important;
+      overflow-x: auto; flex-shrink: 0;
+      border-right: none !important; border-top: 2px solid var(--border);
+      max-height: 110px;
+    }
+    .exam-timer-card { min-width: 90px; padding: 8px 10px !important; flex-shrink: 0; }
+    .exam-timer-display { font-size: 20px !important; }
+    .exam-timer-label { font-size: 9px !important; }
+    .exam-right-dots { flex-direction: row !important; gap: 8px !important; }
+    .right-section-block { min-width: 120px; }
+    .right-section-title { padding: 5px 8px; font-size: 10px; }
+    .right-section-dots { padding: 6px 8px; gap: 4px; }
+    .q-dot { width: 24px !important; height: 24px !important; font-size: 9px !important; }
+    .exam-legend { display: none; }
+    .exam-left-inner { padding: 12px 16px 8px; }
+    .q-text { font-size: 14px; margin-bottom: 12px; }
+    .option { padding: 9px 12px; font-size: 13px; gap: 10px; }
+    .opt-letter { width: 28px; height: 28px; font-size: 11px; }
+    .exam-nav-bar { padding: 8px 14px; }
+    .btn-nav { padding: 8px 14px; font-size: 12px; }
+    .btn-submit { padding: 8px 16px; font-size: 12px; }
+    .btn-mark-review { padding: 8px 12px; font-size: 11px; }
 
     /* RESULT PAGE */
     .result-hero { padding: 40px 18px 32px !important; }
@@ -6060,42 +6122,65 @@ html {
 
 <!-- EXAM -->
 <div id="page-exam" class="page">
-  <div class="exam-header">
-    <div style="display:flex;align-items:center;gap:10px;min-width:0;flex:1">
+  <!-- Top bar: title + lang + progress -->
+  <div class="exam-topbar">
+    <div class="exam-topbar-left">
       <button id="global-back-btn" class="back-btn">← వెనక్కి</button>
-      <div style="min-width:0">
-        <div class="exam-header-title" id="exam-running-title" style="white-space:nowrap;overflow:hidden;text-overflow:ellipsis">Exam</div>
-        <div class="exam-header-sub" id="exam-running-sub"></div>
-      </div>
+      <div class="exam-topbar-title" id="exam-running-title">Exam</div>
     </div>
-    <div style="display:flex;align-items:center;gap:10px">
+    <div class="exam-topbar-right">
+      <div class="fullscreen-hint" id="fs-hint" style="display:none">🛡️ Anti-Cheat — Tab switch వద్దు!</div>
       <div class="lang-toggle-wrap" id="exam-lang-toggle" style="border-color:rgba(27,45,94,.2);background:var(--bg)">
         <button class="lang-btn active" id="exam-lang-te" onclick="setExamLang('te')" style="color:var(--primary)">తె</button>
         <button class="lang-btn" id="exam-lang-en" onclick="setExamLang('en')" style="color:var(--text3)">EN</button>
       </div>
-      <div class="timer-box" id="timer-display">30:00</div>
     </div>
   </div>
   <div class="progress-bar"><div class="progress-fill" id="progress-fill" style="width:0%"></div></div>
-  <div class="exam-body">
-    <div class="fullscreen-hint" id="fs-hint" style="display:none">🛡️ Anti-Cheat Mode active — Tab switch చేయకండి, లేకుంటే exam submit అవుతుంది!</div>
-    <div class="section-tabs-bar" id="section-tabs-bar" style="display:none"></div>
-    <div class="section-label-pill" id="section-label-pill" style="display:none"></div>
-    <div class="q-dots-wrap">
-      <div class="q-dots" id="q-dots"></div>
-      <button class="q-dots-toggle" id="q-dots-toggle" onclick="toggleQDots()" style="display:none">▼ అన్ని Questions చూడండి</button>
-    </div>
-    <div class="q-counter" id="q-counter">Question 1 of 10</div>
-    <div class="q-text" id="q-text"></div>
-    <div class="options-list" id="options-list"></div>
-    <div class="nav-row">
-      <button class="btn-clear-resp" id="btn-clear-resp" onclick="clearCurrentAnswer()">🗑 Clear Response</button>
-      <div style="display:flex;gap:8px;align-items:center;">
-        <button class="btn-nav" id="btn-prev" onclick="prevQ()">← Previous</button>
-        <button class="btn-nav" id="btn-next" onclick="nextQ()">Next →</button>
-        <button class="btn-submit" id="btn-submit" onclick="submitExam()" style="display:none">Submit ✓</button>
+
+  <!-- 2-panel layout -->
+  <div class="exam-layout">
+
+    <!-- LEFT: Question panel -->
+    <div class="exam-left">
+      <div class="exam-left-inner">
+        <div class="q-counter" id="q-counter">Question 1 of 10</div>
+        <div class="exam-running-sub-inline" id="exam-running-sub"></div>
+        <div class="q-text" id="q-text"></div>
+        <div class="options-list" id="options-list"></div>
+      </div>
+      <!-- Bottom nav bar -->
+      <div class="exam-nav-bar">
+        <button class="btn-mark-review" id="btn-clear-resp" onclick="clearCurrentAnswer()">🗑 Clear</button>
+        <div style="display:flex;gap:8px;align-items:center;">
+          <button class="btn-nav" id="btn-prev" onclick="prevQ()">← Previous</button>
+          <button class="btn-nav" id="btn-next" onclick="nextQ()">Next →</button>
+          <button class="btn-submit" id="btn-submit" onclick="submitExam()" style="display:none">Submit ✓</button>
+        </div>
       </div>
     </div>
+
+    <!-- RIGHT: Timer + section dots -->
+    <div class="exam-right">
+      <!-- Timer card -->
+      <div class="exam-timer-card">
+        <div class="exam-timer-label">Time Left</div>
+        <div class="exam-timer-display" id="timer-display">30:00</div>
+      </div>
+
+      <!-- Section tabs + dots per section -->
+      <div class="exam-right-dots" id="exam-right-dots">
+        <!-- rendered by renderRightPanel() -->
+      </div>
+
+      <!-- Legend -->
+      <div class="exam-legend">
+        <div class="legend-item"><span class="legend-dot ld-current"></span> Current</div>
+        <div class="legend-item"><span class="legend-dot ld-answered"></span> Answered</div>
+        <div class="legend-item"><span class="legend-dot ld-unanswered"></span> Not Attempted</div>
+      </div>
+    </div>
+
   </div>
 </div>
 
@@ -10923,7 +11008,7 @@ function tick() {
   const el = document.getElementById('timer-display');
   if (el) {
     el.textContent = String(m).padStart(2,'0') + ':' + String(s).padStart(2,'0');
-    el.className = 'timer-box' + (exam.timeLeft < 60 ? ' danger' : exam.timeLeft < 300 ? ' warning' : '');
+    el.className = 'exam-timer-display' + (exam.timeLeft < 60 ? ' danger' : exam.timeLeft < 300 ? ' warning' : '');
   }
   if (exam.timeLeft <= 0) { stopTimer(); submitExam(); }
 }
@@ -11054,29 +11139,52 @@ function _filteredDotQuestions() {
 
 function renderDots() {
   const qs = exam.questions;
-  renderSectionTabs();
-  const filtered = _filteredDotQuestions();
-  const dotsEl = document.getElementById('q-dots');
-  dotsEl.innerHTML = filtered.map(({q,i}) => {
-    const cls = i===exam.idx ? 'current' : exam.answers[q.id] ? 'answered' : '';
-    return `<button class="q-dot ${cls}" onclick="goToQ(${i})">${i+1}</button>`;
-  }).join('');
-  // Show toggle only if dots overflow (>19 questions)
-  const toggleBtn = document.getElementById('q-dots-toggle');
-  if (toggleBtn) {
-    const overflow = filtered.length > 19;
-    toggleBtn.style.display = overflow ? 'block' : 'none';
-    const expanded = dotsEl.classList.contains('expanded');
-    toggleBtn.textContent = expanded ? '▲ మూసివేయి' : `▼ అన్నీ చూడండి (${filtered.length})`;
+  renderSectionTabs(); // keep section-tabs-bar updated (hidden in new layout but still used)
+
+  // Build section → questions map
+  const secOrder = ['reasoning','arithmetic','ga','english'];
+  const secMap = {};
+  qs.forEach((q,i) => {
+    const s = q.section || 'ga';
+    if (!secMap[s]) secMap[s] = [];
+    secMap[s].push({q, i});
+  });
+
+  const hasMultipleSections = Object.keys(secMap).length > 1;
+  const rightDots = document.getElementById('exam-right-dots');
+  if (!rightDots) return;
+
+  if (hasMultipleSections) {
+    // Render per-section blocks
+    let html = '';
+    secOrder.forEach(s => {
+      if (!secMap[s]) return;
+      const meta = SECTION_META[s] || { short: s };
+      const dotsHtml = secMap[s].map(({q,i}) => {
+        const cls = i === exam.idx ? 'current' : exam.answers[q.id] ? 'answered' : '';
+        return `<button class="q-dot ${cls}" onclick="goToQ(${i})" title="Q${i+1}">${i+1}</button>`;
+      }).join('');
+      html += `<div class="right-section-block">
+        <div class="right-section-title">${meta.short}</div>
+        <div class="right-section-dots">${dotsHtml}</div>
+      </div>`;
+    });
+    rightDots.innerHTML = html;
+  } else {
+    // Single section — one block
+    const allDots = qs.map((q,i) => {
+      const cls = i === exam.idx ? 'current' : exam.answers[q.id] ? 'answered' : '';
+      return `<button class="q-dot ${cls}" onclick="goToQ(${i})" title="Q${i+1}">${i+1}</button>`;
+    }).join('');
+    rightDots.innerHTML = `<div class="right-section-block">
+      <div class="right-section-title">📋 All Questions (${qs.length})</div>
+      <div class="right-section-dots">${allDots}</div>
+    </div>`;
   }
 }
 
 function toggleQDots() {
-  const d = document.getElementById('q-dots');
-  const btn = document.getElementById('q-dots-toggle');
-  if (!d) return;
-  d.classList.toggle('expanded');
-  btn.textContent = d.classList.contains('expanded') ? '▲ మూసివేయి' : `▼ అన్నీ చూడండి`;
+  // Legacy — no longer needed in new layout but keep for safety
 }
 
 function pick(L, qid) { exam.answers[qid] = L; renderQ(); }

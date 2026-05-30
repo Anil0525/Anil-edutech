@@ -325,110 +325,134 @@
 
   /* ── INSTRUCTIONS SCREEN ── */
   #ge-instructions {
-    width: 100%; max-width: 680px;
+    width: 100%; max-width: 700px;
     background: #fff;
-    border-radius: 20px;
+    border-radius: 24px;
     overflow: hidden;
-    box-shadow: 0 32px 80px rgba(0,0,0,.5);
-    animation: geSlideUp .4s cubic-bezier(.2,.8,.2,1);
+    box-shadow: 0 40px 100px rgba(0,0,0,.55);
+    animation: geSlideUp .45s cubic-bezier(.2,.8,.2,1);
   }
-  [data-theme="dark"] #ge-instructions { background: #1C2230; }
+  [data-theme="dark"] #ge-instructions { background: #0F1623; }
 
   @keyframes geSlideUp {
-    from { opacity:0; transform: translateY(40px); }
-    to   { opacity:1; transform: translateY(0); }
+    from { opacity:0; transform: translateY(50px) scale(.97); }
+    to   { opacity:1; transform: translateY(0) scale(1); }
   }
 
+  /* Hero header with mesh gradient */
   .ge-inst-header {
-    background: linear-gradient(135deg, #1B2D5E 0%, #1A73E8 100%);
-    padding: 22px 28px;
-    display: flex; align-items: center; gap: 16px;
-    position: relative;
+    background: linear-gradient(135deg, #0A1628 0%, #1B2D5E 45%, #1A73E8 100%);
+    padding: 28px 28px 22px;
+    display: flex; align-items: center; gap: 18px;
+    position: relative; overflow: hidden;
+  }
+  /* Decorative circles */
+  .ge-inst-header::before {
+    content: '';
+    position: absolute; top: -40px; right: -40px;
+    width: 180px; height: 180px;
+    border-radius: 50%;
+    background: rgba(255,255,255,.05);
+    pointer-events: none;
   }
   .ge-inst-header::after {
     content: '';
-    position: absolute; bottom: 0; left: 0; right: 0; height: 3px;
-    background: linear-gradient(90deg, #FF6B35, #FFC107, #00B894);
+    position: absolute; bottom: 0; left: 0; right: 0; height: 4px;
+    background: linear-gradient(90deg, #FF6B35 0%, #FFC107 35%, #00B894 70%, #1A73E8 100%);
   }
+
   .ge-header-emblem {
-    width: 52px; height: 52px; flex-shrink: 0;
-    background: rgba(255,255,255,.15);
-    border: 2px solid rgba(255,255,255,.3);
-    border-radius: 50%;
+    width: 56px; height: 56px; flex-shrink: 0;
+    background: rgba(255,255,255,.12);
+    border: 2px solid rgba(255,255,255,.25);
+    border-radius: 16px;
     display: flex; align-items: center; justify-content: center;
-    font-size: 24px;
+    font-size: 26px;
+    box-shadow: 0 8px 24px rgba(0,0,0,.2);
   }
   .ge-header-text h2 {
-    font-size: 15px; font-weight: 900; color: #fff;
-    letter-spacing: .3px; line-height: 1.3;
+    font-size: 17px; font-weight: 900; color: #fff;
+    letter-spacing: .2px; line-height: 1.3;
   }
   .ge-header-text p {
-    font-size: 11.5px; color: rgba(255,255,255,.75);
-    font-weight: 600; margin-top: 3px;
+    font-size: 12px; color: rgba(255,255,255,.65);
+    font-weight: 600; margin-top: 4px;
   }
+
+  /* Stats badges row */
   .ge-exam-badge {
     margin-left: auto; flex-shrink: 0;
-    background: rgba(255,255,255,.15);
-    border: 1.5px solid rgba(255,255,255,.3);
-    border-radius: 10px;
-    padding: 8px 14px; text-align: center;
+    display: flex; gap: 10px;
   }
-  .ge-exam-badge span { display: block; color: #fff; }
-  .ge-exam-badge .ge-badge-num { font-size: 22px; font-weight: 900; letter-spacing: -1px; }
-  .ge-exam-badge .ge-badge-lbl { font-size: 9.5px; font-weight: 700; opacity: .75; text-transform: uppercase; letter-spacing: .5px; }
+  .ge-stat-pill {
+    background: rgba(255,255,255,.12);
+    border: 1.5px solid rgba(255,255,255,.2);
+    border-radius: 14px; padding: 10px 16px;
+    text-align: center; min-width: 72px;
+    backdrop-filter: blur(4px);
+  }
+  .ge-stat-pill .ge-badge-num { font-size: 24px; font-weight: 900; color: #fff; letter-spacing: -1px; display: block; }
+  .ge-stat-pill .ge-badge-lbl { font-size: 9px; font-weight: 800; color: rgba(255,255,255,.65); text-transform: uppercase; letter-spacing: .8px; display: block; margin-top: 2px; }
 
-  .ge-inst-body { padding: 22px 28px; max-height: 55vh; overflow-y: auto; }
+  /* Body */
+  .ge-inst-body { padding: 20px 28px 4px; max-height: 52vh; overflow-y: auto; }
 
   .ge-inst-title {
-    font-size: 13px; font-weight: 900; color: #1B2D5E;
-    text-transform: uppercase; letter-spacing: 1px;
-    margin-bottom: 14px; display: flex; align-items: center; gap: 8px;
+    font-size: 11px; font-weight: 900; color: #1B2D5E;
+    text-transform: uppercase; letter-spacing: 1.2px;
+    margin-bottom: 12px; display: flex; align-items: center; gap: 8px;
   }
-  [data-theme="dark"] .ge-inst-title { color: var(--primary); }
+  [data-theme="dark"] .ge-inst-title { color: #7EB3FF; }
   .ge-inst-title::after { content: ''; flex: 1; height: 2px; background: var(--border); border-radius: 1px; }
 
-  .ge-rules-list { list-style: none; display: grid; gap: 9px; margin-bottom: 20px; }
+  /* Rules — 2-column grid on wider screens */
+  .ge-rules-list { list-style: none; display: grid; grid-template-columns: 1fr 1fr; gap: 8px; margin-bottom: 18px; }
   .ge-rule-item {
     display: flex; align-items: flex-start; gap: 10px;
-    background: #F8FAFF;
-    border: 1.5px solid #E0E8FF;
-    border-radius: 11px;
-    padding: 11px 14px;
-    font-size: 13px; font-weight: 600; color: #2D3561;
-    line-height: 1.5;
+    background: linear-gradient(135deg, #F5F8FF, #EEF4FF);
+    border: 1.5px solid #D6E4FF;
+    border-radius: 12px; padding: 11px 13px;
+    font-size: 12.5px; font-weight: 600; color: #2D3561; line-height: 1.5;
+    transition: transform .2s, box-shadow .2s;
   }
-  [data-theme="dark"] .ge-rule-item { background: #1A1F2E; border-color: #2D3748; color: var(--text2); }
-  .ge-rule-icon { font-size: 16px; flex-shrink: 0; margin-top: 1px; }
+  .ge-rule-item:hover { transform: translateY(-2px); box-shadow: 0 6px 18px rgba(26,115,232,.1); }
+  [data-theme="dark"] .ge-rule-item { background: linear-gradient(135deg,#131C2E,#1A2438); border-color: #2A3650; color: var(--text2); }
+  .ge-rule-icon { font-size: 18px; flex-shrink: 0; }
   .ge-rule-item.ge-rule-warn {
-    background: rgba(255,107,53,.06);
-    border-color: rgba(255,107,53,.3);
+    background: linear-gradient(135deg, #FFF5F0, #FFF0EB);
+    border-color: rgba(255,107,53,.35);
+    grid-column: span 2;
   }
+  [data-theme="dark"] .ge-rule-item.ge-rule-warn { background: linear-gradient(135deg,#1E120A,#231510); }
 
+  /* Marking scheme */
   .ge-scoring-grid {
     display: grid; grid-template-columns: repeat(3, 1fr); gap: 10px;
-    margin-bottom: 20px;
+    margin-bottom: 18px;
   }
   .ge-score-box {
-    border-radius: 12px; padding: 13px 10px;
-    text-align: center;
+    border-radius: 14px; padding: 14px 10px; text-align: center;
+    transition: transform .2s;
   }
-  .ge-score-box.correct  { background: rgba(0,184,148,.1);  border: 1.5px solid rgba(0,184,148,.3); }
-  .ge-score-box.wrong    { background: rgba(229,62,62,.1);   border: 1.5px solid rgba(229,62,62,.3); }
-  .ge-score-box.skip     { background: rgba(255,193,7,.1);   border: 1.5px solid rgba(255,193,7,.3); }
-  .ge-score-num { font-size: 22px; font-weight: 900; letter-spacing: -1px; }
+  .ge-score-box:hover { transform: translateY(-3px); }
+  .ge-score-box.correct { background: linear-gradient(135deg,rgba(0,184,148,.12),rgba(0,184,148,.06)); border: 1.5px solid rgba(0,184,148,.35); }
+  .ge-score-box.wrong   { background: linear-gradient(135deg,rgba(229,62,62,.12),rgba(229,62,62,.06));  border: 1.5px solid rgba(229,62,62,.35); }
+  .ge-score-box.skip    { background: linear-gradient(135deg,rgba(255,193,7,.12),rgba(255,193,7,.06));  border: 1.5px solid rgba(255,193,7,.35); }
+  .ge-score-num { font-size: 26px; font-weight: 900; letter-spacing: -1px; }
   .ge-score-box.correct .ge-score-num { color: #00B894; }
   .ge-score-box.wrong   .ge-score-num { color: #E53E3E; }
   .ge-score-box.skip    .ge-score-num { color: #B7791F; }
-  .ge-score-lbl { font-size: 11px; font-weight: 700; color: var(--text3); margin-top: 3px; }
+  .ge-score-lbl { font-size: 11px; font-weight: 700; color: var(--text3); margin-top: 4px; }
 
+  /* Footer */
   .ge-inst-footer {
-    padding: 18px 28px;
+    padding: 16px 28px 20px;
     border-top: 2px solid var(--border);
-    display: flex; align-items: center; gap: 12px;
-    background: #FAFBFF;
+    display: flex; align-items: center; gap: 14px;
+    background: #F8FAFE;
     flex-wrap: wrap;
   }
-  [data-theme="dark"] .ge-inst-footer { background: #161B22; }
+  [data-theme="dark"] .ge-inst-footer { background: #0A0F1A; }
   .ge-agree-check {
     display: flex; align-items: center; gap: 10px;
     font-size: 12.5px; font-weight: 700; color: var(--text2);
@@ -439,19 +463,18 @@
     flex-shrink: 0;
   }
   #ge-start-btn {
-    padding: 13px 28px;
+    padding: 13px 32px;
     background: linear-gradient(135deg, #1A73E8, #4F7CFF);
-    color: #fff; border: none; border-radius: 12px;
-    font-family: inherit; font-size: 14px; font-weight: 800;
+    color: #fff; border: none; border-radius: 14px;
+    font-family: inherit; font-size: 15px; font-weight: 900;
     cursor: pointer; white-space: nowrap;
-    transition: all .2s; flex-shrink: 0;
-    box-shadow: 0 4px 16px rgba(26,115,232,.4);
-    opacity: .5; pointer-events: none;
+    transition: all .25s cubic-bezier(.34,1.56,.64,1); flex-shrink: 0;
+    box-shadow: 0 4px 18px rgba(26,115,232,.35);
+    opacity: .45; pointer-events: none;
+    letter-spacing: .2px;
   }
-  #ge-start-btn.ready {
-    opacity: 1; pointer-events: auto;
-  }
-  #ge-start-btn.ready:hover { transform: translateY(-2px); box-shadow: 0 8px 24px rgba(26,115,232,.5); }
+  #ge-start-btn.ready { opacity: 1; pointer-events: auto; }
+  #ge-start-btn.ready:hover { transform: translateY(-3px) scale(1.04); box-shadow: 0 10px 30px rgba(26,115,232,.55); }
 
   /* ── COUNTDOWN SCREEN ── */
   #ge-countdown {
@@ -11062,8 +11085,9 @@ function renderQ() {
   const btnNext = document.getElementById('btn-next');
   const btnSub  = document.getElementById('btn-submit');
   if (btnPrev) btnPrev.disabled           = exam.idx === 0;
-  if (btnNext) btnNext.style.display      = last ? 'none' : '';
-  if (btnSub)  btnSub.style.display       = last ? ''     : 'none';
+  if (btnNext) btnNext.style.display      = '';           // always visible
+  if (btnNext) btnNext.disabled           = last;         // disabled on last Q
+  if (btnSub)  btnSub.style.display       = last ? '' : 'none';
   renderDots();
 }
 
@@ -16265,10 +16289,14 @@ _beginFreshExam = function(e, qs) {
         <p id="ge-exam-cat">Category | Difficulty</p>
       </div>
       <div class="ge-exam-badge">
-        <span class="ge-badge-num" id="ge-badge-q">0</span>
-        <span class="ge-badge-lbl">Questions</span>
-        <span class="ge-badge-num" style="font-size:14px;margin-top:6px;display:block" id="ge-badge-t">0 min</span>
-        <span class="ge-badge-lbl">Duration</span>
+        <div class="ge-stat-pill">
+          <span class="ge-badge-num" id="ge-badge-q">0</span>
+          <span class="ge-badge-lbl">Questions</span>
+        </div>
+        <div class="ge-stat-pill">
+          <span class="ge-badge-num" id="ge-badge-t" style="font-size:18px">—</span>
+          <span class="ge-badge-lbl">Duration</span>
+        </div>
       </div>
     </div>
 

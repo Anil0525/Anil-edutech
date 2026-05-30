@@ -10987,6 +10987,13 @@ function _restartExam(examId) {
 }
 
 function _beginFreshExam(e, qs) {
+  // Sort questions by section order so English is always last
+  const _secOrd = { reasoning: 0, arithmetic: 1, ga: 2, english: 3, science: 4 };
+  qs = [...qs].sort((a, b) => {
+    const sa = _secOrd[a.section || 'ga'] ?? 2;
+    const sb = _secOrd[b.section || 'ga'] ?? 2;
+    return sa - sb;
+  });
   exam.current   = e;
   exam.questions = qs;
   exam.idx       = 0;

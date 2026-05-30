@@ -11087,21 +11087,29 @@ function renderQ() {
     </div>`;
   }).join('');
 
-  // Submit on the last question of the last available section
-  const secOrder2 = ['reasoning','arithmetic','ga','english','science'];
-  const availSections = secOrder2.filter(s => exam.questions.some(q => (q.section||'ga') === s));
-  const lastSection   = availSections[availSections.length - 1] || 'ga';
-  const lastSectionQs = exam.questions.map((q,i)=>({q,i})).filter(({q})=>(q.section||'ga')===lastSection);
-  const lastGlobalIdx = lastSectionQs.length ? lastSectionQs[lastSectionQs.length-1].i : exam.questions.length-1;
-  // Fallback: if only 1 section found (all same section), use global last
-  const last = exam.idx === lastGlobalIdx || exam.idx === exam.questions.length - 1;
-  const isLastInView  = exam.idx === tot - 1;
+  // Section-aware nav logic
+  const _secOrdMap2 = { reasoning: 0, arithmetic: 1, ga: 2, english: 3, science: 4 };
+  const curSec2   = exam.questions[exam.idx]?.section || 'ga';
+  const nextQ_    = exam.questions[exam.idx + 1];
+  const nextSec2  = nextQ_?.section || 'ga';
+
+  // Last question of current section = next q has different section OR no next q
+  const isSecLast = !nextQ_ || curSec2 !== nextSec2;
+
+  // Last section = no more sections after this one
+  const availSecs  = [...new Set(exam.questions.map(q => q.section || 'ga'))];
+  const _so        = { reasoning: 0, arithmetic: 1, ga: 2, english: 3, science: 4 };
+  const sortedSecs = availSecs.sort((a,b) => (_so[a]??2) - (_so[b]??2));
+  const isLastSec  = sortedSecs[sortedSecs.length - 1] === curSec2;
+
+  const last = isSecLast && isLastSec;  // last Q of last section = show Submit
+
   const btnPrev = document.getElementById('btn-prev');
   const btnNext = document.getElementById('btn-next');
   const btnSub  = document.getElementById('btn-submit');
   if (btnPrev) btnPrev.disabled      = exam.idx === 0;
-  if (btnNext) btnNext.style.display = '';
-  if (btnNext) btnNext.disabled      = last;
+  if (btnNext) btnNext.style.display = last ? 'none' : '';
+  if (btnNext) btnNext.disabled      = false;
   if (btnSub)  btnSub.style.display  = last ? '' : 'none';
   renderDots();
 }
@@ -11228,8 +11236,27 @@ function toggleQDots() {
 
 function pick(L, qid) { exam.answers[qid] = L; renderQ(); }
 function goToQ(i)     { exam.idx = i; renderQ(); }
-function nextQ()      { if (exam.idx < exam.questions.length-1) { exam.idx++; renderQ(); } }
-function prevQ()      { if (exam.idx > 0) { exam.idx--; renderQ(); } }
+function nextQ() {
+  const qs = exam.questions;
+  if (exam.idx >= qs.length - 1) return;
+
+  const _secOrdMap = { reasoning: 0, arithmetic: 1, ga: 2, english: 3, science: 4 };
+  const curSec  = qs[exam.idx].section || 'ga';
+  const nextSec = qs[exam.idx + 1]?.section || 'ga';
+
+  // If crossing into a new section, jump to first question of that section
+  if (curSec !== nextSec) {
+    const nextSecStart = qs.findIndex(q => (q.section || 'ga') === nextSec);
+    if (nextSecStart !== -1) { exam.idx = nextSecStart; renderQ(); return; }
+  }
+
+  exam.idx++;
+  renderQ();
+}
+
+function prevQ() {
+  if (exam.idx > 0) { exam.idx--; renderQ(); }
+}
 function clearCurrentAnswer() {
   const q = exam.questions[exam.idx];
   if (!q) return;

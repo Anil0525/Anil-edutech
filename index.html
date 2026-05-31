@@ -4918,7 +4918,7 @@ html {
       <!-- Online Practice -->
       <div class="cat-card" data-cat="live-test" onclick="goExams('Live Test')" style="--cat-grad:linear-gradient(135deg,#D42B3A,#FF6584);--cat-soft:rgba(212,43,58,.06);--cat-shadow:rgba(212,43,58,.35);"><div class="cat-icon-wrap"><span class="cat-icon">🔴</span></div><div class="cat-name">Live Test</div><div class="cat-count">Real-time</div></div>
       <div class="cat-card" data-cat="free-test" onclick="goExams('Free Test')" style="--cat-grad:linear-gradient(135deg,#0A8C5C,#12B579);--cat-soft:rgba(10,140,92,.06);--cat-shadow:rgba(10,140,92,.35);"><div class="cat-icon-wrap"><span class="cat-icon">✅</span></div><div class="cat-name">Free Test</div><div class="cat-count">100% Free</div></div>
-      <div class="cat-card" data-cat="mock-test" onclick="goExams('Mock Test')" style="--cat-grad:linear-gradient(135deg,#1A73E8,#4F8EFF);--cat-soft:rgba(26,115,232,.06);--cat-shadow:rgba(26,115,232,.35);"><div class="cat-icon-wrap"><span class="cat-icon">📝</span></div><div class="cat-name">Mock Test</div><div class="cat-count">Full length</div></div>
+      <div class="cat-card" data-cat="mock-test" onclick="openMockFoldersPage()" style="--cat-grad:linear-gradient(135deg,#1A73E8,#4F8EFF);--cat-soft:rgba(26,115,232,.06);--cat-shadow:rgba(26,115,232,.35);"><div class="cat-icon-wrap"><span class="cat-icon">📝</span></div><div class="cat-name">Mock Test</div><div class="cat-count">Full length</div></div>
       <div class="cat-card" data-cat="quiz" onclick="goExams('Quiz')" style="--cat-grad:linear-gradient(135deg,#0891B2,#22D3EE);--cat-soft:rgba(8,145,178,.06);--cat-shadow:rgba(8,145,178,.35);"><div class="cat-icon-wrap"><span class="cat-icon">🧩</span></div><div class="cat-name">Quiz Test</div><div class="cat-count">Quick rounds</div></div>
       <!-- Important -->
       <div class="cat-card" data-cat="pyq" onclick="goExams('Previous Papers')" style="--cat-grad:linear-gradient(135deg,#B45309,#F59E0B);--cat-soft:rgba(180,83,9,.06);--cat-shadow:rgba(180,83,9,.35);"><div class="cat-icon-wrap"><span class="cat-icon">📂</span></div><div class="cat-name">Previous Papers</div><div class="cat-count">Year-wise</div></div>
@@ -5717,6 +5717,110 @@ html {
     <div class="footer-copy">Made with ❤️ by <strong>Anil EduTech</strong> &nbsp;·&nbsp; © 2026</div>
   </div>
 </footer>
+</div>
+
+<!-- MOCK TEST FOLDERS PAGE -->
+<div id="page-mock-folders" class="page">
+  <div class="section">
+    <div style="display:flex;align-items:center;gap:10px;margin-bottom:4px;">
+      <button onclick="goHome()" style="background:none;border:none;font-size:18px;cursor:pointer;padding:4px 8px 4px 0;color:var(--primary);font-weight:800;">← Back</button>
+      <div class="section-title" style="margin:0;">📝 Mock Tests</div>
+    </div>
+    <div class="section-sub">Exam select చేసి practice చేయండి</div>
+    <div id="mock-folders-grid" style="display:grid;grid-template-columns:repeat(auto-fill,minmax(155px,1fr));gap:14px;margin-top:18px;"></div>
+  </div>
+  <footer>
+    <div class="footer-inner">
+      <div class="footer-brand">Anil <span>EduTech</span></div>
+      <div class="footer-tagline">Free Online Mock Tests</div>
+      <div class="footer-links">
+        <span class="footer-link" onclick="goHome()">🏠 Home</span>
+        <span class="footer-link" onclick="goExams()">📝 Exams</span>
+        <span class="footer-link" onclick="goProgress()">📊 Progress</span>
+      </div>
+      <div class="footer-divider"></div>
+      <div class="footer-copy">Made with ❤️ by <strong>Anil EduTech</strong> &nbsp;·&nbsp; © 2026</div>
+    </div>
+  </footer>
+</div>
+
+<!-- MOCK SUB-FOLDERS PAGE (sub-folders inside a parent folder) -->
+<div id="page-mock-subfolders" class="page">
+  <div class="section">
+    <div style="display:flex;align-items:center;gap:10px;margin-bottom:4px;">
+      <button onclick="openMockFoldersPage()" style="background:none;border:none;font-size:18px;cursor:pointer;padding:4px 8px 4px 0;color:var(--primary);font-weight:800;">← Back</button>
+      <div class="section-title" style="margin:0;" id="mock-subfolders-title">Sub Folders</div>
+    </div>
+    <div class="section-sub" id="mock-subfolders-sub">Category select చేయండి</div>
+    <div id="mock-subfolders-grid" style="display:grid;grid-template-columns:repeat(auto-fill,minmax(155px,1fr));gap:14px;margin-top:18px;"></div>
+    <!-- Direct exams assigned to this parent folder -->
+    <div id="mock-subfolders-direct-exams-wrap" style="display:none;margin-top:24px;">
+      <div style="font-size:13px;font-weight:800;color:var(--text2);margin-bottom:10px;padding-bottom:6px;border-bottom:1.5px solid var(--border);">📝 General Tests</div>
+      <div class="exams-grid" id="mock-subfolders-direct-exams"></div>
+    </div>
+  </div>
+  <footer>
+    <div class="footer-inner">
+      <div class="footer-brand">Anil <span>EduTech</span></div>
+      <div class="footer-tagline">Free Online Mock Tests</div>
+      <div class="footer-links">
+        <span class="footer-link" onclick="goHome()">🏠 Home</span>
+        <span class="footer-link" onclick="openMockFoldersPage()">📂 Folders</span>
+        <span class="footer-link" onclick="goProgress()">📊 Progress</span>
+      </div>
+      <div class="footer-divider"></div>
+      <div class="footer-copy">Made with ❤️ by <strong>Anil EduTech</strong> &nbsp;·&nbsp; © 2026</div>
+    </div>
+  </footer>
+</div>
+
+<!-- MOCK FOLDER DETAIL PAGE (tests inside a folder) -->
+<div id="page-mock-folder-detail" class="page">
+  <!-- Colored banner header -->
+  <div id="mock-folder-detail-banner" style="
+    background: linear-gradient(135deg, #1A73E8 0%, #0D47A1 100%);
+    padding: 22px 20px 28px;
+    position: relative;
+    overflow: hidden;
+  ">
+    <!-- bg decoration circles -->
+    <div style="position:absolute;top:-30px;right:-30px;width:120px;height:120px;border-radius:50%;background:rgba(255,255,255,.07);pointer-events:none;"></div>
+    <div style="position:absolute;bottom:-20px;left:30%;width:80px;height:80px;border-radius:50%;background:rgba(255,255,255,.05);pointer-events:none;"></div>
+    <!-- back + breadcrumb row -->
+    <div style="display:flex;align-items:center;gap:8px;margin-bottom:14px;">
+      <button onclick="_mockFolderDetailBack()" style="background:rgba(255,255,255,.18);backdrop-filter:blur(6px);border:1px solid rgba(255,255,255,.25);color:#fff;font-size:13px;font-weight:800;padding:5px 14px;border-radius:20px;cursor:pointer;transition:background .2s;"
+        onmouseover="this.style.background='rgba(255,255,255,.28)'" onmouseout="this.style.background='rgba(255,255,255,.18)'">← Back</button>
+      <div id="mock-folder-breadcrumb" style="font-size:11px;color:rgba(255,255,255,.7);font-weight:600;letter-spacing:.3px;"></div>
+    </div>
+    <!-- icon + title row -->
+    <div style="display:flex;align-items:center;gap:14px;">
+      <div id="mock-folder-detail-icon" style="font-size:40px;line-height:1;filter:drop-shadow(0 2px 8px rgba(0,0,0,.2));"></div>
+      <div>
+        <div style="display:flex;align-items:center;gap:8px;flex-wrap:wrap;">
+          <div id="mock-folder-detail-title" style="font-size:22px;font-weight:900;color:#fff;line-height:1.2;"></div>
+          <span id="mock-folder-lock-badge" style="display:none;background:linear-gradient(135deg,#ef4444,#b91c1c);color:#fff;font-size:10px;font-weight:800;padding:3px 10px;border-radius:20px;">🔒 LOCKED</span>
+        </div>
+        <div id="mock-folder-detail-sub" style="font-size:12px;color:rgba(255,255,255,.75);margin-top:4px;font-weight:600;"></div>
+      </div>
+    </div>
+  </div>
+
+  <div class="section" style="padding-top:18px;">
+    <div class="exams-grid" id="mock-folder-exams-list"></div>
+  </div>
+  <footer>
+    <div class="footer-inner">
+      <div class="footer-brand">Anil <span>EduTech</span></div>
+      <div class="footer-tagline">Free Online Mock Tests</div>
+      <div class="footer-links">
+        <span class="footer-link" onclick="goHome()">🏠 Home</span>
+        <span class="footer-link" onclick="openMockFoldersPage()">📂 Folders</span>
+        <span class="footer-link" onclick="goProgress()">📊 Progress</span>
+      </div>
+      <div class="footer-divider"></div>
+      <div class="footer-copy">Made with ❤️ by <strong>Anil EduTech</strong> &nbsp;·&nbsp; © 2026</div>
+    </div>
+  </footer>
 </div>
 
 <!-- EXAMS LIST -->
@@ -6880,12 +6984,24 @@ html {
     <!-- ── TAB: EXAMS ── -->
     <div id="atab-exams" class="admin-panel active">
 
+      <!-- Mock Folder Lock Management -->
+      <div class="admin-card">
+        <h3>📁 Mock Test Folders — Lock / Unlock</h3>
+        <p style="font-size:12px;color:var(--text3);margin-bottom:10px;">Folder lock చేస్తే students ఆ folder లో exams చూడగలరు కానీ admin మాత్రమే tests add చేయగలరు.</p>
+        <div style="overflow-x:auto">
+          <table class="exams-manage-table">
+            <thead><tr><th>Folder</th><th>Tests Count</th><th>Lock / Unlock</th></tr></thead>
+            <tbody id="mock-folders-admin-tbody"></tbody>
+          </table>
+        </div>
+      </div>
+
       <!-- Manage existing exams -->
       <div class="admin-card">
         <h3>📂 All Exams</h3>
         <div style="overflow-x:auto">
           <table class="exams-manage-table">
-            <thead><tr><th>#</th><th>Exam Name</th><th>Category</th><th>Time</th><th>Difficulty</th><th>Questions</th><th>Lock</th><th>Actions</th></tr></thead>
+            <thead><tr><th>#</th><th>Exam Name</th><th>Category</th><th>Time</th><th>Difficulty</th><th>Questions</th><th>📁 Folder</th><th>Lock</th><th>Actions</th></tr></thead>
             <tbody id="exams-manage-table"></tbody>
           </table>
         </div>
@@ -6914,7 +7030,7 @@ html {
                 <option>Free Videos</option>
                 <option>Book Store</option>
               </optgroup>
-              <optgroup label="── Subjects ──">
+              <optgroup id="exam-cat-subjects-group" label="── Subjects ──">
                 <option>TSPSC</option>
                 <option>SSC</option>
                 <option>RRB</option>
@@ -6922,6 +7038,12 @@ html {
                 <option>GK</option>
                 <option>Math</option>
               </optgroup>
+            </select>
+          </div>
+          <div class="form-group">
+            <label>📁 Mock Test Folder (optional)</label>
+            <select id="exam-mock-folder">
+              <option value="">-- Folder లేదు --</option>
             </select>
           </div>
         </div>
@@ -8103,7 +8225,10 @@ async function _loadDBFromSupabase() {
         sections: e.sections || {},
         qmark: e.qmark || 1, nmark: e.nmark || 0,
         isPremium: e.is_premium || false,
-        isLocked: e.is_locked || false
+        isLocked: e.is_locked || false,
+        mockFolder: e.mock_folder || null,
+        videoUrl: e.video_url || null,
+        parts: e.parts || null
       }));
     }
 
@@ -8130,6 +8255,21 @@ async function _loadDBFromSupabase() {
         if (m.key === 'nextExamId') DB.nextExamId = parseInt(m.value) || DB.nextExamId;
         if (m.key === 'nextQId')    DB.nextQId    = parseInt(m.value) || DB.nextQId;
         if (m.key === 'nextVideoId') DB.nextVideoId = parseInt(m.value) || DB.nextVideoId;
+        if (m.key === 'mockFolders') {
+          try {
+            const mf = JSON.parse(m.value);
+            if (Array.isArray(mf) && mf.length) {
+              // If old format (no sub-folders) → don't overwrite localStorage so getMockFolders() can merge
+              const hasSubFolders = mf.some(f => f.parentId);
+              if (hasSubFolders) {
+                try { _ls.setItem('ae_mock_folders', m.value); } catch(e) {}
+              } else {
+                // Clear stale localStorage so getMockFolders() falls back to DEFAULT_DB merge logic
+                try { _ls.removeItem('ae_mock_folders'); } catch(e) {}
+              }
+            }
+          } catch(e) {}
+        }
       });
     }
 
@@ -8164,7 +8304,8 @@ async function _migrateDefaultDataToSupabase() {
       sections: e.sections || {},
       qmark: e.qmark || 1, nmark: e.nmark || 0,
       is_premium: e.isPremium || false,
-      is_locked: e.isLocked || false
+      is_locked: e.isLocked || false,
+      mock_folder: e.mockFolder || null
     }));
     const qRows = DB.questions.map(q => ({
       id: q.id, exam_id: q.examId,
@@ -10181,16 +10322,45 @@ document.getElementById('sub-overlay').addEventListener('click', function(e) {
    ⬇️ DEFAULT DATA
 ════════════════════════════════════════ */
 const DEFAULT_DB = {
+  mockFolders: [
+    // ── Parent Folders ──
+    { id:'tspsc',   name:'TSPSC',   icon:'🏛️', color:'#1A73E8', locked:false, parentId:null },
+    { id:'ssc',     name:'SSC',     icon:'📋', color:'#E8640A', locked:false, parentId:null },
+    { id:'banking', name:'Banking', icon:'🏦', color:'#0891B2', locked:false, parentId:null },
+    { id:'gk',      name:'GK',      icon:'🌍', color:'#10B981', locked:false, parentId:null },
+    { id:'rrb',     name:'RRB',     icon:'🚂', color:'#7C3AED', locked:false, parentId:null },
+    { id:'math',    name:'Math',    icon:'🔢', color:'#DC2626', locked:false, parentId:null },
+    // ── TSPSC Sub-Folders ──
+    { id:'tspsc-group1', name:'Group-1', icon:'⭐', color:'#1A73E8', locked:false, parentId:'tspsc' },
+    { id:'tspsc-group2', name:'Group-2', icon:'🎯', color:'#1A73E8', locked:false, parentId:'tspsc' },
+    { id:'tspsc-group3', name:'Group-3', icon:'📚', color:'#1A73E8', locked:false, parentId:'tspsc' },
+    { id:'tspsc-group4', name:'Group-4', icon:'✏️', color:'#1A73E8', locked:false, parentId:'tspsc' },
+    { id:'tspsc-fso',    name:'FSO',     icon:'🌾', color:'#1A73E8', locked:false, parentId:'tspsc' },
+    // ── SSC Sub-Folders ──
+    { id:'ssc-cgl',  name:'CGL',  icon:'🏆', color:'#E8640A', locked:false, parentId:'ssc' },
+    { id:'ssc-chsl', name:'CHSL', icon:'📄', color:'#E8640A', locked:false, parentId:'ssc' },
+    { id:'ssc-mts',  name:'MTS',  icon:'🔧', color:'#E8640A', locked:false, parentId:'ssc' },
+    { id:'ssc-cpo',  name:'CPO',  icon:'🛡️', color:'#E8640A', locked:false, parentId:'ssc' },
+    { id:'ssc-gd',   name:'GD Constable', icon:'👮', color:'#E8640A', locked:false, parentId:'ssc' },
+    // ── Banking Sub-Folders ──
+    { id:'banking-ibps', name:'IBPS',     icon:'🏦', color:'#0891B2', locked:false, parentId:'banking' },
+    { id:'banking-sbi',  name:'SBI',      icon:'💳', color:'#0891B2', locked:false, parentId:'banking' },
+    { id:'banking-rbi',  name:'RBI',      icon:'🏧', color:'#0891B2', locked:false, parentId:'banking' },
+    // ── RRB Sub-Folders ──
+    { id:'rrb-ntpc',    name:'NTPC',    icon:'🚄', color:'#7C3AED', locked:false, parentId:'rrb' },
+    { id:'rrb-groupd',  name:'Group-D', icon:'🚂', color:'#7C3AED', locked:false, parentId:'rrb' },
+    { id:'rrb-alp',     name:'ALP',     icon:'⚡', color:'#7C3AED', locked:false, parentId:'rrb' },
+  ],
   exams: [
-    { id:1, name:'TSPSC Group-2 Mock Test 1', cat:'TSPSC',   time:30, diff:'Medium', sections:{reasoning:25,arithmetic:25,ga:25,english:25}, qmark:1, nmark:0 },
-    { id:2, name:'SSC CGL',  cat:'SSC',     time:60, diff:'Medium', sections:{reasoning:25,arithmetic:25,ga:25,english:25}, qmark:2, nmark:0.5 },
-    { id:3, name:'SSC CHSL', cat:'SSC',     time:60, diff:'Easy',   sections:{reasoning:25,arithmetic:25,ga:25,english:25}, qmark:2, nmark:0.5 },
-    { id:4, name:'SSC MTS',  cat:'SSC',     time:90, diff:'Easy',   sections:{reasoning:20,arithmetic:20,ga:20,english:20}, qmark:1, nmark:0 },
-    { id:5, name:'Banking Awareness Test',    cat:'Banking',  time:15, diff:'Medium', sections:{reasoning:0,arithmetic:0,ga:1},  qmark:1, nmark:0 },
-    { id:6, name:'RRB NTPC Mock Test 1',      cat:'RRB',      time:90, diff:'Medium', sections:{reasoning:30,arithmetic:30,ga:40}, qmark:1, nmark:0.33 },
-    { id:7, name:'RRB Group D Mock Test 1',   cat:'RRB',      time:90, diff:'Easy',   sections:{reasoning:25,arithmetic:25,ga:20,science:30}, qmark:1, nmark:0.33 },
-    { id:8, name:'IBPS Clerk Mock Test 1',    cat:'Banking',  time:60, diff:'Medium', sections:{reasoning:35,arithmetic:35,english:30}, qmark:1, nmark:0.25 },
-    { id:9, name:'SBI Clerk Mock Test 1',     cat:'Banking',  time:60, diff:'Medium', sections:{reasoning:35,arithmetic:35,english:30}, qmark:1, nmark:0.25 },
+    { id:1, name:'TSPSC Group-2 Mock Test 1', cat:'TSPSC',   mockFolder:'tspsc-group2', time:30, diff:'Medium', sections:{reasoning:25,arithmetic:25,ga:25,english:25}, qmark:1, nmark:0 },
+    { id:2, name:'SSC CGL Mock Test 1',  cat:'SSC',     mockFolder:'ssc-cgl',  time:60, diff:'Medium', sections:{reasoning:25,arithmetic:25,ga:25,english:25}, qmark:2, nmark:0.5 },
+    { id:3, name:'SSC CHSL Mock Test 1', cat:'SSC',     mockFolder:'ssc-chsl', time:60, diff:'Easy',   sections:{reasoning:25,arithmetic:25,ga:25,english:25}, qmark:2, nmark:0.5 },
+    { id:4, name:'SSC MTS Mock Test 1',  cat:'SSC',     mockFolder:'ssc-mts',  time:90, diff:'Easy',   sections:{reasoning:20,arithmetic:20,ga:20,english:20}, qmark:1, nmark:0 },
+    { id:5, name:'Banking Awareness Test',    cat:'Banking',  mockFolder:'banking-rbi',  time:15, diff:'Medium', sections:{reasoning:0,arithmetic:0,ga:1},  qmark:1, nmark:0 },
+    { id:6, name:'RRB NTPC Mock Test 1',      cat:'RRB',      mockFolder:'rrb-ntpc',   time:90, diff:'Medium', sections:{reasoning:30,arithmetic:30,ga:40}, qmark:1, nmark:0.33 },
+    { id:7, name:'RRB Group D Mock Test 1',   cat:'RRB',      mockFolder:'rrb-groupd', time:90, diff:'Easy',   sections:{reasoning:25,arithmetic:25,ga:20,science:30}, qmark:1, nmark:0.33 },
+    { id:8, name:'IBPS Clerk Mock Test 1',    cat:'Banking',  mockFolder:'banking-ibps', time:60, diff:'Medium', sections:{reasoning:35,arithmetic:35,english:30}, qmark:1, nmark:0.25 },
+    { id:9, name:'SBI Clerk Mock Test 1',     cat:'Banking',  mockFolder:'banking-sbi',  time:60, diff:'Medium', sections:{reasoning:35,arithmetic:35,english:30}, qmark:1, nmark:0.25 },
   ],
   questions: [
     // TSPSC
@@ -10270,6 +10440,7 @@ async function sbSaveExam(exam) {
     qmark: exam.qmark || 1, nmark: exam.nmark || 0,
     is_premium: exam.isPremium || false,
     is_locked: exam.isLocked || false,
+    mock_folder: exam.mockFolder || null,
     updated_at: new Date().toISOString()
   };
   await sbUpsert('ae_exams', row);
@@ -10650,9 +10821,11 @@ function checkAdminPw() {
   document.getElementById('nav-admin').classList.add('active');
   document.getElementById('admin-logged-label').textContent = '✅ Logged in as: ' + ADMIN_USERNAME;
   populateAdminSelects();
+  // Persist merged folders (ensures new sub-folders saved to Supabase/localStorage)
+  saveMockFolders(getMockFolders());
   renderAdminTable();
   renderExamsManageTable();
-  loadGeminiKey();
+  renderMockFolderAdminTable();
   loadAdminCredentials();
   toast('✅ Admin login successful!', 'success');
 }
@@ -10783,7 +10956,7 @@ function renderBookmarkedExams() {
   }
   el.innerHTML = list.map(e => _examCardHtml(e)).join('');
 }
-function _examCardHtml(e) {
+function _examCardHtml(e, idx) {
   const qc = DB.questions.filter(q => q.examId === e.id).length;
   const videoBtn = e.videoUrl ? `<a class="video-link-btn" href="${sanitizeUrl(e.videoUrl)}" target="_blank" rel="noopener noreferrer" title="Video చూడండి">▶ Video</a>` : '';
   const bmked = isBookmarked(e.id);
@@ -10791,10 +10964,14 @@ function _examCardHtml(e) {
   const resumeBadge = saved && Object.keys(saved.answers||{}).length > 0
     ? `<span style="background:linear-gradient(135deg,#FF6B35,#FF9F1C);color:#fff;font-size:10px;font-weight:800;padding:3px 9px;border-radius:20px;margin-left:6px;vertical-align:middle;">▶ Resume</span>` : '';
   const isLocked=!!e.isPremium,u2=getCurrentUser(),userIsPremium=!!(u2&&u2.isPremium);
+  const numBadge = (idx !== undefined)
+    ? `<div style="min-width:28px;height:28px;border-radius:50%;background:linear-gradient(135deg,var(--primary),#00B4D8);color:#fff;font-size:11px;font-weight:900;display:flex;align-items:center;justify-content:center;flex-shrink:0;">${idx+1}</div>`
+    : '';
   return `<div class="exam-card${isLocked?' is-locked':''}" style="position:relative;">
     <button id="bm-btn-${e.id}" onclick="toggleBookmark(${e.id})" title="${bmked?'Bookmarked':'Bookmark చేయండి'}"
       style="position:absolute;top:10px;right:10px;background:none;border:none;font-size:20px;cursor:pointer;line-height:1;padding:2px 4px;border-radius:6px;transition:transform .2s;"
       onmouseover="this.style.transform='scale(1.25)'" onmouseout="this.style.transform=''">${bmked?'⭐':'🔖'}</button>
+    ${numBadge}
     <div class="exam-info" style="padding-right:32px;">
       <div class="exam-title">${e.name}${resumeBadge}</div>
       <div class="exam-meta">
@@ -11731,7 +11908,7 @@ function switchAdminTab(tab, btnEl) {
     const tabsBar = document.getElementById('admin-tabs-bar');
     if (tabsBar) tabsBar.scrollTo({ top: btnEl.offsetTop - 60, behavior: 'smooth' });
   }
-  if (tab === 'exams')       { renderExamsManageTable(); }
+  if (tab === 'exams')       { renderExamsManageTable(); renderMockFolderAdminTable(); }
   if (tab === 'questions')   { renderAdminTable(); }
   if (tab === 'pdfitems')    { _refreshPdfAdmin(); filterPdfAdmin('all'); }
   if (tab === 'subscribers') { renderSubscriberTables(); }
@@ -11762,6 +11939,37 @@ function populateAdminSelects() {
   document.getElementById('ai-exam-select').innerHTML = opts;
   document.getElementById('gen-exam-select').innerHTML = opts;
   document.getElementById('admin-filter').innerHTML  = '<option value="">All Exams</option>' + opts;
+
+  // ── Populate exam-cat Subjects optgroup dynamically from parent folders ──
+  const catGroup = document.getElementById('exam-cat-subjects-group');
+  if (catGroup) {
+    const folders = getMockFolders();
+    const parents = folders.filter(f => !f.parentId);
+    catGroup.innerHTML = parents.map(p => `<option value="${p.name}">${p.icon} ${p.name}</option>`).join('');
+  }
+
+  // ── Populate exam-mock-folder dropdown with 2-level grouped structure ──
+  const folderSel = document.getElementById('exam-mock-folder');
+  if (folderSel) {
+    const folders = getMockFolders();
+    const parents = folders.filter(f => !f.parentId);
+    let folderOpts = '<option value="">-- Folder లేదు --</option>';
+    parents.forEach(parent => {
+      const subs = folders.filter(f => f.parentId === parent.id);
+      if (subs.length > 0) {
+        folderOpts += `<optgroup label="${parent.icon} ${parent.name}">`;
+        subs.forEach(sf => {
+          folderOpts += `<option value="${sf.id}">${sf.icon} ${parent.name} → ${sf.name}</option>`;
+        });
+        folderOpts += '</optgroup>';
+      } else {
+        folderOpts += `<option value="${parent.id}">${parent.icon} ${parent.name}</option>`;
+      }
+    });
+    const prevVal = folderSel.value;
+    folderSel.innerHTML = folderOpts;
+    folderSel.value = prevVal;
+  }
 }
 
 function createExam() {
@@ -11795,6 +12003,7 @@ function createExam() {
     partLabels: _partLabels,
     qmark: _isSSC ? 2 : 1,
     nmark: _isSSC ? 0.5 : 0,
+    mockFolder: document.getElementById('exam-mock-folder')?.value || null,
   };
   DB.exams.push(_newExamObj);
   sbSaveExam(_newExamObj); // Supabase save
@@ -11807,6 +12016,7 @@ function createExam() {
   if(document.getElementById('exam-part-b')) document.getElementById('exam-part-b').value='';
   if(document.getElementById('exam-part-c')) document.getElementById('exam-part-c').value='';
   if(document.getElementById('exam-part-d')) document.getElementById('exam-part-d').value='';
+  if(document.getElementById('exam-mock-folder')) document.getElementById('exam-mock-folder').value='';
   saveDB();
   populateAdminSelects();
   if (typeof _populateBulkExamDropdown === 'function') _populateBulkExamDropdown();
@@ -12411,15 +12621,71 @@ function changeAdminPassword() {
 function renderExamsManageTable(){
   const tbody=document.getElementById('exams-manage-table');
   if(!tbody)return;
-  if(!DB.exams.length){tbody.innerHTML='<tr><td colspan="8" style="text-align:center;color:var(--text3);padding:20px">Exams లేవు</td></tr>';return;}
+  if(!DB.exams.length){tbody.innerHTML='<tr><td colspan="9" style="text-align:center;color:var(--text3);padding:20px">Exams లేవు</td></tr>';return;}
+
+  // Build folder options HTML (2-level grouped)
+  const allFolders = getMockFolders();
+  const parents = allFolders.filter(f => !f.parentId);
+  function _folderOpts(currentFolderId) {
+    let html = '<option value="">-- లేదు --</option>';
+    parents.forEach(p => {
+      const subs = allFolders.filter(f => f.parentId === p.id);
+      if (subs.length > 0) {
+        html += `<optgroup label="${p.icon} ${p.name}">`;
+        subs.forEach(sf => {
+          html += `<option value="${sf.id}" ${currentFolderId===sf.id?'selected':''}>${sf.icon} ${p.name} → ${sf.name}</option>`;
+        });
+        html += '</optgroup>';
+      } else {
+        html += `<option value="${p.id}" ${currentFolderId===p.id?'selected':''}>${p.icon} ${p.name}</option>`;
+      }
+    });
+    return html;
+  }
+
   tbody.innerHTML=DB.exams.map((e,i)=>{
     const qc=DB.questions.filter(q=>q.examId===e.id).length;
-    const lb=e.isPremium?`<span class="meta-pill" style="background:rgba(245,183,49,.15);color:#E8640A;border:1px solid rgba(245,183,49,.4);font-size:10px">🔒 Premium</span>`:`<span class="meta-pill" style="background:rgba(16,185,129,.1);color:var(--teal);border:1px solid rgba(16,185,129,.3);font-size:10px">🔓 Free</span>`;
-    const lbtn=e.isPremium?`<button class="edit-btn" style="background:linear-gradient(135deg,#10b981,#059669);min-width:80px" onclick="toggleExamLock(${e.id})">🔓 Unlock</button>`:`<button class="edit-btn" style="background:linear-gradient(135deg,#F5B731,#E8640A);min-width:80px" onclick="toggleExamLock(${e.id})">🔒 Lock</button>`;
-    return `<tr><td style="color:var(--text3);font-weight:700">${i+1}</td><td style="color:var(--text);font-weight:700;max-width:180px;word-break:break-word">${escHtml(e.name)}</td><td><span class="meta-pill ${catPill[e.cat]||'pill-blue'}">${e.cat}</span></td><td>${e.time} min</td><td><span class="meta-pill ${diffPill[e.diff]||'pill-green'}">${e.diff}</span></td><td><span class="meta-pill pill-blue">📝 ${qc}</span></td><td>${lb}</td><td><div class="action-btns">${lbtn}<button class="edit-btn" onclick="openEditExamModal(${e.id})">✏️ Edit</button><button class="edit-btn" style="background:linear-gradient(135deg,#00B894,#077042)" onclick="copyExam(${e.id})">📋 Copy</button><button class="del-btn" onclick="deleteExam(${e.id})">Delete</button></div></td></tr>`;
+    const lb=e.isPremium
+      ?`<span class="meta-pill" style="background:rgba(245,183,49,.15);color:#E8640A;border:1px solid rgba(245,183,49,.4);font-size:10px">🔒 Premium</span>`
+      :`<span class="meta-pill" style="background:rgba(16,185,129,.1);color:var(--teal);border:1px solid rgba(16,185,129,.3);font-size:10px">🔓 Free</span>`;
+    const lbtn=e.isPremium
+      ?`<button class="edit-btn" style="background:linear-gradient(135deg,#10b981,#059669);min-width:72px;font-size:11px" onclick="toggleExamLock(${e.id})">🔓 Unlock</button>`
+      :`<button class="edit-btn" style="background:linear-gradient(135deg,#F5B731,#E8640A);min-width:72px;font-size:11px" onclick="toggleExamLock(${e.id})">🔒 Lock</button>`;
+    const folderSel = `<select onchange="assignExamFolder(${e.id}, this.value)"
+      style="font-size:11px;padding:4px 6px;border-radius:8px;border:1.5px solid var(--border2);background:var(--bg);color:var(--text);max-width:160px;cursor:pointer">
+      ${_folderOpts(e.mockFolder||'')}
+    </select>`;
+    return `<tr>
+      <td style="color:var(--text3);font-weight:700">${i+1}</td>
+      <td style="color:var(--text);font-weight:700;max-width:170px;word-break:break-word">${escHtml(e.name)}</td>
+      <td><span class="meta-pill ${catPill[e.cat]||'pill-blue'}">${e.cat}</span></td>
+      <td>${e.time}m</td>
+      <td><span class="meta-pill ${diffPill[e.diff]||'pill-green'}">${e.diff}</span></td>
+      <td><span class="meta-pill pill-blue">📝 ${qc}</span></td>
+      <td>${folderSel}</td>
+      <td>${lb}</td>
+      <td><div class="action-btns">${lbtn}<button class="edit-btn" onclick="openEditExamModal(${e.id})">✏️ Edit</button><button class="edit-btn" style="background:linear-gradient(135deg,#00B894,#077042)" onclick="copyExam(${e.id})">📋 Copy</button><button class="del-btn" onclick="deleteExam(${e.id})">Delete</button></div></td>
+    </tr>`;
   }).join('');
 }
 function toggleExamLock(id){const e=DB.exams.find(x=>x.id===id);if(!e)return;e.isPremium=!e.isPremium;sbSaveExam(e);saveDB();renderExamsManageTable();filterExams();toast(e.isPremium?`🔒 "${e.name}" — Premium Only!`:`🔓 "${e.name}" — Free!`,e.isPremium?'warn':'success');}
+
+function assignExamFolder(examId, folderId) {
+  const e = DB.exams.find(x => x.id === examId);
+  if (!e) return;
+  e.mockFolder = folderId || null;
+  sbSaveExam(e);
+  saveDB();
+  // Refresh folder counts on mock-folders page if visible
+  renderMockFoldersGrid();
+  renderMockFolderAdminTable();
+  const folders = getMockFolders();
+  const f = folders.find(x => x.id === folderId);
+  toast(folderId
+    ? `📁 "${e.name}" → ${f ? f.name : folderId} folder కి add అయింది!`
+    : `📁 "${e.name}" folder నుండి remove అయింది!`,
+    'success');
+}
 
 /* ---- COPY EXAM ---- */
 function copyExam(id) {
@@ -12646,6 +12912,249 @@ function setSscSubFilter(el, val) {
   document.querySelectorAll('.ssc-sub').forEach(s => s.classList.remove('active'));
   el.classList.add('active');
   filterExams();
+}
+
+/* ═══════════════════════════════════════════════════════════
+   📁 MOCK TEST FOLDER SYSTEM
+   - Folders: TSPSC, SSC, Banking, GK, RRB, Math
+   - Each exam has a mockFolder field
+   - Admin can lock/unlock folders
+   - Admin can assign exams to folders
+═══════════════════════════════════════════════════════════ */
+
+// Load folders from localStorage (merged with DEFAULT_DB.mockFolders)
+function getMockFolders() {
+  try {
+    const saved = JSON.parse(_ls.getItem('ae_mock_folders') || 'null');
+    if (saved && Array.isArray(saved) && saved.length) {
+      // Check if saved data has sub-folders (parentId field). If not → it's old format.
+      // Merge: keep saved parent folders (preserving lock states etc), add DEFAULT sub-folders
+      const hasSubFolders = saved.some(f => f.parentId);
+      if (!hasSubFolders) {
+        // Old format: merge saved parents + DEFAULT_DB sub-folders
+        const defaultSubs = DEFAULT_DB.mockFolders.filter(f => f.parentId);
+        // Update saved parents with any new parents from DEFAULT_DB that are missing
+        const savedIds = saved.map(f => f.id);
+        const newParents = DEFAULT_DB.mockFolders.filter(f => !f.parentId && !savedIds.includes(f.id));
+        return [...saved.map(f => ({...f, parentId: null})), ...newParents, ...defaultSubs];
+      }
+      return saved;
+    }
+  } catch(e) {}
+  return JSON.parse(JSON.stringify(DEFAULT_DB.mockFolders));
+}
+
+function saveMockFolders(folders) {
+  try { _ls.setItem('ae_mock_folders', JSON.stringify(folders)); } catch(e) {}
+  // Sync to Supabase meta
+  sbUpsert('ae_meta', [{ key: 'mockFolders', value: JSON.stringify(folders) }]).catch(()=>{});
+}
+
+// Track which parent folder is currently open (for back navigation)
+let _currentParentFolderId = null;
+
+// Open the Mock Test folder listing page (shows parent folders only)
+function openMockFoldersPage() {
+  _currentParentFolderId = null;
+  showPage('mock-folders');
+  renderMockFoldersGrid();
+}
+
+// Render parent folder cards (parentId === null)
+function renderMockFoldersGrid() {
+  const folders = getMockFolders();
+  const grid = document.getElementById('mock-folders-grid');
+  if (!grid) return;
+  const parents = folders.filter(f => !f.parentId);
+  grid.innerHTML = parents.map(f => {
+    // Count tests across all sub-folders of this parent
+    const subIds = folders.filter(s => s.parentId === f.id).map(s => s.id);
+    // Also count direct exams assigned to parent (legacy support)
+    const count = DB.exams.filter(e => e.mockFolder === f.id || subIds.includes(e.mockFolder)).length;
+    const subCount = folders.filter(s => s.parentId === f.id).length;
+    return `<div onclick="openMockFolder('${f.id}')" style="
+      background:var(--card);border:2px solid ${f.color}33;border-radius:18px;
+      padding:20px 16px;cursor:pointer;text-align:center;
+      box-shadow:0 4px 18px ${f.color}22;transition:transform .18s,box-shadow .18s;
+      position:relative;
+    " onmouseover="this.style.transform='translateY(-3px)';this.style.boxShadow='0 8px 28px ${f.color}44'"
+       onmouseout="this.style.transform='';this.style.boxShadow='0 4px 18px ${f.color}22'">
+      ${f.locked ? '<span style="position:absolute;top:8px;right:8px;font-size:13px;" title="Locked">🔒</span>' : ''}
+      <div style="font-size:36px;margin-bottom:8px;">${f.icon}</div>
+      <div style="font-size:14px;font-weight:900;color:var(--text);margin-bottom:4px;">${f.name}</div>
+      ${subCount > 0
+        ? `<div style="font-size:11px;color:${f.color};font-weight:700;background:${f.color}18;padding:3px 10px;border-radius:20px;display:inline-block;">
+             📁 ${subCount} Categories
+           </div>`
+        : `<div style="font-size:11px;color:${f.color};font-weight:700;background:${f.color}18;padding:3px 10px;border-radius:20px;display:inline-block;">
+             ${count} Test${count!==1?'s':''}
+           </div>`
+      }
+    </div>`;
+  }).join('');
+}
+
+// Open a folder — if it has sub-folders → show sub-folder page; else → show tests
+function openMockFolder(folderId) {
+  const folders = getMockFolders();
+  const folder = folders.find(f => f.id === folderId);
+  if (!folder) return;
+
+  const subFolders = folders.filter(f => f.parentId === folderId);
+
+  if (subFolders.length > 0) {
+    // Show sub-folders page
+    _currentParentFolderId = folderId;
+    document.getElementById('mock-subfolders-title').textContent = folder.icon + ' ' + folder.name;
+
+    // Direct exams assigned to the parent folder itself
+    const directExams = DB.exams.filter(e => e.mockFolder === folderId);
+    const totalTests = DB.exams.filter(e => subFolders.map(s=>s.id).includes(e.mockFolder)).length + directExams.length;
+    document.getElementById('mock-subfolders-sub').textContent = subFolders.length + ' categories · ' + totalTests + ' tests available';
+
+    const grid = document.getElementById('mock-subfolders-grid');
+    grid.innerHTML = subFolders.map(sf => {
+      const count = DB.exams.filter(e => e.mockFolder === sf.id).length;
+      return `<div onclick="openMockSubFolder('${sf.id}')" style="
+        background:var(--card);border:2px solid ${sf.color}44;border-radius:18px;
+        padding:20px 16px;cursor:pointer;text-align:center;
+        box-shadow:0 4px 18px ${sf.color}22;transition:transform .18s,box-shadow .18s;
+        position:relative;
+      " onmouseover="this.style.transform='translateY(-3px)';this.style.boxShadow='0 8px 28px ${sf.color}44'"
+         onmouseout="this.style.transform='';this.style.boxShadow='0 4px 18px ${sf.color}22'">
+        ${sf.locked ? '<span style="position:absolute;top:8px;right:8px;font-size:13px;">🔒</span>' : ''}
+        <div style="font-size:32px;margin-bottom:8px;">${sf.icon}</div>
+        <div style="font-size:14px;font-weight:900;color:var(--text);margin-bottom:4px;">${sf.name}</div>
+        <div style="font-size:11px;color:${sf.color};font-weight:700;background:${sf.color}18;padding:3px 10px;border-radius:20px;display:inline-block;">
+          ${count} Test${count!==1?'s':''}
+        </div>
+      </div>`;
+    }).join('');
+
+    // Show direct exams (assigned to parent folder directly) below sub-folder grid
+    const directWrap = document.getElementById('mock-subfolders-direct-exams-wrap');
+    const directEl   = document.getElementById('mock-subfolders-direct-exams');
+    if (directExams.length > 0) {
+      directEl.innerHTML = directExams.map((e, i) => _examCardHtml(e, i)).join('');
+      directWrap.style.display = 'block';
+    } else {
+      directWrap.style.display = 'none';
+    }
+
+    showPage('mock-subfolders');
+  } else {
+    // No sub-folders → show tests directly (legacy / GK / Math style)
+    openMockSubFolder(folderId);
+  }
+}
+
+// Open a sub-folder's test list
+function openMockSubFolder(folderId) {
+  const folders = getMockFolders();
+  const folder = folders.find(f => f.id === folderId);
+  if (!folder) return;
+
+  const tests = DB.exams.filter(e => e.mockFolder === folderId);
+  const parentFolder = folder.parentId ? folders.find(f => f.id === folder.parentId) : null;
+
+  // ── Banner color from folder ──
+  const banner = document.getElementById('mock-folder-detail-banner');
+  if (banner) {
+    const c = folder.color || '#1A73E8';
+    // darken for gradient end
+    banner.style.background = `linear-gradient(135deg, ${c} 0%, ${c}cc 100%)`;
+  }
+
+  // Icon
+  const iconEl = document.getElementById('mock-folder-detail-icon');
+  if (iconEl) iconEl.textContent = folder.icon || '📝';
+
+  // Breadcrumb
+  const breadcrumb = document.getElementById('mock-folder-breadcrumb');
+  if (breadcrumb) {
+    breadcrumb.textContent = parentFolder ? (parentFolder.icon + ' ' + parentFolder.name + '  →  ' + folder.name) : '';
+  }
+
+  document.getElementById('mock-folder-detail-title').textContent = folder.name + ' Mock Tests';
+  document.getElementById('mock-folder-detail-sub').textContent = tests.length
+    ? `${tests.length} test${tests.length !== 1 ? 's' : ''} available · Practice చేయండి!`
+    : 'ఇంకా tests add చేయలేదు';
+
+  const lockBadge = document.getElementById('mock-folder-lock-badge');
+  lockBadge.style.display = folder.locked ? 'inline-block' : 'none';
+
+  const listEl = document.getElementById('mock-folder-exams-list');
+  if (!tests.length) {
+    listEl.innerHTML = '<div class="empty-state" style="text-align:center;padding:40px 20px;color:var(--text3);font-size:14px;font-weight:600;">📭 ఈ folder లో ఇంకా tests లేవు.<br><span style="font-size:12px;opacity:.7">Admin లో exams add చేయండి.</span></div>';
+  } else {
+    listEl.innerHTML = tests.map((e, i) => _examCardHtml(e, i)).join('');
+  }
+
+  showPage('mock-folder-detail');
+}
+
+// Back button logic for detail page
+function _mockFolderDetailBack() {
+  if (_currentParentFolderId) {
+    showPage('mock-subfolders');
+  } else {
+    openMockFoldersPage();
+  }
+}
+
+/* ── Admin: Render Mock Folder management table ── */
+function renderMockFolderAdminTable() {
+  const tbody = document.getElementById('mock-folders-admin-tbody');
+  if (!tbody) return;
+  const folders = getMockFolders();
+  const parents = folders.filter(f => !f.parentId);
+  let rows = '';
+  parents.forEach(parent => {
+    const subs = folders.filter(f => f.parentId === parent.id);
+    const parentCount = DB.exams.filter(e => e.mockFolder === parent.id).length;
+    // Parent row
+    rows += `<tr style="background:var(--bg2);">
+      <td style="font-weight:900;">${parent.icon} ${parent.name}</td>
+      <td>${subs.length > 0 ? subs.length + ' sub-folders' : parentCount + ' tests'}</td>
+      <td>
+        <button onclick="toggleMockFolderLock('${parent.id}')" style="
+          background:${parent.locked ? '#ef444422' : '#10b98122'};
+          color:${parent.locked ? '#ef4444' : '#10b981'};
+          border:1px solid ${parent.locked ? '#ef4444' : '#10b981'};
+          border-radius:8px;padding:4px 12px;font-size:12px;font-weight:800;cursor:pointer;">
+          ${parent.locked ? '🔒 Unlock' : '🔓 Lock'}
+        </button>
+      </td>
+    </tr>`;
+    // Sub-folder rows
+    subs.forEach(sf => {
+      const count = DB.exams.filter(e => e.mockFolder === sf.id).length;
+      rows += `<tr>
+        <td style="padding-left:24px;color:var(--text2);">↳ ${sf.icon} ${sf.name}</td>
+        <td>${count} tests</td>
+        <td>
+          <button onclick="toggleMockFolderLock('${sf.id}')" style="
+            background:${sf.locked ? '#ef444422' : '#10b98122'};
+            color:${sf.locked ? '#ef4444' : '#10b981'};
+            border:1px solid ${sf.locked ? '#ef4444' : '#10b981'};
+            border-radius:8px;padding:4px 12px;font-size:12px;font-weight:800;cursor:pointer;">
+            ${sf.locked ? '🔒 Unlock' : '🔓 Lock'}
+          </button>
+        </td>
+      </tr>`;
+    });
+  });
+  tbody.innerHTML = rows;
+}
+
+function toggleMockFolderLock(folderId) {
+  const folders = getMockFolders();
+  const f = folders.find(x => x.id === folderId);
+  if (!f) return;
+  f.locked = !f.locked;
+  saveMockFolders(folders);
+  renderMockFolderAdminTable();
+  toast(f.locked ? `🔒 "${f.name}" folder locked!` : `🔓 "${f.name}" folder unlocked!`, f.locked ? 'warn' : 'success');
 }
 
 function filterExams() {

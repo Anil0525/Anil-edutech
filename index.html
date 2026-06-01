@@ -8050,6 +8050,7 @@ const SB_HEADERS = {
 
 // ── CIRCUIT BREAKERS — stop error spam when backend is offline ──
 let _sbDead = false, _sbFails = 0;
+const _SB_MAX_FAILS = 5;
 let _gsDead = false;
 
 async function sbGet(table, filters) {
@@ -8058,12 +8059,12 @@ async function sbGet(table, filters) {
     let url = `${SB_URL}/rest/v1/${table}?select=*`;
     if (filters) url += '&' + filters;
     const r = await fetch(url, { headers: { ...SB_HEADERS, 'Prefer': 'return=representation' } });
-    if (!r.ok) { _sbFails++; if (_sbFails >= 2) { _sbDead = true; setTimeout(function(){ _sbDead = false; _sbFails = 0; }, 5*60*1000); } return null; }
+    if (!r.ok) { _sbFails++; if (_sbFails >= _SB_MAX_FAILS) { _sbDead = true; setTimeout(function(){ _sbDead = false; _sbFails = 0; }, 5*60*1000); } return null; }
     _sbFails = 0;
     return await r.json();
   } catch(e) {
     _sbFails++;
-    if (_sbFails >= 2) { _sbDead = true; setTimeout(function(){ _sbDead = false; _sbFails = 0; }, 5*60*1000); }
+    if (_sbFails >= _SB_MAX_FAILS) { _sbDead = true; setTimeout(function(){ _sbDead = false; _sbFails = 0; }, 5*60*1000); }
     return null;
   }
 }
@@ -8076,9 +8077,9 @@ async function sbUpsert(table, data) {
       headers: { ...SB_HEADERS, 'Prefer': 'resolution=merge-duplicates,return=minimal' },
       body: JSON.stringify(data)
     });
-    if (!r.ok) { _sbFails++; if (_sbFails >= 2) { _sbDead = true; setTimeout(function(){ _sbDead = false; _sbFails = 0; }, 5*60*1000); } }
+    if (!r.ok) { _sbFails++; if (_sbFails >= _SB_MAX_FAILS) { _sbDead = true; setTimeout(function(){ _sbDead = false; _sbFails = 0; }, 5*60*1000); } }
     return r.ok;
-  } catch(e) { _sbFails++; if (_sbFails >= 2) { _sbDead = true; setTimeout(function(){ _sbDead = false; _sbFails = 0; }, 5*60*1000); } return false; }
+  } catch(e) { _sbFails++; if (_sbFails >= _SB_MAX_FAILS) { _sbDead = true; setTimeout(function(){ _sbDead = false; _sbFails = 0; }, 5*60*1000); } return false; }
 }
 
 async function sbDelete(table, filter) {
@@ -8087,9 +8088,9 @@ async function sbDelete(table, filter) {
     const r = await fetch(`${SB_URL}/rest/v1/${table}?${filter}`, {
       method: 'DELETE', headers: SB_HEADERS
     });
-    if (!r.ok) { _sbFails++; if (_sbFails >= 2) { _sbDead = true; setTimeout(function(){ _sbDead = false; _sbFails = 0; }, 5*60*1000); } }
+    if (!r.ok) { _sbFails++; if (_sbFails >= _SB_MAX_FAILS) { _sbDead = true; setTimeout(function(){ _sbDead = false; _sbFails = 0; }, 5*60*1000); } }
     return r.ok;
-  } catch(e) { _sbFails++; if (_sbFails >= 2) { _sbDead = true; setTimeout(function(){ _sbDead = false; _sbFails = 0; }, 5*60*1000); } return false; }
+  } catch(e) { _sbFails++; if (_sbFails >= _SB_MAX_FAILS) { _sbDead = true; setTimeout(function(){ _sbDead = false; _sbFails = 0; }, 5*60*1000); } return false; }
 }
 
 // ── SUPABASE RESULTS / USER-DATA HELPERS ──
@@ -8177,9 +8178,9 @@ async function sbInsert(table, data) {
       headers: { ...SB_HEADERS, 'Prefer': 'return=minimal' },
       body: JSON.stringify(data)
     });
-    if (!r.ok) { _sbFails++; if (_sbFails >= 2) { _sbDead = true; setTimeout(function(){ _sbDead = false; _sbFails = 0; }, 5*60*1000); } }
+    if (!r.ok) { _sbFails++; if (_sbFails >= _SB_MAX_FAILS) { _sbDead = true; setTimeout(function(){ _sbDead = false; _sbFails = 0; }, 5*60*1000); } }
     return r.ok;
-  } catch(e) { _sbFails++; if (_sbFails >= 2) { _sbDead = true; setTimeout(function(){ _sbDead = false; _sbFails = 0; }, 5*60*1000); } return false; }
+  } catch(e) { _sbFails++; if (_sbFails >= _SB_MAX_FAILS) { _sbDead = true; setTimeout(function(){ _sbDead = false; _sbFails = 0; }, 5*60*1000); } return false; }
 }
 
 async function sbPatch(table, filter, data) {
@@ -8190,9 +8191,9 @@ async function sbPatch(table, filter, data) {
       headers: { ...SB_HEADERS, 'Prefer': 'return=minimal' },
       body: JSON.stringify(data)
     });
-    if (!r.ok) { _sbFails++; if (_sbFails >= 2) { _sbDead = true; setTimeout(function(){ _sbDead = false; _sbFails = 0; }, 5*60*1000); } }
+    if (!r.ok) { _sbFails++; if (_sbFails >= _SB_MAX_FAILS) { _sbDead = true; setTimeout(function(){ _sbDead = false; _sbFails = 0; }, 5*60*1000); } }
     return r.ok;
-  } catch(e) { _sbFails++; if (_sbFails >= 2) { _sbDead = true; setTimeout(function(){ _sbDead = false; _sbFails = 0; }, 5*60*1000); } return false; }
+  } catch(e) { _sbFails++; if (_sbFails >= _SB_MAX_FAILS) { _sbDead = true; setTimeout(function(){ _sbDead = false; _sbFails = 0; }, 5*60*1000); } return false; }
 }
 
 // Batch insert — 50 rows at a time to avoid payload limits
@@ -8230,6 +8231,18 @@ async function _loadDBFromSupabase() {
         videoUrl: e.video_url || null,
         parts: e.parts || null
       }));
+    } else {
+      // Fallback: try ae_db blob (used when ae_exams upsert was failing)
+      try {
+        const blobRows = await sbGet('ae_db', 'id=eq.exams_blob');
+        if (blobRows && blobRows.length > 0 && blobRows[0].data) {
+          const blobExams = JSON.parse(blobRows[0].data);
+          if (Array.isArray(blobExams) && blobExams.length > 0) {
+            DB.exams = blobExams;
+            console.info('Loaded exams from ae_db blob fallback:', blobExams.length);
+          }
+        }
+      } catch(blobErr) { console.warn('ae_db blob load failed:', blobErr); }
     }
 
     if (questions && Array.isArray(questions) && questions.length > 0) {
@@ -10441,10 +10454,17 @@ async function sbSaveExam(exam) {
     is_premium: exam.isPremium || false,
     is_locked: exam.isLocked || false,
     mock_folder: exam.mockFolder || null,
+    video_url: exam.videoUrl || null,
     updated_at: new Date().toISOString()
   };
-  await sbUpsert('ae_exams', row);
+  const ok = await sbUpsert('ae_exams', row);
+  if (!ok) {
+    // Fallback: save full exams blob to ae_db
+    console.warn('ae_exams upsert failed, saving to ae_db blob fallback');
+    await sbUpsert('ae_db', { id: 'exams_blob', data: JSON.stringify(DB.exams), updated_at: new Date().toISOString() });
+  }
   await _saveMeta();
+  return ok !== false;
 }
 
 // ── Supabase: Save single question ──
@@ -10457,8 +10477,9 @@ async function sbSaveQuestion(q) {
     marks: q.marks || null,
     image: q.image || null
   };
-  await sbUpsert('ae_questions', row);
+  const ok = await sbUpsert('ae_questions', row);
   await _saveMeta();
+  return ok !== false;
 }
 
 // ── Supabase: Delete exam + its questions ──
@@ -11972,7 +11993,7 @@ function populateAdminSelects() {
   }
 }
 
-function createExam() {
+async function createExam() {
   const name = document.getElementById('exam-name').value.trim();
   if (!name) { alert('Exam name enter చేయండి'); return; }
   const secR  = Math.max(0, parseInt(document.getElementById('exam-sec-reasoning')?.value) || 0);
@@ -12006,7 +12027,10 @@ function createExam() {
     mockFolder: document.getElementById('exam-mock-folder')?.value || null,
   };
   DB.exams.push(_newExamObj);
-  sbSaveExam(_newExamObj); // Supabase save
+  const _saveOk = await sbSaveExam(_newExamObj);
+  if (_saveOk === false) {
+    toast('Exam locally add అయింది కానీ Supabase save fail! Internet check చేయండి.', 'warn');
+  }
   document.getElementById('exam-name').value = '';
   if(document.getElementById('exam-sec-reasoning')) document.getElementById('exam-sec-reasoning').value=0;
   if(document.getElementById('exam-sec-arithmetic')) document.getElementById('exam-sec-arithmetic').value=0;
@@ -12027,7 +12051,7 @@ function createExam() {
   toast('✓ Exam "' + name + '" create అయింది! (ID: ' + newExam.id + ') — Bulk Import లో dropdown నుండి select చేయండి', 'success');
 }
 
-function addQuestion() {
+async function addQuestion() {
   const examId = parseInt(document.getElementById('q-exam-select').value);
   const qText  = document.getElementById('q-text-input').value.trim();
   const opts   = ['opt-a','opt-b','opt-c','opt-d'].map(id => document.getElementById(id).value.trim());
@@ -12047,7 +12071,10 @@ function addQuestion() {
   if (marks) qObj.marks = marks;
   if (image) qObj.image = image;
   DB.questions.push(qObj);
-  sbSaveQuestion(qObj); // Supabase save
+  const _qSaveOk = await sbSaveQuestion(qObj);
+  if (_qSaveOk === false) {
+    toast('Question locally add అయింది కానీ Supabase save fail! Internet check చేయండి.', 'warn');
+  }
 
   document.getElementById('q-text-input').value = '';
   ['opt-a','opt-b','opt-c','opt-d'].forEach(id => document.getElementById(id).value = '');
@@ -12670,20 +12697,25 @@ function renderExamsManageTable(){
 }
 function toggleExamLock(id){const e=DB.exams.find(x=>x.id===id);if(!e)return;e.isPremium=!e.isPremium;sbSaveExam(e);saveDB();renderExamsManageTable();filterExams();toast(e.isPremium?`🔒 "${e.name}" — Premium Only!`:`🔓 "${e.name}" — Free!`,e.isPremium?'warn':'success');}
 
-function assignExamFolder(examId, folderId) {
+async function assignExamFolder(examId, folderId) {
   const e = DB.exams.find(x => x.id === examId);
   if (!e) return;
-  e.mockFolder = folderId || null;
-  sbSaveExam(e);
+  // Fix: empty string should be treated as null
+  e.mockFolder = (folderId && folderId !== '') ? folderId : null;
+  const ok = await sbSaveExam(e);
   saveDB();
   // Refresh folder counts on mock-folders page if visible
   renderMockFoldersGrid();
   renderMockFolderAdminTable();
+  if (ok === false) {
+    toast('Supabase save fail అయింది! Internet check చేయండి. F12 Console చూడండి.', 'warn');
+    return;
+  }
   const folders = getMockFolders();
-  const f = folders.find(x => x.id === folderId);
-  toast(folderId
-    ? `📁 "${e.name}" → ${f ? f.name : folderId} folder కి add అయింది!`
-    : `📁 "${e.name}" folder నుండి remove అయింది!`,
+  const f = folders.find(x => x.id === e.mockFolder);
+  toast(e.mockFolder
+    ? '✅ "' + e.name + '" → "' + (f ? f.name : e.mockFolder) + '" folder కి save అయింది!'
+    : '"' + e.name + '" folder నుండి remove అయింది!',
     'success');
 }
 

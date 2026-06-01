@@ -8273,10 +8273,12 @@ async function _loadDBFromSupabase() {
       });
     }
 
-    // If Supabase tables empty → migrate DEFAULT_DB data into Supabase once
-    if (!exams || !exams.length) {
+    // If Supabase tables empty AND we got a valid (non-null) response → migrate DEFAULT_DB once
+    // IMPORTANT: Only migrate if exams is an empty array (not null/undefined which means network failure)
+    if (exams !== null && Array.isArray(exams) && exams.length === 0) {
       await _migrateDefaultDataToSupabase();
     }
+    // If exams is null → Supabase fetch failed (network/auth error) → do NOT migrate, keep existing DB data
 
     return true;
   } catch(e) {
@@ -8315,8 +8317,14 @@ async function _migrateDefaultDataToSupabase() {
       marks: q.marks || null,
       image: q.image || null
     }));
-    await sbBatchInsert('ae_exams', examRows);
-    await sbBatchInsert('ae_questions', qRows);
+    // Use upsert (merge-duplicates) so existing admin-added exams are NEVER overwritten
+    const CHUNK = 50;
+    for (let i = 0; i < examRows.length; i += CHUNK) {
+      await sbUpsert('ae_exams', examRows.slice(i, i + CHUNK));
+    }
+    for (let i = 0; i < qRows.length; i += CHUNK) {
+      await sbUpsert('ae_questions', qRows.slice(i, i + CHUNK));
+    }
     await _saveMeta();
     toast('✅ Data Supabase కి migrate అయింది!', 'success');
   } catch(e) {

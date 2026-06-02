@@ -8228,6 +8228,7 @@ async function _loadDBFromSupabase() {
         isLocked: e.is_locked || false,
         mockFolder: e.mock_folder || null,
         videoUrl: e.video_url || null,
+        partLabels: e.part_labels || null,
         parts: e.parts || null
       }));
     }
@@ -8273,12 +8274,10 @@ async function _loadDBFromSupabase() {
       });
     }
 
-    // If Supabase tables empty AND we got a valid (non-null) response → migrate DEFAULT_DB once
-    // IMPORTANT: Only migrate if exams is an empty array (not null/undefined which means network failure)
-    if (exams !== null && Array.isArray(exams) && exams.length === 0) {
+    // If Supabase tables empty → migrate DEFAULT_DB data into Supabase once
+    if (!exams || !exams.length) {
       await _migrateDefaultDataToSupabase();
     }
-    // If exams is null → Supabase fetch failed (network/auth error) → do NOT migrate, keep existing DB data
 
     return true;
   } catch(e) {
@@ -8317,14 +8316,8 @@ async function _migrateDefaultDataToSupabase() {
       marks: q.marks || null,
       image: q.image || null
     }));
-    // Use upsert (merge-duplicates) so existing admin-added exams are NEVER overwritten
-    const CHUNK = 50;
-    for (let i = 0; i < examRows.length; i += CHUNK) {
-      await sbUpsert('ae_exams', examRows.slice(i, i + CHUNK));
-    }
-    for (let i = 0; i < qRows.length; i += CHUNK) {
-      await sbUpsert('ae_questions', qRows.slice(i, i + CHUNK));
-    }
+    await sbBatchInsert('ae_exams', examRows);
+    await sbBatchInsert('ae_questions', qRows);
     await _saveMeta();
     toast('✅ Data Supabase కి migrate అయింది!', 'success');
   } catch(e) {
@@ -10366,7 +10359,7 @@ const DEFAULT_DB = {
     { id:4, name:'SSC MTS Mock Test 1',  cat:'SSC',     mockFolder:'ssc-mts',  time:90, diff:'Easy',   sections:{reasoning:20,arithmetic:20,ga:20,english:20}, qmark:1, nmark:0 },
     { id:5, name:'Banking Awareness Test',    cat:'Banking',  mockFolder:'banking-rbi',  time:15, diff:'Medium', sections:{reasoning:0,arithmetic:0,ga:1},  qmark:1, nmark:0 },
     { id:6, name:'RRB NTPC Mock Test 1',      cat:'RRB',      mockFolder:'rrb-ntpc',   time:90, diff:'Medium', sections:{reasoning:30,arithmetic:30,ga:40}, qmark:1, nmark:0.33 },
-    { id:7, name:'RRB Group D Mock Test 1',   cat:'RRB',      mockFolder:'rrb-groupd', time:90, diff:'Easy',   sections:{reasoning:25,arithmetic:25,ga:20,science:30}, qmark:1, nmark:0.33 },
+    { id:7, name:'RRB Group D Mock Test 1',   cat:'RRB',      mockFolder:'rrb-groupd', time:90, diff:'Easy',   sections:{reasoning:25,arithmetic:25,ga:20}, qmark:1, nmark:0.33 },
     { id:8, name:'IBPS Clerk Mock Test 1',    cat:'Banking',  mockFolder:'banking-ibps', time:60, diff:'Medium', sections:{reasoning:35,arithmetic:35,english:30}, qmark:1, nmark:0.25 },
     { id:9, name:'SBI Clerk Mock Test 1',     cat:'Banking',  mockFolder:'banking-sbi',  time:60, diff:'Medium', sections:{reasoning:35,arithmetic:35,english:30}, qmark:1, nmark:0.25 },
   ],
@@ -10413,8 +10406,6 @@ const DEFAULT_DB = {
     { id:22, examId:6, section:'arithmetic',q:'ఒక రైలు 300 km దూరాన్ని 5 గంటలలో పూర్తి చేస్తుంది. దాని వేగం km/h లో?', opts:['50','55','60','65'], ans:'C' },
     { id:23, examId:6, section:'ga',        q:'భారతదేశంలో మొదటి రైలు ఏ సంవత్సరంలో నడిచింది?', opts:['1850','1851','1853','1855'], ans:'C' },
     // RRB Group D
-    { id:24, examId:7, section:'science',   q:'నీటి రసాయన సూత్రం ఏమిటి?', opts:['H2O2','H2O','HO','H3O'], ans:'B' },
-    { id:25, examId:7, section:'science',   q:'సౌరశక్తి ఏ రకమైన శక్తి?', opts:['రసాయన','అణు','పునరుత్పాదక','శిలాజ ఇంధనం'], ans:'C' },
     { id:26, examId:7, section:'reasoning', q:'If CAT = 3120, then DOG = ?', opts:['4157','4156','4155','4158'], ans:'A' },
     { id:27, examId:7, section:'arithmetic',q:'15 యొక్క 20% + 20 యొక్క 15% = ?', opts:['3','6','7','5'], ans:'B' },
     { id:28, examId:7, section:'ga',        q:'తెలంగాణ రాష్ట్ర అధికారిక పక్షి ఏది?', opts:['నెమలి','పాలపిట్ట','గువ్వ','కొంగ'], ans:'B' },
@@ -10449,9 +10440,15 @@ async function sbSaveExam(exam) {
     is_premium: exam.isPremium || false,
     is_locked: exam.isLocked || false,
     mock_folder: exam.mockFolder || null,
+    part_labels: exam.partLabels || null,
+    video_url: exam.videoUrl || null,
     updated_at: new Date().toISOString()
   };
-  await sbUpsert('ae_exams', row);
+  const ok = await sbUpsert('ae_exams', row);
+  if (!ok) {
+    console.error('❌ sbSaveExam failed for exam:', exam.id, exam.name);
+    toast('⚠️ Exam Supabase లో save కాలేదు! Network check చేయండి.', 'warn');
+  }
   await _saveMeta();
 }
 
@@ -10465,7 +10462,11 @@ async function sbSaveQuestion(q) {
     marks: q.marks || null,
     image: q.image || null
   };
-  await sbUpsert('ae_questions', row);
+  const ok = await sbUpsert('ae_questions', row);
+  if (!ok) {
+    console.error('❌ sbSaveQuestion failed for q:', q.id);
+    toast('⚠️ Question Supabase లో save కాలేదు! Network check చేయండి.', 'warn');
+  }
   await _saveMeta();
 }
 
@@ -10932,14 +10933,15 @@ function saveBookmarks(arr) {
     sbSaveUserData(u.gmail, { bookmarks: arr, badges: JSON.parse(_ls.getItem('ae_badges_seen')||'[]'), daily_done: JSON.parse(_ls.getItem('ae_daily_done')||'[]'), daily_count: dc });
   }
 }
-function isBookmarked(examId) { return getBookmarks().includes(examId); }
+function isBookmarked(examId) { return getBookmarks().includes(String(examId)); }
 function toggleBookmark(examId) {
   let bm = getBookmarks();
-  if (bm.includes(examId)) {
-    bm = bm.filter(id => id !== examId);
+  const idStr = String(examId);
+  if (bm.includes(idStr)) {
+    bm = bm.filter(id => id !== idStr);
     toast('🔖 Bookmark తీసేయబడింది', 'info');
   } else {
-    bm.push(examId);
+    bm.push(idStr);
     toast('⭐ Bookmark చేయబడింది!', 'success');
   }
   saveBookmarks(bm);
@@ -10956,7 +10958,7 @@ function toggleBookmark(examId) {
 }
 function renderBookmarkedExams() {
   const bm = getBookmarks();
-  const list = DB.exams.filter(e => bm.includes(e.id));
+  const list = DB.exams.filter(e => bm.includes(String(e.id)));
   const el = document.getElementById('exams-list');
   if (!list.length) {
     el.innerHTML = '<div class="empty-state" style="text-align:center;padding:40px 20px;color:var(--text3);font-size:14px;font-weight:600;">⭐ ఇంకా Bookmark చేయలేదు.<br><span style="font-size:12px;opacity:.7">Exam card పై 🔖 click చేసి bookmark చేయండి</span></div>';
@@ -10969,19 +10971,18 @@ function _examCardHtml(e, idx) {
   const videoBtn = e.videoUrl ? `<a class="video-link-btn" href="${sanitizeUrl(e.videoUrl)}" target="_blank" rel="noopener noreferrer" title="Video చూడండి">▶ Video</a>` : '';
   const bmked = isBookmarked(e.id);
   const saved = _getSavedProgress(e.id);
-  const resumeBadge = saved && Object.keys(saved.answers||{}).length > 0
-    ? `<span style="background:linear-gradient(135deg,#FF6B35,#FF9F1C);color:#fff;font-size:10px;font-weight:800;padding:3px 9px;border-radius:20px;margin-left:6px;vertical-align:middle;">▶ Resume</span>` : '';
-  const isLocked=!!e.isPremium,u2=getCurrentUser(),userIsPremium=!!(u2&&u2.isPremium);
+  const hasResume = !!(saved && Object.keys(saved.answers||{}).length > 0);
+  const isLocked=!!(e.isPremium||e.isLocked),u2=getCurrentUser(),userIsPremium=!!(u2&&u2.isPremium);
   const numBadge = (idx !== undefined)
     ? `<div style="min-width:28px;height:28px;border-radius:50%;background:linear-gradient(135deg,var(--primary),#00B4D8);color:#fff;font-size:11px;font-weight:900;display:flex;align-items:center;justify-content:center;flex-shrink:0;">${idx+1}</div>`
     : '';
   return `<div class="exam-card${isLocked?' is-locked':''}" style="position:relative;">
     <button id="bm-btn-${e.id}" onclick="toggleBookmark(${e.id})" title="${bmked?'Bookmarked':'Bookmark చేయండి'}"
       style="position:absolute;top:10px;right:10px;background:none;border:none;font-size:20px;cursor:pointer;line-height:1;padding:2px 4px;border-radius:6px;transition:transform .2s;"
-      onmouseover="this.style.transform='scale(1.25)'" onmouseout="this.style.transform=''">${bmked?'⭐':'🔖'}</button>
+      onmouseover="this.style.transform='scale(1.25)'" onmouseout="this.style.transform=''">  ${bmked?'⭐':'🔖'}</button>
     ${numBadge}
     <div class="exam-info" style="padding-right:32px;">
-      <div class="exam-title">${e.name}${resumeBadge}</div>
+      <div class="exam-title">${e.name}</div>
       <div class="exam-meta">
         <span class="meta-pill ${catPill[e.cat]||'pill-blue'}">${e.cat}</span>
         <span class="meta-pill pill-blue">⏱ ${e.time} min</span>
@@ -10991,7 +10992,7 @@ function _examCardHtml(e, idx) {
       ${videoBtn}
     </div>
     <button class="start-btn" onclick="startExam(${e.id})" ${qc===0?'disabled':''}>
-      ${isLocked&&!userIsPremium?'🔒 Unlock':saved&&Object.keys(saved.answers||{}).length>0?'Resume →':qc===0?'No Questions':'Start →'}
+      ${isLocked&&!userIsPremium?'🔒 Unlock':hasResume?'▶ Resume →':qc===0?'No Questions':'Start →'}
     </button>
   </div>`;
 }
@@ -11013,7 +11014,7 @@ function renderExamCards(list) {
   </div>`;
   let html = '';
   list.forEach((e, i) => {
-    html += _examCardHtml(e);
+    html += _examCardHtml(e, i);
     if ((i + 1) % 4 === 0 && i !== list.length - 1) {
       html += AD_BETWEEN_CARDS;
     }
@@ -11029,6 +11030,10 @@ function renderExamCards(list) {
 
 /* ---- START EXAM ---- */
 // ── RESUME EXAM HELPERS ──
+function _examProgressKey(examId) {
+  return 'ae_exam_progress_' + String(examId || (exam.current && exam.current.id) || '');
+}
+
 function _saveExamProgress() {
   if (!exam.current) return;
   const data = {
@@ -11038,21 +11043,36 @@ function _saveExamProgress() {
     timeLeft:  exam.timeLeft,
     ts:        Date.now()
   };
-  _ls.setItem('ae_exam_progress', JSON.stringify(data));
+  _ls.setItem(_examProgressKey(exam.current.id), JSON.stringify(data));
 }
 
 function _clearExamProgress() {
-  _ls.removeItem('ae_exam_progress');
+  if (exam.current) {
+    _ls.removeItem(_examProgressKey(exam.current.id));
+  } else {
+    // Fallback: clear old single-key format too
+    _ls.removeItem('ae_exam_progress');
+  }
 }
 
 function _getSavedProgress(examId) {
   try {
-    const d = JSON.parse(_ls.getItem('ae_exam_progress') || 'null');
-    if (!d) return null;
-    // Expire after 24 hours
-    if (Date.now() - d.ts > 86400000) { _clearExamProgress(); return null; }
-    if (examId !== undefined && d.examId !== examId) return null;
-    return d;
+    // Try per-exam key first (new format)
+    if (examId !== undefined) {
+      const d = JSON.parse(_ls.getItem(_examProgressKey(examId)) || 'null');
+      if (d) {
+        if (Date.now() - d.ts > 86400000) { _ls.removeItem(_examProgressKey(examId)); return null; }
+        return d;
+      }
+      // Fallback: check old single-key format for migration
+      const legacy = JSON.parse(_ls.getItem('ae_exam_progress') || 'null');
+      if (legacy && String(legacy.examId) === String(examId)) {
+        if (Date.now() - legacy.ts > 86400000) { _ls.removeItem('ae_exam_progress'); return null; }
+        return legacy;
+      }
+      return null;
+    }
+    return null;
   } catch(e) { return null; }
 }
 
@@ -11080,7 +11100,7 @@ function startExam(examId) {
   }
 
   const e = DB.exams.find(x => x.id === examId);
-  if(e&&e.isPremium){const cu=getCurrentUser();if(!cu||!cu.isPremium){_showPremiumLockModal(e.name);return;}}
+  if(e&&(e.isPremium||e.isLocked)){const cu=getCurrentUser();if(!cu||!cu.isPremium){_showPremiumLockModal(e.name);return;}}
   const qs = DB.questions.filter(q => q.examId === examId);
   if (!qs.length) { alert('ఈ exam కి questions లేవు. Admin లో add చేయండి.'); return; }
 
@@ -11166,8 +11186,10 @@ function _resumeExam() {
 function _restartExam(examId) {
   document.getElementById('resume-modal-overlay')?.remove();
   _clearExamProgress();
-  const e = DB.exams.find(x => x.id === examId);
-  const qs = DB.questions.filter(q => q.examId === examId);
+  // Normalise to same type for safe comparison (string ids vs numeric)
+  const idStr = String(examId);
+  const e = DB.exams.find(x => String(x.id) === idStr);
+  const qs = DB.questions.filter(q => String(q.examId) === idStr);
   _beginFreshExam(e, qs);
 }
 
@@ -11318,6 +11340,7 @@ const SECTION_META = {
   arithmetic: { label: '🔢 Arithmetic',            short: '🔢 Arithmetic' },
   ga:         { label: '🌍 General Awareness',     short: '🌍 Gen. Awareness' },
   english:    { label: '📖 English Comprehension', short: '📖 English' },
+  science:    { label: '🔬 Science',               short: '🔬 Science' },
 };
 
 // Current active section filter ('all' or 'reasoning'/'arithmetic'/'ga')
@@ -11344,7 +11367,7 @@ function renderSectionTabs() {
   tabBar.style.display = 'flex';
 
   let html = `<button class="sec-tab${exam._activeSection==='all'?' active':''}" onclick="_switchSection('all')">📋 All <span class="sec-badge">${qs.length}</span></button>`;
-  ['reasoning','arithmetic','ga','english'].forEach(s => {
+  ['reasoning','arithmetic','ga','english','science'].forEach(s => {
     if (!secCounts[s]) return;
     const m = SECTION_META[s];
     const isActive = exam._activeSection === s;
@@ -11489,7 +11512,7 @@ function submitExam() {
   }
   const qs = exam.questions;
   let correct=0, wrong=0, skip=0;
-  const _secStats = { reasoning:{c:0,w:0,s:0,t:0}, arithmetic:{c:0,w:0,s:0,t:0}, ga:{c:0,w:0,s:0,t:0}, english:{c:0,w:0,s:0,t:0} };
+  const _secStats = { reasoning:{c:0,w:0,s:0,t:0}, arithmetic:{c:0,w:0,s:0,t:0}, ga:{c:0,w:0,s:0,t:0}, english:{c:0,w:0,s:0,t:0}, science:{c:0,w:0,s:0,t:0} };
   // Normalize ans: support 'A'/'B'/'C'/'D' (string) and 0/1/2/3 (number)
   const _normAns = (v) => {
     if (v === undefined || v === null || v === '') return null;
@@ -11674,7 +11697,7 @@ function showResultPage() {
   const secBreak = document.getElementById('sec-result-breakdown');
   if (secBreak && exam._sectionStats) {
     const ss = exam._sectionStats;
-    const secMeta2 = { reasoning:{label:'🧠 Reasoning', color:'#4A9EFF'}, arithmetic:{label:'🔢 Arithmetic', color:'#00B894'}, ga:{label:'🌍 General Awareness', color:'#FF6B35'} };
+    const secMeta2 = { reasoning:{label:'🧠 Reasoning', color:'#4A9EFF'}, arithmetic:{label:'🔢 Arithmetic', color:'#00B894'}, ga:{label:'🌍 General Awareness', color:'#FF6B35'}, english:{label:'📖 English', color:'#A855F7'}, science:{label:'🔬 Science', color:'#06B6D4'} };
     const secRows = Object.entries(secMeta2)
       .filter(([k]) => ss[k] && ss[k].t > 0)
       .map(([k, m]) => {
@@ -11710,7 +11733,7 @@ function showResultPage() {
     const optIdx = (L) => L ? L.charCodeAt(0) - 65 : -1;
     const myAns  = myLetter ? `${myLetter}: ${escHtml(q.opts[optIdx(myLetter)] || '')}` : 'Skip చేశారు';
     const corAns = ansLetter ? escHtml(q.opts[optIdx(ansLetter)] || '') : '';
-    const _secNames = {reasoning:'🧠 Reasoning', arithmetic:'🔢 Arithmetic', ga:'🌍 GA'};
+    const _secNames = {reasoning:'🧠 Reasoning', arithmetic:'🔢 Arithmetic', ga:'🌍 GA', english:'📖 English', science:'🔬 Science'};
     const _secTag = q.section && _secNames[q.section] ? `<span style="font-size:10px;font-weight:800;background:var(--primary-soft);color:var(--primary);padding:2px 8px;border-radius:10px;margin-left:6px">${_secNames[q.section]}</span>` : '';
     return `<div class="review-card ${ok?'correct-card':'wrong-card'}">
       <div class="review-q">${i+1}. ${escHtml(q.q)}${_secTag}</div>
@@ -12940,11 +12963,17 @@ function getMockFolders() {
       const hasSubFolders = saved.some(f => f.parentId);
       if (!hasSubFolders) {
         // Old format: merge saved parents + DEFAULT_DB sub-folders
+        // Preserve DEFAULT_DB sub-folder settings (color, icon, locked) as base,
+        // but merge any admin-saved sub-folder overrides on top
         const defaultSubs = DEFAULT_DB.mockFolders.filter(f => f.parentId);
-        // Update saved parents with any new parents from DEFAULT_DB that are missing
         const savedIds = saved.map(f => f.id);
         const newParents = DEFAULT_DB.mockFolders.filter(f => !f.parentId && !savedIds.includes(f.id));
-        return [...saved.map(f => ({...f, parentId: null})), ...newParents, ...defaultSubs];
+        // Merge: saved sub-folder overrides take priority over DEFAULT_DB defaults
+        const mergedSubs = defaultSubs.map(ds => {
+          const override = saved.find(s => s.id === ds.id && s.parentId);
+          return override ? {...ds, ...override} : ds;
+        });
+        return [...saved.map(f => ({...f, parentId: null})), ...newParents, ...mergedSubs];
       }
       return saved;
     }
@@ -12975,10 +13004,10 @@ function renderMockFoldersGrid() {
   if (!grid) return;
   const parents = folders.filter(f => !f.parentId);
   grid.innerHTML = parents.map(f => {
-    // Count tests across all sub-folders of this parent
-    const subIds = folders.filter(s => s.parentId === f.id).map(s => s.id);
+    // Count tests across all sub-folders of this parent (String cast to avoid type mismatch)
+    const subIds = folders.filter(s => String(s.parentId) === String(f.id)).map(s => String(s.id));
     // Also count direct exams assigned to parent (legacy support)
-    const count = DB.exams.filter(e => e.mockFolder === f.id || subIds.includes(e.mockFolder)).length;
+    const count = DB.exams.filter(e => String(e.mockFolder) === String(f.id) || subIds.includes(String(e.mockFolder))).length;
     const subCount = folders.filter(s => s.parentId === f.id).length;
     return `<div onclick="openMockFolder('${f.id}')" style="
       background:var(--card);border:2px solid ${f.color}33;border-radius:18px;
@@ -13008,6 +13037,12 @@ function openMockFolder(folderId) {
   const folder = folders.find(f => f.id === folderId);
   if (!folder) return;
 
+  // Block locked folders
+  if (folder.locked) {
+    toast('🔒 ఈ folder locked గా ఉంది. Premium తీసుకోండి!', 'warn');
+    return;
+  }
+
   const subFolders = folders.filter(f => f.parentId === folderId);
 
   if (subFolders.length > 0) {
@@ -13016,13 +13051,13 @@ function openMockFolder(folderId) {
     document.getElementById('mock-subfolders-title').textContent = folder.icon + ' ' + folder.name;
 
     // Direct exams assigned to the parent folder itself
-    const directExams = DB.exams.filter(e => e.mockFolder === folderId);
+    const directExams = DB.exams.filter(e => String(e.mockFolder) === String(folderId));
     const totalTests = DB.exams.filter(e => subFolders.map(s=>s.id).includes(e.mockFolder)).length + directExams.length;
     document.getElementById('mock-subfolders-sub').textContent = subFolders.length + ' categories · ' + totalTests + ' tests available';
 
     const grid = document.getElementById('mock-subfolders-grid');
     grid.innerHTML = subFolders.map(sf => {
-      const count = DB.exams.filter(e => e.mockFolder === sf.id).length;
+      const count = DB.exams.filter(e => String(e.mockFolder) === String(sf.id)).length;
       return `<div onclick="openMockSubFolder('${sf.id}')" style="
         background:var(--card);border:2px solid ${sf.color}44;border-radius:18px;
         padding:20px 16px;cursor:pointer;text-align:center;
@@ -13062,7 +13097,20 @@ function openMockSubFolder(folderId) {
   const folder = folders.find(f => f.id === folderId);
   if (!folder) return;
 
-  const tests = DB.exams.filter(e => e.mockFolder === folderId);
+  // Block locked sub-folders (also block if parent folder is locked)
+  if (folder.locked) {
+    toast('🔒 ఈ folder locked గా ఉంది. Premium తీసుకోండి!', 'warn');
+    return;
+  }
+  if (folder.parentId) {
+    const parentCheck = folders.find(f => f.id === folder.parentId);
+    if (parentCheck && parentCheck.locked) {
+      toast('🔒 ఈ folder locked గా ఉంది. Premium తీసుకోండి!', 'warn');
+      return;
+    }
+  }
+
+  const tests = DB.exams.filter(e => String(e.mockFolder) === String(folderId));
   const parentFolder = folder.parentId ? folders.find(f => f.id === folder.parentId) : null;
 
   // ── Banner color from folder ──
@@ -13136,7 +13184,7 @@ function renderMockFolderAdminTable() {
     </tr>`;
     // Sub-folder rows
     subs.forEach(sf => {
-      const count = DB.exams.filter(e => e.mockFolder === sf.id).length;
+      const count = DB.exams.filter(e => String(e.mockFolder) === String(sf.id)).length;
       rows += `<tr>
         <td style="padding-left:24px;color:var(--text2);">↳ ${sf.icon} ${sf.name}</td>
         <td>${count} tests</td>

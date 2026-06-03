@@ -7136,6 +7136,7 @@ html {
           </div>
           <div style="display:flex;gap:8px;margin-left:auto;align-items:flex-end">
             <button onclick="deleteFilteredQuestions()" style="padding:8px 14px;background:rgba(239,68,68,.12);color:#ef4444;border:1.5px solid rgba(239,68,68,.3);border-radius:9px;font-family:inherit;font-size:12px;font-weight:800;cursor:pointer">🗑 Filter Delete</button>
+            <button onclick="removeDuplicateQuestions()" style="padding:8px 14px;background:rgba(245,183,49,.15);color:#d97706;border:1.5px solid rgba(245,183,49,.4);border-radius:9px;font-family:inherit;font-size:12px;font-weight:800;cursor:pointer">🔁 Duplicates తీసివేయి</button>
             <button onclick="deleteAllQuestions()" style="padding:8px 14px;background:rgba(239,68,68,.9);color:#fff;border:none;border-radius:9px;font-family:inherit;font-size:12px;font-weight:800;cursor:pointer;box-shadow:0 3px 10px rgba(239,68,68,.3)">🗑 All Delete</button>
           </div>
         </div>
@@ -8073,7 +8074,7 @@ async function _testSupabaseConnection() {
 async function sbGet(table, filters) {
   if (_sbDead) return null;
   try {
-    let url = `${SB_URL}/rest/v1/${table}?select=*`;
+    let url = `${SB_URL}/rest/v1/${table}?select=*&limit=100000`;
     if (filters) url += '&' + filters;
     const r = await fetch(url, { headers: { ...SB_HEADERS, 'Prefer': 'return=representation' } });
     if (!r.ok) { _sbFails++; if (_sbFails >= 5) { _sbDead = true; setTimeout(function(){ _sbDead = false; _sbFails = 0; }, 2*60*1000); } return null; }
@@ -8286,23 +8287,13 @@ async function _loadDBFromSupabase() {
         marks: q.marks || null,
         image: q.image || null
       }));
-      if (sbQs.length >= DB.questions.length) {
-        // Supabase has more or equal → use Supabase as source of truth
-        DB.questions = sbQs;
-        sbUpdated = true;
-      } else {
-        // localStorage has more → push the extras to Supabase (no duplicate by id)
-        const sbIds = new Set(sbQs.map(q => q.id));
-        const extras = DB.questions.filter(q => !sbIds.has(q.id));
-        if (extras.length > 0) {
-          sbBatchInsert('ae_questions', extras.map(q => ({
-            id: q.id, exam_id: q.examId, q: q.q, opts: q.opts, ans: q.ans,
-            explanation: q.explanation || '', section: q.section || 'ga',
-            marks: q.marks || null, image: q.image || null
-          }))).catch(() => {});
-        }
-        // Keep localStorage version (it has more)
-      }
+      // Deduplicate by id (keep last occurrence)
+      const sbQsMap = new Map();
+      sbQs.forEach(q => sbQsMap.set(q.id, q));
+      const sbQsDeduped = Array.from(sbQsMap.values());
+      // Always use Supabase as source of truth — never push seed data back
+      DB.questions = sbQsDeduped;
+      sbUpdated = true;
     }
 
     if (videos && Array.isArray(videos) && videos.length > 0) {
@@ -11311,6 +11302,13 @@ function _beginFreshExam(e, qs) {
         qsCopy[idx] = { ...qsCopy[idx], section: sec };
       }
     }
+    // Extra questions beyond sections config → assign to last active section
+    if (idx < qsCopy.length) {
+      const lastSec = _secOrdList.slice().reverse().find(s => (e.sections[s] || 0) > 0) || 'ga';
+      for (; idx < qsCopy.length; idx++) {
+        qsCopy[idx] = { ...qsCopy[idx], section: lastSec };
+      }
+    }
     qs = qsCopy;
   }
 
@@ -12204,6 +12202,33 @@ function deleteQuestion(id) {
   renderAdminTable();
   renderExamsManageTable();
   updateStats();
+}
+
+function removeDuplicateQuestions() {
+  // Group by exam + question text to find duplicates
+  const seen = new Map();
+  const toDelete = [];
+  // Sort by id so we keep the LATEST (highest id) version
+  const sorted = [...DB.questions].sort((a, b) => a.id - b.id);
+  sorted.forEach(q => {
+    const key = q.examId + '||' + q.q.trim().toLowerCase();
+    if (seen.has(key)) {
+      toDelete.push(seen.get(key)); // delete older one
+    }
+    seen.set(key, q.id);
+  });
+  if (!toDelete.length) { toast('Duplicate questions లేవు!', 'success'); return; }
+  if (!confirm(toDelete.length + ' duplicate questions తీసివేయాలా?')) return;
+  // Delete from Supabase
+  toDelete.forEach(id => sbDelete('ae_questions', `id=eq.${id}`).catch(()=>{}));
+  // Delete from local DB
+  const deleteSet = new Set(toDelete);
+  DB.questions = DB.questions.filter(q => !deleteSet.has(q.id));
+  saveDB();
+  renderAdminTable();
+  renderExamsManageTable();
+  updateStats();
+  toast('✅ ' + toDelete.length + ' duplicates తీసివేయబడ్డాయి!', 'success');
 }
 
 function deleteAllQuestions() {

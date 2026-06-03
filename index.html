@@ -8280,9 +8280,24 @@ async function _loadDBFromSupabase() {
         partLabels: e.part_labels || null,
         parts: e.parts || null
       }));
-      // FIX: Supabase is ALWAYS source of truth for exams.
-      // Never overwrite Supabase data with localStorage — localStorage is cache only.
-      DB.exams = sbExams;
+      // FIX: Merge localStorage exams that Supabase doesn't have yet
+      // (exams added while Supabase save was in-flight / failed)
+      const sbExamsMap = new Map();
+      sbExams.forEach(e => sbExamsMap.set(e.id, e));
+
+      // Check localStorage for any exams missing in Supabase
+      const lsSnapForMerge = (() => { try { return JSON.parse(localStorage.getItem('ae_local_db')||'null'); } catch(e) { return null; } })();
+      if (lsSnapForMerge && lsSnapForMerge.exams) {
+        lsSnapForMerge.exams.forEach(le => {
+          if (!sbExamsMap.has(le.id)) {
+            sbExamsMap.set(le.id, le); // keep local-only exams
+            // re-push to Supabase since it clearly missed them
+            sbSaveExam(le).catch(() => {});
+          }
+        });
+      }
+
+      DB.exams = Array.from(sbExamsMap.values()).sort((a,b) => a.id - b.id);
       sbUpdated = true;
     }
 
@@ -12168,7 +12183,9 @@ function createExam() {
     mockFolder: document.getElementById('exam-mock-folder')?.value || null,
   };
   DB.exams.push(_newExamObj);
-  sbSaveExam(_newExamObj); // Supabase save
+  // Save to localStorage IMMEDIATELY before async Supabase call
+  saveDB();
+  sbSaveExam(_newExamObj); // Supabase save (async)
   document.getElementById('exam-name').value = '';
   if(document.getElementById('exam-sec-reasoning')) document.getElementById('exam-sec-reasoning').value=0;
   if(document.getElementById('exam-sec-arithmetic')) document.getElementById('exam-sec-arithmetic').value=0;

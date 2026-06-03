@@ -8528,9 +8528,6 @@ async function _gsSaveBackup(key, value) {
 
 // ── INIT STORAGE — Supabase primary, Sheets fallback ──
 async function _initStorage() {
-  // ⚡ Local file:// లో network calls skip — instantly return
-  if (location.protocol === 'file:') return;
-
   // ⚡ FIX: Per-request 6s timeout — network slow అయినా hang కాదు
   const withTimeout = (promise, ms=6000) =>
     Promise.race([promise, new Promise((_,r) => setTimeout(() => r(new Error('timeout')), ms))]);
@@ -8602,9 +8599,8 @@ async function _initStorage() {
 document.addEventListener('DOMContentLoaded', function() {
 
   const _startTime = Date.now();
-  const _isLocal   = location.protocol === 'file:';
-  const MIN_SHOW   = _isLocal ? 800  : 1500; // local లో fast show
-  const MAX_WAIT   = _isLocal ? 1500 : 4000; // local లో max 1.5s, live లో 4s
+  const MIN_SHOW   = 2000;  // minimum 2s show చేయాలి (too fast అయితే flash అవుతుంది)
+  const MAX_WAIT   = 5000;  // max 5s wait చేస్తాం
 
   function _hideLoader() {
     const ov = document.getElementById('_ae_loading');
@@ -18612,17 +18608,9 @@ function openCAViewer(encodedUrl, title) {
         iframe.srcdoc = '<div style="padding:20px;font-family:Arial;color:red;">❌ Load error. <a href="'+url+'" target="_blank">ఇక్కడ click చేసి చదవండి ↗</a></div>';
       });
   } else {
-    // PDF: load directly — browser has built-in PDF viewer
+    // PDF: use Google Docs viewer
     iframe.srcdoc = '';
-    iframe.src = url;
-    // Fallback: if iframe fails to load PDF (e.g. browser blocks), show open-in-tab link
-    iframe.onerror = function() {
-      iframe.srcdoc = '<div style="display:flex;flex-direction:column;align-items:center;justify-content:center;height:100%;font-family:Arial;gap:16px;">'
-        + '<div style="font-size:40px;">📄</div>'
-        + '<div style="font-size:15px;font-weight:700;color:#333;">PDF ఇక్కడ load కాలేదు</div>'
-        + '<a href="'+url+'" target="_blank" style="background:#1A73E8;color:#fff;padding:10px 24px;border-radius:8px;text-decoration:none;font-weight:700;font-size:14px;">🔗 New Tab లో చదవండి ↗</a>'
-        + '</div>';
-    };
+    iframe.src = 'https://docs.google.com/viewer?url=' + encodeURIComponent(url) + '&embedded=true';
   }
 
   document.getElementById('ca-viewer-overlay').style.display = 'flex';

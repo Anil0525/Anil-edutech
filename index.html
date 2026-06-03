@@ -8060,22 +8060,12 @@ async function _testSupabaseConnection() {
       headers: { ...SB_HEADERS, 'Prefer': 'return=representation' }
     });
     _sbWorking = r.ok;
-    if (!r.ok) {
-      console.warn('[Supabase] Connection test failed:', r.status, r.statusText);
-      toast('⚠️ Supabase connect కాలేదు! Data localStorage లో మాత్రమే save అవుతుంది.', 'warn');
-    } else {
-      console.log('[Supabase] ✅ Connected successfully');
+    if (r.ok) {
       _sbFails = 0; _sbDead = false;
     }
     return r.ok;
   } catch(e) {
     _sbWorking = false;
-    console.warn('[Supabase] Connection error:', e.message);
-    if (window.location.protocol === 'file:') {
-      toast('⚠️ file:// లో Supabase పని చేయదు! File ని web server లో host చేయండి (Live Server / GitHub Pages).', 'error');
-    } else {
-      toast('⚠️ Supabase offline! Data localStorage లో save అవుతుంది.', 'warn');
-    }
     return false;
   }
 }
@@ -8247,7 +8237,7 @@ async function _loadDBFromSupabase() {
       DB.nextExamId = localSnap.nextExamId || DB.nextExamId;
       DB.nextQId    = localSnap.nextQId    || DB.nextQId;
       DB.nextVideoId= localSnap.nextVideoId|| DB.nextVideoId;
-      console.log('[DB] Loaded from localStorage:', DB.exams.length, 'exams,', DB.questions.length, 'questions');
+
     }
   } catch(e) { console.warn('[DB] localStorage load failed:', e); }
 
@@ -8334,10 +8324,10 @@ async function _loadDBFromSupabase() {
 
     // Save merged result back to localStorage
     if (sbUpdated) saveDB();
-    console.log('[DB] After merge:', DB.exams.length, 'exams,', DB.questions.length, 'questions');
+    // DB loaded
     return true;
   } catch(e) {
-    console.warn('[DB] Supabase load failed (offline/file:// mode), using localStorage data:', e.message);
+
     return DB.exams.length > 0; // return true if we have local data
   }
 }
@@ -10497,7 +10487,7 @@ function saveDB() {
     };
     _ls.setItem('ae_local_db', JSON.stringify(snapshot));
     _ls.setItem('anil_edutech_db', JSON.stringify(DB)); // legacy key too
-  } catch(e) { console.warn('saveDB localStorage failed:', e); }
+  } catch(e) { }
 }
 
 // ── Supabase: Save single exam ──
@@ -10517,11 +10507,6 @@ async function sbSaveExam(exam) {
   const ok = await sbUpsert('ae_exams', row);
   if (!ok) {
     console.error('❌ sbSaveExam failed for exam:', exam.id, exam.name);
-    if (window.location.protocol === 'file:') {
-      toast('⚠️ file:// లో Supabase పని చేయదు! Live Server లో open చేయండి.', 'error');
-    } else {
-      toast('⚠️ Exam Supabase లో save కాలేదు! Network check చేయండి.', 'warn');
-    }
   }
   await _saveMeta();
 }
@@ -10539,7 +10524,6 @@ async function sbSaveQuestion(q) {
   const ok = await sbUpsert('ae_questions', row);
   if (!ok) {
     console.error('❌ sbSaveQuestion failed for q:', q.id);
-    toast('⚠️ Question Supabase లో save కాలేదు! Network check చేయండి.', 'warn');
   }
   await _saveMeta();
 }
@@ -13100,10 +13084,10 @@ async function loadFoldersFromSupabase() {
         sort_order: r.sort_order || 0
       }));
       try { _ls.setItem('ae_mock_folders', JSON.stringify(folders)); } catch(e) {}
-      console.log('[Folders] Loaded from Supabase:', folders.length, 'folders');
+
       return folders;
     }
-  } catch(e) { console.warn('[Folders] Supabase load failed:', e); }
+  } catch(e) { }
   return null;
 }
 
@@ -15055,7 +15039,7 @@ function _appInit() {
       const localSnap = JSON.parse(_ls.getItem('ae_local_db') || 'null');
       if (localSnap && localSnap.exams && localSnap.exams.length > 0) {
         Object.assign(DB, localSnap);
-        console.log('[DB] Fallback: loaded from localStorage');
+
       } else {
         Object.assign(DB, JSON.parse(JSON.stringify(DEFAULT_DB)));
       }

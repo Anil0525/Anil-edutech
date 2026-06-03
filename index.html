@@ -8280,16 +8280,10 @@ async function _loadDBFromSupabase() {
         partLabels: e.part_labels || null,
         parts: e.parts || null
       }));
-      // Use whichever has more data — Supabase is source of truth if equal or more
-      if (sbExams.length >= DB.exams.length) {
-        DB.exams = sbExams;
-        sbUpdated = true;
-      } else {
-        // localStorage has more → push extras to Supabase
-        const sbIds = new Set(sbExams.map(e => e.id));
-        const extras = DB.exams.filter(e => !sbIds.has(e.id));
-        extras.forEach(e => sbSaveExam(e).catch(()=>{}));
-      }
+      // FIX: Supabase is ALWAYS source of truth for exams.
+      // Never overwrite Supabase data with localStorage — localStorage is cache only.
+      DB.exams = sbExams;
+      sbUpdated = true;
     }
 
     if (questions && Array.isArray(questions) && questions.length > 0) {
@@ -8301,12 +8295,23 @@ async function _loadDBFromSupabase() {
         marks: q.marks || null,
         image: q.image || null
       }));
-      // Deduplicate by id (keep last occurrence)
+      // Deduplicate Supabase questions by id
       const sbQsMap = new Map();
       sbQs.forEach(q => sbQsMap.set(q.id, q));
+
+      // FIX: Merge localStorage questions that Supabase doesn't have yet
+      // (questions added while Supabase save was in-flight / failed)
+      DB.questions.forEach(lq => {
+        if (!sbQsMap.has(lq.id)) {
+          sbQsMap.set(lq.id, lq); // keep local-only questions
+          // re-push to Supabase since it clearly missed them
+          sbSaveQuestion(lq).catch(() => {});
+        }
+      });
+
       const sbQsDeduped = Array.from(sbQsMap.values());
-      // Always use Supabase as source of truth — never push seed data back
       DB.questions = sbQsDeduped;
+
       // FIX: nextQId must always be > max existing question id to prevent duplicates
       const maxQId = sbQsDeduped.reduce((max, q) => Math.max(max, q.id || 0), 0);
       if (maxQId >= DB.nextQId) {
@@ -10577,6 +10582,7 @@ async function sbSaveQuestion(q) {
     console.error('❌ sbSaveQuestion failed for q:', q.id);
   }
   await _saveMeta();
+  return ok; // FIX: return success status so caller can retry
 }
 
 // ── Supabase: Delete exam + its questions ──
@@ -12205,8 +12211,14 @@ function addQuestion() {
   if (marks) qObj.marks = marks;
   if (image) qObj.image = image;
   DB.questions.push(qObj);
-  sbSaveQuestion(qObj); // Supabase save
-  saveDB(); // localStorage save
+  saveDB(); // localStorage save first (immediate)
+  // FIX: await Supabase save — if it fails, retry
+  sbSaveQuestion(qObj).then(ok => {
+    if (!ok) {
+      // Retry after 3s
+      setTimeout(() => sbSaveQuestion(qObj), 3000);
+    }
+  }).catch(() => setTimeout(() => sbSaveQuestion(qObj), 3000));
 
   document.getElementById('q-text-input').value = '';
   ['opt-a','opt-b','opt-c','opt-d'].forEach(id => document.getElementById(id).value = '');

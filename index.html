@@ -8334,9 +8334,14 @@ async function _loadDBFromSupabase() {
       });
     }
 
-    // If Supabase tables empty → migrate local data into Supabase
+    // If Supabase tables empty AND no localStorage data → first time setup only
     if (!exams || !exams.length) {
-      await _migrateDefaultDataToSupabase();
+      const lsSnap = (() => { try { return JSON.parse(localStorage.getItem('ae_local_db')||'null'); } catch(e) { return null; } })();
+      const alreadyMigrated = (() => { try { return localStorage.getItem('ae_migrated_v1'); } catch(e) { return null; } })();
+      // Only migrate if: never migrated before AND no local data either
+      if (!alreadyMigrated && (!lsSnap || !lsSnap.exams || !lsSnap.exams.length)) {
+        await _migrateDefaultDataToSupabase();
+      }
     }
 
     // Save merged result back to localStorage
@@ -8360,8 +8365,16 @@ async function _saveMeta() {
 
 // ── One-time migration: push DEFAULT_DB into Supabase tables ──
 async function _migrateDefaultDataToSupabase() {
+  // ✅ SAFETY: Never run migration if already done once
   try {
-    toast('⏳ Data migration చేస్తున్నాం...', 'info');
+    const alreadyMigrated = localStorage.getItem('ae_migrated_v1');
+    if (alreadyMigrated) {
+      console.log('[Migration] Already done, skipping.');
+      return;
+    }
+  } catch(e) {}
+
+  try {
     const examRows = DB.exams.map(e => ({
       id: e.id, name: e.name, cat: e.cat || '',
       time: e.time || 30, diff: e.diff || 'Medium',
@@ -8382,10 +8395,9 @@ async function _migrateDefaultDataToSupabase() {
     await sbBatchInsert('ae_exams', examRows);
     await sbBatchInsert('ae_questions', qRows);
     await _saveMeta();
-    toast('✅ Data Supabase కి migrate అయింది!', 'success');
-  } catch(e) {
-    console.warn('Migration failed:', e);
-  }
+    // ✅ Mark as done so it never runs again
+    try { localStorage.setItem('ae_migrated_v1', '1'); } catch(e) {}
+  } catch(e) {}
 }
 
 // ── GOOGLE SHEETS BACKUP CONFIG ──
@@ -8412,15 +8424,23 @@ const _store = {};
 
 const _ls = {
   getItem(key) {
+    // Real localStorage first, then in-memory cache
+    try {
+      const v = localStorage.getItem(key);
+      if (v !== null) { _store[key] = v; return v; }
+    } catch(e) {}
     return key in _store ? _store[key] : null;
   },
   setItem(key, value) {
     _store[key] = String(value);
-    _sbSave(key, String(value));        // Primary: Supabase
-    _gsSaveBackup(key, String(value));  // Backup: Google Sheets
+    // Always write to real localStorage so data survives refresh
+    try { localStorage.setItem(key, String(value)); } catch(e) {}
+    _sbSave(key, String(value));
+    _gsSaveBackup(key, String(value));
   },
   removeItem(key) {
     delete _store[key];
+    try { localStorage.removeItem(key); } catch(e) {}
     _sbSave(key, null);
     _gsSaveBackup(key, null);
   }

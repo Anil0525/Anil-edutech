@@ -8265,10 +8265,15 @@ async function _loadDBFromSupabase() {
         partLabels: e.part_labels || null,
         parts: e.parts || null
       }));
-      // Use whichever has more data
+      // Use whichever has more data — Supabase is source of truth if equal or more
       if (sbExams.length >= DB.exams.length) {
         DB.exams = sbExams;
         sbUpdated = true;
+      } else {
+        // localStorage has more → push extras to Supabase
+        const sbIds = new Set(sbExams.map(e => e.id));
+        const extras = DB.exams.filter(e => !sbIds.has(e.id));
+        extras.forEach(e => sbSaveExam(e).catch(()=>{}));
       }
     }
 
@@ -8281,10 +8286,22 @@ async function _loadDBFromSupabase() {
         marks: q.marks || null,
         image: q.image || null
       }));
-      // Use whichever has more questions
       if (sbQs.length >= DB.questions.length) {
+        // Supabase has more or equal → use Supabase as source of truth
         DB.questions = sbQs;
         sbUpdated = true;
+      } else {
+        // localStorage has more → push the extras to Supabase (no duplicate by id)
+        const sbIds = new Set(sbQs.map(q => q.id));
+        const extras = DB.questions.filter(q => !sbIds.has(q.id));
+        if (extras.length > 0) {
+          sbBatchInsert('ae_questions', extras.map(q => ({
+            id: q.id, exam_id: q.examId, q: q.q, opts: q.opts, ans: q.ans,
+            explanation: q.explanation || '', section: q.section || 'ga',
+            marks: q.marks || null, image: q.image || null
+          }))).catch(() => {});
+        }
+        // Keep localStorage version (it has more)
       }
     }
 
@@ -12145,16 +12162,14 @@ function addQuestion() {
   if (marks) qObj.marks = marks;
   if (image) qObj.image = image;
   DB.questions.push(qObj);
-  saveDB(); // ✅ localStorage save (primary)
-  sbSaveQuestion(qObj); // Supabase save (secondary)
+  sbSaveQuestion(qObj); // Supabase save
+  saveDB(); // localStorage save
 
   document.getElementById('q-text-input').value = '';
   ['opt-a','opt-b','opt-c','opt-d'].forEach(id => document.getElementById(id).value = '');
   document.querySelectorAll('input[name="correct-ans"]').forEach(r => r.checked = false);
   if (document.getElementById('q-marks')) document.getElementById('q-marks').value = '';
   _clearQImage('q-image-file', 'q-image-preview');
-
-  saveDB();
   renderAdminTable();
   renderExamsManageTable();
   updateStats();

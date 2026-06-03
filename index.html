@@ -6990,7 +6990,7 @@ html {
         <p style="font-size:12px;color:var(--text3);margin-bottom:10px;">Folder lock చేస్తే students ఆ folder లో exams చూడగలరు కానీ admin మాత్రమే tests add చేయగలరు.</p>
         <div style="overflow-x:auto">
           <table class="exams-manage-table">
-            <thead><tr><th>Folder</th><th>Tests Count</th><th>Lock / Unlock</th></tr></thead>
+            <thead><tr><th>Folder</th><th>Count</th><th>Premium</th><th>Lock</th><th>Order / Edit / Delete</th></tr></thead>
             <tbody id="mock-folders-admin-tbody"></tbody>
           </table>
         </div>
@@ -8051,6 +8051,34 @@ const SB_HEADERS = {
 // ── CIRCUIT BREAKERS — stop error spam when backend is offline ──
 let _sbDead = false, _sbFails = 0;
 let _gsDead = false;
+let _sbWorking = null; // null=untested, true=working, false=failed
+
+// ── Test Supabase connectivity on startup ──
+async function _testSupabaseConnection() {
+  try {
+    const r = await fetch(`${SB_URL}/rest/v1/ae_meta?limit=1`, {
+      headers: { ...SB_HEADERS, 'Prefer': 'return=representation' }
+    });
+    _sbWorking = r.ok;
+    if (!r.ok) {
+      console.warn('[Supabase] Connection test failed:', r.status, r.statusText);
+      toast('⚠️ Supabase connect కాలేదు! Data localStorage లో మాత్రమే save అవుతుంది.', 'warn');
+    } else {
+      console.log('[Supabase] ✅ Connected successfully');
+      _sbFails = 0; _sbDead = false;
+    }
+    return r.ok;
+  } catch(e) {
+    _sbWorking = false;
+    console.warn('[Supabase] Connection error:', e.message);
+    if (window.location.protocol === 'file:') {
+      toast('⚠️ file:// లో Supabase పని చేయదు! File ని web server లో host చేయండి (Live Server / GitHub Pages).', 'error');
+    } else {
+      toast('⚠️ Supabase offline! Data localStorage లో save అవుతుంది.', 'warn');
+    }
+    return false;
+  }
+}
 
 async function sbGet(table, filters) {
   if (_sbDead) return null;
@@ -8058,12 +8086,12 @@ async function sbGet(table, filters) {
     let url = `${SB_URL}/rest/v1/${table}?select=*`;
     if (filters) url += '&' + filters;
     const r = await fetch(url, { headers: { ...SB_HEADERS, 'Prefer': 'return=representation' } });
-    if (!r.ok) { _sbFails++; if (_sbFails >= 2) { _sbDead = true; setTimeout(function(){ _sbDead = false; _sbFails = 0; }, 5*60*1000); } return null; }
+    if (!r.ok) { _sbFails++; if (_sbFails >= 5) { _sbDead = true; setTimeout(function(){ _sbDead = false; _sbFails = 0; }, 2*60*1000); } return null; }
     _sbFails = 0;
     return await r.json();
   } catch(e) {
     _sbFails++;
-    if (_sbFails >= 2) { _sbDead = true; setTimeout(function(){ _sbDead = false; _sbFails = 0; }, 5*60*1000); }
+    if (_sbFails >= 5) { _sbDead = true; setTimeout(function(){ _sbDead = false; _sbFails = 0; }, 2*60*1000); }
     return null;
   }
 }
@@ -8076,7 +8104,7 @@ async function sbUpsert(table, data) {
       headers: { ...SB_HEADERS, 'Prefer': 'resolution=merge-duplicates,return=minimal' },
       body: JSON.stringify(data)
     });
-    if (!r.ok) { _sbFails++; if (_sbFails >= 2) { _sbDead = true; setTimeout(function(){ _sbDead = false; _sbFails = 0; }, 5*60*1000); } }
+    if (!r.ok) { _sbFails++; if (_sbFails >= 5) { _sbDead = true; setTimeout(function(){ _sbDead = false; _sbFails = 0; }, 2*60*1000); } }
     return r.ok;
   } catch(e) { _sbFails++; if (_sbFails >= 2) { _sbDead = true; setTimeout(function(){ _sbDead = false; _sbFails = 0; }, 5*60*1000); } return false; }
 }
@@ -8087,7 +8115,7 @@ async function sbDelete(table, filter) {
     const r = await fetch(`${SB_URL}/rest/v1/${table}?${filter}`, {
       method: 'DELETE', headers: SB_HEADERS
     });
-    if (!r.ok) { _sbFails++; if (_sbFails >= 2) { _sbDead = true; setTimeout(function(){ _sbDead = false; _sbFails = 0; }, 5*60*1000); } }
+    if (!r.ok) { _sbFails++; if (_sbFails >= 5) { _sbDead = true; setTimeout(function(){ _sbDead = false; _sbFails = 0; }, 2*60*1000); } }
     return r.ok;
   } catch(e) { _sbFails++; if (_sbFails >= 2) { _sbDead = true; setTimeout(function(){ _sbDead = false; _sbFails = 0; }, 5*60*1000); } return false; }
 }
@@ -8177,7 +8205,7 @@ async function sbInsert(table, data) {
       headers: { ...SB_HEADERS, 'Prefer': 'return=minimal' },
       body: JSON.stringify(data)
     });
-    if (!r.ok) { _sbFails++; if (_sbFails >= 2) { _sbDead = true; setTimeout(function(){ _sbDead = false; _sbFails = 0; }, 5*60*1000); } }
+    if (!r.ok) { _sbFails++; if (_sbFails >= 5) { _sbDead = true; setTimeout(function(){ _sbDead = false; _sbFails = 0; }, 2*60*1000); } }
     return r.ok;
   } catch(e) { _sbFails++; if (_sbFails >= 2) { _sbDead = true; setTimeout(function(){ _sbDead = false; _sbFails = 0; }, 5*60*1000); } return false; }
 }
@@ -8190,7 +8218,7 @@ async function sbPatch(table, filter, data) {
       headers: { ...SB_HEADERS, 'Prefer': 'return=minimal' },
       body: JSON.stringify(data)
     });
-    if (!r.ok) { _sbFails++; if (_sbFails >= 2) { _sbDead = true; setTimeout(function(){ _sbDead = false; _sbFails = 0; }, 5*60*1000); } }
+    if (!r.ok) { _sbFails++; if (_sbFails >= 5) { _sbDead = true; setTimeout(function(){ _sbDead = false; _sbFails = 0; }, 2*60*1000); } }
     return r.ok;
   } catch(e) { _sbFails++; if (_sbFails >= 2) { _sbDead = true; setTimeout(function(){ _sbDead = false; _sbFails = 0; }, 5*60*1000); } return false; }
 }
@@ -8209,6 +8237,21 @@ async function sbBatchInsert(table, rows) {
 
 // ── Load exams + questions from Supabase into DB cache ──
 async function _loadDBFromSupabase() {
+  // ── STEP 1: Load from localStorage FIRST (works offline / file://) ──
+  try {
+    const localSnap = JSON.parse(_ls.getItem('ae_local_db') || 'null');
+    if (localSnap && localSnap.exams && localSnap.exams.length > 0) {
+      DB.exams      = localSnap.exams;
+      DB.questions  = localSnap.questions  || DB.questions;
+      DB.videos     = localSnap.videos     || DB.videos;
+      DB.nextExamId = localSnap.nextExamId || DB.nextExamId;
+      DB.nextQId    = localSnap.nextQId    || DB.nextQId;
+      DB.nextVideoId= localSnap.nextVideoId|| DB.nextVideoId;
+      console.log('[DB] Loaded from localStorage:', DB.exams.length, 'exams,', DB.questions.length, 'questions');
+    }
+  } catch(e) { console.warn('[DB] localStorage load failed:', e); }
+
+  // ── STEP 2: Try Supabase (if online) and merge if it has MORE data ──
   try {
     const [exams, questions, videos, meta] = await Promise.all([
       sbGet('ae_exams', null),
@@ -8217,9 +8260,10 @@ async function _loadDBFromSupabase() {
       sbGet('ae_meta', null)
     ]);
 
+    let sbUpdated = false;
+
     if (exams && Array.isArray(exams) && exams.length > 0) {
-      // Map Supabase column names back to app format
-      DB.exams = exams.map(e => ({
+      const sbExams = exams.map(e => ({
         id: e.id, name: e.name, cat: e.cat,
         time: e.time, diff: e.diff,
         sections: e.sections || {},
@@ -8231,10 +8275,15 @@ async function _loadDBFromSupabase() {
         partLabels: e.part_labels || null,
         parts: e.parts || null
       }));
+      // Use whichever has more data
+      if (sbExams.length >= DB.exams.length) {
+        DB.exams = sbExams;
+        sbUpdated = true;
+      }
     }
 
     if (questions && Array.isArray(questions) && questions.length > 0) {
-      DB.questions = questions.map(q => ({
+      const sbQs = questions.map(q => ({
         id: q.id, examId: q.exam_id,
         q: q.q, opts: q.opts, ans: q.ans,
         explanation: q.explanation || '',
@@ -8242,6 +8291,11 @@ async function _loadDBFromSupabase() {
         marks: q.marks || null,
         image: q.image || null
       }));
+      // Use whichever has more questions
+      if (sbQs.length >= DB.questions.length) {
+        DB.questions = sbQs;
+        sbUpdated = true;
+      }
     }
 
     if (videos && Array.isArray(videos) && videos.length > 0) {
@@ -8249,23 +8303,22 @@ async function _loadDBFromSupabase() {
         id: v.id, title: v.title, cat: v.cat,
         url: v.url, desc: v.description || ''
       }));
+      sbUpdated = true;
     }
 
     if (meta && Array.isArray(meta)) {
       meta.forEach(m => {
-        if (m.key === 'nextExamId') DB.nextExamId = parseInt(m.value) || DB.nextExamId;
-        if (m.key === 'nextQId')    DB.nextQId    = parseInt(m.value) || DB.nextQId;
-        if (m.key === 'nextVideoId') DB.nextVideoId = parseInt(m.value) || DB.nextVideoId;
+        if (m.key === 'nextExamId') DB.nextExamId = Math.max(parseInt(m.value)||0, DB.nextExamId);
+        if (m.key === 'nextQId')    DB.nextQId    = Math.max(parseInt(m.value)||0, DB.nextQId);
+        if (m.key === 'nextVideoId') DB.nextVideoId = Math.max(parseInt(m.value)||0, DB.nextVideoId);
         if (m.key === 'mockFolders') {
           try {
             const mf = JSON.parse(m.value);
             if (Array.isArray(mf) && mf.length) {
-              // If old format (no sub-folders) → don't overwrite localStorage so getMockFolders() can merge
               const hasSubFolders = mf.some(f => f.parentId);
               if (hasSubFolders) {
                 try { _ls.setItem('ae_mock_folders', m.value); } catch(e) {}
               } else {
-                // Clear stale localStorage so getMockFolders() falls back to DEFAULT_DB merge logic
                 try { _ls.removeItem('ae_mock_folders'); } catch(e) {}
               }
             }
@@ -8274,15 +8327,18 @@ async function _loadDBFromSupabase() {
       });
     }
 
-    // If Supabase tables empty → migrate DEFAULT_DB data into Supabase once
+    // If Supabase tables empty → migrate local data into Supabase
     if (!exams || !exams.length) {
       await _migrateDefaultDataToSupabase();
     }
 
+    // Save merged result back to localStorage
+    if (sbUpdated) saveDB();
+    console.log('[DB] After merge:', DB.exams.length, 'exams,', DB.questions.length, 'questions');
     return true;
   } catch(e) {
-    console.warn('Supabase DB load failed, using defaults:', e);
-    return false;
+    console.warn('[DB] Supabase load failed (offline/file:// mode), using localStorage data:', e.message);
+    return DB.exams.length > 0; // return true if we have local data
   }
 }
 
@@ -10418,16 +10474,30 @@ const DEFAULT_DB = {
 
 /* ---- LOCALSTORAGE DB ---- */
 function loadDB() {
-  // Legacy: return DEFAULT_DB (actual load now happens via Supabase in _appInit)
+  // Load from localStorage first (primary storage)
+  try {
+    const saved = JSON.parse(_ls.getItem('ae_local_db') || 'null');
+    if (saved && saved.exams && saved.exams.length > 0) {
+      return saved;
+    }
+  } catch(e) {}
   return JSON.parse(JSON.stringify(DEFAULT_DB));
 }
 
 function saveDB() {
-  // Legacy wrapper — Supabase saves are done per-operation now
-  // Still save to ae_db blob as fallback for old keys
+  // PRIMARY: Always save full DB to localStorage so data survives refresh
   try {
-    _ls.setItem('anil_edutech_db', JSON.stringify(DB));
-  } catch(e) {}
+    const snapshot = {
+      exams:      DB.exams,
+      questions:  DB.questions,
+      videos:     DB.videos,
+      nextExamId: DB.nextExamId,
+      nextQId:    DB.nextQId,
+      nextVideoId:DB.nextVideoId
+    };
+    _ls.setItem('ae_local_db', JSON.stringify(snapshot));
+    _ls.setItem('anil_edutech_db', JSON.stringify(DB)); // legacy key too
+  } catch(e) { console.warn('saveDB localStorage failed:', e); }
 }
 
 // ── Supabase: Save single exam ──
@@ -10447,7 +10517,11 @@ async function sbSaveExam(exam) {
   const ok = await sbUpsert('ae_exams', row);
   if (!ok) {
     console.error('❌ sbSaveExam failed for exam:', exam.id, exam.name);
-    toast('⚠️ Exam Supabase లో save కాలేదు! Network check చేయండి.', 'warn');
+    if (window.location.protocol === 'file:') {
+      toast('⚠️ file:// లో Supabase పని చేయదు! Live Server లో open చేయండి.', 'error');
+    } else {
+      toast('⚠️ Exam Supabase లో save కాలేదు! Network check చేయండి.', 'warn');
+    }
   }
   await _saveMeta();
 }
@@ -10495,7 +10569,16 @@ async function sbDeleteVideo(vId) {
   await sbDelete('ae_videos', `id=eq.${vId}`);
 }
 
-const DB = JSON.parse(JSON.stringify(DEFAULT_DB)); // populated in _appInit
+// ── DB init: load from localStorage immediately (before Supabase async) ──
+const DB = (() => {
+  try {
+    const snap = JSON.parse(localStorage.getItem('ae_local_db') || 'null');
+    if (snap && snap.exams && snap.exams.length > 0) {
+      return Object.assign(JSON.parse(JSON.stringify(DEFAULT_DB)), snap);
+    }
+  } catch(e) {}
+  return JSON.parse(JSON.stringify(DEFAULT_DB));
+})(); // fully populated synchronously from localStorage
 
 /* ---- NAVIGATION ---- */
 
@@ -12078,7 +12161,8 @@ function addQuestion() {
   if (marks) qObj.marks = marks;
   if (image) qObj.image = image;
   DB.questions.push(qObj);
-  sbSaveQuestion(qObj); // Supabase save
+  saveDB(); // ✅ localStorage save (primary)
+  sbSaveQuestion(qObj); // Supabase save (secondary)
 
   document.getElementById('q-text-input').value = '';
   ['opt-a','opt-b','opt-c','opt-d'].forEach(id => document.getElementById(id).value = '');
@@ -12958,17 +13042,11 @@ function getMockFolders() {
   try {
     const saved = JSON.parse(_ls.getItem('ae_mock_folders') || 'null');
     if (saved && Array.isArray(saved) && saved.length) {
-      // Check if saved data has sub-folders (parentId field). If not → it's old format.
-      // Merge: keep saved parent folders (preserving lock states etc), add DEFAULT sub-folders
       const hasSubFolders = saved.some(f => f.parentId);
       if (!hasSubFolders) {
-        // Old format: merge saved parents + DEFAULT_DB sub-folders
-        // Preserve DEFAULT_DB sub-folder settings (color, icon, locked) as base,
-        // but merge any admin-saved sub-folder overrides on top
         const defaultSubs = DEFAULT_DB.mockFolders.filter(f => f.parentId);
         const savedIds = saved.map(f => f.id);
         const newParents = DEFAULT_DB.mockFolders.filter(f => !f.parentId && !savedIds.includes(f.id));
-        // Merge: saved sub-folder overrides take priority over DEFAULT_DB defaults
         const mergedSubs = defaultSubs.map(ds => {
           const override = saved.find(s => s.id === ds.id && s.parentId);
           return override ? {...ds, ...override} : ds;
@@ -12982,9 +13060,51 @@ function getMockFolders() {
 }
 
 function saveMockFolders(folders) {
+  // Sort by sort_order before saving
+  folders.sort((a,b) => (a.sort_order||0) - (b.sort_order||0));
   try { _ls.setItem('ae_mock_folders', JSON.stringify(folders)); } catch(e) {}
-  // Sync to Supabase meta
+  // Save each folder to ae_folders Supabase table
+  const rows = folders.map((f,i) => ({
+    id: f.id,
+    name: f.name,
+    icon: f.icon || '📁',
+    color: f.color || '#1A73E8',
+    description: f.description || '',
+    banner_image: f.bannerImage || '',
+    is_premium: f.isPremium || false,
+    is_locked: f.locked || false,
+    parent_id: f.parentId || null,
+    sort_order: f.sort_order !== undefined ? f.sort_order : i,
+    updated_at: new Date().toISOString()
+  }));
+  sbUpsert('ae_folders', rows).catch(()=>{});
+  // Also keep meta backup
   sbUpsert('ae_meta', [{ key: 'mockFolders', value: JSON.stringify(folders) }]).catch(()=>{});
+}
+
+// Load folders from ae_folders Supabase table
+async function loadFoldersFromSupabase() {
+  try {
+    const rows = await sbGet('ae_folders', 'order=sort_order.asc');
+    if (rows && Array.isArray(rows) && rows.length > 0) {
+      const folders = rows.map(r => ({
+        id: r.id,
+        name: r.name,
+        icon: r.icon || '📁',
+        color: r.color || '#1A73E8',
+        description: r.description || '',
+        bannerImage: r.banner_image || '',
+        isPremium: r.is_premium || false,
+        locked: r.is_locked || false,
+        parentId: r.parent_id || null,
+        sort_order: r.sort_order || 0
+      }));
+      try { _ls.setItem('ae_mock_folders', JSON.stringify(folders)); } catch(e) {}
+      console.log('[Folders] Loaded from Supabase:', folders.length, 'folders');
+      return folders;
+    }
+  } catch(e) { console.warn('[Folders] Supabase load failed:', e); }
+  return null;
 }
 
 // Track which parent folder is currently open (for back navigation)
@@ -13002,31 +13122,62 @@ function renderMockFoldersGrid() {
   const folders = getMockFolders();
   const grid = document.getElementById('mock-folders-grid');
   if (!grid) return;
-  const parents = folders.filter(f => !f.parentId);
+  const parents = folders.filter(f => !f.parentId).sort((a,b) => (a.sort_order||0) - (b.sort_order||0));
   grid.innerHTML = parents.map(f => {
-    // Count tests across all sub-folders of this parent (String cast to avoid type mismatch)
     const subIds = folders.filter(s => String(s.parentId) === String(f.id)).map(s => String(s.id));
-    // Also count direct exams assigned to parent (legacy support)
     const count = DB.exams.filter(e => String(e.mockFolder) === String(f.id) || subIds.includes(String(e.mockFolder))).length;
     const subCount = folders.filter(s => s.parentId === f.id).length;
+    const isPremium = f.isPremium || false;
+    const hasBanner = f.bannerImage && f.bannerImage.trim();
+    const hasDesc = f.description && f.description.trim();
     return `<div onclick="openMockFolder('${f.id}')" style="
-      background:var(--card);border:2px solid ${f.color}33;border-radius:18px;
-      padding:20px 16px;cursor:pointer;text-align:center;
-      box-shadow:0 4px 18px ${f.color}22;transition:transform .18s,box-shadow .18s;
+      background:var(--card);
+      border:2px solid ${f.color}44;
+      border-radius:18px;
+      cursor:pointer;
+      overflow:hidden;
+      box-shadow:0 4px 18px ${f.color}22;
+      transition:transform .18s,box-shadow .18s;
       position:relative;
-    " onmouseover="this.style.transform='translateY(-3px)';this.style.boxShadow='0 8px 28px ${f.color}44'"
+    " onmouseover="this.style.transform='translateY(-4px)';this.style.boxShadow='0 12px 32px ${f.color}44'"
        onmouseout="this.style.transform='';this.style.boxShadow='0 4px 18px ${f.color}22'">
-      ${f.locked ? '<span style="position:absolute;top:8px;right:8px;font-size:13px;" title="Locked">🔒</span>' : ''}
-      <div style="font-size:36px;margin-bottom:8px;">${f.icon}</div>
-      <div style="font-size:14px;font-weight:900;color:var(--text);margin-bottom:4px;">${f.name}</div>
-      ${subCount > 0
-        ? `<div style="font-size:11px;color:${f.color};font-weight:700;background:${f.color}18;padding:3px 10px;border-radius:20px;display:inline-block;">
-             📁 ${subCount} Categories
+
+      ${hasBanner
+        ? `<div style="height:90px;background:url('${f.bannerImage}') center/cover no-repeat;position:relative;">
+             <div style="position:absolute;inset:0;background:linear-gradient(to bottom,transparent 40%,${f.color}cc);"></div>
            </div>`
-        : `<div style="font-size:11px;color:${f.color};font-weight:700;background:${f.color}18;padding:3px 10px;border-radius:20px;display:inline-block;">
-             ${count} Test${count!==1?'s':''}
+        : `<div style="height:60px;background:linear-gradient(135deg,${f.color}22,${f.color}44);display:flex;align-items:center;justify-content:center;">
+             <span style="font-size:28px;">${f.icon}</span>
            </div>`
       }
+
+      <div style="padding:14px 14px 12px;">
+        ${f.locked
+          ? '<span style="position:absolute;top:8px;right:8px;background:#ef444499;color:#fff;font-size:10px;font-weight:800;padding:2px 8px;border-radius:20px;">🔒 LOCKED</span>'
+          : ''
+        }
+        ${isPremium
+          ? '<span style="position:absolute;top:8px;left:8px;background:linear-gradient(135deg,#f59e0b,#d97706);color:#fff;font-size:10px;font-weight:800;padding:2px 8px;border-radius:20px;">⭐ PREMIUM</span>'
+          : ''
+        }
+
+        <div style="display:flex;align-items:center;gap:8px;margin-bottom:6px;">
+          ${!hasBanner ? '' : `<span style="font-size:22px;">${f.icon}</span>`}
+          <div style="font-size:14px;font-weight:900;color:var(--text);line-height:1.2;">${f.name}</div>
+        </div>
+
+        ${hasDesc
+          ? `<div style="font-size:11px;color:var(--text3);margin-bottom:8px;line-height:1.4;">${f.description}</div>`
+          : ''
+        }
+
+        <div style="display:flex;align-items:center;justify-content:space-between;margin-top:4px;">
+          <div style="font-size:11px;color:${f.color};font-weight:700;background:${f.color}18;padding:3px 10px;border-radius:20px;">
+            ${subCount > 0 ? '📁 ' + subCount + ' Categories' : count + ' Test' + (count!==1?'s':'')}
+          </div>
+          <div style="font-size:18px;color:${f.color};opacity:.7;">›</div>
+        </div>
+      </div>
     </div>`;
   }).join('');
 }
@@ -13056,20 +13207,36 @@ function openMockFolder(folderId) {
     document.getElementById('mock-subfolders-sub').textContent = subFolders.length + ' categories · ' + totalTests + ' tests available';
 
     const grid = document.getElementById('mock-subfolders-grid');
-    grid.innerHTML = subFolders.map(sf => {
+    grid.innerHTML = subFolders.sort((a,b)=>(a.sort_order||0)-(b.sort_order||0)).map(sf => {
       const count = DB.exams.filter(e => String(e.mockFolder) === String(sf.id)).length;
+      const hasBanner = sf.bannerImage && sf.bannerImage.trim();
+      const hasDesc   = sf.description && sf.description.trim();
       return `<div onclick="openMockSubFolder('${sf.id}')" style="
-        background:var(--card);border:2px solid ${sf.color}44;border-radius:18px;
-        padding:20px 16px;cursor:pointer;text-align:center;
-        box-shadow:0 4px 18px ${sf.color}22;transition:transform .18s,box-shadow .18s;
-        position:relative;
-      " onmouseover="this.style.transform='translateY(-3px)';this.style.boxShadow='0 8px 28px ${sf.color}44'"
+        background:var(--card);border:2px solid ${sf.color}44;border-radius:16px;
+        cursor:pointer;overflow:hidden;
+        box-shadow:0 4px 18px ${sf.color}22;transition:transform .18s,box-shadow .18s;position:relative;
+      " onmouseover="this.style.transform='translateY(-4px)';this.style.boxShadow='0 12px 32px ${sf.color}44'"
          onmouseout="this.style.transform='';this.style.boxShadow='0 4px 18px ${sf.color}22'">
-        ${sf.locked ? '<span style="position:absolute;top:8px;right:8px;font-size:13px;">🔒</span>' : ''}
-        <div style="font-size:32px;margin-bottom:8px;">${sf.icon}</div>
-        <div style="font-size:14px;font-weight:900;color:var(--text);margin-bottom:4px;">${sf.name}</div>
-        <div style="font-size:11px;color:${sf.color};font-weight:700;background:${sf.color}18;padding:3px 10px;border-radius:20px;display:inline-block;">
-          ${count} Test${count!==1?'s':''}
+        ${hasBanner
+          ? `<div style="height:70px;background:url('${sf.bannerImage}') center/cover no-repeat;position:relative;">
+               <div style="position:absolute;inset:0;background:linear-gradient(to bottom,transparent 30%,${sf.color}bb);"></div>
+             </div>`
+          : `<div style="height:50px;background:linear-gradient(135deg,${sf.color}22,${sf.color}44);display:flex;align-items:center;justify-content:center;">
+               <span style="font-size:24px;">${sf.icon}</span>
+             </div>`
+        }
+        <div style="padding:10px 12px 10px;">
+          ${sf.locked ? '<span style="position:absolute;top:6px;right:6px;background:#ef444499;color:#fff;font-size:9px;font-weight:800;padding:2px 6px;border-radius:20px;">🔒</span>' : ''}
+          ${sf.isPremium ? '<span style="position:absolute;top:6px;left:6px;background:linear-gradient(135deg,#f59e0b,#d97706);color:#fff;font-size:9px;font-weight:800;padding:2px 6px;border-radius:20px;">⭐</span>' : ''}
+          <div style="display:flex;align-items:center;gap:6px;margin-bottom:4px;">
+            ${!hasBanner ? '' : `<span style="font-size:18px;">${sf.icon}</span>`}
+            <div style="font-size:13px;font-weight:900;color:var(--text);">${sf.name}</div>
+          </div>
+          ${hasDesc ? `<div style="font-size:10px;color:var(--text3);margin-bottom:6px;line-height:1.3;">${sf.description}</div>` : ''}
+          <div style="display:flex;align-items:center;justify-content:space-between;">
+            <div style="font-size:10px;color:${sf.color};font-weight:700;background:${sf.color}18;padding:2px 8px;border-radius:20px;">${count} Test${count!==1?'s':''}</div>
+            <div style="font-size:16px;color:${sf.color};opacity:.7;">›</div>
+          </div>
         </div>
       </div>`;
     }).join('');
@@ -13162,45 +13329,145 @@ function _mockFolderDetailBack() {
 function renderMockFolderAdminTable() {
   const tbody = document.getElementById('mock-folders-admin-tbody');
   if (!tbody) return;
-  const folders = getMockFolders();
+  const folders = getMockFolders().sort((a,b)=>(a.sort_order||0)-(b.sort_order||0));
   const parents = folders.filter(f => !f.parentId);
   let rows = '';
   parents.forEach(parent => {
     const subs = folders.filter(f => f.parentId === parent.id);
     const parentCount = DB.exams.filter(e => e.mockFolder === parent.id).length;
-    // Parent row
     rows += `<tr style="background:var(--bg2);">
-      <td style="font-weight:900;">${parent.icon} ${parent.name}</td>
+      <td style="font-weight:900;">
+        <div style="display:flex;align-items:center;gap:6px;">
+          ${parent.bannerImage ? `<img src="${parent.bannerImage}" style="width:30px;height:30px;border-radius:6px;object-fit:cover;">` : `<span style="font-size:18px;">${parent.icon}</span>`}
+          <div>
+            <div>${parent.name}</div>
+            ${parent.description ? `<div style="font-size:10px;color:var(--text3);font-weight:400;">${parent.description.slice(0,40)}...</div>` : ''}
+          </div>
+        </div>
+      </td>
       <td>${subs.length > 0 ? subs.length + ' sub-folders' : parentCount + ' tests'}</td>
+      <td><button onclick="toggleMockFolderPremium('${parent.id}')" style="background:${parent.isPremium?'#f59e0b22':'#6b728022'};color:${parent.isPremium?'#f59e0b':'#6b7280'};border:1px solid ${parent.isPremium?'#f59e0b':'#6b7280'};border-radius:8px;padding:3px 10px;font-size:11px;font-weight:800;cursor:pointer;">${parent.isPremium?'⭐ Premium':'🆓 Free'}</button></td>
+      <td><button onclick="toggleMockFolderLock('${parent.id}')" style="background:${parent.locked?'#ef444422':'#10b98122'};color:${parent.locked?'#ef4444':'#10b981'};border:1px solid ${parent.locked?'#ef4444':'#10b981'};border-radius:8px;padding:3px 10px;font-size:11px;font-weight:800;cursor:pointer;">${parent.locked?'🔒 Lock':'🔓 Unlock'}</button></td>
       <td>
-        <button onclick="toggleMockFolderLock('${parent.id}')" style="
-          background:${parent.locked ? '#ef444422' : '#10b98122'};
-          color:${parent.locked ? '#ef4444' : '#10b981'};
-          border:1px solid ${parent.locked ? '#ef4444' : '#10b981'};
-          border-radius:8px;padding:4px 12px;font-size:12px;font-weight:800;cursor:pointer;">
-          ${parent.locked ? '🔒 Unlock' : '🔓 Lock'}
-        </button>
+        <div style="display:flex;gap:3px;">
+          <button onclick="moveFolderOrder('${parent.id}',-1)" title="Up" style="background:var(--bg3);border:1px solid var(--border);border-radius:5px;padding:2px 7px;cursor:pointer;">↑</button>
+          <button onclick="moveFolderOrder('${parent.id}',1)" title="Down" style="background:var(--bg3);border:1px solid var(--border);border-radius:5px;padding:2px 7px;cursor:pointer;">↓</button>
+          <button onclick="adminEditFolder('${parent.id}')" style="background:#3b82f622;color:#3b82f6;border:1px solid #3b82f6;border-radius:5px;padding:2px 7px;font-size:11px;cursor:pointer;">✏️</button>
+          <button onclick="adminDeleteFolder('${parent.id}')" style="background:#ef444422;color:#ef4444;border:1px solid #ef4444;border-radius:5px;padding:2px 7px;font-size:11px;cursor:pointer;">🗑</button>
+        </div>
       </td>
     </tr>`;
-    // Sub-folder rows
     subs.forEach(sf => {
       const count = DB.exams.filter(e => String(e.mockFolder) === String(sf.id)).length;
       rows += `<tr>
-        <td style="padding-left:24px;color:var(--text2);">↳ ${sf.icon} ${sf.name}</td>
+        <td style="padding-left:24px;">
+          <div style="display:flex;align-items:center;gap:5px;">
+            <span style="color:var(--text3);">↳</span>
+            <span style="font-size:14px;">${sf.icon}</span>
+            <div>
+              <div style="font-size:12px;font-weight:700;">${sf.name}</div>
+              ${sf.description ? `<div style="font-size:10px;color:var(--text3);">${sf.description.slice(0,35)}</div>` : ''}
+            </div>
+          </div>
+        </td>
         <td>${count} tests</td>
+        <td><button onclick="toggleMockFolderPremium('${sf.id}')" style="background:${sf.isPremium?'#f59e0b22':'#6b728022'};color:${sf.isPremium?'#f59e0b':'#6b7280'};border:1px solid ${sf.isPremium?'#f59e0b':'#6b7280'};border-radius:8px;padding:2px 8px;font-size:10px;font-weight:800;cursor:pointer;">${sf.isPremium?'⭐':'🆓'}</button></td>
+        <td><button onclick="toggleMockFolderLock('${sf.id}')" style="background:${sf.locked?'#ef444422':'#10b98122'};color:${sf.locked?'#ef4444':'#10b981'};border:1px solid ${sf.locked?'#ef4444':'#10b981'};border-radius:8px;padding:2px 8px;font-size:10px;font-weight:800;cursor:pointer;">${sf.locked?'🔒':'🔓'}</button></td>
         <td>
-          <button onclick="toggleMockFolderLock('${sf.id}')" style="
-            background:${sf.locked ? '#ef444422' : '#10b98122'};
-            color:${sf.locked ? '#ef4444' : '#10b981'};
-            border:1px solid ${sf.locked ? '#ef4444' : '#10b981'};
-            border-radius:8px;padding:4px 12px;font-size:12px;font-weight:800;cursor:pointer;">
-            ${sf.locked ? '🔒 Unlock' : '🔓 Lock'}
-          </button>
+          <div style="display:flex;gap:3px;">
+            <button onclick="moveFolderOrder('${sf.id}',-1)" style="background:var(--bg3);border:1px solid var(--border);border-radius:5px;padding:2px 6px;cursor:pointer;font-size:11px;">↑</button>
+            <button onclick="moveFolderOrder('${sf.id}',1)" style="background:var(--bg3);border:1px solid var(--border);border-radius:5px;padding:2px 6px;cursor:pointer;font-size:11px;">↓</button>
+            <button onclick="adminEditFolder('${sf.id}')" style="background:#3b82f622;color:#3b82f6;border:1px solid #3b82f6;border-radius:5px;padding:2px 6px;font-size:10px;cursor:pointer;">✏️</button>
+            <button onclick="adminDeleteFolder('${sf.id}')" style="background:#ef444422;color:#ef4444;border:1px solid #ef4444;border-radius:5px;padding:2px 6px;font-size:10px;cursor:pointer;">🗑</button>
+          </div>
         </td>
       </tr>`;
     });
   });
   tbody.innerHTML = rows;
+  _populateNewFolderParentSelect();
+}
+
+function toggleMockFolderPremium(folderId) {
+  const folders = getMockFolders();
+  const f = folders.find(x => x.id === folderId);
+  if (!f) return;
+  f.isPremium = !f.isPremium;
+  saveMockFolders(folders);
+  renderMockFolderAdminTable();
+  renderMockFoldersGrid();
+  toast(f.isPremium ? `⭐ "${f.name}" Premium గా set అయింది!` : `🆓 "${f.name}" Free గా set అయింది!`, 'info');
+}
+
+function moveFolderOrder(folderId, direction) {
+  const folders = getMockFolders().sort((a,b)=>(a.sort_order||0)-(b.sort_order||0));
+  const idx = folders.findIndex(f => f.id === folderId);
+  if (idx === -1) return;
+  const target = idx + direction;
+  if (target < 0 || target >= folders.length) return;
+  // Swap sort_order values
+  const tmp = folders[idx].sort_order || idx;
+  folders[idx].sort_order = folders[target].sort_order || target;
+  folders[target].sort_order = tmp;
+  // Re-assign clean sort_order
+  folders.sort((a,b)=>(a.sort_order||0)-(b.sort_order||0));
+  folders.forEach((f,i) => f.sort_order = i);
+  saveMockFolders(folders);
+  renderMockFolderAdminTable();
+  renderMockFoldersGrid();
+  toast('✅ Order updated!', 'success');
+}
+
+function adminEditFolder(folderId) {
+  const folders = getMockFolders();
+  const f = folders.find(x => x.id === folderId);
+  if (!f) return;
+  // Build edit modal
+  const existing = document.getElementById('admin-edit-folder-modal');
+  if (existing) existing.remove();
+  const modal = document.createElement('div');
+  modal.id = 'admin-edit-folder-modal';
+  modal.style.cssText = 'position:fixed;inset:0;background:#0009;z-index:9999;display:flex;align-items:center;justify-content:center;padding:20px;';
+  modal.innerHTML = `
+    <div style="background:var(--card);border-radius:18px;padding:24px;width:100%;max-width:460px;box-shadow:0 20px 60px #0006;">
+      <h3 style="margin:0 0 16px;font-size:16px;font-weight:900;">✏️ Edit Folder: ${f.icon} ${f.name}</h3>
+      <div style="display:flex;flex-direction:column;gap:12px;">
+        <div><label style="font-size:12px;font-weight:700;color:var(--text3);">Folder Name</label>
+          <input id="ef-name" value="${f.name}" style="width:100%;padding:8px 12px;border-radius:8px;border:1px solid var(--border);background:var(--bg2);color:var(--text);font-size:14px;box-sizing:border-box;margin-top:4px;"></div>
+        <div style="display:flex;gap:10px;">
+          <div style="flex:1;"><label style="font-size:12px;font-weight:700;color:var(--text3);">Icon</label>
+            <input id="ef-icon" value="${f.icon||'📁'}" maxlength="4" style="width:100%;padding:8px;border-radius:8px;border:1px solid var(--border);background:var(--bg2);color:var(--text);font-size:18px;margin-top:4px;text-align:center;"></div>
+          <div><label style="font-size:12px;font-weight:700;color:var(--text3);">Color</label>
+            <input id="ef-color" type="color" value="${f.color||'#1A73E8'}" style="width:60px;height:38px;border-radius:8px;cursor:pointer;margin-top:4px;"></div>
+        </div>
+        <div><label style="font-size:12px;font-weight:700;color:var(--text3);">Description</label>
+          <textarea id="ef-desc" rows="2" style="width:100%;padding:8px 12px;border-radius:8px;border:1px solid var(--border);background:var(--bg2);color:var(--text);font-size:13px;box-sizing:border-box;margin-top:4px;resize:vertical;">${f.description||''}</textarea></div>
+        <div><label style="font-size:12px;font-weight:700;color:var(--text3);">Banner Image URL (optional)</label>
+          <input id="ef-banner" value="${f.bannerImage||''}" placeholder="https://..." style="width:100%;padding:8px 12px;border-radius:8px;border:1px solid var(--border);background:var(--bg2);color:var(--text);font-size:12px;box-sizing:border-box;margin-top:4px;"></div>
+        ${document.getElementById('ef-banner') ? '' : ''}
+      </div>
+      <div style="display:flex;gap:10px;margin-top:18px;">
+        <button onclick="adminSaveFolderEdit('${f.id}')" style="flex:1;background:linear-gradient(135deg,#1A73E8,#0d47a1);color:#fff;border:none;border-radius:10px;padding:10px;font-size:14px;font-weight:800;cursor:pointer;">💾 Save</button>
+        <button onclick="document.getElementById('admin-edit-folder-modal').remove()" style="background:var(--bg2);border:1px solid var(--border);border-radius:10px;padding:10px 16px;font-size:13px;cursor:pointer;">Cancel</button>
+      </div>
+    </div>`;
+  document.body.appendChild(modal);
+}
+
+function adminSaveFolderEdit(folderId) {
+  const folders = getMockFolders();
+  const f = folders.find(x => x.id === folderId);
+  if (!f) return;
+  f.name        = document.getElementById('ef-name')?.value.trim() || f.name;
+  f.icon        = document.getElementById('ef-icon')?.value.trim() || f.icon;
+  f.color       = document.getElementById('ef-color')?.value || f.color;
+  f.description = document.getElementById('ef-desc')?.value.trim() || '';
+  f.bannerImage = document.getElementById('ef-banner')?.value.trim() || '';
+  saveMockFolders(folders);
+  renderMockFolderAdminTable();
+  renderMockFoldersGrid();
+  document.getElementById('admin-edit-folder-modal')?.remove();
+  toast('✅ "' + f.name + '" updated!', 'success');
 }
 
 function toggleMockFolderLock(folderId) {
@@ -14489,6 +14756,7 @@ function _confirmBulkImport() {
   const valid = _bulkRows.filter(r=>r.valid&&r.examExists);
   if (!valid.length) { toast('❌ Valid rows లేవు', 'error'); return; }
   let imported=0, skipped=0;
+  const newQs = []; // track newly added questions
   valid.forEach(r => {
     const dup = DB.questions.find(q=>q.examId===r.examId&&q.q.trim().toLowerCase()===r.question.toLowerCase());
     if(dup){skipped++;return;}
@@ -14496,13 +14764,20 @@ function _confirmBulkImport() {
     if (r.marks) qObj.marks = r.marks;
     if (r.image) qObj.image = r.image;
     DB.questions.push(qObj);
+    newQs.push(qObj); // track correctly
     imported++;
   });
-  // Supabase batch insert for all newly imported questions
-  const newQs = DB.questions.slice(DB.questions.length - imported);
-  if (newQs.length) sbBatchInsert('ae_questions', newQs.map(q=>({id:q.id,exam_id:q.examId,q:q.q,opts:q.opts,ans:q.ans,explanation:q.explanation||'',section:q.section||'ga',marks:q.marks||null,image:q.image||null})));
-  _saveMeta();
+  // ① Save to localStorage IMMEDIATELY so refresh keeps data
   saveDB();
+  // ② Try Supabase in background (optional, won't block)
+  if (newQs.length) {
+    sbBatchInsert('ae_questions', newQs.map(q=>({
+      id:q.id, exam_id:q.examId, q:q.q, opts:q.opts, ans:q.ans,
+      explanation:q.explanation||'', section:q.section||'ga',
+      marks:q.marks||null, image:q.image||null
+    }))).catch(()=>{});
+  }
+  _saveMeta();
   const log = document.getElementById('bulk-log');
   log.style.display='block';
   log.innerHTML=`<div style="color:var(--teal)">✅ ${imported} questions imported!</div>
@@ -14756,7 +15031,15 @@ function _appInit() {
   ADMIN_USERNAME = _ls.getItem('ae_admin_uname')    || 'admin';
   ADMIN_RECOVERY = _ls.getItem('ae_admin_recovery') || 'ANIL2025RESET';
 
-  // DB — Load from Supabase ae_exams / ae_questions tables
+  // DB — Test Supabase then Load
+  _testSupabaseConnection().then(() => {});
+  // Load folders from Supabase first
+  loadFoldersFromSupabase().then(sbFolders => {
+    if (sbFolders && sbFolders.length) {
+      if (typeof renderMockFoldersGrid === 'function') renderMockFoldersGrid();
+      if (typeof renderMockFolderAdminTable === 'function') renderMockFolderAdminTable();
+    }
+  }).catch(()=>{});
   // _loadDBFromSupabase runs async; UI updates after data loads
   _loadDBFromSupabase().then(ok => {
     updateStats();
@@ -14767,10 +15050,21 @@ function _appInit() {
     if (typeof _populateBulkExamDropdown === 'function') _populateBulkExamDropdown();
     if (typeof populateAdminSelects === 'function') populateAdminSelects();
   }).catch(() => {
-    // Fallback: use DEFAULT_DB in-memory
-    Object.assign(DB, JSON.parse(JSON.stringify(DEFAULT_DB)));
+    // Fallback: try localStorage, then DEFAULT_DB
+    try {
+      const localSnap = JSON.parse(_ls.getItem('ae_local_db') || 'null');
+      if (localSnap && localSnap.exams && localSnap.exams.length > 0) {
+        Object.assign(DB, localSnap);
+        console.log('[DB] Fallback: loaded from localStorage');
+      } else {
+        Object.assign(DB, JSON.parse(JSON.stringify(DEFAULT_DB)));
+      }
+    } catch(e) {
+      Object.assign(DB, JSON.parse(JSON.stringify(DEFAULT_DB)));
+    }
     updateStats();
     renderLeaderboard();
+    filterExams();
   });
 
   // Notification reminder

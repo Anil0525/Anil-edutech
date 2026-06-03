@@ -8113,9 +8113,11 @@ async function sbDelete(table, filter) {
 
 // ── SUPABASE RESULTS / USER-DATA HELPERS ──
 
-async function sbSaveResult(scoreObj) {
+async function sbSaveResult(scoreObj, _retryCount) {
+  _retryCount = _retryCount || 0;
+  if (_sbDead) return;
   try {
-    await fetch(`${SB_URL}/rest/v1/ae_results`, {
+    const r = await fetch(`${SB_URL}/rest/v1/ae_results`, {
       method: 'POST',
       headers: { ...SB_HEADERS, 'Prefer': 'return=minimal' },
       body: JSON.stringify({
@@ -8135,7 +8137,14 @@ async function sbSaveResult(scoreObj) {
         ts:         scoreObj.ts || Date.now()
       })
     });
-  } catch(e) {}
+    if (!r.ok && _retryCount < 2) {
+      setTimeout(() => sbSaveResult(scoreObj, _retryCount + 1), 4000);
+    }
+  } catch(e) {
+    if (_retryCount < 2) {
+      setTimeout(() => sbSaveResult(scoreObj, _retryCount + 1), 5000);
+    }
+  }
 }
 
 async function sbLoadResults(limit = 200) {
@@ -8237,6 +8246,11 @@ async function _loadDBFromSupabase() {
       DB.videos     = localSnap.videos     || DB.videos;
       DB.nextExamId = localSnap.nextExamId || DB.nextExamId;
       DB.nextQId    = localSnap.nextQId    || DB.nextQId;
+      // FIX: also check Supabase-synced nextQId backup
+      try {
+        const sbNextQId = parseInt(localStorage.getItem('ae_nextQId_sb') || '0');
+        if (sbNextQId > DB.nextQId) DB.nextQId = sbNextQId;
+      } catch(e) {}
       DB.nextVideoId= localSnap.nextVideoId|| DB.nextVideoId;
 
     }
@@ -8293,6 +8307,11 @@ async function _loadDBFromSupabase() {
       const sbQsDeduped = Array.from(sbQsMap.values());
       // Always use Supabase as source of truth — never push seed data back
       DB.questions = sbQsDeduped;
+      // FIX: nextQId must always be > max existing question id to prevent duplicates
+      const maxQId = sbQsDeduped.reduce((max, q) => Math.max(max, q.id || 0), 0);
+      if (maxQId >= DB.nextQId) {
+        DB.nextQId = maxQId + 1;
+      }
       sbUpdated = true;
     }
 
@@ -8336,7 +8355,11 @@ async function _loadDBFromSupabase() {
     }
 
     // Save merged result back to localStorage
-    if (sbUpdated) saveDB();
+    if (sbUpdated) {
+      saveDB(); // persist Supabase data to localStorage
+      // FIX: also persist updated nextQId so offline/refresh doesn't reset it
+      try { localStorage.setItem('ae_nextQId_sb', String(DB.nextQId)); } catch(e) {}
+    }
     // DB loaded
     return true;
   } catch(e) {
@@ -8449,7 +8472,7 @@ async function _sbSave(key, value) {
       await sbUpsert('ae_db', { id: 'pending', data: value, updated_at: new Date().toISOString() });
     } else if (key === 'ae_sub_approved') {
       await sbUpsert('ae_db', { id: 'approved', data: value, updated_at: new Date().toISOString() });
-    } else if (['ae_bookmarks','ae_exam_progress','ae_daily_done','ae_daily_done_count','ae_badges_seen','ae_scores_last_clear'].includes(key)) {
+    } else if (['ae_bookmarks','ae_exam_progress','ae_daily_done','ae_daily_done_count','ae_badges_seen','ae_scores_last_clear'].includes(key) || key.startsWith('ae_exam_progress_')) {
       if (value === null) {
         await sbDelete('ae_db', `id=eq.${encodeURIComponent(key)}`);
       } else {
@@ -11694,7 +11717,7 @@ function saveScoreAndShow() {
   // Send result email
   sendEmailNotification('result', { name, gmail: u?.gmail||'', examName, pct, correct, wrong, skip, total });
   scores.sort((a,b) => b.pct - a.pct || b.correct - a.correct);
-  if (scores.length > 50) scores.length = 50;
+  if (scores.length > 500) scores.length = 500; // FIX: increased from 50 to 500
   _ls.setItem('ae_scores', JSON.stringify(scores));
   // ── Supabase ae_results save ──
   sbSaveResult({name,gmail:u?.gmail||'',examName,examId:exam.current?.id,examCat:exam.current?.cat||'',correct,wrong,skip,total,pct,score:exam._result?.score??correct,maxScore:exam._result?.maxScore??total,answers:{...exam.answers||{}},ts:Date.now()});
@@ -12176,6 +12199,8 @@ function addQuestion() {
   const marks = (!isNaN(marksVal) && marksVal > 0) ? marksVal : null;
   const imgEl = document.getElementById('q-image-preview')?.querySelector('img');
   const image = (imgEl && imgEl.src && imgEl.src.startsWith('data:')) ? imgEl.src : null;
+  // FIX: ensure nextQId is never a duplicate of existing question ids
+  while (DB.questions.some(q => q.id === DB.nextQId)) { DB.nextQId++; }
   const qObj = { id: DB.nextQId++, examId, q: qText, opts, ans: correct, section };
   if (marks) qObj.marks = marks;
   if (image) qObj.image = image;
@@ -16728,10 +16753,8 @@ function startPayment(plan) {
 }
 
 function _getCurrentUser() {
-  try {
-    const sess = JSON.parse(_ls.getItem('ae_session') || 'null');
-    return sess;
-  } catch(e) { return null; }
+  // FIX: delegate to main getCurrentUser() to avoid dual-key session conflict
+  return getCurrentUser();
 }
 
 function _onPaymentSuccess(response, plan, amount, user) {

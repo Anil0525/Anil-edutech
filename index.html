@@ -5825,9 +5825,37 @@ html {
 
 <!-- EXAMS LIST -->
 <div id="page-exams" class="page">
+  <!-- ══ SIDEBAR LAYOUT ══ -->
+  <div class="ae-exams-layout">
+
+  <!-- LEFT SIDEBAR -->
+  <div class="ae-exams-sidebar">
+    <div class="ae-sidebar-logo">📝 Exams</div>
+    <div class="ae-sidebar-section-label">CATEGORIES</div>
+    <button class="ae-sidebar-item active" id="sb-all" onclick="goExams('');_setSbActive('sb-all')">
+      <span class="ae-sb-icon">🏠</span><span>All Exams</span>
+    </button>
+    <button class="ae-sidebar-item" id="sb-tspsc" onclick="goExams('TSPSC');_setSbActive('sb-tspsc')">
+      <span class="ae-sb-icon">🏛️</span><span>TSPSC</span>
+    </button>
+    <button class="ae-sidebar-item" id="sb-ssc" onclick="goExams('SSC');_setSbActive('sb-ssc')">
+      <span class="ae-sb-icon">📋</span><span>SSC</span>
+    </button>
+    <button class="ae-sidebar-item" id="sb-rrb" onclick="goExams('RRB');_setSbActive('sb-rrb')">
+      <span class="ae-sb-icon">🚂</span><span>RRB</span>
+    </button>
+    <button class="ae-sidebar-item" id="sb-bank" onclick="goExams('Banking');_setSbActive('sb-bank')">
+      <span class="ae-sb-icon">🏦</span><span>Banking</span>
+    </button>
+  </div>
+
+  <!-- MAIN CONTENT -->
+  <div class="ae-exams-main">
   <div class="section">
     <div class="section-title" id="exams-page-title">All Exams</div>
     <div class="section-sub" id="exams-page-sub">Available exams చూపిస్తున్నాం</div>
+    <!-- ══ PREMIUM BANNER ══ -->
+    <div id="premium-exams-banner" style="display:none;"></div>
     <!-- Search -->
     <div class="search-bar-wrap">
       <span class="search-icon">🔍</span>
@@ -5862,6 +5890,8 @@ html {
     </div>
     <div class="exams-grid" id="exams-list"></div>
   </div>
+  </div> <!-- /.ae-exams-main -->
+  </div> <!-- /.ae-exams-layout -->
   <footer>
   <div class="footer-inner">
     <div class="footer-brand">Anil <span>EduTech</span></div>
@@ -8236,27 +8266,10 @@ async function sbBatchInsert(table, rows) {
 }
 
 // ── Load exams + questions from Supabase into DB cache ──
+// SUPABASE = single source of truth (same data on ALL devices)
+// localStorage = offline cache only
 async function _loadDBFromSupabase() {
-  // ── STEP 1: Load from localStorage FIRST (works offline / file://) ──
-  try {
-    const localSnap = JSON.parse(_ls.getItem('ae_local_db') || 'null');
-    if (localSnap && localSnap.exams && localSnap.exams.length > 0) {
-      DB.exams      = localSnap.exams;
-      DB.questions  = localSnap.questions  || DB.questions;
-      DB.videos     = localSnap.videos     || DB.videos;
-      DB.nextExamId = localSnap.nextExamId || DB.nextExamId;
-      DB.nextQId    = localSnap.nextQId    || DB.nextQId;
-      // FIX: also check Supabase-synced nextQId backup
-      try {
-        const sbNextQId = parseInt(localStorage.getItem('ae_nextQId_sb') || '0');
-        if (sbNextQId > DB.nextQId) DB.nextQId = sbNextQId;
-      } catch(e) {}
-      DB.nextVideoId= localSnap.nextVideoId|| DB.nextVideoId;
-
-    }
-  } catch(e) { console.warn('[DB] localStorage load failed:', e); }
-
-  // ── STEP 2: Try Supabase (if online) and merge if it has MORE data ──
+  // ── STEP 1: Try Supabase FIRST ──
   try {
     const [exams, questions, videos, meta] = await Promise.all([
       sbGet('ae_exams', null),
@@ -8265,10 +8278,11 @@ async function _loadDBFromSupabase() {
       sbGet('ae_meta', null)
     ]);
 
-    let sbUpdated = false;
+    const sbHasExams     = exams     && Array.isArray(exams)     && exams.length     > 0;
+    const sbHasQuestions = questions && Array.isArray(questions) && questions.length > 0;
 
-    if (exams && Array.isArray(exams) && exams.length > 0) {
-      const sbExams = exams.map(e => ({
+    if (sbHasExams) {
+      DB.exams = exams.map(e => ({
         id: e.id, name: e.name, cat: e.cat,
         time: e.time, diff: e.diff,
         sections: e.sections || {},
@@ -8279,30 +8293,12 @@ async function _loadDBFromSupabase() {
         videoUrl: e.video_url || null,
         partLabels: e.part_labels || null,
         parts: e.parts || null
-      }));
-      // FIX: Merge localStorage exams that Supabase doesn't have yet
-      // (exams added while Supabase save was in-flight / failed)
-      const sbExamsMap = new Map();
-      sbExams.forEach(e => sbExamsMap.set(e.id, e));
-
-      // Check localStorage for any exams missing in Supabase
-      const lsSnapForMerge = (() => { try { return JSON.parse(localStorage.getItem('ae_local_db')||'null'); } catch(e) { return null; } })();
-      if (lsSnapForMerge && lsSnapForMerge.exams) {
-        lsSnapForMerge.exams.forEach(le => {
-          if (!sbExamsMap.has(le.id)) {
-            sbExamsMap.set(le.id, le); // keep local-only exams
-            // re-push to Supabase since it clearly missed them
-            sbSaveExam(le).catch(() => {});
-          }
-        });
-      }
-
-      DB.exams = Array.from(sbExamsMap.values()).sort((a,b) => a.id - b.id);
-      sbUpdated = true;
+      })).sort((a,b) => a.id - b.id);
     }
 
-    if (questions && Array.isArray(questions) && questions.length > 0) {
-      const sbQs = questions.map(q => ({
+    if (sbHasQuestions) {
+      // Supabase = exact truth, no local merge
+      DB.questions = questions.map(q => ({
         id: q.id, examId: q.exam_id,
         q: q.q, opts: q.opts, ans: q.ans,
         explanation: q.explanation || '',
@@ -8310,29 +8306,8 @@ async function _loadDBFromSupabase() {
         marks: q.marks || null,
         image: q.image || null
       }));
-      // Deduplicate Supabase questions by id
-      const sbQsMap = new Map();
-      sbQs.forEach(q => sbQsMap.set(q.id, q));
-
-      // FIX: Merge localStorage questions that Supabase doesn't have yet
-      // (questions added while Supabase save was in-flight / failed)
-      DB.questions.forEach(lq => {
-        if (!sbQsMap.has(lq.id)) {
-          sbQsMap.set(lq.id, lq); // keep local-only questions
-          // re-push to Supabase since it clearly missed them
-          sbSaveQuestion(lq).catch(() => {});
-        }
-      });
-
-      const sbQsDeduped = Array.from(sbQsMap.values());
-      DB.questions = sbQsDeduped;
-
-      // FIX: nextQId must always be > max existing question id to prevent duplicates
-      const maxQId = sbQsDeduped.reduce((max, q) => Math.max(max, q.id || 0), 0);
-      if (maxQId >= DB.nextQId) {
-        DB.nextQId = maxQId + 1;
-      }
-      sbUpdated = true;
+      const maxQId = DB.questions.reduce((max, q) => Math.max(max, q.id || 0), 0);
+      if (maxQId >= DB.nextQId) DB.nextQId = maxQId + 1;
     }
 
     if (videos && Array.isArray(videos) && videos.length > 0) {
@@ -8340,51 +8315,57 @@ async function _loadDBFromSupabase() {
         id: v.id, title: v.title, cat: v.cat,
         url: v.url, desc: v.description || ''
       }));
-      sbUpdated = true;
     }
 
     if (meta && Array.isArray(meta)) {
       meta.forEach(m => {
-        if (m.key === 'nextExamId') DB.nextExamId = Math.max(parseInt(m.value)||0, DB.nextExamId);
-        if (m.key === 'nextQId')    DB.nextQId    = Math.max(parseInt(m.value)||0, DB.nextQId);
+        if (m.key === 'nextExamId')  DB.nextExamId  = Math.max(parseInt(m.value)||0, DB.nextExamId);
+        if (m.key === 'nextQId')     DB.nextQId     = Math.max(parseInt(m.value)||0, DB.nextQId);
         if (m.key === 'nextVideoId') DB.nextVideoId = Math.max(parseInt(m.value)||0, DB.nextVideoId);
         if (m.key === 'mockFolders') {
           try {
             const mf = JSON.parse(m.value);
             if (Array.isArray(mf) && mf.length) {
-              const hasSubFolders = mf.some(f => f.parentId);
-              if (hasSubFolders) {
-                try { _ls.setItem('ae_mock_folders', m.value); } catch(e) {}
-              } else {
-                try { _ls.removeItem('ae_mock_folders'); } catch(e) {}
-              }
+              if (mf.some(f => f.parentId)) { try { _ls.setItem('ae_mock_folders', m.value); } catch(e) {} }
+              else { try { _ls.removeItem('ae_mock_folders'); } catch(e) {} }
             }
           } catch(e) {}
         }
       });
     }
 
-    // If Supabase tables empty AND no localStorage data → first time setup only
-    if (!exams || !exams.length) {
-      const lsSnap = (() => { try { return JSON.parse(localStorage.getItem('ae_local_db')||'null'); } catch(e) { return null; } })();
+    // First time: Supabase empty → migrate default data
+    if (!sbHasExams) {
       const alreadyMigrated = (() => { try { return localStorage.getItem('ae_migrated_v1'); } catch(e) { return null; } })();
-      // Only migrate if: never migrated before AND no local data either
-      if (!alreadyMigrated && (!lsSnap || !lsSnap.exams || !lsSnap.exams.length)) {
-        await _migrateDefaultDataToSupabase();
-      }
+      if (!alreadyMigrated) await _migrateDefaultDataToSupabase();
     }
 
-    // Save merged result back to localStorage
-    if (sbUpdated) {
-      saveDB(); // persist Supabase data to localStorage
-      // FIX: also persist updated nextQId so offline/refresh doesn't reset it
-      try { localStorage.setItem('ae_nextQId_sb', String(DB.nextQId)); } catch(e) {}
-    }
-    // DB loaded
+    // Cache Supabase data to localStorage (offline fallback)
+    try {
+      const snap = { exams: DB.exams, questions: DB.questions, videos: DB.videos, nextExamId: DB.nextExamId, nextQId: DB.nextQId, nextVideoId: DB.nextVideoId };
+      localStorage.setItem('ae_local_db', JSON.stringify(snap));
+      localStorage.setItem('anil_edutech_db', JSON.stringify(DB));
+      localStorage.setItem('ae_nextQId_sb', String(DB.nextQId));
+    } catch(e) {}
+
     return true;
-  } catch(e) {
 
-    return DB.exams.length > 0; // return true if we have local data
+  } catch(e) {
+    // ── STEP 2: Supabase unreachable → use localStorage cache (offline mode) ──
+    console.warn('[DB] Supabase offline — using localStorage cache');
+    try {
+      const localSnap = JSON.parse(localStorage.getItem('ae_local_db') || 'null');
+      if (localSnap && localSnap.exams && localSnap.exams.length > 0) {
+        DB.exams       = localSnap.exams;
+        DB.questions   = localSnap.questions  || DB.questions;
+        DB.videos      = localSnap.videos     || DB.videos;
+        DB.nextExamId  = localSnap.nextExamId || DB.nextExamId;
+        DB.nextQId     = localSnap.nextQId    || DB.nextQId;
+        DB.nextVideoId = localSnap.nextVideoId|| DB.nextVideoId;
+        return true;
+      }
+    } catch(e2) {}
+    return false;
   }
 }
 
@@ -10545,8 +10526,58 @@ function loadDB() {
   return JSON.parse(JSON.stringify(DEFAULT_DB));
 }
 
+// Debounced Supabase batch sync — runs 2s after saveDB()
+let _syncTimer = null;
+let _syncLastQCount = -1;
+let _syncLastExamCount = -1;
+
+function _scheduleSbSync() {
+  if (_sbDead) return;
+  clearTimeout(_syncTimer);
+  _syncTimer = setTimeout(_runSbSync, 2000);
+}
+
+async function _runSbSync() {
+  if (_sbDead) return;
+  try {
+    if (DB.questions.length !== _syncLastQCount) {
+      const CHUNK = 100;
+      for (let i = 0; i < DB.questions.length; i += CHUNK) {
+        const rows = DB.questions.slice(i, i + CHUNK).map(q => ({
+          id: q.id, exam_id: q.examId, q: q.q, opts: q.opts,
+          ans: q.ans, explanation: q.explanation || '',
+          section: q.section || 'ga', marks: q.marks || null, image: q.image || null
+        }));
+        await fetch(SB_URL + '/rest/v1/ae_questions', {
+          method: 'POST',
+          headers: { ...SB_HEADERS, 'Prefer': 'resolution=merge-duplicates,return=minimal' },
+          body: JSON.stringify(rows)
+        }).catch(() => {});
+      }
+      _syncLastQCount = DB.questions.length;
+    }
+    if (DB.exams.length !== _syncLastExamCount) {
+      const examRows = DB.exams.map(e => ({
+        id: e.id, name: e.name, cat: e.cat || '',
+        time: e.time || 30, diff: e.diff || 'Medium',
+        sections: e.sections || {}, qmark: e.qmark || 1, nmark: e.nmark || 0,
+        is_premium: e.isPremium || false, is_locked: e.isLocked || false,
+        mock_folder: e.mockFolder || null, part_labels: e.partLabels || null,
+        video_url: e.videoUrl || null, updated_at: new Date().toISOString()
+      }));
+      await fetch(SB_URL + '/rest/v1/ae_exams', {
+        method: 'POST',
+        headers: { ...SB_HEADERS, 'Prefer': 'resolution=merge-duplicates,return=minimal' },
+        body: JSON.stringify(examRows)
+      }).catch(() => {});
+      _syncLastExamCount = DB.exams.length;
+    }
+    await _saveMeta();
+  } catch(e) {}
+}
+
 function saveDB() {
-  // PRIMARY: Always save full DB to localStorage so data survives refresh
+  // Save to localStorage (offline cache)
   try {
     const snapshot = {
       exams:      DB.exams,
@@ -10557,8 +10588,10 @@ function saveDB() {
       nextVideoId:DB.nextVideoId
     };
     _ls.setItem('ae_local_db', JSON.stringify(snapshot));
-    _ls.setItem('anil_edutech_db', JSON.stringify(DB)); // legacy key too
+    _ls.setItem('anil_edutech_db', JSON.stringify(DB));
   } catch(e) { }
+  // Auto-sync to Supabase (debounced 2s) — keeps all devices in sync
+  _scheduleSbSync();
 }
 
 // ── Supabase: Save single exam ──
@@ -10859,6 +10892,8 @@ function goExams(cat) {
   if (favTab) favTab.classList.remove('active');
   const title = cat ? cat + ' Exams' : 'All Exams';
   document.getElementById('exams-page-title').textContent = title;
+  // refresh premium banner
+  if(typeof _refreshPremiumBanner === 'function') _refreshPremiumBanner();
   filterExams();
 }
 
@@ -17528,6 +17563,346 @@ _beginFreshExam = function(e, qs) {
 [data-theme="dark"] .ssc-analysis-table td { border-color: var(--border); color: var(--text2); }
 </style>
 
+<!-- ═══ ANIL EDUTECH — EXAM PAGE ENERGETIC REDESIGN ═══ -->
+<style>
+/* ── PAGE BACKGROUND: subtle animated gradient mesh ── */
+#page-exams {
+  background: linear-gradient(135deg, #F0F4FF 0%, #FFF8F0 40%, #F0FFF8 100%) !important;
+  min-height: 100vh;
+  position: relative;
+}
+#page-exams::before {
+  content: '';
+  position: fixed; inset: 0; pointer-events: none; z-index: 0;
+  background:
+    radial-gradient(ellipse 600px 400px at 10% 20%, rgba(26,115,232,.07) 0%, transparent 70%),
+    radial-gradient(ellipse 500px 350px at 90% 80%, rgba(232,100,10,.06) 0%, transparent 70%),
+    radial-gradient(ellipse 400px 300px at 50% 50%, rgba(10,140,92,.04) 0%, transparent 70%);
+}
+#page-exams .section {
+  position: relative; z-index: 1;
+}
+
+/* ── HEADER AREA ── */
+#exams-page-title {
+  font-size: 28px !important;
+  font-weight: 900 !important;
+  letter-spacing: -0.8px !important;
+  background: linear-gradient(135deg, #1B2D5E 0%, #1A73E8 50%, #E8640A 100%) !important;
+  -webkit-background-clip: text !important;
+  -webkit-text-fill-color: transparent !important;
+  background-clip: text !important;
+  margin-bottom: 2px !important;
+}
+#exams-page-title::after { display: none !important; }
+#exams-page-sub {
+  font-size: 13px !important;
+  color: #6B7A99 !important;
+  margin-bottom: 20px !important;
+  font-weight: 600 !important;
+}
+
+/* ── SEARCH BAR: upgraded ── */
+#page-exams .search-bar-wrap {
+  margin-bottom: 16px !important;
+}
+#page-exams .search-bar {
+  background: rgba(255,255,255,.9) !important;
+  backdrop-filter: blur(12px) !important;
+  border: 2px solid rgba(26,115,232,.15) !important;
+  border-radius: 20px !important;
+  padding: 15px 16px 15px 52px !important;
+  font-size: 14px !important;
+  font-weight: 600 !important;
+  box-shadow: 0 4px 24px rgba(26,115,232,.08), 0 1px 4px rgba(0,0,0,.04) !important;
+  transition: all .3s cubic-bezier(.2,.8,.2,1) !important;
+}
+#page-exams .search-bar:focus {
+  border-color: #1A73E8 !important;
+  box-shadow: 0 0 0 4px rgba(26,115,232,.12), 0 8px 32px rgba(26,115,232,.15) !important;
+  transform: translateY(-2px) !important;
+  background: #fff !important;
+}
+#page-exams .search-icon {
+  left: 18px !important;
+  font-size: 18px !important;
+}
+
+/* ── FILTER CHIPS: pill style ── */
+#page-exams .filter-chips {
+  gap: 8px !important;
+  margin-bottom: 20px !important;
+  flex-wrap: wrap !important;
+}
+#page-exams .filter-chip {
+  padding: 8px 20px !important;
+  border-radius: 30px !important;
+  border: 2px solid rgba(26,115,232,.18) !important;
+  background: rgba(255,255,255,.85) !important;
+  font-size: 12.5px !important;
+  font-weight: 800 !important;
+  color: #3D4F6B !important;
+  backdrop-filter: blur(8px) !important;
+  box-shadow: 0 2px 8px rgba(0,0,0,.06) !important;
+  transition: all .25s cubic-bezier(.34,1.56,.64,1) !important;
+  letter-spacing: .2px !important;
+}
+#page-exams .filter-chip:hover {
+  border-color: #1A73E8 !important;
+  color: #1A73E8 !important;
+  transform: translateY(-3px) scale(1.04) !important;
+  box-shadow: 0 6px 20px rgba(26,115,232,.2) !important;
+  background: rgba(255,255,255,.98) !important;
+}
+#page-exams .filter-chip.active {
+  background: linear-gradient(135deg, #1A73E8, #3D8BF7) !important;
+  border-color: transparent !important;
+  color: #fff !important;
+  box-shadow: 0 6px 20px rgba(26,115,232,.35) !important;
+  transform: translateY(-2px) !important;
+}
+
+/* ── EXAMS GRID ── */
+#page-exams .exams-grid {
+  gap: 14px !important;
+}
+
+/* ── EXAM CARD: complete redesign ── */
+#page-exams .exam-card {
+  background: rgba(255,255,255,.92) !important;
+  backdrop-filter: blur(12px) !important;
+  border: 1.5px solid rgba(255,255,255,.9) !important;
+  border-radius: 22px !important;
+  padding: 18px 18px 18px 20px !important;
+  box-shadow: 0 4px 20px rgba(26,115,232,.07), 0 1px 4px rgba(0,0,0,.04) !important;
+  transition: all .3s cubic-bezier(.2,.8,.2,1) !important;
+  position: relative !important;
+  overflow: hidden !important;
+}
+#page-exams .exam-card::before {
+  content: '' !important;
+  display: block !important;
+  position: absolute !important;
+  left: 0 !important; top: 0 !important; bottom: 0 !important;
+  width: 4px !important;
+  background: linear-gradient(180deg, #1A73E8, #00C2FF) !important;
+  border-radius: 4px 0 0 4px !important;
+  opacity: 1 !important;
+}
+#page-exams .exam-card:hover::before {
+  display: block !important;
+}
+#page-exams .exam-card.is-locked::before {
+  background: linear-gradient(180deg, #F5B731, #E8640A) !important;
+}
+#page-exams .exam-card::after {
+  content: '' !important;
+  position: absolute !important; inset: 0 !important;
+  background: linear-gradient(120deg, rgba(26,115,232,.03) 0%, transparent 55%) !important;
+  opacity: 1 !important;
+  border-radius: inherit !important;
+  pointer-events: none !important;
+}
+#page-exams .exam-card:hover {
+  transform: translateY(-5px) !important;
+  box-shadow: 0 16px 48px rgba(26,115,232,.16), 0 4px 12px rgba(0,0,0,.06) !important;
+  border-color: rgba(26,115,232,.25) !important;
+  background: #fff !important;
+}
+/* Locked card accent */
+#page-exams .exam-card.is-locked::before {
+  background: linear-gradient(180deg, #E8640A, #FFB347) !important;
+}
+
+/* ── EXAM TITLE ── */
+#page-exams .exam-title {
+  font-size: 15px !important;
+  font-weight: 800 !important;
+  color: #1B2D5E !important;
+  letter-spacing: -.2px !important;
+  line-height: 1.3 !important;
+  margin-bottom: 10px !important;
+}
+
+/* ── META PILLS: redesigned ── */
+#page-exams .meta-pill {
+  font-size: 11px !important;
+  font-weight: 800 !important;
+  padding: 4px 12px !important;
+  border-radius: 30px !important;
+  letter-spacing: .3px !important;
+}
+#page-exams .pill-blue {
+  background: rgba(26,115,232,.1) !important;
+  color: #1A73E8 !important;
+  border: 1.5px solid rgba(26,115,232,.2) !important;
+}
+#page-exams .pill-green {
+  background: rgba(10,140,92,.1) !important;
+  color: #0A8C5C !important;
+  border: 1.5px solid rgba(10,140,92,.2) !important;
+}
+#page-exams .pill-orange {
+  background: rgba(232,100,10,.1) !important;
+  color: #E8640A !important;
+  border: 1.5px solid rgba(232,100,10,.2) !important;
+}
+#page-exams .pill-red {
+  background: rgba(212,43,58,.1) !important;
+  color: #D42B3A !important;
+  border: 1.5px solid rgba(212,43,58,.2) !important;
+}
+#page-exams .pill-amber {
+  background: rgba(217,119,6,.1) !important;
+  color: #D97706 !important;
+  border: 1.5px solid rgba(217,119,6,.2) !important;
+}
+
+/* ── NUMBER BADGE ── */
+#page-exams .exam-card > div[style*="border-radius:50%"] {
+  background: linear-gradient(135deg, #1A73E8, #00C2FF) !important;
+  box-shadow: 0 4px 12px rgba(26,115,232,.3) !important;
+  width: 32px !important; height: 32px !important;
+  min-width: 32px !important;
+  font-size: 12px !important;
+  font-weight: 900 !important;
+}
+
+/* ── START BUTTON: energetic ── */
+#page-exams .start-btn {
+  background: linear-gradient(135deg, #1A73E8 0%, #0D57C8 100%) !important;
+  color: #fff !important;
+  border: none !important;
+  border-radius: 14px !important;
+  padding: 12px 22px !important;
+  font-size: 13px !important;
+  font-weight: 900 !important;
+  letter-spacing: .3px !important;
+  cursor: pointer !important;
+  white-space: nowrap !important;
+  box-shadow: 0 4px 16px rgba(26,115,232,.35) !important;
+  transition: all .25s cubic-bezier(.2,.8,.2,1) !important;
+  position: relative !important;
+  overflow: hidden !important;
+}
+#page-exams .start-btn::after {
+  content: '' !important;
+  position: absolute !important;
+  inset: 0 !important;
+  background: linear-gradient(135deg, rgba(255,255,255,.15), transparent) !important;
+  border-radius: inherit !important;
+}
+#page-exams .start-btn:hover:not(:disabled) {
+  transform: translateY(-3px) scale(1.04) !important;
+  box-shadow: 0 10px 30px rgba(26,115,232,.5) !important;
+  background: linear-gradient(135deg, #2B7FEF 0%, #1A68D8 100%) !important;
+}
+#page-exams .start-btn:active:not(:disabled) {
+  transform: translateY(-1px) scale(1.01) !important;
+}
+#page-exams .exam-card.is-locked .start-btn {
+  background: linear-gradient(135deg, #E8640A 0%, #C9530A 100%) !important;
+  box-shadow: 0 4px 16px rgba(232,100,10,.35) !important;
+}
+#page-exams .exam-card.is-locked .start-btn:hover:not(:disabled) {
+  box-shadow: 0 10px 28px rgba(232,100,10,.45) !important;
+  background: linear-gradient(135deg, #F0720D 0%, #D45F0A 100%) !important;
+}
+#page-exams .start-btn:disabled {
+  background: #CDD3DE !important;
+  box-shadow: none !important;
+  cursor: not-allowed !important;
+  transform: none !important;
+}
+
+/* ── EMPTY STATE ── */
+#page-exams .empty-state {
+  text-align: center !important;
+  padding: 60px 20px !important;
+  color: #8A99B8 !important;
+  font-weight: 700 !important;
+  font-size: 14px !important;
+  background: rgba(255,255,255,.7) !important;
+  border-radius: 20px !important;
+  border: 2px dashed rgba(26,115,232,.2) !important;
+}
+
+/* ── CARD STAGGER ANIMATION ── */
+#page-exams .exam-card {
+  animation: examCardIn .4s cubic-bezier(.2,.8,.2,1) both !important;
+}
+@keyframes examCardIn {
+  from { opacity: 0; transform: translateY(18px); }
+  to   { opacity: 1; transform: translateY(0); }
+}
+#page-exams .exam-card:nth-child(1)  { animation-delay: .03s !important; }
+#page-exams .exam-card:nth-child(2)  { animation-delay: .06s !important; }
+#page-exams .exam-card:nth-child(3)  { animation-delay: .09s !important; }
+#page-exams .exam-card:nth-child(4)  { animation-delay: .12s !important; }
+#page-exams .exam-card:nth-child(5)  { animation-delay: .15s !important; }
+#page-exams .exam-card:nth-child(6)  { animation-delay: .18s !important; }
+#page-exams .exam-card:nth-child(7)  { animation-delay: .21s !important; }
+#page-exams .exam-card:nth-child(8)  { animation-delay: .24s !important; }
+
+/* ── DARK MODE overrides ── */
+[data-theme="dark"] #page-exams {
+  background: linear-gradient(135deg, #0A0F1E 0%, #0F1726 50%, #0A1520 100%) !important;
+}
+[data-theme="dark"] #page-exams::before {
+  background:
+    radial-gradient(ellipse 600px 400px at 10% 20%, rgba(26,115,232,.12) 0%, transparent 70%),
+    radial-gradient(ellipse 500px 350px at 90% 80%, rgba(232,100,10,.09) 0%, transparent 70%);
+}
+[data-theme="dark"] #exams-page-title {
+  background: linear-gradient(135deg, #7FB3FF 0%, #4F8EFF 50%, #FF9A5C 100%) !important;
+  -webkit-background-clip: text !important;
+  -webkit-text-fill-color: transparent !important;
+  background-clip: text !important;
+}
+[data-theme="dark"] #page-exams .exam-card {
+  background: rgba(15,23,38,.92) !important;
+  border-color: rgba(255,255,255,.07) !important;
+  box-shadow: 0 4px 24px rgba(0,0,0,.3) !important;
+}
+[data-theme="dark"] #page-exams .exam-card:hover {
+  background: rgba(20,32,54,.98) !important;
+  border-color: rgba(26,115,232,.3) !important;
+  box-shadow: 0 16px 48px rgba(26,115,232,.2) !important;
+}
+[data-theme="dark"] #page-exams .exam-title {
+  color: #E8EEFF !important;
+}
+[data-theme="dark"] #page-exams .search-bar {
+  background: rgba(15,23,38,.9) !important;
+  border-color: rgba(26,115,232,.2) !important;
+  color: #E8EEFF !important;
+}
+[data-theme="dark"] #page-exams .filter-chip {
+  background: rgba(15,23,38,.85) !important;
+  border-color: rgba(255,255,255,.1) !important;
+  color: #A0AECB !important;
+}
+[data-theme="dark"] #page-exams .filter-chip:hover {
+  background: rgba(26,115,232,.15) !important;
+  color: #7FB3FF !important;
+}
+[data-theme="dark"] #page-exams .pill-blue {
+  background: rgba(26,115,232,.15) !important;
+  color: #7FB3FF !important;
+  border-color: rgba(26,115,232,.25) !important;
+}
+[data-theme="dark"] #page-exams .pill-green {
+  background: rgba(10,140,92,.15) !important;
+  color: #34D399 !important;
+  border-color: rgba(10,140,92,.25) !important;
+}
+[data-theme="dark"] #page-exams .pill-orange {
+  background: rgba(232,100,10,.15) !important;
+  color: #FB923C !important;
+  border-color: rgba(232,100,10,.25) !important;
+}
+</style>
+
 <!-- SSC INSTRUCTIONS OVERLAY — SSC CGL Official Pattern -->
 <div id="ssc-inst-overlay">
 
@@ -17887,7 +18262,134 @@ _beginFreshExam = function(e, qs) {
   .ssc2-center  { display:none; }
   .ssc2-zoom    { display:none; }
 }
+/* ══ PREMIUM BANNER ══ */
+.ae-prem-banner {
+  position: relative; overflow: hidden;
+  display: flex; align-items: center; justify-content: space-between; gap: 12px;
+  padding: 18px 22px; border-radius: 20px;
+  background: linear-gradient(120deg, #1B2D5E 0%, #1A73E8 45%, #E8640A 100%);
+  margin-bottom: 20px; cursor: pointer;
+  box-shadow: 0 8px 32px rgba(26,115,232,.35), 0 2px 8px rgba(0,0,0,.12);
+  transition: transform .25s cubic-bezier(.2,.8,.2,1), box-shadow .25s;
+  animation: bannerIn .5s cubic-bezier(.2,.8,.2,1) both;
+}
+@keyframes bannerIn {
+  from { opacity:0; transform: translateY(-16px) scale(.97); }
+  to   { opacity:1; transform: translateY(0) scale(1); }
+}
+.ae-prem-banner:hover { transform: translateY(-3px) scale(1.01); box-shadow: 0 16px 48px rgba(26,115,232,.45); }
+.ae-prem-glow {
+  position: absolute; inset: 0; pointer-events: none;
+  background: linear-gradient(105deg, transparent 35%, rgba(255,255,255,.13) 50%, transparent 65%);
+  background-size: 200% 100%;
+  animation: shimmerBanner 2.8s ease-in-out infinite;
+}
+@keyframes shimmerBanner {
+  0%   { background-position: -100% 0; }
+  60%  { background-position: 200% 0; }
+  100% { background-position: 200% 0; }
+}
+.ae-prem-stars {
+  position: absolute; top: 8px; right: 145px;
+  color: rgba(255,220,80,.55); font-size: 11px; letter-spacing: 3px; pointer-events: none;
+}
+.ae-prem-left { position: relative; z-index: 1; }
+.ae-prem-badge {
+  display: inline-flex; align-items: center; gap: 4px;
+  background: rgba(255,220,80,.2); border: 1.5px solid rgba(255,220,80,.45);
+  color: #FFD84A; font-size: 10.5px; font-weight: 900; letter-spacing: .8px;
+  padding: 3px 10px; border-radius: 30px; margin-bottom: 6px; text-transform: uppercase;
+}
+.ae-prem-title {
+  font-size: 16px; font-weight: 900; color: #fff;
+  letter-spacing: -.3px; margin-bottom: 3px; text-shadow: 0 1px 8px rgba(0,0,0,.2);
+}
+.ae-prem-sub { font-size: 11.5px; font-weight: 600; color: rgba(255,255,255,.75); }
+.ae-prem-cta {
+  position: relative; z-index: 1; flex-shrink: 0;
+  padding: 11px 20px;
+  background: linear-gradient(135deg, #FFD84A 0%, #F5B731 100%);
+  color: #1B2D5E; border: none; border-radius: 14px;
+  font-size: 13px; font-weight: 900; cursor: pointer; letter-spacing: .2px;
+  box-shadow: 0 4px 16px rgba(245,183,49,.5);
+  transition: all .22s cubic-bezier(.2,.8,.2,1); white-space: nowrap;
+}
+.ae-prem-cta:hover { transform: translateY(-2px) scale(1.05); box-shadow: 0 8px 24px rgba(245,183,49,.65); }
+@media (max-width: 640px) {
+  .ae-prem-banner { flex-direction: column; align-items: flex-start; gap: 14px; padding: 16px 18px; }
+  .ae-prem-cta { width: 100%; text-align: center; }
+  .ae-prem-stars { display: none; }
+}
+/* ══ LOCKED CARD GOLD ACCENT ══ */
+/* locked accent removed */
+#page-exams .exam-card.is-locked .start-btn {
+  background: linear-gradient(135deg, #F5B731 0%, #E8640A 100%) !important;
+  box-shadow: 0 4px 16px rgba(232,100,10,.35) !important;
+  color: #fff !important;
+}
+#page-exams .exam-card.is-locked .start-btn:hover:not(:disabled) {
+  box-shadow: 0 8px 28px rgba(232,100,10,.5) !important;
+  transform: translateY(-3px) scale(1.04) !important;
+}
+/* ══ EXAMS PAGE SIDEBAR LAYOUT ══ */
+.ae-exams-layout {
+  display: flex;
+  min-height: calc(100vh - 64px);
+  align-items: flex-start;
+}
+.ae-exams-sidebar {
+  width: 210px; min-width: 210px;
+  background: #111827;
+  min-height: calc(100vh - 64px);
+  padding: 32px 0 40px;
+  position: sticky; top: 64px;
+  display: flex; flex-direction: column; gap: 2px;
+  z-index: 10;
+}
+.ae-sidebar-logo {
+  font-size: 16px; font-weight: 900; color: #fff;
+  padding: 0 20px 20px;
+  border-bottom: 1px solid rgba(255,255,255,.08);
+  margin-bottom: 12px; letter-spacing: -.3px;
+}
+.ae-sidebar-section-label {
+  font-size: 10px; font-weight: 800;
+  color: rgba(255,255,255,.35);
+  letter-spacing: 1.2px; padding: 0 20px 8px; text-transform: uppercase;
+}
+.ae-sidebar-item {
+  display: flex; align-items: center; gap: 12px;
+  padding: 11px 20px;
+  background: none; border: none;
+  color: rgba(255,255,255,.65);
+  font-size: 13.5px; font-weight: 700;
+  cursor: pointer; text-align: left; width: 100%;
+  font-family: inherit; border-radius: 0;
+  transition: all .2s ease; position: relative;
+}
+.ae-sidebar-item:hover { background: rgba(255,255,255,.07); color: #fff; }
+.ae-sidebar-item.active { background: rgba(26,115,232,.18); color: #60A5FA; }
+.ae-sidebar-item.active::before {
+  content: ''; position: absolute;
+  left: 0; top: 0; bottom: 0; width: 3px;
+  background: #1A73E8; border-radius: 0 3px 3px 0;
+}
+.ae-sb-icon { font-size: 16px; flex-shrink: 0; }
+.ae-exams-main { flex: 1; min-width: 0; }
+.ae-exams-main .section { padding: 32px 28px 40px; max-width: none; margin: 0; }
+@media (max-width: 640px) {
+  .ae-exams-layout { flex-direction: column; }
+  .ae-exams-sidebar { display: none; }
+  .ae-exams-main .section { padding: 16px 16px 32px; }
+}
 </style>
+<script>
+function _setSbActive(id) {
+  document.querySelectorAll('.ae-sidebar-item').forEach(function(el){ el.classList.remove('active'); });
+  var el = document.getElementById(id);
+  if(el) el.classList.add('active');
+}
+</script>
 
 <div id="page-exam-ssc" class="page">
 
@@ -18627,6 +19129,26 @@ document.addEventListener('DOMContentLoaded', function() {
   var ov = document.getElementById('ca-viewer-overlay');
   if (ov) ov.addEventListener('click', function(e){ if(e.target===ov) closeCAViewer(); });
 });
+</script>
+<script>
+// ══ PREMIUM BANNER INIT ══
+window._refreshPremiumBanner = function(){
+  var el = document.getElementById('premium-exams-banner');
+  if(!el) return;
+  var u = typeof getCurrentUser === 'function' ? getCurrentUser() : null;
+  if(u && u.isPremium){ el.style.display='none'; el.innerHTML=''; return; }
+  el.style.display='block';
+  el.innerHTML = '<div class="ae-prem-banner" onclick="if(typeof openPricing===\'function\')openPricing()">'
+    + '<div class="ae-prem-glow"></div>'
+    + '<div class="ae-prem-stars">★ ★ ★ ★ ★</div>'
+    + '<div class="ae-prem-left">'
+    + '<div class="ae-prem-badge">👑 PREMIUM</div>'
+    + '<div class="ae-prem-title">అన్ని Exams Unlock చేయండి!</div>'
+    + '<div class="ae-prem-sub">TSPSC · SSC · RRB · Banking — unlimited access</div>'
+    + '</div>'
+    + '<button class="ae-prem-cta" onclick="event.stopPropagation();if(typeof openPricing===\'function\')openPricing()">⚡ Upgrade చేయండి</button>'
+    + '</div>';
+};
 </script>
 </html>
 

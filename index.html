@@ -18,17 +18,16 @@
 <!-- ===== FULL SEO OPTIMIZATION ===== -->
 <!-- Canonical URL — replace with your actual deployed URL -->
 <link rel="canonical" href="https://aniledutech.in/">
-<!-- Google AdSense — replace ca-pub-4249412359624560 with your Publisher ID -->
 <!-- ══════════════════════════════════════════════════════════════
-  ADSENSE SETUP — Publish cheyyadaniki mundu ivi replace cheyyandi:
-  1. "ca-pub-4249412359624560" → మీ Publisher ID (AdSense dashboard లో)
-  2. "1111111111" → Exam cards ad Slot ID
-  3. "2222222222" → Results page ad Slot ID
-  4. "3333333333" → Footer ad Slot ID
-  తర్వాత ఈ comment tags తీసేయండి.
+  ADSENSE SETUP — AdSense approval వచ్చాక ఇక్కడ enable చేయండి:
+  Step 1: కింద ఉన్న script tag uncomment చేయండి
+  Step 2: "ca-pub-XXXXXXXXXXXXXXXX" → మీ real Publisher ID పెట్టండి
+  Step 3: 3 ad slots లో కూడా real Slot IDs పెట్టండి (search: ADSENSE_SLOT)
 ════════════════════════════════════════════════════════════════ -->
-<script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-4249412359624560"
+<!-- ADSENSE_SCRIPT (uncomment after approval):
+<script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-XXXXXXXXXXXXXXXX"
      crossorigin="anonymous"></script>
+-->
 
 
 <!-- Geo / Regional Targeting -->
@@ -4422,9 +4421,7 @@ html {
 }
 </style>
 
-<!-- Google AdSense -->
-<script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-4249412359624560"
-     crossorigin="anonymous"></script>
+<!-- ADSENSE_SCRIPT_2 — duplicate removed, enable only after approval -->
 <!-- Chart.js for Progress Dashboard -->
 <script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/4.4.1/chart.umd.min.js"></script>
 
@@ -5388,17 +5385,17 @@ html {
   </div>
 
 
-  <!-- ═══ AdSense: Footer Banner ═══ -->
+  <!-- ═══ AdSense: Footer Banner — approval వచ్చాక enable చేయండి ═══
   <div style="text-align:center;padding:14px 16px 6px;border-top:1px solid var(--border);background:var(--surface);">
     <ins class="adsbygoogle"
          style="display:block"
-         data-ad-client="ca-pub-4249412359624560"
-         data-ad-slot="3333333333"
+         data-ad-client="ca-pub-XXXXXXXXXXXXXXXX"
+         data-ad-slot="ADSENSE_SLOT_FOOTER"
          data-ad-format="auto"
          data-full-width-responsive="true"></ins>
     <script>(adsbygoogle = window.adsbygoogle || []).push({});</script>
   </div>
-  <!-- ══════════════════════════════ -->
+  ══════════════════════════════ -->
   <footer style="text-align:center;padding:24px 20px 18px;background:linear-gradient(135deg,#0A1628 0%,#1A3A6B 40%,#1A73E8 100%);color:rgba(255,255,255,.5);font-size:12px;font-weight:600;border-top:3px solid #1A73E8;">
     <div style="margin-bottom:8px;">
       <div style="display:inline-flex;align-items:center;gap:7px;background:rgba(255,255,255,.05);border:1px solid rgba(255,255,255,.1);border-radius:50px;padding:5px 14px;">
@@ -6392,17 +6389,17 @@ html {
       <button class="btn-nav" onclick="shareResult('copy')" style="background:linear-gradient(135deg,var(--primary),#7C3AED);color:#fff;border:none">🔗 Link Copy</button>
       <button class="btn-nav" onclick="shareScoreCard()" style="background:linear-gradient(135deg,#E91E63,#9C27B0);color:#fff;border:none">🖼️ Score Card Share</button>
     </div>
-    <!-- ═══ AdSense: Results Page ═══ -->
+    <!-- ═══ AdSense: Results Page — approval వచ్చాక enable చేయండి ═══
     <div style="text-align:center;padding:16px 0 8px;margin-bottom:8px;">
       <ins class="adsbygoogle"
            style="display:block"
-           data-ad-client="ca-pub-4249412359624560"
-           data-ad-slot="2222222222"
+           data-ad-client="ca-pub-XXXXXXXXXXXXXXXX"
+           data-ad-slot="ADSENSE_SLOT_RESULTS"
            data-ad-format="auto"
            data-full-width-responsive="true"></ins>
       <script>(adsbygoogle = window.adsbygoogle || []).push({});</script>
     </div>
-    <!-- ══════════════════════════════ -->
+    ══════════════════════════════ -->
     <div class="section-title" style="margin-bottom:16px">Answer Review</div>
     <div class="answer-review" id="answer-review"></div>
   </div>
@@ -8081,7 +8078,7 @@ const SB_HEADERS = {
 
 // ── CIRCUIT BREAKERS — stop error spam when backend is offline ──
 let _sbDead = false, _sbFails = 0;
-let _gsDead = false;
+let _gsDead = true; // GS disabled — Supabase only
 let _sbWorking = null; // null=untested, true=working, false=failed
 
 // ── Test Supabase connectivity on startup ──
@@ -8426,23 +8423,10 @@ async function _migrateDefaultDataToSupabase() {
 }
 
 // ── GOOGLE SHEETS BACKUP CONFIG ──
-const GS_URL = 'https://script.google.com/macros/s/AKfycbwQfUeEtKNC2FfXuM8Eh5SjQKAGLEuJkpY4BhUgfsERnQx7LloXblbu4vCoYxGE3Ti70Q/exec';
-
-async function gsAPI(params) {
-  if (_gsDead) return null;
-  try {
-    const url = GS_URL + '?' + new URLSearchParams(params).toString();
-    const resp = await fetch(url);
-    const data = await resp.json();
-    if (data.error) throw new Error(data.error);
-    return data;
-  } catch(e) {
-    _gsDead = true; // silent — no console spam
-    // Auto-reset after 5 minutes so GS can retry
-    setTimeout(function() { _gsDead = false; }, 5 * 60 * 1000);
-    return null;
-  }
-}
+// Google Sheets backup disabled — Supabase is the only storage backend
+// (GS caused CORS errors; re-enable by setting _gsDead = false if needed)
+const GS_URL = '';
+async function gsAPI(params) { return null; }
 
 // ── IN-MEMORY STORE ──
 const _store = {};
@@ -11251,15 +11235,16 @@ function renderExamCards(list) {
     el.innerHTML = '<div class="empty-state">ఈ category లో exams లేవు. Admin లో add చేయండి.</div>';
     return;
   }
-  // ── AdSense: inject ad after every 4th exam card ──
-  const AD_BETWEEN_CARDS = `<div class="ae-ad-between" style="text-align:center;padding:10px 0;margin:4px 0;">
-    <ins class="adsbygoogle"
-         style="display:block"
-         data-ad-client="ca-pub-4249412359624560"
-         data-ad-slot="1111111111"
-         data-ad-format="auto"
-         data-full-width-responsive="true"></ins>
-  </div>`;
+  // ── AdSense: inject ad after every 4th exam card (enable after approval) ──
+  // const AD_BETWEEN_CARDS = `<div class="ae-ad-between" style="text-align:center;padding:10px 0;margin:4px 0;">
+  //   <ins class="adsbygoogle"
+  //        style="display:block"
+  //        data-ad-client="ca-pub-XXXXXXXXXXXXXXXX"
+  //        data-ad-slot="ADSENSE_SLOT_CARDS"
+  //        data-ad-format="auto"
+  //        data-full-width-responsive="true"></ins>
+  // </div>`;
+  const AD_BETWEEN_CARDS = ''; // disabled until AdSense approval
   let html = '';
   list.forEach((e, i) => {
     html += _examCardHtml(e, i);

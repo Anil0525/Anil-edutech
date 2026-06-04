@@ -8104,12 +8104,22 @@ async function _testSupabaseConnection() {
 async function sbGet(table, filters) {
   if (_sbDead) return null;
   try {
-    let url = `${SB_URL}/rest/v1/${table}?select=*&limit=100000`;
-    if (filters) url += '&' + filters;
-    const r = await fetch(url, { headers: { ...SB_HEADERS, 'Prefer': 'return=representation' } });
-    if (!r.ok) { _sbFails++; if (_sbFails >= 5) { _sbDead = true; setTimeout(function(){ _sbDead = false; _sbFails = 0; }, 2*60*1000); } return null; }
-    _sbFails = 0;
-    return await r.json();
+    // Paginate to bypass Supabase 1000-row limit
+    const PAGE = 1000;
+    let all = [], offset = 0;
+    while (true) {
+      let url = `${SB_URL}/rest/v1/${table}?select=*&limit=${PAGE}&offset=${offset}`;
+      if (filters) url += '&' + filters;
+      const r = await fetch(url, { headers: { ...SB_HEADERS, 'Prefer': 'return=representation' } });
+      if (!r.ok) { _sbFails++; if (_sbFails >= 5) { _sbDead = true; setTimeout(function(){ _sbDead = false; _sbFails = 0; }, 2*60*1000); } return all.length ? all : null; }
+      _sbFails = 0;
+      const page = await r.json();
+      if (!Array.isArray(page) || !page.length) break;
+      all = all.concat(page);
+      if (page.length < PAGE) break; // last page
+      offset += PAGE;
+    }
+    return all;
   } catch(e) {
     _sbFails++;
     if (_sbFails >= 5) { _sbDead = true; setTimeout(function(){ _sbDead = false; _sbFails = 0; }, 2*60*1000); }
@@ -10526,7 +10536,7 @@ function loadDB() {
   return JSON.parse(JSON.stringify(DEFAULT_DB));
 }
 
-// Debounced Supabase batch sync — runs 2s after saveDB()
+// Debounced Supabase batch sync
 let _syncTimer = null;
 let _syncLastQCount = -1;
 let _syncLastExamCount = -1;
@@ -10590,7 +10600,7 @@ function saveDB() {
     _ls.setItem('ae_local_db', JSON.stringify(snapshot));
     _ls.setItem('anil_edutech_db', JSON.stringify(DB));
   } catch(e) { }
-  // Auto-sync to Supabase (debounced 2s) — keeps all devices in sync
+  // Auto-sync to Supabase (debounced 2s)
   _scheduleSbSync();
 }
 

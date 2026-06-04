@@ -8540,11 +8540,32 @@ async function _initStorage() {
     if (dbRows && Array.isArray(dbRows)) {
       sbWorking = true;
       dbRows.forEach(row => {
-        if (row.id === 'main'     && row.data) _store['anil_edutech_db'] = row.data;
-        if (row.id === 'scores'   && row.data) _store['ae_scores']       = row.data;
-        if (row.id === 'pending'  && row.data) _store['ae_sub_pending']  = row.data;
-        if (row.id === 'approved' && row.data) _store['ae_sub_approved'] = row.data;
-        ['ae_bookmarks','ae_exam_progress','ae_daily_done','ae_daily_done_count','ae_badges_seen','ae_scores_last_clear'].forEach(k => { if (row.id === k && row.data) _store[k] = row.data; });
+        if (row.id === 'main'     && row.data) { _store['anil_edutech_db'] = row.data; try { localStorage.setItem('anil_edutech_db', row.data); localStorage.setItem('ae_local_db', row.data); } catch(e){} }
+        if (row.id === 'scores'   && row.data) {
+          // Merge Supabase scores with local scores so reload doesn't lose recent entries
+          try {
+            const sbScores  = JSON.parse(row.data || '[]');
+            const lcScores  = JSON.parse(localStorage.getItem('ae_scores') || '[]');
+            // Combine: use ts (timestamp) as unique key; local entries win for same ts
+            const merged = [...sbScores];
+            lcScores.forEach(ls => {
+              if (!merged.find(s => s.ts === ls.ts && s.gmail === ls.gmail)) merged.push(ls);
+            });
+            merged.sort((a,b) => (b.ts||0) - (a.ts||0));
+            if (merged.length > 500) merged.length = 500;
+            const mergedStr = JSON.stringify(merged);
+            _store['ae_scores'] = mergedStr;
+            localStorage.setItem('ae_scores', mergedStr);
+          } catch(e) {
+            _store['ae_scores'] = row.data;
+            try { localStorage.setItem('ae_scores', row.data); } catch(e2){}
+          }
+        }
+        if (row.id === 'pending'  && row.data) { _store['ae_sub_pending']  = row.data; try { localStorage.setItem('ae_sub_pending',  row.data); } catch(e){} }
+        if (row.id === 'approved' && row.data) { _store['ae_sub_approved'] = row.data; try { localStorage.setItem('ae_sub_approved', row.data); } catch(e){} }
+        ['ae_bookmarks','ae_exam_progress','ae_daily_done','ae_daily_done_count','ae_badges_seen','ae_scores_last_clear'].forEach(k => {
+          if (row.id === k && row.data) { _store[k] = row.data; try { localStorage.setItem(k, row.data); } catch(e){} }
+        });
       });
     }
 
@@ -8569,8 +8590,23 @@ async function _initStorage() {
       ]), 6000);
       if (db && !db.error && db.exams && db.exams.length > 0)
         _store['anil_edutech_db'] = JSON.stringify(db);
-      if (scores && !scores.error && Array.isArray(scores))
-        _store['ae_scores'] = JSON.stringify(scores);
+      if (scores && !scores.error && Array.isArray(scores)) {
+        try {
+          const lcScores = JSON.parse(localStorage.getItem('ae_scores') || '[]');
+          lcScores.forEach(ls => {
+            if (!scores.find(s => s.ts === ls.ts && s.gmail === ls.gmail)) scores.push(ls);
+          });
+          scores.sort((a,b) => (b.ts||0) - (a.ts||0));
+          if (scores.length > 500) scores.length = 500;
+          const mergedStr = JSON.stringify(scores);
+          _store['ae_scores'] = mergedStr;
+          localStorage.setItem('ae_scores', mergedStr);
+        } catch(e) {
+          const s = JSON.stringify(scores);
+          _store['ae_scores'] = s;
+          try { localStorage.setItem('ae_scores', s); } catch(e2){}
+        }
+      }
       if (pending && !pending.error && Array.isArray(pending))
         _store['ae_sub_pending'] = JSON.stringify(pending);
       if (approved && !approved.error && Array.isArray(approved))

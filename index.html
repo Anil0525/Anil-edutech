@@ -13509,6 +13509,30 @@ function _mockFolderDetailBack() {
   }
 }
 
+/* ── Populate exam-mock-folder dropdown ── */
+function _populateNewFolderParentSelect() {
+  const folderSel = document.getElementById('exam-mock-folder');
+  if (!folderSel) return;
+  const folders = getMockFolders();
+  const parents = folders.filter(f => !f.parentId);
+  let folderOpts = '<option value="">-- Folder లేదు --</option>';
+  parents.forEach(parent => {
+    const subs = folders.filter(f => f.parentId === parent.id);
+    if (subs.length > 0) {
+      folderOpts += `<optgroup label="${parent.icon} ${parent.name}">`;
+      subs.forEach(sf => {
+        folderOpts += `<option value="${sf.id}">${sf.icon} ${parent.name} → ${sf.name}</option>`;
+      });
+      folderOpts += '</optgroup>';
+    } else {
+      folderOpts += `<option value="${parent.id}">${parent.icon} ${parent.name}</option>`;
+    }
+  });
+  const prevVal = folderSel.value;
+  folderSel.innerHTML = folderOpts;
+  folderSel.value = prevVal;
+}
+
 /* ── Admin: Render Mock Folder management table ── */
 function renderMockFolderAdminTable() {
   const tbody = document.getElementById('mock-folders-admin-tbody');

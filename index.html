@@ -4411,6 +4411,209 @@ html {
   -webkit-text-size-adjust: 100%;
   text-size-adjust: 100%;
 }
+
+/* ═══════════════════════════════════════════════
+   MOBILE RESPONSIVE FIXES — aniledutech
+   ═══════════════════════════════════════════════ */
+
+/* ── 1. INSTRUCTIONS OVERLAY — mobile layout ── */
+@media (max-width: 600px) {
+  #ge-instructions {
+    border-radius: 18px;
+    max-height: 94vh;
+    overflow: hidden;
+    display: flex;
+    flex-direction: column;
+  }
+  .ge-inst-header {
+    padding: 18px 16px 16px;
+    gap: 12px;
+    flex-wrap: wrap;
+  }
+  .ge-exam-badge {
+    width: 100%;
+    margin-left: 0;
+    justify-content: flex-start;
+    gap: 8px;
+  }
+  .ge-stat-pill {
+    flex: 1;
+    min-width: 60px;
+    padding: 8px 10px;
+  }
+  .ge-stat-pill .ge-badge-num { font-size: 18px; }
+  .ge-inst-body {
+    max-height: none;
+    flex: 1;
+    overflow-y: auto;
+    padding: 16px 14px 4px;
+    -webkit-overflow-scrolling: touch;
+  }
+  /* Rules — single column on mobile */
+  .ge-rules-list {
+    grid-template-columns: 1fr !important;
+  }
+  .ge-rule-item.ge-rule-warn {
+    grid-column: span 1 !important;
+  }
+  .ge-rule-item { font-size: 12px; padding: 10px 12px; }
+  /* Scoring grid — single row */
+  .ge-scoring-grid {
+    grid-template-columns: repeat(3, 1fr);
+    gap: 6px;
+  }
+  .ge-score-box { padding: 10px 6px; }
+  .ge-score-num { font-size: 20px; }
+  .ge-score-lbl { font-size: 10px; }
+  .ge-inst-footer {
+    padding: 12px 14px 14px !important;
+  }
+  #ge-start-btn {
+    padding: 12px 20px !important;
+    font-size: 14px !important;
+  }
+}
+
+/* ── 2. EXAM LIST PAGE — mobile sidebar as horizontal scroll strip ── */
+@media (max-width: 640px) {
+  /* Show sidebar as a horizontal scrollable strip instead of hiding it */
+  .ae-exams-sidebar {
+    display: flex !important;
+    flex-direction: row !important;
+    width: 100% !important;
+    min-width: unset !important;
+    min-height: unset !important;
+    position: sticky !important;
+    top: 52px !important;
+    z-index: 100 !important;
+    padding: 8px 12px !important;
+    overflow-x: auto !important;
+    overflow-y: hidden !important;
+    gap: 6px !important;
+    background: #111827 !important;
+    -webkit-overflow-scrolling: touch !important;
+    scrollbar-width: none !important;
+    border-bottom: 2px solid rgba(26,115,232,.4) !important;
+  }
+  .ae-exams-sidebar::-webkit-scrollbar { display: none; }
+  /* Hide logo and section label in horizontal mode */
+  .ae-sidebar-logo,
+  .ae-sidebar-section-label { display: none !important; }
+  .ae-sidebar-item {
+    padding: 7px 14px !important;
+    border-radius: 30px !important;
+    font-size: 12px !important;
+    white-space: nowrap !important;
+    flex-shrink: 0 !important;
+    width: auto !important;
+    border: 1.5px solid rgba(255,255,255,.12) !important;
+  }
+  .ae-sidebar-item.active {
+    background: rgba(26,115,232,.9) !important;
+    color: #fff !important;
+    border-color: #1A73E8 !important;
+  }
+  .ae-sidebar-item.active::before { display: none !important; }
+  .ae-sidebar-item:hover { background: rgba(255,255,255,.12) !important; }
+  /* Adjust main content top padding so it clears the sticky strip */
+  .ae-exams-main .section {
+    padding: 14px 14px 32px !important;
+  }
+  /* Smaller page title on mobile */
+  #exams-page-title {
+    font-size: 20px !important;
+  }
+  #exams-page-sub {
+    font-size: 12px !important;
+    margin-bottom: 14px !important;
+  }
+  /* Exam card — better mobile layout */
+  #page-exams .exam-card {
+    padding: 14px 14px 14px 16px !important;
+    border-radius: 16px !important;
+  }
+  #page-exams .exam-title {
+    font-size: 13.5px !important;
+  }
+  #page-exams .meta-pill {
+    font-size: 10px !important;
+    padding: 3px 9px !important;
+  }
+  #page-exams .start-btn {
+    padding: 10px 16px !important;
+    font-size: 12px !important;
+    border-radius: 12px !important;
+  }
+  /* Number badge smaller */
+  #page-exams .exam-card > div[style*="border-radius:50%"] {
+    width: 28px !important;
+    height: 28px !important;
+    min-width: 28px !important;
+    font-size: 11px !important;
+  }
+}
+
+/* ── 3. SSC EXAM SCREEN — mobile layout ── */
+@media (max-width: 768px) {
+  .ssc-right-panel {
+    max-height: 220px;
+    overflow-y: auto;
+    -webkit-overflow-scrolling: touch;
+  }
+  .ssc-toolbar {
+    gap: 6px;
+    padding: 8px 12px;
+  }
+  .ssc-question-area {
+    padding: 16px 14px;
+  }
+  .ssc2-panel {
+    max-height: 200px;
+    overflow-y: auto;
+    -webkit-overflow-scrolling: touch;
+  }
+}
+
+/* ── 4. FILTER CHIPS — wrap nicely on small screens ── */
+@media (max-width: 400px) {
+  #page-exams .filter-chip {
+    padding: 6px 14px !important;
+    font-size: 11.5px !important;
+  }
+  #page-exams .filter-chips {
+    gap: 6px !important;
+  }
+}
+
+/* ── 5. PREMIUM BANNER — better mobile ── */
+@media (max-width: 640px) {
+  .ae-prem-title { font-size: 14px; }
+  .ae-prem-sub   { font-size: 11px; }
+  .ae-prem-cta   { padding: 9px 16px; font-size: 12px; }
+}
+
+/* ── 6. Result page — mobile stats ── */
+@media (max-width: 480px) {
+  .result-stat-row { gap: 8px; }
+  .result-stat-box { padding: 10px 8px; }
+  .result-stat-num { font-size: 20px; }
+  .result-stat-lbl { font-size: 9px; }
+}
+
+/* ── 7. Admin modal — full screen on mobile ── */
+@media (max-width: 600px) {
+  .edit-box {
+    border-radius: 16px;
+    padding: 22px 16px;
+  }
+  .pw-box {
+    flex-direction: column;
+    height: auto !important;
+    max-height: 90vh;
+    overflow-y: auto;
+  }
+  .pw-left { flex: none; padding: 28px 20px; }
+}
 </style>
 
 <!-- ADSENSE_SCRIPT_2 — duplicate removed, enable only after approval -->

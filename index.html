@@ -9453,9 +9453,23 @@ function renderProgressDashboard() {
     const localAll = JSON.parse(_ls.getItem('ae_scores') || '[]');
     const sbMy = sbScores.filter(s => s.gmail === u.gmail || s.name === u.name);
     const localMy = localAll.filter(s => s.gmail === u.gmail || s.name === u.name);
+
+    // Merge: Supabase + local, deduplicate by ts
     const myScores = [...sbMy];
     localMy.forEach(ls => { if (!myScores.find(m => m.ts == ls.ts)) myScores.push(ls); });
     myScores.sort((a,b) => b.ts - a.ts);
+
+    // ── PERSIST merged scores back to localStorage so refresh / other tab keeps data ──
+    try {
+      const otherScores = localAll.filter(s => s.gmail !== u.gmail && s.name !== u.name);
+      const allMerged = [...myScores, ...otherScores];
+      allMerged.sort((a,b) => (b.ts||0) - (a.ts||0));
+      if (allMerged.length > 500) allMerged.length = 500;
+      const merged = JSON.stringify(allMerged);
+      _store['ae_scores'] = merged;
+      try { localStorage.setItem('ae_scores', merged); } catch(e) {}
+    } catch(e) {}
+
     _renderProgressContent(u, myScores, contentEl);
   }).catch(() => {
     const all = JSON.parse(_ls.getItem('ae_scores') || '[]');
@@ -9908,6 +9922,20 @@ function setCurrentUser(u) {
         if (data.daily_done?.length) _ls.setItem('ae_daily_done', JSON.stringify(data.daily_done));
         if (data.daily_count > parseInt(_ls.getItem('ae_daily_done_count')||'0')) _ls.setItem('ae_daily_done_count', String(data.daily_count));
       }).catch(()=>{});
+      // ── Sync exam results from Supabase to localStorage on login ──
+      sbLoadResults(500).then(sbScores => {
+        if (!sbScores || !sbScores.length) return;
+        try {
+          const localAll = JSON.parse(localStorage.getItem('ae_scores') || '[]');
+          const merged = [...sbScores];
+          localAll.forEach(ls => { if (!merged.find(m => m.ts == ls.ts)) merged.push(ls); });
+          merged.sort((a,b) => (b.ts||0) - (a.ts||0));
+          if (merged.length > 500) merged.length = 500;
+          const mergedStr = JSON.stringify(merged);
+          _store['ae_scores'] = mergedStr;
+          localStorage.setItem('ae_scores', mergedStr);
+        } catch(e) {}
+      }).catch(() => {});
     }
   } else {
     localStorage.removeItem(SUB_SESSION_KEY);

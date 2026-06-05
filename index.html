@@ -3867,7 +3867,7 @@
   /* ─── MOBILE OVERRIDES ─── */
   @media (max-width: 640px) {
     /* NAV */
-    nav { padding: 0 16px !important; height: 52px !important; position: relative; }
+    nav { padding: 0 16px !important; height: 52px !important; }
     nav .logo-text span:last-child { display: none; }
     .hamburger { display: flex; }
 
@@ -5012,6 +5012,7 @@ html {
     <button class="nav-btn" id="nav-support" onclick="goSupport();closeMenu()">🆘 <span>Support</span></button>
     <button class="nav-btn" id="nav-admin" onclick="goAdmin();closeMenu()">⚙️ <span>Admin</span></button>
     <button class="nav-btn" id="nav-premium-btn" onclick="openPricing();closeMenu()" style="display:none;background:linear-gradient(135deg,#F5B731,#E8640A);color:#fff;border-radius:9px;font-weight:800;box-shadow:0 4px 14px rgba(245,183,49,.4)">⭐ <span>Premium</span></button>
+    <button class="nav-btn" onclick="goReferral();closeMenu()" style="background:linear-gradient(135deg,#EC4899,#8B5CF6);color:#fff;border-radius:9px;font-weight:800;">🎁 <span>Refer & Earn</span></button>
     <button class="nav-btn nav-accent" onclick="openYT();closeMenu()">▶ <span>YouTube</span></button>
     <div class="lang-toggle-wrap">
       <button class="lang-btn" id="lang-te" onclick="setLang('te')">తె</button>
@@ -5065,6 +5066,32 @@ html {
     </button>
   </div>
 </nav>
+
+<!-- MOBILE BOTTOM NAV -->
+<div class="mob-bottom-nav" id="mob-bottom-nav">
+  <div class="mob-nav-inner">
+    <button class="mob-nav-item active" id="mob-nav-home" onclick="goHome();setMobNav('home')">
+      <span class="mob-nav-icon">🏠</span>
+      <span class="mob-nav-label">Home</span>
+    </button>
+    <button class="mob-nav-item" id="mob-nav-exams" onclick="goExams();setMobNav('exams')">
+      <span class="mob-nav-icon">📝</span>
+      <span class="mob-nav-label">Exams</span>
+    </button>
+    <button class="mob-nav-item" id="mob-nav-progress" onclick="goProgress();setMobNav('progress')">
+      <span class="mob-nav-icon">📊</span>
+      <span class="mob-nav-label">Progress</span>
+    </button>
+    <button class="mob-nav-item" id="mob-nav-videos" onclick="goVideos();setMobNav('videos')">
+      <span class="mob-nav-icon">🎥</span>
+      <span class="mob-nav-label">Videos</span>
+    </button>
+    <button class="mob-nav-item" id="mob-nav-more" onclick="toggleMenu()">
+      <span class="mob-nav-icon">☰</span>
+      <span class="mob-nav-label">More</span>
+    </button>
+  </div>
+</div>
 
 <!-- HOME -->
 <div id="page-home" class="page active">
@@ -14801,20 +14828,23 @@ function _applyPendingReferral(user) {
     const tiers = [
       { count: 1,  reward: 'First Referral Badge' },
       { count: 3,  reward: '3 Bonus Daily Challenges' },
-      { count: 5,  reward: 'Super Referrer Badge' },
-      { count: 10, reward: 'Premium Trial 7 Days' },
+      { count: 5,  reward: 'Premium FREE 30 Days' },
+      { count: 10, reward: 'Premium FREE 90 Days' },
+      { count: 20, reward: 'Lifetime Premium' },
     ];
     const reached = tiers.filter(t => newCount >= t.count);
     if (reached.length) {
       const top = reached[reached.length - 1];
-      // Grant premium if 10+ referrals
-      if (newCount >= 10) {
+      // Grant premium for 5+ referrals
+      if (newCount >= 5) {
         const refUser = getCurrentUser();
         if (refUser && refUser.gmail) {
           refUser.isPremium = true;
           refUser.premiumPlan = 'referral';
+          refUser.premiumSince = new Date().toISOString();
           setCurrentUser(refUser);
-          _ls.setItem('ae_referral_premium', '1');
+          _ls.setItem('ae_referral_premium', newCount >= 20 ? 'lifetime' : (newCount >= 10 ? '90days' : '30days'));
+          toast('🎉 ' + top.reward + ' — Premium activated!', 'success');
         }
       }
     }
@@ -14849,92 +14879,120 @@ function goReferral() {
 function _renderReferral() {
   const u  = getCurrentUser();
   const el = document.getElementById('referral-content');
+  if (!el) return;
   if (!u) {
     el.innerHTML = `<div class="prog-empty"><span class="prog-empty-icon">🔐</span>Login చేసి Referral code పొందండి.<br><br><button class="btn-primary" onclick="openSubModal(goReferral)">Login చేయండి →</button></div>`;
     return;
   }
   const code    = _getReferralCode(u);
-  const refs    = _getMyReferralCount(u);  // BUG FIX: per-user count, not global
-  const refList = _getMyReferralList(u);   // BUG FIX: per-user list
-  const shareUrl = window.location.href.split('?')[0] + '?ref=' + code;
-  const waMsg   = `🎓 *Anil EduTech* — Free Mock Tests!\n\nHello! నేను TSPSC, SSC, Banking exams కోసం ఈ portal use చేస్తున్నాను. మీరు కూడా join చేయండి!\n\n🔗 ${shareUrl}\n\n✅ 100% Free | 📝 Daily Challenges | 🏆 Leaderboard`;
+  const refs    = _getMyReferralCount(u);
+  const refList = _getMyReferralList(u);
+  const shareUrl = (window.location.href.split('?')[0]).replace(/#.*/,'') + '?ref=' + code;
+  const waMsg   = '🎓 *Anil EduTech* — Free Mock Tests!\n\nHello! నేను TSPSC, SSC, Banking exams కోసం ఈ portal use చేస్తున్నాను. మీరు కూడా join చేయండి!\n\n🔗 ' + shareUrl + '\n\n✅ 100% Free | 📝 Daily Challenges | 🏆 Leaderboard';
 
-  // Reward tiers
+  // Reward tiers — UPGRADED
   const tiers = [
-    { count:1,  reward:'🎯 First Referral Badge',     color:'#1A73E8' },
-    { count:3,  reward:'⭐ 3 Bonus Daily Challenges', color:'#F59E0B' },
-    { count:5,  reward:'👑 Super Referrer Badge',     color:'#8B5CF6' },
-    { count:10, reward:'💎 Premium Trial 7 Days',     color:'#EC4899' },
+    { count:1,  reward:'🎯 First Referral Badge',      color:'#1A73E8', desc:'మీ first friend join అయ్యాడు!' },
+    { count:3,  reward:'⭐ 3 Bonus Daily Challenges',  color:'#F59E0B', desc:'Extra practice questions unlock' },
+    { count:5,  reward:'👑 Premium FREE 30 Days',       color:'#8B5CF6', desc:'Full premium access — free!' },
+    { count:10, reward:'💎 Premium FREE 90 Days',       color:'#EC4899', desc:'3 నెలలు premium — మీరే winner!' },
+    { count:20, reward:'🚀 Lifetime Premium',           color:'#10B981', desc:'20 friends = Lifetime access!' },
   ];
 
-  el.innerHTML = `
-    <!-- My code card -->
-    <div style="background:linear-gradient(135deg,#EC4899,#8B5CF6);border-radius:var(--radius);padding:22px;margin-bottom:18px;text-align:center;color:#fff;">
-      <div style="font-size:13px;font-weight:700;opacity:.8;margin-bottom:6px;">మీ Referral Code</div>
-      <div style="font-size:36px;font-weight:900;letter-spacing:4px;margin-bottom:10px;">${code}</div>
-      <div style="font-size:12px;opacity:.7;margin-bottom:14px;">మీ friends ఈ code use చేసి join చేస్తే మీకు reward వస్తుంది!</div>
-      <div style="display:flex;gap:10px;justify-content:center;flex-wrap:wrap;">
-        <button onclick="_copyRefCode('${code}')" style="padding:10px 18px;background:rgba(255,255,255,.25);color:#fff;border:1.5px solid rgba(255,255,255,.4);border-radius:10px;font-family:inherit;font-size:13px;font-weight:800;cursor:pointer;">📋 Code Copy</button>
-        <button onclick="_shareRefWA('${encodeURIComponent(waMsg)}')" style="padding:10px 18px;background:#25D366;color:#fff;border:none;border-radius:10px;font-family:inherit;font-size:13px;font-weight:800;cursor:pointer;">📤 WhatsApp Share</button>
-        <button onclick="_copyRefLink('${shareUrl}')" style="padding:10px 18px;background:rgba(255,255,255,.25);color:#fff;border:1.5px solid rgba(255,255,255,.4);border-radius:10px;font-family:inherit;font-size:13px;font-weight:800;cursor:pointer;">🔗 Link Copy</button>
-      </div>
-    </div>
+  const unlocked = tiers.filter(t => refs >= t.count).length;
+  const nextTier = tiers.find(t => refs < t.count);
+  const nextNeeded = nextTier ? (nextTier.count - refs) : 0;
 
-    <!-- Stats -->
-    <div style="display:grid;grid-template-columns:1fr 1fr;gap:12px;margin-bottom:18px;">
-      <div style="background:var(--card);border:2px solid var(--border);border-radius:var(--radius);padding:16px;text-align:center;">
-        <div style="font-size:32px;font-weight:900;color:#EC4899;">${refs}</div>
-        <div style="font-size:12px;color:var(--text2);font-weight:700;">Total Referrals</div>
-      </div>
-      <div style="background:var(--card);border:2px solid var(--border);border-radius:var(--radius);padding:16px;text-align:center;">
-        <div style="font-size:32px;font-weight:900;color:#8B5CF6;">${tiers.filter(t=>refs>=t.count).length}</div>
-        <div style="font-size:12px;color:var(--text2);font-weight:700;">Rewards Unlocked</div>
-      </div>
-    </div>
-
-    <!-- Reward tiers -->
-    <div style="background:var(--card);border:2px solid var(--border);border-radius:var(--radius);padding:18px;margin-bottom:18px;">
-      <div style="font-size:14px;font-weight:900;color:var(--text);margin-bottom:14px;">🎁 Reward Tiers</div>
-      ${tiers.map(t=>{
-        const done = refs >= t.count;
-        const prog = Math.min(refs/t.count*100,100);
-        return `<div style="margin-bottom:14px;">
-          <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:6px;">
-            <div style="font-size:13px;font-weight:800;color:${done?t.color:'var(--text2)'};">${t.reward}</div>
-            <span style="font-size:10px;font-weight:800;padding:2px 9px;border-radius:20px;background:${done?t.color+'22':' var(--bg)'};color:${done?t.color:'var(--text3)'};">${done?'✓ Unlocked':'${refs}/${t.count}'}</span>
-          </div>
-          <div style="height:6px;background:var(--border);border-radius:3px;overflow:hidden;">
-            <div style="height:100%;width:${prog}%;background:${t.color};border-radius:3px;transition:width 1s;"></div>
-          </div>
-        </div>`;
-      }).join('')}
-    </div>
-
-    <!-- Enter referral code -->
-    <div style="background:var(--card);border:2px solid var(--border);border-radius:var(--radius);padding:18px;">
-      <div style="font-size:14px;font-weight:900;color:var(--text);margin-bottom:6px;">🤝 Friend's Code Enter చేయండి</div>
-      <div style="font-size:12px;color:var(--text2);font-weight:600;margin-bottom:12px;">మీ friend's referral code enter చేస్తే వారికి reward వస్తుంది</div>
-      <div style="display:flex;gap:10px;">
-        <input id="ref-code-input" type="text" placeholder="AET1234" maxlength="9"
-          style="flex:1;padding:11px 14px;border:2px solid var(--border);border-radius:10px;font-family:inherit;font-size:15px;font-weight:800;letter-spacing:2px;text-transform:uppercase;background:var(--bg);color:var(--text);outline:none;"
-          oninput="this.value=this.value.toUpperCase()"
-          onfocus="this.style.borderColor='var(--primary)'" onblur="this.style.borderColor='var(--border)'">
-        <button onclick="_applyRefCode()" style="padding:11px 18px;background:linear-gradient(135deg,#EC4899,#8B5CF6);color:#fff;border:none;border-radius:10px;font-family:inherit;font-size:14px;font-weight:800;cursor:pointer;white-space:nowrap;">Apply ✓</button>
-      </div>
-    </div>`;
-
-  // Fix tier display strings (template literal issue with ${refs})
-  document.querySelectorAll('[data-ref-prog]')?.forEach(()=>{});
-  // Inline fix: re-render tier counts
-  tiers.forEach(t=>{
-    const done = refs>=t.count;
-    if(!done){
-      const allSpans = el.querySelectorAll('span');
-      allSpans.forEach(sp=>{
-        if(sp.textContent.includes('${refs}')) sp.textContent = `${refs}/${t.count}`;
-      });
-    }
+  // Build tier rows (BUG FIX: no nested template literals)
+  let tierRows = '';
+  tiers.forEach(function(t) {
+    const done = refs >= t.count;
+    const prog = Math.min(Math.round(refs / t.count * 100), 100);
+    const badgeBg = done ? t.color + '22' : 'var(--bg)';
+    const badgeClr = done ? t.color : 'var(--text3)';
+    const badgeTxt = done ? '✓ Unlocked' : (refs + '/' + t.count);
+    const titleClr = done ? t.color : 'var(--text2)';
+    tierRows += '<div style="margin-bottom:16px;padding:12px;background:var(--bg);border-radius:12px;border:1.5px solid ' + (done ? t.color + '44' : 'var(--border)') + ';">'
+      + '<div style="display:flex;justify-content:space-between;align-items:flex-start;margin-bottom:4px;gap:8px;">'
+        + '<div>'
+          + '<div style="font-size:13px;font-weight:800;color:' + titleClr + ';">' + t.reward + '</div>'
+          + '<div style="font-size:11px;color:var(--text3);font-weight:600;margin-top:1px;">' + t.desc + '</div>'
+        + '</div>'
+        + '<span style="flex-shrink:0;font-size:10px;font-weight:800;padding:3px 10px;border-radius:20px;background:' + badgeBg + ';color:' + badgeClr + ';">' + badgeTxt + '</span>'
+      + '</div>'
+      + '<div style="height:5px;background:var(--border);border-radius:3px;overflow:hidden;margin-top:8px;">'
+        + '<div style="height:100%;width:' + prog + '%;background:' + t.color + ';border-radius:3px;transition:width 1.2s;"></div>'
+      + '</div>'
+    + '</div>';
   });
+
+  // Build referral list
+  let listRows = '';
+  if (refList.length) {
+    refList.slice(0,8).forEach(function(r) {
+      listRows += '<div style="display:flex;align-items:center;justify-content:space-between;padding:8px 0;border-bottom:1px solid var(--border);">'
+        + '<div style="display:flex;align-items:center;gap:10px;">'
+          + '<div style="width:32px;height:32px;border-radius:50%;background:linear-gradient(135deg,#EC4899,#8B5CF6);display:flex;align-items:center;justify-content:center;font-size:13px;font-weight:900;color:#fff;">' + (r.name||'?').charAt(0).toUpperCase() + '</div>'
+          + '<div><div style="font-size:13px;font-weight:800;color:var(--text);">' + (r.name||'Friend') + '</div><div style="font-size:11px;color:var(--text3);">' + (r.date||'') + '</div></div>'
+        + '</div>'
+        + '<span style="font-size:11px;font-weight:800;color:#10B981;background:rgba(16,185,129,.1);padding:3px 9px;border-radius:20px;">✓ Joined</span>'
+      + '</div>';
+    });
+  } else {
+    listRows = '<div style="text-align:center;padding:20px;color:var(--text3);font-size:13px;">ఇంకా ఎవరూ join అవ్వలేదు.<br>Share చేయండి!</div>';
+  }
+
+  el.innerHTML =
+    // Hero card
+    '<div style="background:linear-gradient(135deg,#EC4899,#8B5CF6);border-radius:var(--radius);padding:24px 20px;margin-bottom:18px;text-align:center;color:#fff;position:relative;overflow:hidden;">'
+      + '<div style="position:absolute;top:-30px;right:-30px;width:120px;height:120px;border-radius:50%;background:rgba(255,255,255,.08);"></div>'
+      + '<div style="font-size:11px;font-weight:800;opacity:.75;letter-spacing:1.5px;text-transform:uppercase;margin-bottom:8px;">మీ Referral Code</div>'
+      + '<div style="font-size:40px;font-weight:900;letter-spacing:5px;margin-bottom:6px;font-family:monospace;">' + code + '</div>'
+      + '<div style="font-size:12px;opacity:.75;margin-bottom:18px;">20 మంది friends join చేస్తే → Lifetime Premium FREE! 🚀</div>'
+      + '<div style="display:flex;gap:8px;justify-content:center;flex-wrap:wrap;">'
+        + '<button onclick="_copyRefCode(\'' + code + '\')" style="padding:10px 16px;background:rgba(255,255,255,.22);color:#fff;border:1.5px solid rgba(255,255,255,.4);border-radius:10px;font-family:inherit;font-size:12px;font-weight:800;cursor:pointer;">📋 Code Copy</button>'
+        + '<button onclick="_shareRefWA(\'' + encodeURIComponent(waMsg) + '\')" style="padding:10px 16px;background:#25D366;color:#fff;border:none;border-radius:10px;font-family:inherit;font-size:12px;font-weight:800;cursor:pointer;">📤 WhatsApp</button>'
+        + '<button onclick="_copyRefLink(\'' + shareUrl + '\')" style="padding:10px 16px;background:rgba(255,255,255,.22);color:#fff;border:1.5px solid rgba(255,255,255,.4);border-radius:10px;font-family:inherit;font-size:12px;font-weight:800;cursor:pointer;">🔗 Link Copy</button>'
+      + '</div>'
+    + '</div>'
+
+    // Stats row
+    + '<div style="display:grid;grid-template-columns:repeat(3,1fr);gap:10px;margin-bottom:18px;">'
+      + '<div style="background:var(--card);border:2px solid var(--border);border-radius:14px;padding:14px;text-align:center;">'
+        + '<div style="font-size:30px;font-weight:900;color:#EC4899;line-height:1;">' + refs + '</div>'
+        + '<div style="font-size:11px;color:var(--text2);font-weight:700;margin-top:4px;">Total Referrals</div>'
+      + '</div>'
+      + '<div style="background:var(--card);border:2px solid var(--border);border-radius:14px;padding:14px;text-align:center;">'
+        + '<div style="font-size:30px;font-weight:900;color:#8B5CF6;line-height:1;">' + unlocked + '/5</div>'
+        + '<div style="font-size:11px;color:var(--text2);font-weight:700;margin-top:4px;">Rewards Unlocked</div>'
+      + '</div>'
+      + '<div style="background:var(--card);border:2px solid var(--border);border-radius:14px;padding:14px;text-align:center;">'
+        + '<div style="font-size:30px;font-weight:900;color:#10B981;line-height:1;">' + (nextNeeded || '🎉') + '</div>'
+        + '<div style="font-size:11px;color:var(--text2);font-weight:700;margin-top:4px;">' + (nextNeeded ? 'Next Reward కి' : 'All Unlocked!') + '</div>'
+      + '</div>'
+    + '</div>'
+
+    // Reward tiers
+    + '<div style="background:var(--card);border:2px solid var(--border);border-radius:var(--radius);padding:18px;margin-bottom:18px;">'
+      + '<div style="font-size:14px;font-weight:900;color:var(--text);margin-bottom:14px;">🎁 Reward Tiers</div>'
+      + tierRows
+    + '</div>'
+
+    // Referral list
+    + '<div style="background:var(--card);border:2px solid var(--border);border-radius:var(--radius);padding:18px;margin-bottom:18px;">'
+      + '<div style="font-size:14px;font-weight:900;color:var(--text);margin-bottom:14px;">👥 Joined via your link (' + refList.length + ')</div>'
+      + listRows
+    + '</div>'
+
+    // Enter friend's code
+    + '<div style="background:var(--card);border:2px solid var(--border);border-radius:var(--radius);padding:18px;">'
+      + '<div style="font-size:14px;font-weight:900;color:var(--text);margin-bottom:6px;">🤝 Friend\'s Code Enter చేయండి</div>'
+      + '<div style="font-size:12px;color:var(--text2);font-weight:600;margin-bottom:12px;">మీ friend refer చేస్తే వారికి reward వస్తుంది</div>'
+      + '<div style="display:flex;gap:10px;">'
+        + '<input id="ref-code-input" type="text" placeholder="AET1234" maxlength="9" style="flex:1;padding:11px 14px;border:2px solid var(--border);border-radius:10px;font-family:inherit;font-size:15px;font-weight:800;letter-spacing:2px;text-transform:uppercase;background:var(--bg);color:var(--text);outline:none;" oninput="this.value=this.value.toUpperCase()" onfocus="this.style.borderColor=\'var(--primary)\'" onblur="this.style.borderColor=\'var(--border)\'">'
+        + '<button onclick="_applyRefCode()" style="padding:11px 18px;background:linear-gradient(135deg,#EC4899,#8B5CF6);color:#fff;border:none;border-radius:10px;font-family:inherit;font-size:14px;font-weight:800;cursor:pointer;white-space:nowrap;">Apply ✓</button>'
+      + '</div>'
+    + '</div>';
 }
 
 function _copyRefCode(code) {
@@ -16650,7 +16708,11 @@ function exportBackupCSV() {
   <div class="pricing-box">
     <button class="pricing-close" onclick="closePricing()">✕</button>
 
-    <!-- LEFT: Billing Summary -->
+    <!-- COMING SOON BANNER — shown when PAYMENT_ENABLED=false -->
+    <div id="pricing-coming-soon" style="display:none;position:absolute;top:0;left:0;right:0;z-index:10;background:linear-gradient(90deg,#F5B731,#E8640A);color:#fff;padding:9px 16px;font-size:12px;font-weight:800;text-align:center;letter-spacing:.3px;gap:8px;align-items:center;justify-content:center;border-radius:20px 20px 0 0;">
+      ⏳ Payment Coming Soon — ఇప్పుడు free గా referral వాడి premium పొందండి! &nbsp;
+      <button onclick="closePricing();goReferral()" style="background:rgba(255,255,255,.25);border:1px solid rgba(255,255,255,.5);color:#fff;border-radius:20px;padding:3px 12px;font-size:11px;font-weight:800;cursor:pointer;font-family:inherit;">Refer & Earn →</button>
+    </div>
     <div class="pricing-left">
       <button class="pricing-back" onclick="closePricing()"></button>
       <div class="billing-title">Billing summary</div>
@@ -16900,9 +16962,6 @@ function switchPayMethod(method, btn) {
 
 // ── PRICING MODAL ──
 function openPricing() {
-  if (!PAYMENT_ENABLED) {
-    return;
-  }
   document.getElementById('pricing-overlay').classList.add('show');
   // Update ALL price displays with current PLAN_PRICES
   document.querySelectorAll('.upi-price-m').forEach(e => e.textContent = PLAN_PRICES.monthly);
@@ -16916,7 +16975,15 @@ function openPricing() {
   const upiY = document.getElementById('upi-btn-yearly');
   if (upiM) upiM.href = `upi://pay?pa=${UPI_ID}&pn=${encodeURIComponent(UPI_NAME)}&am=${PLAN_PRICES.monthly}&cu=INR&tn=${encodeURIComponent('AE Monthly Premium')}`;
   if (upiY) upiY.href = `upi://pay?pa=${UPI_ID}&pn=${encodeURIComponent(UPI_NAME)}&am=${PLAN_PRICES.yearly}&cu=INR&tn=${encodeURIComponent('AE Yearly Premium')}`;
-  // Init tab — this also sets plan-price-big correctly
+  // Show/hide coming-soon banner based on payment status
+  const csBanner = document.getElementById('pricing-coming-soon');
+  if (csBanner) csBanner.style.display = PAYMENT_ENABLED ? 'none' : 'flex';
+  // Disable pay buttons if payment not enabled
+  document.querySelectorAll('.upi-pay-btn, #upi-btn-monthly, #upi-btn-yearly').forEach(btn => {
+    btn.style.opacity = PAYMENT_ENABLED ? '1' : '0.5';
+    btn.style.pointerEvents = PAYMENT_ENABLED ? 'auto' : 'none';
+  });
+  // Init tab
   switchPricingTab('monthly');
 }
 function closePricing() {
@@ -17352,9 +17419,11 @@ function submitUTR() {
 ════════════════════════════════════════ */
 function _mobNavActive(id) {
   document.querySelectorAll('.mob-nav-item').forEach(el => el.classList.remove('active'));
-  const el = document.getElementById('mobnav-' + id);
+  const el = document.getElementById('mob-nav-' + id);
   if (el) el.classList.add('active');
 }
+/* alias used by bottom nav onclick */
+function setMobNav(id) { _mobNavActive(id); }
 
 /* ════════════════════════════════════════
    DARK MODE — mob nav sync

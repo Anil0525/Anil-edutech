@@ -11907,16 +11907,8 @@ function renderQ() {
   const nextQ_    = exam.questions[exam.idx + 1];
   const nextSec2  = nextQ_?.section || 'ga';
 
-  // Last question of current section = next q has different section OR no next q
-  const isSecLast = !nextQ_ || curSec2 !== nextSec2;
-
-  // Last section = no more sections after this one
-  const availSecs  = [...new Set(exam.questions.map(q => q.section || 'ga'))];
-  const _so        = { reasoning: 0, arithmetic: 1, ga: 2, english: 3, science: 4 };
-  const sortedSecs = availSecs.sort((a,b) => (_so[a]??2) - (_so[b]??2));
-  const isLastSec  = sortedSecs[sortedSecs.length - 1] === curSec2;
-
-  const last = isSecLast && isLastSec;  // last Q of last section = show Submit
+  // Show Submit only on the absolute last question
+  const last = exam.idx === exam.questions.length - 1;
 
   const btnPrev = document.getElementById('btn-prev');
   const btnNext = document.getElementById('btn-next');

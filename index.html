@@ -841,7 +841,8 @@
   }
   /* mobile: stack vertically */
   @media (max-width: 600px) {
-    .pricing-box { flex-direction: column; max-width: 420px; }
+    .pricing-overlay { padding: 8px; align-items: flex-start; overflow-y: auto; }
+    .pricing-box { flex-direction: column; max-width: 420px; max-height: none; overflow: visible; }
     .pricing-left { border-right: none; border-bottom: 1px solid var(--border); padding: 16px 14px 12px; flex: none; }
     .pricing-left::before { border-radius: 20px 20px 0 0; }
     .pricing-right { padding: 16px 14px 12px; }
@@ -1626,6 +1627,11 @@
     border-radius: 8px; padding: 4px 10px; font-size: 11px;
     color: var(--primary); font-weight: 700; white-space: nowrap;
     overflow: hidden; text-overflow: ellipsis; max-width: 300px;
+  }
+
+  /* Mobile timer pill - hidden on desktop */
+  .mobile-timer-pill {
+    display: none;
   }
 
   /* Submit button */
@@ -3918,9 +3924,25 @@
     .exam-card .start-btn { width: 100%; text-align: center; }
 
     /* EXAM PAGE - 2 panel */
-    .exam-topbar { padding: 0 12px; height: 46px; }
-    .exam-topbar-title { font-size: 13px !important; max-width: 150px; }
-    .exam-layout { flex-direction: column; }
+    .exam-topbar { padding: 0 12px; height: 46px; flex-wrap: nowrap; overflow: hidden; }
+    .exam-topbar-left { min-width: 0; flex: 1; overflow: hidden; }
+    .exam-topbar-right { flex-shrink: 0; gap: 6px; }
+    .exam-topbar-title { font-size: 13px !important; max-width: 120px; }
+    .fullscreen-hint { font-size: 10px !important; padding: 3px 7px !important; max-width: 160px !important; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+    .mobile-timer-pill {
+      display: flex; align-items: center; gap: 4px;
+      background: linear-gradient(135deg, var(--primary), var(--teal));
+      color: #fff; font-weight: 800; font-size: 13px;
+      padding: 4px 10px; border-radius: 20px;
+      white-space: nowrap; flex-shrink: 0;
+      box-shadow: 0 2px 8px rgba(67,97,238,.3);
+    }
+    .mobile-timer-pill.warn { background: linear-gradient(135deg,#FF416C,#FF4B2B); }
+    /* Hide anti-cheat hint on mobile to save space (it still fires the warning) */
+    #fs-hint { display: none !important; }
+    .exam-layout { flex-direction: column; flex: 1; min-height: 0; }
+    .exam-left { flex: 1; min-height: 0; overflow: hidden; display: flex; flex-direction: column; }
+    .exam-left-inner { flex: 1; min-height: 0; overflow-y: auto; -webkit-overflow-scrolling: touch; }
     .exam-right {
       width: 100% !important; flex-direction: row !important;
       padding: 8px 12px !important; gap: 10px !important;
@@ -3937,7 +3959,7 @@
     .right-section-dots { padding: 6px 8px; gap: 4px; }
     .q-dot { width: 24px !important; height: 24px !important; font-size: 9px !important; }
     .exam-legend { display: none; }
-    .exam-left-inner { padding: 12px 16px 8px; }
+    .exam-left-inner { padding: 12px 16px 8px; flex: 1; min-height: 0; overflow-y: auto; -webkit-overflow-scrolling: touch; }
     .q-text { font-size: 14px; margin-bottom: 12px; }
     .option { padding: 9px 12px; font-size: 13px; gap: 10px; }
     .opt-letter { width: 28px; height: 28px; font-size: 11px; }
@@ -4008,6 +4030,104 @@
     .categories-grid { grid-template-columns: repeat(2, 1fr) !important; }
     .hero h1 { font-size: 26px !important; }
     .admin-tab { padding: 7px 10px; font-size: 10.5px; }
+  }
+
+  /* ═══════════════════════════════════════════════
+     COMPREHENSIVE MOBILE IMPROVEMENTS
+     Target: Better readability, touch targets, layout
+     ═══════════════════════════════════════════════ */
+  @media (max-width: 640px) {
+
+    /* ── HERO ── */
+    .hero { padding: 44px 16px 36px !important; }
+    .hero-badge { font-size: 11px !important; padding: 6px 16px !important; margin-bottom: 16px !important; }
+    .hero h1 { font-size: 28px !important; letter-spacing: -.8px !important; margin-bottom: 10px !important; }
+    .hero p { font-size: 13px !important; margin-bottom: 18px !important; }
+    .btn-primary, .btn-outline { padding: 13px 20px !important; font-size: 14px !important; border-radius: 12px !important; }
+    .stats-row { display: grid !important; grid-template-columns: repeat(4,1fr) !important; gap: 6px !important; margin: 16px 0 0 !important; }
+    .stats-row > div { padding: 12px 6px !important; border-radius: 12px !important; min-width: unset !important; }
+    .stat-num { font-size: 22px !important; }
+    .stat-label { font-size: 9px !important; }
+
+    /* ── SECTION TITLES ── */
+    .section-title { font-size: 18px !important; }
+    .section-sub { font-size: 12px !important; margin-bottom: 16px !important; }
+    .section { padding: 22px 14px !important; }
+
+    /* ── CATEGORIES ── */
+    .categories-grid { grid-template-columns: repeat(3,1fr) !important; gap: 8px !important; }
+    .cat-card { padding: 12px 6px 10px !important; border-radius: 12px !important; min-height: 76px !important; }
+    .cat-icon { font-size: 22px !important; margin-bottom: 6px !important; }
+    .cat-name { font-size: 10.5px !important; font-weight: 800 !important; }
+    .cat-count { font-size: 9px !important; }
+
+    /* ── STUDY GUIDES GRID (inline style override) ── */
+    #sg-grid { grid-template-columns: repeat(2,1fr) !important; gap: 10px !important; }
+
+    /* ── EXAM CARDS ── */
+    .exam-card { padding: 14px !important; gap: 10px !important; }
+    .exam-card .start-btn { min-height: 42px !important; font-size: 13px !important; }
+
+    /* ── VIDEOS GRID ── */
+    #videos-grid { grid-template-columns: 1fr !important; gap: 12px !important; }
+    .video-card { border-radius: 14px !important; }
+    .video-thumb { height: 180px !important; }
+
+    /* ── PROGRESS PAGE ── */
+    .prog-header { padding: 20px 16px !important; }
+    .prog-header h2 { font-size: 17px !important; }
+    .prog-body { padding: 14px 12px 80px !important; }
+    .prog-tab { padding: 7px 14px !important; font-size: 12px !important; }
+    .prog-history-card { padding: 12px !important; gap: 10px !important; }
+    .prog-hist-rank { width: 32px !important; height: 32px !important; font-size: 13px !important; }
+
+    /* ── LEADERBOARD ── */
+    .lb-header { padding: 20px 16px !important; }
+    .lb-card { border-radius: 12px !important; padding: 12px !important; }
+    .lb-name { font-size: 13px !important; }
+    .lb-pct { font-size: 17px !important; }
+
+    /* ── MODALS — full width on mobile ── */
+    .edit-box { width: calc(100vw - 28px) !important; max-width: unset !important; padding: 20px 16px !important; border-radius: 18px !important; margin: 0 !important; }
+    .name-box, .pw-box { width: calc(100vw - 28px) !important; max-width: unset !important; padding: 24px 18px !important; margin: 0 !important; border-radius: 18px !important; }
+    .edit-modal-actions { flex-direction: column; }
+    .edit-modal-actions button { width: 100% !important; }
+
+    /* ── SEARCH BARS ── */
+    .search-bar { font-size: 14px !important; padding: 10px 14px !important; }
+
+    /* ── FILTER CHIPS / TABS ── */
+    .filter-chips { gap: 6px !important; flex-wrap: nowrap !important; overflow-x: auto; -webkit-overflow-scrolling: touch; padding-bottom: 4px; scrollbar-width: none; }
+    .filter-chips::-webkit-scrollbar { display: none; }
+    .filter-chip { flex-shrink: 0 !important; font-size: 11px !important; padding: 6px 12px !important; }
+
+    /* ── MOCK FOLDER PAGE ── */
+    .mock-folder-banner { padding: 20px 16px !important; border-radius: 14px !important; }
+    .mock-folder-title { font-size: 18px !important; }
+
+    /* ── BOTTOM NAV SAFE AREA ── */
+    .mob-bottom-nav { padding-bottom: max(env(safe-area-inset-bottom, 8px), 8px); }
+    .mob-nav-label { font-size: 10px !important; }
+    .mob-nav-icon { font-size: 22px !important; }
+    .mob-nav-item { padding: 4px 10px !important; }
+
+    /* ── TABLES — horizontal scroll ── */
+    .atable-wrap, .exams-manage-wrap { overflow-x: auto !important; -webkit-overflow-scrolling: touch; }
+    .atable { min-width: 500px; }
+
+    /* ── TOAST ── */
+    .ae-toast-wrap { bottom: 72px !important; }
+
+    /* ── GENERAL TOUCH TARGETS ── */
+    button, .btn, .cat-card, .exam-card, .mob-nav-item { -webkit-tap-highlight-color: transparent; }
+  }
+
+  /* Extra small phones */
+  @media (max-width: 360px) {
+    .categories-grid { grid-template-columns: repeat(2,1fr) !important; }
+    #sg-grid { grid-template-columns: 1fr !important; }
+    .hero h1 { font-size: 24px !important; }
+    .stats-row { grid-template-columns: repeat(2,1fr) !important; }
   }
 
   /* ─── SUBSCRIBER LOGIN MODAL ─── */
@@ -5170,7 +5290,7 @@ html {
     </div>
     <div class="section-sub" style="margin-bottom:16px;">Exam preparation articles — free గా చదవండి</div>
 
-    <div id="sg-grid" style="display:grid; grid-template-columns:repeat(auto-fit,minmax(160px,1fr)); gap:12px;">
+    <div id="sg-grid" style="display:grid; grid-template-columns:repeat(auto-fit,minmax(min(160px,100%),1fr)); gap:12px;">
 
       <!-- Card 1 -->
       <a href="tspsc-groups-guide.html" class="sg-card" data-idx="0" style="text-decoration:none;">
@@ -6506,6 +6626,7 @@ html {
     </div>
     <div class="exam-topbar-right">
       <div class="fullscreen-hint" id="fs-hint" style="display:none">🛡️ Anti-Cheat — Tab switch వద్దు!</div>
+      <div class="mobile-timer-pill" id="mobile-timer-pill">⏱ <span id="mobile-timer-display">--:--</span></div>
       <div class="lang-toggle-wrap" id="exam-lang-toggle" style="border-color:rgba(27,45,94,.2);background:var(--bg)">
         <button class="lang-btn active" id="exam-lang-te" onclick="setExamLang('te')" style="color:var(--primary)">తె</button>
         <button class="lang-btn" id="exam-lang-en" onclick="setExamLang('en')" style="color:var(--text3)">EN</button>
@@ -6959,7 +7080,7 @@ html {
       <span class="search-icon">🔍</span>
       <input class="search-bar" id="video-search" placeholder="Video search చేయండి..." oninput="renderVideos()">
     </div>
-    <div id="videos-grid" style="display:grid;grid-template-columns:repeat(auto-fill,minmax(280px,1fr));gap:18px;margin-top:4px"></div>
+    <div id="videos-grid" style="display:grid;grid-template-columns:repeat(auto-fill,minmax(min(280px,100%),1fr));gap:18px;margin-top:4px"></div>
     <div id="videos-empty" style="display:none;text-align:center;padding:48px;color:var(--text3)">
       <div style="font-size:48px;margin-bottom:12px">🎥</div>
       <div style="font-weight:700;font-size:15px">Videos ఇంకా add చేయలేదు</div>
@@ -11699,6 +11820,11 @@ function _launchExamUI(e, qs) {
   document.getElementById('exam-running-sub').textContent = e.cat + ' | ' + e.diff + ' | ' + qs.length + ' Qs' + (secInfo ? ' · '+secInfo : '');
 
   stopTimer();
+  // Init mobile timer pill
+  const _im = Math.floor(exam.timeLeft/60), _is = exam.timeLeft%60;
+  const _initTime = String(_im).padStart(2,'0')+':'+String(_is).padStart(2,'0');
+  const _mel = document.getElementById('mobile-timer-display');
+  if (_mel) _mel.textContent = _initTime;
   exam.timerInterval = setInterval(() => { tick(); _saveExamProgress(); }, 1000);
 
   enableAntiCheat();
@@ -11717,11 +11843,17 @@ function tick() {
   exam.timeLeft--;
   const m = Math.floor(exam.timeLeft / 60);
   const s = exam.timeLeft % 60;
+  const timeStr = String(m).padStart(2,'0') + ':' + String(s).padStart(2,'0');
   const el = document.getElementById('timer-display');
   if (el) {
-    el.textContent = String(m).padStart(2,'0') + ':' + String(s).padStart(2,'0');
+    el.textContent = timeStr;
     el.className = 'exam-timer-display' + (exam.timeLeft < 60 ? ' danger' : exam.timeLeft < 300 ? ' warning' : '');
   }
+  // Sync mobile timer pill
+  const mel = document.getElementById('mobile-timer-display');
+  if (mel) mel.textContent = timeStr;
+  const pill = document.getElementById('mobile-timer-pill');
+  if (pill) pill.className = 'mobile-timer-pill' + (exam.timeLeft < 60 ? ' warn' : '');
   if (exam.timeLeft <= 0) { stopTimer(); submitExam(); }
 }
 

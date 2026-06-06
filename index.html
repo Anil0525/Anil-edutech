@@ -11813,7 +11813,7 @@ function _beginFreshExam(e, qs) {
   exam.questions = qs;
   exam.idx       = 0;
   exam.answers   = {};
-  exam.timeLeft  = e.time * 60;
+  exam.timeLeft  = (e.time || 60) * 60;
   _launchExamUI(e, qs);
 }
 
@@ -12007,7 +12007,7 @@ function renderDots() {
   renderSectionTabs(); // keep section-tabs-bar updated (hidden in new layout but still used)
 
   // Build section → questions map
-  const secOrder = ['reasoning','arithmetic','ga','english'];
+  const secOrder = ['reasoning','arithmetic','ga','english','science'];
   const secMap = {};
   qs.forEach((q,i) => {
     const s = q.section || 'ga';
@@ -17810,7 +17810,7 @@ _beginFreshExam = function(e, qs) {
     exam.questions = qs;
     exam.idx       = 0;
     exam.answers   = {};
-    exam.timeLeft  = e.time * 60;
+    exam.timeLeft  = (e.time || 60) * 60;
     _launchExamUI(e, qs);
   });
 };

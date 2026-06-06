@@ -839,13 +839,48 @@
     font-size: 11px; color: var(--text3); font-weight: 700;
     padding-top: 8px; border-top: 1px solid var(--border); margin-top: 8px;
   }
-  /* mobile: stack vertically */
+  /* mobile: compact square box */
   @media (max-width: 600px) {
-    .pricing-overlay { padding: 8px; align-items: flex-start; overflow-y: auto; }
-    .pricing-box { flex-direction: column; max-width: 420px; max-height: none; overflow: visible; }
-    .pricing-left { border-right: none; border-bottom: 1px solid var(--border); padding: 16px 14px 12px; flex: none; }
-    .pricing-left::before { border-radius: 20px 20px 0 0; }
-    .pricing-right { padding: 16px 14px 12px; }
+    .pricing-overlay {
+      padding: 12px;
+      align-items: center;
+      justify-content: center;
+      overflow-y: auto;
+    }
+    .pricing-box {
+      flex-direction: column;
+      width: calc(100vw - 24px);
+      max-width: 380px;
+      max-height: calc(100vh - 40px);
+      overflow-y: auto;
+      overflow-x: hidden;
+      -webkit-overflow-scrolling: touch;
+      border-radius: 20px;
+    }
+    /* Hide left billing panel on mobile — save space */
+    .pricing-left { display: none !important; }
+    /* Right panel takes full width */
+    .pricing-right {
+      padding: 18px 16px 16px !important;
+      flex: none;
+    }
+    /* Plan tabs — full width, compact */
+    .pay-plan-tabs { gap: 6px; margin-bottom: 10px; }
+    .pay-plan-tab { padding: 8px 4px; font-size: 11.5px; }
+    .pay-plan-tab .tab-price { font-size: 13px; }
+    /* Method buttons compact */
+    .pay-method-btns { gap: 6px; }
+    .pay-method-btn { font-size: 11.5px; padding: 8px 4px; }
+    /* UPI QR smaller */
+    .pay-upi-qr-img canvas,
+    .pay-upi-qr-img img { width: 90px !important; height: 90px !important; }
+    /* Subscribe button */
+    .pay-subscribe-btn { font-size: 13px; padding: 10px; }
+    /* Close button visible */
+    .pricing-close { top: 10px; right: 10px; }
+    /* Section title smaller */
+    .pay-section-title { font-size: 13px; margin-bottom: 8px; }
+    .pay-method-label { font-size: 10px; margin-bottom: 6px; }
   }
   .pm-header {
     background: linear-gradient(135deg, #0D1F5C 0%, #1A73E8 100%);
@@ -19019,6 +19054,126 @@ _beginFreshExam = function(e, qs) {
   .ae-exams-layout { flex-direction: column; }
   .ae-exams-sidebar { display: none; }
   .ae-exams-main .section { padding: 16px 16px 32px; }
+}
+
+/* ══════════════════════════════════════════
+   SSC EXAM — MOBILE RESPONSIVE FIX
+   All screen sizes ≤ 640px
+══════════════════════════════════════════ */
+@media (max-width: 640px) {
+
+  /* ── HEADER: stack items, hide avatars ── */
+  .ssc2-header {
+    flex-wrap: wrap !important;
+    padding: 6px 10px !important;
+    min-height: unset !important;
+    gap: 6px !important;
+    top: 52px !important; /* below mobile nav */
+  }
+  .ssc2-zoom { display: none !important; } /* hide zoom on mobile */
+  .ssc2-avatar { display: none !important; } /* hide avatars — save space */
+  .ssc2-center { order: 3; width: 100%; padding: 0 !important; text-align: left !important; }
+  .ssc2-title { font-size: 12px !important; }
+  .ssc2-rollno { font-size: 10px !important; }
+  .ssc2-logo-wrap { flex: 1; min-width: 0; }
+  .ssc2-exam-sub { max-width: 130px !important; font-size: 9.5px !important; }
+  .ssc2-timer { font-size: 17px !important; }
+  .ssc2-timer-lbl { font-size: 9px !important; }
+
+  /* ── TOOLBAR: scroll horizontally ── */
+  .ssc2-toolbar {
+    top: calc(52px + 58px) !important;
+    padding: 5px 8px !important;
+    gap: 4px !important;
+    overflow-x: auto !important;
+    flex-wrap: nowrap !important;
+    -webkit-overflow-scrolling: touch !important;
+    scrollbar-width: none !important;
+  }
+  .ssc2-toolbar::-webkit-scrollbar { display: none; }
+  .ssc2-util-btn { font-size: 11px !important; padding: 4px 7px !important; }
+  .ssc2-part-tab { font-size: 11px !important; padding: 4px 9px !important; flex-shrink: 0; }
+  .ssc2-action-btn { font-size: 11px !important; padding: 4px 9px !important; flex-shrink: 0; }
+
+  /* ── BODY: stack question + palette vertically ── */
+  .ssc2-body {
+    flex-direction: column !important;
+    min-height: unset !important;
+  }
+
+  /* ── QUESTION AREA ── */
+  .ssc2-q-area {
+    padding: 12px 12px 80px !important; /* 80px = bottom bar space */
+  }
+  .ssc2-q-box {
+    font-size: 13px !important;
+    padding: 12px 12px !important;
+    line-height: 1.7 !important;
+  }
+  .ssc2-option {
+    font-size: 13px !important;
+    padding: 9px 12px !important;
+  }
+  .ssc2-q-toprow {
+    flex-direction: column !important;
+    align-items: flex-start !important;
+    gap: 6px !important;
+    margin-bottom: 10px !important;
+  }
+  .ssc2-lang-row { gap: 6px !important; flex-wrap: wrap; }
+  .ssc2-lang-lbl { font-size: 11px !important; }
+  .ssc2-lang-sel { font-size: 11px !important; padding: 3px 6px !important; }
+  .ssc2-report-btn { font-size: 10px !important; padding: 3px 7px !important; }
+
+  /* ── PALETTE PANEL: horizontal scroll strip ── */
+  .ssc2-panel {
+    width: 100% !important;
+    max-width: 100% !important;
+    min-width: unset !important;
+    border-left: none !important;
+    border-top: 2px solid #ddd !important;
+    max-height: 150px !important;
+    overflow-y: auto !important;
+    padding: 8px 10px !important;
+    background: #f9f9f9 !important;
+  }
+  .ssc2-palette {
+    display: flex !important;
+    flex-direction: row !important;
+    flex-wrap: wrap !important;
+    gap: 6px !important;
+  }
+  .ssc2-panel-answered {
+    font-size: 11px !important;
+    padding: 4px 0 6px !important;
+  }
+  .ssc2-section-hdr {
+    font-size: 11px !important;
+    padding: 4px 0 !important;
+  }
+  #ssc-section-analysis { display: none !important; }
+
+  /* ── BOTTOM ACTION BAR ── */
+  #ssc-bottom-bar {
+    padding: 8px 10px !important;
+    gap: 6px !important;
+  }
+  #ssc-bottom-bar > div {
+    gap: 6px !important;
+    flex-wrap: nowrap !important;
+  }
+  .ssc2-action-btn, #ssc-bottom-bar button {
+    padding: 8px 10px !important;
+    font-size: 11.5px !important;
+  }
+}
+
+/* Extra small phones ≤ 380px */
+@media (max-width: 380px) {
+  .ssc2-title { display: none !important; }
+  .ssc2-center { display: none !important; }
+  .ssc2-timer { font-size: 15px !important; }
+  .ssc2-action-btn, #ssc-bottom-bar button { font-size: 10.5px !important; padding: 7px 7px !important; }
 }
 </style>
 <script>

@@ -7,7 +7,6 @@
 <title>Anil EduTech | Free Mock Tests — TSPSC, SSC, Banking, GK</title>
 <meta name="description" content="Anil EduTech — Free TSPSC, SSC CGL/CHSL, Banking &amp; GK mock tests in Telugu &amp; English. 500+ questions, leaderboard &amp; certificates. 100% Free!">
 <meta name="robots" content="index, follow">
-<meta name="keywords" content="TSPSC mock test, SSC free test, banking exam practice, Telugu GK, online mock test Telugu, free exam preparation">
 <meta property="og:title" content="Anil EduTech | Free Mock Tests — TSPSC, SSC, Banking, GK">
 <meta property="og:description" content="Free online mock tests for TSPSC, SSC CGL, CHSL, Banking &amp; GK in Telugu and English. Practice, track progress, earn certificates.">
 <meta property="og:type" content="website">
@@ -10648,14 +10647,11 @@ async function doLogin() {
     isPremium: false
   };
 
-  // Check premium status from ae_settings (userId OR gmail-based manual grant)
+  // Check premium status from ae_settings (gmail-based key)
   try {
     const gmailKey = 'premium_gmail_' + gmail.replace(/[@.]/g, '_');
-    const [premRes, premGmail] = await Promise.all([
-      sbGet('ae_settings', `key=eq.premium_${res.user?.id}`),
-      sbGet('ae_settings', `key=eq.${encodeURIComponent(gmailKey)}`)
-    ]);
-    if ((premRes && premRes.length > 0) || (premGmail && premGmail.length > 0)) user.isPremium = true;
+    const premGmail = await sbGet('ae_settings', `key=eq.${encodeURIComponent(gmailKey)}`);
+    if (premGmail && premGmail.length > 0) user.isPremium = true;
   } catch(e) {
     // Also check local approved list as fallback
     try {
@@ -10771,6 +10767,27 @@ function doGoogleLogin() {
     }
     sbSubUpsert({ name, gmail, sbUserId: userData.id, status: 'approved' });
 
+    // Check premium status (same logic as password login)
+    const gmailKey = 'premium_gmail_' + gmail.replace(/[@.]/g, '_');
+    sbGet('ae_settings', `key=eq.${encodeURIComponent(gmailKey)}`).then(premRes => {
+      if (premRes && premRes.length > 0) {
+        user.isPremium = true;
+        setCurrentUser({ ...user, isPremium: true });
+        updateNavUser(); filterExams();
+      } else {
+        // Fallback: check local approved list
+        const localUser = getSubApproved().find(s => s.gmail === gmail);
+        if (localUser && localUser.isPremium) {
+          user.isPremium = true;
+          setCurrentUser({ ...user, isPremium: true });
+          updateNavUser(); filterExams();
+        }
+      }
+      if (!user.isPremium) _startPremiumPolling();
+    }).catch(() => {
+      if (!user.isPremium) _startPremiumPolling();
+    });
+
     setCurrentUser(user);
     updateNavUser();
     closeSubModal();
@@ -10789,6 +10806,10 @@ function doLogout() {
   const u = getCurrentUser();
   if (u) _logUserActivity(u.name, u.gmail, 'logout');
   if (u?.sbToken) sbSignOut(u.sbToken).catch(() => {});
+  // Stop premium polling timer
+  if (typeof _premPollTimer !== 'undefined' && _premPollTimer) {
+    clearInterval(_premPollTimer); _premPollTimer = null;
+  }
   setCurrentUser(null);
   updateNavUser();
   toast('Logout అయింది. మళ్ళీ login చేయండి!', 'info');
@@ -11232,10 +11253,6 @@ function showPage(name, _skipHistory) {
       goAdmin();
       return;
     }
-  }
-  if (false && name === 'admin' && !_adminAuthenticated) {
-    goAdmin();
-    return;
   }
   if (!_skipHistory) {
     const prev = _pageHistory[_pageHistory.length - 1];
@@ -13792,7 +13809,9 @@ function getMockFolders() {
           const override = saved.find(s => s.id === ds.id && s.parentId);
           return override ? {...ds, ...override} : ds;
         });
-        return [...saved.map(f => ({...f, parentId: null})), ...newParents, ...mergedSubs];
+        const savedMerged = saved.map(f => ({...f, parentId: f.parentId || null}));
+        const newSubs = mergedSubs.filter(ds => !savedIds.includes(ds.id));
+        return [...savedMerged, ...newParents, ...newSubs];
       }
       return saved;
     }
@@ -13818,9 +13837,9 @@ function saveMockFolders(folders) {
     sort_order: f.sort_order !== undefined ? f.sort_order : i,
     updated_at: new Date().toISOString()
   }));
-  sbUpsert('ae_folders', rows).catch(()=>{});
+  sbUpsert('ae_folders', rows).catch(e => console.error('❌ ae_folders save failed:', e));
   // Also keep meta backup
-  sbUpsert('ae_meta', [{ key: 'mockFolders', value: JSON.stringify(folders) }]).catch(()=>{});
+  sbUpsert('ae_meta', [{ key: 'mockFolders', value: JSON.stringify(folders) }]).catch(e => console.error('❌ ae_meta mockFolders backup failed:', e));
 }
 
 // Load folders from ae_folders Supabase table
@@ -14098,8 +14117,8 @@ function renderMockFolderAdminTable() {
   const parents = folders.filter(f => !f.parentId);
   let rows = '';
   parents.forEach(parent => {
-    const subs = folders.filter(f => f.parentId === parent.id);
-    const parentCount = DB.exams.filter(e => e.mockFolder === parent.id).length;
+    const subs = folders.filter(f => String(f.parentId) === String(parent.id));
+    const parentCount = DB.exams.filter(e => String(e.mockFolder) === String(parent.id)).length;
     rows += `<tr style="background:var(--bg2);">
       <td style="font-weight:900;">
         <div style="display:flex;align-items:center;gap:6px;">
@@ -17523,6 +17542,12 @@ function _onPaymentSuccess(response, plan, amount, user) {
     }
     // Supabase ae_subscribers premium update
     sbSubUpsert({ name: user.name, gmail: user.gmail, is_premium: true, premium_since: premiumSince, status: 'approved' }).catch(e => console.warn('sbSubUpsert payment:', e));
+    // Supabase ae_settings — persist premium so login check works after logout
+    sbUpsert('ae_settings', {
+      key: 'premium_gmail_' + user.gmail.replace(/[@.]/g, '_'),
+      value: JSON.stringify({ gmail: user.gmail, since: premiumSince, plan }),
+      updated_at: new Date().toISOString()
+    }).catch(e => console.warn('ae_settings premium write:', e));
     // Supabase ae_payments save
     sbInsert('ae_payments', { gmail: user.gmail, name: user.name, plan, amount, payment_id: response.razorpay_payment_id, status: 'paid' }).catch(e => console.warn('ae_payments:', e));
     // Update session
@@ -17595,21 +17620,7 @@ function renderPaymentStats() {
 // switchAdminTab payments tab is handled in the main switchAdminTab function above
 // Note: payment config is loaded in _appInit() after Google Sheets data syncs
 
-function adminRevokePremium(gmail) {
-  if (!confirm(`${gmail} — Premium revoke చేయాలా?`)) return;
-  const approved = getSubApproved();
-  const u = approved.find(a => a.gmail === gmail);
-  if (u) { u.isPremium = false; u.premiumPlan = null; saveSubApproved(approved); }
-  // Remove from Supabase
-  try { sbDelete('ae_settings', 'key=eq.premium_gmail_' + gmail.replace(/[@.]/g, '_')); } catch(e) {}
-  // Update payment record status
-  const records = JSON.parse(_ls.getItem('ae_payment_records') || '[]');
-  const r = records.find(r => r.gmail === gmail && r.status === 'UTR Submitted');
-  if (r) r.status = 'Revoked';
-  _ls.setItem('ae_payment_records', JSON.stringify(records));
-  renderPaymentsTable(); renderSubscriberTables();
-  toast('🚫 Premium revoked: ' + gmail, 'warn');
-}
+// adminRevokePremium is defined above (async version) — duplicate removed
 
 
 /* ════════════════════════════════════════
@@ -19919,6 +19930,8 @@ function _caCreateCard(file, publicUrl, tab) {
   if (dateMatch) {
     try { var d = new Date(dateMatch[1].replace(/_/g,'-')); dateStr = d.toLocaleDateString('te-IN',{day:'2-digit',month:'long',year:'numeric'}); } catch(e) { dateStr = dateMatch[1]; }
   }
+  var isHtml = file.name.toLowerCase().endsWith('.html');
+  var fileTypeLabel = isHtml ? '🌐 HTML' : '📄 PDF';
   var isMonthly = tab === 'monthly';
   var safeUrl  = encodeURIComponent(publicUrl);
   var safeName = name.replace(/\\/g,'\\\\').replace(/'/g,"\\'");
@@ -19930,7 +19943,7 @@ function _caCreateCard(file, publicUrl, tab) {
       '<div class="ca-card-badge-new' + (isMonthly ? ' ca-purple-badge' : '') + '">' + (isMonthly ? '📅 Monthly' : '⭐ Daily CA') + '</div>' +
       (dateStr ? '<div class="ca-card-date-new">📅 ' + dateStr + '</div>' : '') +
       '<div class="ca-card-name">' + name + '</div>' +
-      '<div class="ca-card-meta-row">📄 PDF &nbsp;·&nbsp; Telugu + English</div>' +
+      '<div class="ca-card-meta-row">' + fileTypeLabel + ' &nbsp;·&nbsp; Telugu + English</div>' +
       '<div class="ca-card-actions">' +
         '<button onclick="openCAViewer(\'' + safeUrl + '\',\'' + safeName + '\')" class="ca-read-btn' + (isMonthly ? ' ca-purple-btn' : '') + '">👁 చదవండి</button>' +
         '<a href="' + publicUrl + '" download target="_blank" class="ca-dl-btn">⬇</a>' +

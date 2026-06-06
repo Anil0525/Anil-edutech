@@ -12014,12 +12014,6 @@ function renderQ() {
     </div>`;
   }).join('');
 
-  // Section-aware nav logic
-  const _secOrdMap2 = { reasoning: 0, arithmetic: 1, ga: 2, english: 3, science: 4 };
-  const curSec2   = exam.questions[exam.idx]?.section || 'ga';
-  const nextQ_    = exam.questions[exam.idx + 1];
-  const nextSec2  = nextQ_?.section || 'ga';
-
   const last = exam.idx === exam.questions.length - 1;
 
   const btnPrev = document.getElementById('btn-prev');
@@ -12105,7 +12099,7 @@ function _filteredDotQuestions() {
 
 function renderDots() {
   const qs = exam.questions;
-  renderSectionTabs(); // keep section-tabs-bar updated (hidden in new layout but still used)
+  renderSectionTabs();
   // Update stat pills
   const answeredCount = qs.filter(q => exam.answers[q.id]).length;
   const statA = document.getElementById('stat-answered');
@@ -12113,46 +12107,19 @@ function renderDots() {
   if (statA) statA.textContent = '✓ ' + answeredCount;
   if (statS) statS.textContent = '— ' + (qs.length - answeredCount);
 
-  // Build section → questions map
-  const secOrder = ['reasoning','arithmetic','ga','english','science'];
-  const secMap = {};
-  qs.forEach((q,i) => {
-    const s = q.section || 'ga';
-    if (!secMap[s]) secMap[s] = [];
-    secMap[s].push({q, i});
-  });
-
-  const hasMultipleSections = Object.keys(secMap).length > 1;
   const rightDots = document.getElementById('exam-right-dots');
   if (!rightDots) return;
 
-  if (hasMultipleSections) {
-    // Render per-section blocks with section-relative numbering
-    let html = '';
-    secOrder.forEach(s => {
-      if (!secMap[s]) return;
-      const meta = SECTION_META[s] || { short: s };
-      const dotsHtml = secMap[s].map(({q,i}, secIdx) => {
-        const cls = i === exam.idx ? 'current' : exam.answers[q.id] ? 'answered' : '';
-        return `<button class="q-dot ${cls}" onclick="goToQ(${i})" title="Q${i+1}">${secIdx+1}</button>`;
-      }).join('');
-      html += `<div class="right-section-block">
-        <div class="right-section-title">${meta.short}</div>
-        <div class="right-section-dots">${dotsHtml}</div>
-      </div>`;
-    });
-    rightDots.innerHTML = html;
-  } else {
-    // Single section — show 1,2,3...
-    const allDots = qs.map((q,i) => {
-      const cls = i === exam.idx ? 'current' : exam.answers[q.id] ? 'answered' : '';
-      return `<button class="q-dot ${cls}" onclick="goToQ(${i})" title="Q${i+1}">${i+1}</button>`;
-    }).join('');
-    rightDots.innerHTML = `<div class="right-section-block">
-      <div class="right-section-title">📋 All Questions (${qs.length})</div>
-      <div class="right-section-dots">${allDots}</div>
-    </div>`;
-  }
+  // Always single block — all questions 1..N
+  const allDots = qs.map((q,i) => {
+    const cls = i === exam.idx ? 'current' : exam.answers[q.id] ? 'answered' : '';
+    return `<button class="q-dot ${cls}" onclick="goToQ(${i})" title="Q${i+1}">${i+1}</button>`;
+  }).join('');
+
+  rightDots.innerHTML = `<div class="right-section-block">
+    <div class="right-section-title">📋 Questions (${qs.length})</div>
+    <div class="right-section-dots">${allDots}</div>
+  </div>`;
 }
 
 function toggleQDots() {
@@ -12164,17 +12131,6 @@ function goToQ(i)     { exam.idx = i; renderQ(); }
 function nextQ() {
   const qs = exam.questions;
   if (exam.idx >= qs.length - 1) return;
-
-  const _secOrdMap = { reasoning: 0, arithmetic: 1, ga: 2, english: 3, science: 4 };
-  const curSec  = qs[exam.idx].section || 'ga';
-  const nextSec = qs[exam.idx + 1]?.section || 'ga';
-
-  // If crossing into a new section, jump to first question of that section
-  if (curSec !== nextSec) {
-    const nextSecStart = qs.findIndex(q => (q.section || 'ga') === nextSec);
-    if (nextSecStart !== -1) { exam.idx = nextSecStart; renderQ(); return; }
-  }
-
   exam.idx++;
   renderQ();
 }

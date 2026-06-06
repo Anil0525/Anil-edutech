@@ -8727,7 +8727,8 @@ async function sbLoadUserData(gmail) {
 }
 
 async function sbClearResults() {
-  try { await fetch(`${SB_URL}/rest/v1/ae_results`, { method: 'DELETE', headers: SB_HEADERS }); } catch(e) {}
+  if (!confirm('⚠️ ALL results Supabase నుండి permanently delete అవుతాయి. Continue?')) return;
+  try { await fetch(`${SB_URL}/rest/v1/ae_results`, { method: 'DELETE', headers: { ...SB_HEADERS, 'Prefer': 'return=minimal' } }); } catch(e) {}
 }
 
 // ── SUPABASE EXAMS/QUESTIONS TABLE HELPERS ──
@@ -10395,9 +10396,12 @@ function getCurrentUser() {
       localStorage.removeItem(SUB_SESSION_KEY);
       return null; // auto-logout
     }
-    // Refresh session timestamp on each access (sliding expiry)
-    u._loginTime = Date.now();
-    localStorage.setItem(SUB_SESSION_KEY, JSON.stringify(u));
+    // Refresh session timestamp — throttled to once per 5 minutes to avoid excessive writes
+    const REFRESH_THROTTLE = 5 * 60 * 1000;
+    if (!u._loginTime || (Date.now() - u._loginTime) > REFRESH_THROTTLE) {
+      u._loginTime = Date.now();
+      localStorage.setItem(SUB_SESSION_KEY, JSON.stringify(u));
+    }
     return u;
   } catch(e){ return null; }
 }
@@ -11813,9 +11817,9 @@ function _examCardHtml(e, idx) {
     <div class="exam-info" style="padding-right:32px;">
       <div class="exam-title">${e.name}</div>
       <div class="exam-meta">
-        <span class="meta-pill ${catPill[e.cat]||'pill-blue'}">${e.cat}</span>
-        <span class="meta-pill pill-blue">⏱ ${e.time} min</span>
-        <span class="meta-pill ${diffPill[e.diff]||'pill-green'}">${e.diff}</span>
+        <span class="meta-pill ${catPill[e.cat]||'pill-blue'}">${e.cat||''}</span>
+        <span class="meta-pill pill-blue">⏱ ${e.time||'?'} min</span>
+        <span class="meta-pill ${diffPill[e.diff||'']||'pill-green'}">${e.diff||''}</span>
         <span class="meta-pill pill-blue">📝 ${qc} Qs</span>
       </div>
       ${videoBtn}
@@ -12115,7 +12119,8 @@ function _launchExamUI(e, qs) {
   const _initTime = String(_im).padStart(2,'0')+':'+String(_is).padStart(2,'0');
   const _mel = document.getElementById('mobile-timer-display');
   if (_mel) _mel.textContent = _initTime;
-  exam.timerInterval = setInterval(() => { tick(); _saveExamProgress(); }, 1000);
+  let _saveThrottle = 0;
+  exam.timerInterval = setInterval(() => { tick(); if(++_saveThrottle >= 30){ _saveExamProgress(); _saveThrottle=0; } }, 1000);
 
   showPage('exam');
   applyLang();
@@ -12186,7 +12191,7 @@ function renderQ() {
   }
   document.getElementById('progress-fill').style.width = Math.round((exam.idx+1)/tot*100) + '%';
 
-  document.getElementById('options-list').innerHTML = q.opts.map((o,i) => {
+  document.getElementById('options-list').innerHTML = (q.opts||[]).map((o,i) => {
     const L = String.fromCharCode(65+i);
     const sel = exam.answers[q.id] === L;
     return `<div class="option${sel?' selected':''}" onclick="pick('${L}',${q.id})">
@@ -14331,10 +14336,10 @@ function filterExams() {
   if (_examFilter) list = list.filter(e => e.cat === _examFilter);
   // SSC sub-filter: CGL / CHSL / MTS
   if (_examFilter === 'SSC' && _sscSubFilter !== 'all') {
-    list = list.filter(e => e.name.toUpperCase().includes(_sscSubFilter));
+    list = list.filter(e => (e.name||'').toUpperCase().includes(_sscSubFilter));
   }
   if (q) list = list.filter(e =>
-    e.name.toLowerCase().includes(q) || e.cat.toLowerCase().includes(q) || e.diff.toLowerCase().includes(q)
+    (e.name||'').toLowerCase().includes(q) || (e.cat||'').toLowerCase().includes(q) || (e.diff||'').toLowerCase().includes(q)
   );
 
   // For PDF-only categories, show PDF cards; hide standard exam cards
@@ -14677,7 +14682,7 @@ function setBankingSubFilter(el, subName) {
   document.getElementById('exam-search').value = '';
   const list = subName === 'ALL'
     ? DB.exams.filter(e => e.cat === 'Banking')
-    : DB.exams.filter(e => e.cat === 'Banking' && e.name.toUpperCase().includes(subName.toUpperCase()));
+    : DB.exams.filter(e => e.cat === 'Banking' && (e.name||'').toUpperCase().includes(subName.toUpperCase()));
   document.getElementById('exams-page-title').textContent = subName === 'ALL' ? 'Banking Exams' : subName + ' Clerk Exams';
   document.getElementById('exams-page-sub').textContent = list.length + ' exam(s) found';
   renderExamCards(list);
@@ -14691,7 +14696,7 @@ function setSSCSubFilter(el, subName) {
   document.getElementById('exam-search').value = '';
   const list = subName === 'ALL'
     ? DB.exams.filter(e => e.cat === 'SSC')
-    : DB.exams.filter(e => e.cat === 'SSC' && e.name.toUpperCase().includes(subName.toUpperCase()));
+    : DB.exams.filter(e => e.cat === 'SSC' && (e.name||'').toUpperCase().includes(subName.toUpperCase()));
   document.getElementById('exams-page-title').textContent = subName === 'ALL' ? 'SSC Exams' : 'SSC ' + subName + ' Exams';
   document.getElementById('exams-page-sub').textContent = list.length + ' exam(s) found';
   renderExamCards(list);
@@ -14705,7 +14710,7 @@ function setRRBSubFilter(el, subName) {
   document.getElementById('exam-search').value = '';
   const list = subName === 'ALL'
     ? DB.exams.filter(e => e.cat === 'RRB')
-    : DB.exams.filter(e => e.cat === 'RRB' && e.name.toUpperCase().includes(subName.toUpperCase()));
+    : DB.exams.filter(e => e.cat === 'RRB' && (e.name||'').toUpperCase().includes(subName.toUpperCase()));
   document.getElementById('exams-page-title').textContent = subName === 'ALL' ? 'RRB Exams' : 'RRB ' + subName + ' Exams';
   document.getElementById('exams-page-sub').textContent = list.length + ' exam(s) found';
   renderExamCards(list);
@@ -15482,7 +15487,7 @@ function _populateBulkExamDropdown() {
   if (!sel) return;
   const prev = sel.value;
   sel.innerHTML = '<option value="">-- CSV లో examId use చేయి (పాత method) --</option>';
-  (DB.exams || []).slice().sort((a,b)=>a.name.localeCompare(b.name)).forEach(e => {
+  (DB.exams || []).slice().sort((a,b)=>(a.name||'').localeCompare(b.name||'')).forEach(e => {
     const opt = document.createElement('option');
     opt.value = e.id;
     opt.textContent = e.name + '  (ID: ' + e.id + ')';
@@ -16672,7 +16677,7 @@ async function adminResetPw(gmail) {
   const r = resets.find(r => r.gmail === gmail);
   if (r) r.done = true;
   _ls.setItem('ae_pw_resets', JSON.stringify(resets));
-  sendEmailNotification('approved', { name: u.name, gmail, msg: 'Password reset: ' + newPw });
+  sendEmailNotification('forgot', { name: u.name, gmail });
   renderPwResetRequests();
   toast('✅ Password reset చేయబడింది!', 'success');
 }
@@ -16967,7 +16972,7 @@ function renderBackupTable() {
   const subFil  = document.getElementById('bk-sub-filter')?.value || 'all';
 
   let users = Object.values(userMap);
-  if (search) users = users.filter(u => u.name.toLowerCase().includes(search) || u.gmail.toLowerCase().includes(search));
+  if (search) users = users.filter(u => (u.name||'').toLowerCase().includes(search) || (u.gmail||'').toLowerCase().includes(search));
   if (subFil === 'premium') users = users.filter(u => u.isPremium);
   if (subFil === 'free')    users = users.filter(u => !u.isPremium);
 
@@ -19759,7 +19764,7 @@ function _launchSSCExamUI(e, qs) {
   const toolbarName = document.getElementById('ssc-toolbar-name');
   const rollEl      = document.getElementById('ssc-roll-no');
   if (headerTitle) headerTitle.textContent = e.name;
-  if (toolbarName) toolbarName.textContent = e.name.length > 32 ? e.name.slice(0,32)+'…' : e.name;
+  if (toolbarName) toolbarName.textContent = (e.name||'').length > 32 ? (e.name||'').slice(0,32)+'…' : (e.name||'');
   if (rollEl)      rollEl.textContent      = 'Roll No : ' + rollNo;
 
   _renderSSCPartTabs();
@@ -19859,7 +19864,7 @@ function _renderSSCQuestion() {
   }
 
   const picked = ssc.answers[q.id] || null;
-  document.getElementById('ssc-options').innerHTML = q.opts.map(function(o, i) {
+  document.getElementById('ssc-options').innerHTML = (q.opts||[]).map(function(o, i) {
     const L   = String.fromCharCode(65+i);
     const sel = picked === L;
     return '<div class="ssc2-option' + (sel?' selected':'') + '" onclick="sscPick(\''+L+'\','+q.id+')">'

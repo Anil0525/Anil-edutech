@@ -11209,6 +11209,8 @@ function showPage(name, _skipHistory) {
         prev.examFilter = _examFilter || '';
       }
       _pageHistory.push({ name, scrollY: 0, examFilter: _examFilter || '' });
+      // Push browser history state so device back button works
+      _safeHistoryPush({ ae_page: name });
     }
   }
 
@@ -11304,6 +11306,76 @@ function goHome() {
   renderLeaderboard();
   _startLbAutoRefresh();
 }
+
+/* ─── DEVICE BACK BUTTON HANDLER ─── */
+// Safe history helper — srcdoc/iframe environments లో SecurityError రాకుండా
+function _safeHistoryPush(state) {
+  try { history.pushState(state, '', window.location.pathname); } catch(e) {}
+}
+function _safeHistoryReplace(state) {
+  try { history.replaceState(state, '', window.location.pathname); } catch(e) {}
+}
+
+// Device back button / browser back button press అయినప్పుడు
+// website close కాకుండా app లో navigate చేయాలి
+window.addEventListener('popstate', function(e) {
+  // Payment overlay open ఉంటే close చేయాలి
+  const pricingOverlay = document.getElementById('pricing-overlay');
+  if (pricingOverlay && pricingOverlay.classList.contains('show')) {
+    closePricing();
+    // Push state back so next back press still works
+    _safeHistoryPush({ ae_page: 'pricing' });
+    return;
+  }
+  // Any other open overlay/modal close చేయాలి
+  const overlays = document.querySelectorAll('.overlay.show, .modal.show, .sub-overlay.show');
+  for (const ov of overlays) {
+    if (ov.style.display !== 'none' || ov.classList.contains('show')) {
+      ov.classList.remove('show');
+      _safeHistoryPush({ ae_page: 'modal' });
+      return;
+    }
+  }
+  // SSC exam active ఉంటే confirm చేయాలి
+  const sscPage = document.getElementById('page-exam-ssc');
+  if (sscPage && sscPage.classList.contains('active')) {
+    if (confirm('SSC Exam వదిలేయాలా? Progress save అవుతుంది!')) {
+      if (typeof submitSSCExam === 'function') submitSSCExam();
+      else _navigateBack();
+    } else {
+      // Back వెళ్ళిపోకుండా state restore చేయాలి
+      _safeHistoryPush({ ae_page: 'exam-ssc' });
+    }
+    return;
+  }
+  // Regular exam active ఉంటే confirm చేయాలి
+  const examPage = document.getElementById('page-exam');
+  if (examPage && examPage.classList.contains('active')) {
+    if (confirm('Exam వదిలేయాలా? Progress save అవుతుంది — తర్వాత resume చేయవచ్చు!')) {
+      if (typeof _saveExamProgress === 'function') _saveExamProgress();
+      if (typeof stopTimer === 'function') stopTimer();
+      _navigateBack();
+    } else {
+      _safeHistoryPush({ ae_page: 'exam' });
+    }
+    return;
+  }
+  // Home page లో ఉంటే — website close చేయకూడదు, అలాగే ఉండాలి
+  const homePage = document.getElementById('page-home');
+  if (homePage && homePage.classList.contains('active')) {
+    _safeHistoryPush({ ae_page: 'home' });
+    return;
+  }
+  // Other pages లో ఉంటే — previous page కి వెళ్ళాలి
+  _navigateBack();
+});
+
+// Page load అయినప్పుడు initial state push చేయాలి
+(function() {
+  if (!history.state || !history.state.ae_page) {
+    _safeHistoryReplace({ ae_page: 'home' });
+  }
+})();
 
 /* ─── CATEGORY TOPICS DATA ─── */
 const CAT_TOPICS = {
@@ -11416,9 +11488,9 @@ function setBmFavFilter(el) {
 }
 
 /* ---- ADMIN AUTH ---- */
-let ADMIN_PW       = null;
-let ADMIN_USERNAME = null;
-let ADMIN_RECOVERY = null;
+let ADMIN_PW       = (typeof localStorage !== 'undefined' && localStorage.getItem('ae_admin_pw'))       || 'Anil@2025';
+let ADMIN_USERNAME = (typeof localStorage !== 'undefined' && localStorage.getItem('ae_admin_uname'))    || 'admin';
+let ADMIN_RECOVERY = (typeof localStorage !== 'undefined' && localStorage.getItem('ae_admin_recovery')) || 'ANIL2025RESET';
 let _adminAuthenticated = false; // SECURITY: set true only after successful login
 let _adminLoginTime    = 0;      // SECURITY: track admin session start
 
@@ -17180,6 +17252,8 @@ function switchPayMethod(method, btn) {
 // ── PRICING MODAL ──
 function openPricing() {
   document.getElementById('pricing-overlay').classList.add('show');
+  // Push history state so device back button closes payment overlay instead of leaving site
+  _safeHistoryPush({ ae_page: 'pricing' });
   // Update ALL price displays with current PLAN_PRICES
   document.querySelectorAll('.upi-price-m').forEach(e => e.textContent = PLAN_PRICES.monthly);
   document.querySelectorAll('.upi-price-y').forEach(e => e.textContent = PLAN_PRICES.yearly);
@@ -18963,6 +19037,8 @@ function _setSbActive(id) {
     <div class="ssc2-logo-wrap">
       <div style="display:flex;flex-direction:column;">
         <div style="display:flex;align-items:center;gap:5px;">
+          <!-- Back button -->
+          <button onclick="if(confirm('SSC Exam వదిలేయాలా? Progress save అవుతుంది!'))submitSSCExam();" title="వెనక్కి వెళ్ళు" style="background:rgba(255,102,0,0.12);border:1.5px solid #FF6600;border-radius:6px;color:#FF6600;font-size:12px;font-weight:900;padding:3px 8px;cursor:pointer;margin-right:4px;line-height:1;">← Back</button>
           <div style="width:26px;height:26px;background:#FF6600;border-radius:4px;display:flex;align-items:center;justify-content:center;">
             <span style="font-size:13px;font-weight:900;color:#fff;">AE</span>
           </div>

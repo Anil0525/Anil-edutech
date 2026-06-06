@@ -11913,7 +11913,24 @@ function startExam(examId) {
   }
 
   const e = DB.exams.find(x => x.id === examId);
-  if(e&&(e.isPremium||e.isLocked)){const cu=getCurrentUser();if(!cu||!cu.isPremium){_showPremiumLockModal(e.name);return;}}
+  if (!e) { alert('Exam కనపడలేదు.'); return; }
+
+  // Check exam-level lock
+  const _cuSE = getCurrentUser();
+  const _cuIsPrem = !!(_cuSE && _cuSE.isPremium);
+  if ((e.isPremium || e.isLocked) && !_cuIsPrem) { _showPremiumLockModal(e.name); return; }
+
+  // Check folder-level lock (prevents bypass from Exams page)
+  if (e.mockFolder && !_cuIsPrem) {
+    const _folders = getMockFolders();
+    const _ef = _folders.find(f => String(f.id) === String(e.mockFolder));
+    if (_ef && _ef.locked) { _showPremiumLockModal(e.name); return; }
+    // Also check parent folder
+    if (_ef && _ef.parentId) {
+      const _pf = _folders.find(f => String(f.id) === String(_ef.parentId));
+      if (_pf && _pf.locked) { _showPremiumLockModal(e.name); return; }
+    }
+  }
   const qs = DB.questions.filter(q => q.examId === examId);
   if (!qs.length) { alert('ఈ exam కి questions లేవు. Admin లో add చేయండి.'); return; }
 
@@ -13948,8 +13965,10 @@ function openMockFolder(folderId) {
   const folder = folders.find(f => f.id === folderId);
   if (!folder) return;
 
-  // Block locked folders
-  if (folder.locked) {
+  // Block locked folders — but allow premium users through
+  const _curUser = getCurrentUser();
+  const _userIsPremium = !!(_curUser && _curUser.isPremium);
+  if (folder.locked && !_userIsPremium) {
     toast('🔒 ఈ folder locked గా ఉంది. Premium తీసుకోండి!', 'warn');
     return;
   }
@@ -14024,12 +14043,14 @@ function openMockSubFolder(folderId) {
   const folder = folders.find(f => f.id === folderId);
   if (!folder) return;
 
-  // Block locked sub-folders (also block if parent folder is locked)
-  if (folder.locked) {
+  // Block locked sub-folders (also block if parent folder is locked) — but allow premium users
+  const _cu = getCurrentUser();
+  const _isPrem = !!(_cu && _cu.isPremium);
+  if (folder.locked && !_isPrem) {
     toast('🔒 ఈ folder locked గా ఉంది. Premium తీసుకోండి!', 'warn');
     return;
   }
-  if (folder.parentId) {
+  if (folder.parentId && !_isPrem) {
     const parentCheck = folders.find(f => f.id === folder.parentId);
     if (parentCheck && parentCheck.locked) {
       toast('🔒 ఈ folder locked గా ఉంది. Premium తీసుకోండి!', 'warn');
@@ -17625,8 +17646,8 @@ function renderPaymentStats() {
 
 /* ════════════════════════════════════════
    💳 UTR PAYMENT VERIFICATION
-   User pay చేసిన వెంటనే UTR enter చేస్తే
-   instant premium access వస్తుంది
+   User UTR submit చేస్తే pending గా save అవుతుంది
+   Admin approve చేసిన తర్వాత మాత్రమే premium activate అవుతుంది
 ════════════════════════════════════════ */
 function submitUTR() {
   const utrRaw  = (document.getElementById('utr-input')?.value || '').trim();
@@ -17639,14 +17660,14 @@ function submitUTR() {
     return;
   }
   if (utrRaw.length < 8) {
-    toast('⚠️ Valid UTR / Transaction ID enter చేయండి', 'warn');
+    toast('⚠️ Valid UTR / Transaction ID enter చేయండి (min 8 characters)', 'warn');
     return;
   }
 
-  // Check duplicate UTR
+  // Check duplicate UTR — localStorage
   const records = JSON.parse(_ls.getItem('ae_payment_records') || '[]');
   if (records.find(r => r.utr === utrRaw)) {
-    toast('❌ ఈ UTR ఇప్పటికే use అయింది', 'error');
+    toast('❌ ఈ UTR ఇప్పటికే submit చేయబడింది', 'error');
     return;
   }
 
@@ -17654,7 +17675,7 @@ function submitUTR() {
   const now     = new Date();
   const dateStr = now.toLocaleString('te-IN');
 
-  // 1️⃣ Save payment record with UTR
+  // 1️⃣ Save as PENDING — premium grant చేయకూడదు
   records.unshift({
     name:   user.name,
     gmail:  user.gmail,
@@ -17667,58 +17688,52 @@ function submitUTR() {
   });
   _ls.setItem('ae_payment_records', JSON.stringify(records));
 
-  // 2️⃣ Grant premium — instant unlock
-  const approved = getSubApproved();
-  const u = approved.find(a => a.gmail === user.gmail);
-  if (u) {
-    u.isPremium    = true;
-    u.premiumPlan  = plan;
-    u.premiumSince = now.toISOString();
-    u.utr          = utrRaw;
-    saveSubApproved(approved);
-  }
+  // 2️⃣ Supabase ae_payments లో pending గా save
+  sbInsert('ae_payments', {
+    gmail: user.gmail,
+    name: user.name,
+    plan,
+    amount,
+    payment_id: utrRaw,
+    status: 'UTR Submitted'
+  }).catch(e => console.warn('ae_payments UTR:', e));
 
-  // 3️⃣ Update current session
-  const sess = { ...user, isPremium: true, premiumPlan: plan, premiumSince: now.toISOString() };
-  setCurrentUser(sess);
-
-  // 4️⃣ Send WhatsApp alert to admin
-  const waMsg = `🔔 *New UPI Payment*%0A` +
+  // 3️⃣ Send WhatsApp alert to admin
+  const waMsg = `🔔 *New UTR — Verify చేయండి!*%0A` +
     `👤 Name: ${encodeURIComponent(user.name)}%0A` +
     `📧 Gmail: ${encodeURIComponent(user.gmail)}%0A` +
     `📋 Plan: ${plan} — ₹${amount}%0A` +
     `🔑 UTR: ${utrRaw}%0A` +
-    `🕐 Time: ${encodeURIComponent(dateStr)}`;
+    `🕐 Time: ${encodeURIComponent(dateStr)}%0A` +
+    `✅ Admin panel లో verify చేసి approve చేయండి`;
   window.open('https://wa.me/' + SITE_CONFIG.WA_NUMBER + '?text=' + waMsg, '_blank');
 
-  // 5️⃣ UI update
+  // 4️⃣ UI update — premium grant చేయకుండా
   closePricing();
-  updateNavUser();
-  filterExams();
   if (typeof renderPaymentsTable === 'function') renderPaymentsTable();
   if (typeof renderPaymentStats  === 'function') renderPaymentStats();
 
-  // 6️⃣ Success modal
+  // 5️⃣ Pending confirmation modal
   setTimeout(() => {
     document.getElementById('premium-success-modal')?.remove();
     const m = document.createElement('div');
     m.id = 'premium-success-modal';
     m.style.cssText = 'position:fixed;inset:0;z-index:9999;background:rgba(10,18,45,.8);backdrop-filter:blur(16px);display:flex;align-items:center;justify-content:center;padding:16px;';
     m.innerHTML = `
-      <div style="background:var(--surface);border-radius:24px;width:100%;max-width:400px;padding:36px 28px;text-align:center;border:2px solid rgba(16,185,129,.4);">
-        <div style="font-size:60px">🎉</div>
-        <div style="font-size:22px;font-weight:900;color:#10b981;margin-bottom:6px">Premium Activated!</div>
+      <div style="background:var(--surface);border-radius:24px;width:100%;max-width:400px;padding:36px 28px;text-align:center;border:2px solid rgba(245,183,49,.4);">
+        <div style="font-size:60px">⏳</div>
+        <div style="font-size:22px;font-weight:900;color:#F5B731;margin-bottom:6px">Payment Submitted!</div>
         <div style="font-size:12px;color:var(--text3);margin-bottom:4px">UTR: <b>${utrRaw}</b></div>
         <div style="font-size:12px;color:var(--text3);margin-bottom:20px">Plan: <b>${plan === 'yearly' ? 'Yearly ₹'+PLAN_PRICES.yearly : 'Monthly ₹'+PLAN_PRICES.monthly}</b></div>
-        <div style="background:rgba(16,185,129,.1);border:1.5px solid rgba(16,185,129,.3);border-radius:14px;padding:16px;margin-bottom:24px">
-          <div style="font-size:14px;font-weight:700;color:var(--teal);line-height:1.9">
-            ✅ అన్ని Premium Exams unlock అయ్యాయి<br>
-            ✅ Admin కి WhatsApp వెళ్ళింది<br>
-            ✅ మీ account verified అవుతుంది
+        <div style="background:rgba(245,183,49,.1);border:1.5px solid rgba(245,183,49,.3);border-radius:14px;padding:16px;margin-bottom:24px">
+          <div style="font-size:13px;font-weight:700;color:#F5B731;line-height:2;">
+            ✅ UTR Admin కి submit అయింది<br>
+            ⏳ Admin verify చేసిన తర్వాత Premium activate అవుతుంది<br>
+            📱 సాధారణంగా 1–2 గంటల్లో activate అవుతుంది
           </div>
         </div>
-        <button onclick="document.getElementById('premium-success-modal').remove();goExams();" style="width:100%;padding:14px;border-radius:14px;border:none;cursor:pointer;font-size:15px;font-weight:800;background:linear-gradient(135deg,#10b981,#059669);color:#fff">
-          🚀 Exams చూడండి
+        <button onclick="document.getElementById('premium-success-modal').remove();" style="width:100%;padding:14px;border-radius:14px;border:none;cursor:pointer;font-size:15px;font-weight:800;background:linear-gradient(135deg,#F5B731,#E8640A);color:#fff">
+          OK, నేను wait చేస్తాను
         </button>
       </div>`;
     document.body.appendChild(m);

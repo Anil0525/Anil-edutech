@@ -5720,7 +5720,7 @@ html {
         <!-- Slide 1: Mobile App -->
         <div class="ae-slide ae-slide-app">
           <div class="ae-slide-dots-bg"></div>
-          <div class="ae-slide-counter" id="ae-counter">1 / 4</div>
+          <div class="ae-slide-counter" id="ae-counter">1 / 5</div>
           <div class="ae-slide-content">
             <div class="ae-slide-tag">🚀 Coming Soon</div>
             <div class="ae-slide-title">Anil EduTech<br><span>Mobile App</span></div>
@@ -5791,7 +5791,23 @@ html {
           </div>
         </div>
 
-        <!-- Slide 4: YouTube -->
+        <!-- Slide 4: Premium Ad -->
+        <div class="ae-slide" style="background:linear-gradient(135deg,#1a0533 0%,#2d0a5e 50%,#4a1080 100%);">
+          <div class="ae-slide-dots-bg"></div>
+          <div class="ae-slide-content" style="z-index:1">
+            <div class="ae-slide-tag" style="background:linear-gradient(135deg,#F5B731,#E8640A);color:#fff;border:none;">👑 PREMIUM</div>
+            <div class="ae-slide-title" style="color:#fff">అన్ని Exams<br><span style="background:linear-gradient(135deg,#F5B731,#E8640A);-webkit-background-clip:text;-webkit-text-fill-color:transparent">Unlock చేయండి!</span></div>
+            <div class="ae-slide-desc" style="color:rgba(255,255,255,.8)">TSPSC Group-1 · SSC Advanced · Banking Special<br>₹99/month మాత్రమే — Cancel anytime!</div>
+            <button onclick="openPricing()" class="ae-slide-btn" style="background:linear-gradient(135deg,#F5B731,#E8640A);color:#1a0533;font-weight:900;">⚡ Premium తీసుకోండి <span style="font-size:14px">→</span></button>
+          </div>
+          <div class="ae-slide-phone" style="z-index:1;display:flex;flex-direction:column;gap:8px;">
+            <div style="background:rgba(245,183,49,.15);border:1.5px solid rgba(245,183,49,.4);border-radius:12px;padding:10px 14px;color:#F5B731;font-size:12px;font-weight:700;">🔓 Locked Exams</div>
+            <div style="background:rgba(245,183,49,.15);border:1.5px solid rgba(245,183,49,.4);border-radius:12px;padding:10px 14px;color:#F5B731;font-size:12px;font-weight:700;">📊 Advanced Analytics</div>
+            <div style="background:rgba(245,183,49,.15);border:1.5px solid rgba(245,183,49,.4);border-radius:12px;padding:10px 14px;color:#F5B731;font-size:12px;font-weight:700;">🏅 Certificates</div>
+          </div>
+        </div>
+
+        <!-- Slide 5: YouTube -->
         <div class="ae-slide ae-slide-yt">
           <div class="ae-slide-dots-bg"></div>
           <div class="ae-slide-content">
@@ -5821,6 +5837,7 @@ html {
         <button class="ae-dot" onclick="goSlide(1)"></button>
         <button class="ae-dot" onclick="goSlide(2)"></button>
         <button class="ae-dot" onclick="goSlide(3)"></button>
+        <button class="ae-dot" onclick="goSlide(4)"></button>
       </div>
       <div class="ae-car-progress">
         <div class="ae-car-progress-fill" id="ae-progress-fill"></div>
@@ -16359,58 +16376,224 @@ function loadEmailJSConfig() {
   if (document.getElementById('ejs-pubkey'))   document.getElementById('ejs-pubkey').value   = cfg.publicKey  || '';
 }
 
+/* ── HTML Email Builder ── */
+function _buildEmailHTML(headerColor, headerIcon, headerTitle, bodyHTML, footerNote) {
+  return `<!DOCTYPE html>
+<html><head><meta charset="UTF-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<style>
+  @import url('https://fonts.googleapis.com/css2?family=Noto+Sans+Telugu:wght@400;600;700&family=Poppins:wght@400;600;700&display=swap');
+  *{margin:0;padding:0;box-sizing:border-box}
+  body{background:#f0f4f8;font-family:'Poppins','Noto Sans Telugu',sans-serif;color:#1e293b}
+  .wrap{max-width:600px;margin:32px auto;background:#fff;border-radius:16px;overflow:hidden;box-shadow:0 4px 24px rgba(0,0,0,.10)}
+  .header{background:${headerColor};padding:32px 24px;text-align:center}
+  .header-icon{font-size:48px;display:block;margin-bottom:8px}
+  .header-title{color:#fff;font-size:22px;font-weight:700;letter-spacing:.3px}
+  .header-sub{color:rgba(255,255,255,.85);font-size:13px;margin-top:4px}
+  .body{padding:32px 28px}
+  .greeting{font-size:16px;font-weight:600;color:#1e293b;margin-bottom:20px}
+  .info-card{background:#f8fafc;border:1.5px solid #e2e8f0;border-radius:12px;padding:20px;margin:20px 0}
+  .info-row{display:flex;align-items:center;gap:12px;padding:10px 0;border-bottom:1px solid #e2e8f0}
+  .info-row:last-child{border-bottom:none;padding-bottom:0}
+  .info-row:first-child{padding-top:0}
+  .info-icon{width:36px;height:36px;border-radius:8px;display:flex;align-items:center;justify-content:center;font-size:18px;flex-shrink:0;background:#e0e7ff}
+  .info-label{font-size:11px;color:#64748b;font-weight:600;text-transform:uppercase;letter-spacing:.5px}
+  .info-value{font-size:14px;color:#1e293b;font-weight:600;margin-top:2px}
+  .score-bar-wrap{margin:20px 0}
+  .score-bar-bg{background:#e2e8f0;border-radius:999px;height:12px;overflow:hidden}
+  .score-bar-fill{height:100%;border-radius:999px;transition:width .6s}
+  .score-label{display:flex;justify-content:space-between;margin-bottom:6px;font-size:13px;font-weight:600}
+  .badge{display:inline-block;padding:8px 20px;border-radius:999px;font-weight:700;font-size:14px;margin:16px 0}
+  .cta-btn{display:block;width:fit-content;margin:24px auto 0;background:linear-gradient(135deg,#1A73E8,#0EA5E9);color:#fff;text-decoration:none;padding:14px 36px;border-radius:999px;font-weight:700;font-size:15px;text-align:center;letter-spacing:.3px}
+  .divider{height:1px;background:#e2e8f0;margin:24px 0}
+  .footer{background:#f8fafc;padding:20px 28px;text-align:center;border-top:1px solid #e2e8f0}
+  .footer-logo{font-size:18px;font-weight:700;color:#1A73E8;margin-bottom:6px}
+  .footer-note{font-size:12px;color:#94a3b8;line-height:1.6}
+  .stat-grid{display:grid;grid-template-columns:repeat(4,1fr);gap:12px;margin:20px 0}
+  .stat-box{background:#f8fafc;border:1.5px solid #e2e8f0;border-radius:10px;padding:14px 8px;text-align:center}
+  .stat-num{font-size:22px;font-weight:700}
+  .stat-lbl{font-size:11px;color:#64748b;margin-top:2px}
+  .highlight-msg{background:linear-gradient(135deg,#f0fdf4,#dcfce7);border:1.5px solid #86efac;border-radius:12px;padding:16px 20px;margin:20px 0;color:#166534;font-weight:600;font-size:14px;text-align:center}
+  .warn-msg{background:#fef9c3;border:1.5px solid #fde047;border-radius:12px;padding:16px 20px;margin:20px 0;color:#713f12;font-weight:600;font-size:14px;text-align:center}
+</style>
+</head><body>
+<div class="wrap">
+  <div class="header">
+    <span class="header-icon">${headerIcon}</span>
+    <div class="header-title">${headerTitle}</div>
+    <div class="header-sub">aniledutech.in</div>
+  </div>
+  <div class="body">${bodyHTML}</div>
+  <div class="footer">
+    <div class="footer-logo">📚 Anil EduTech</div>
+    <div class="footer-note">${footerNote}<br>© ${new Date().getFullYear()} Anil EduTech · aniledutech.in</div>
+  </div>
+</div>
+</body></html>`;
+}
+
+function _infoRow(icon, label, value, iconBg) {
+  return `<div class="info-row">
+    <div class="info-icon" style="background:${iconBg||'#e0e7ff'}">${icon}</div>
+    <div><div class="info-label">${label}</div><div class="info-value">${value}</div></div>
+  </div>`;
+}
+
 async function sendEmailNotification(type, data) {
   const cfg = getEmailJSConfig();
   if (!cfg || !cfg.serviceId || !cfg.templateId || !cfg.publicKey) return;
 
   const adminGmail = (getAdminEmail && getAdminEmail()) || '';
+  const now = new Date().toLocaleString('en-IN', {dateStyle:'medium', timeStyle:'short'});
 
-  const templates = {
-    register: {
-      to: adminGmail,
-      subject: '🆕 New Registration — ' + data.name,
-      message: `నమస్కారం Admin,\n\nకొత్త user register అయ్యారు!\n\n👤 Name: ${data.name}\n📧 Gmail: ${data.gmail}\n🕐 Time: ${new Date().toLocaleString('en-IN')}\n\nAdmin Panel → Subscribers లో చూడండి.\n\n— Anil EduTech`
-    },
-    approved: {
-      to: data.gmail,
-      subject: '🎉 Anil EduTech — మీ Account Approve అయింది!',
-      message: `నమస్కారం ${data.name},\n\nమీ Anil EduTech account approve అయింది! 🎉\n\n✅ ఇప్పుడు login చేసి exams start చేయండి\n🌐 Website: https://aniledutech.in\n\nAll the best for your preparation!\n\n— Anil EduTech Team`
-    },
-    result: {
-      to: data.gmail,
-      subject: `📊 Exam Result — ${data.examName} | Score: ${data.pct}%`,
-      message: `నమస్కారం ${data.name},\n\n🎯 మీ Exam Result:\n\n📝 Exam: ${data.examName}\n✅ Correct: ${data.correct}\n❌ Wrong: ${data.wrong || 0}\n⏭️ Skipped: ${data.skip || 0}\n📊 Total: ${data.correct}/${data.total}\n🏆 Score: ${data.pct}%\n\n${data.pct >= 75 ? '🌟 Excellent performance! చాలా బాగా చేశారు!' : data.pct >= 50 ? '👍 Good effort! ఇంకా practice చేయండి.' : '💪 Keep practicing! మీరు improve అవుతారు.'}\n\n${data.pct >= 50 ? '🏅 మీ Certificate separate email గా పంపబడుతోంది!' : ''}\n\nMore exams: https://aniledutech.in\n\n— Anil EduTech Team`
-    },
-    payment: {
-      to: data.gmail,
-      subject: '🌟 Anil EduTech Premium Activated!',
-      message: `నమస్కారం ${data.name},\n\nమీ Premium subscription successful! 🎉\n\n💳 Payment ID: ${data.paymentId}\n📦 Plan: ${data.plan === 'yearly' ? 'Yearly Premium' : 'Monthly Premium'}\n💰 Amount: ₹${data.amount}\n\n✅ అన్ని locked exams ఇప్పుడు open అయ్యాయి\n✅ Premium content access activated\n\nExams చూడండి: https://aniledutech.in\n\nThank you for your support!\n\n— Anil EduTech Team`
-    },
-    payment_admin: {
-      to: adminGmail,
-      subject: '💰 New Payment — ' + data.name,
-      message: `కొత్త payment వచ్చింది!\n\n👤 Name: ${data.name}\n📧 Gmail: ${data.gmail}\n💳 Payment ID: ${data.paymentId}\n📦 Plan: ${data.plan}\n💰 Amount: ₹${data.amount}\n🕐 Time: ${new Date().toLocaleString('en-IN')}\n\n— Anil EduTech`
-    },
-    forgot: {
-      to: adminGmail,
-      subject: '🔑 Password Reset Request — ' + data.name,
-      message: `Password reset request!\n\n👤 Name: ${data.name}\n📧 Gmail: ${data.gmail}\n🕐 Time: ${new Date().toLocaleString('en-IN')}\n\nAdmin Panel → Subscribers లో reset చేయండి.\n\n— Anil EduTech`
-    },
-    login: {
-      to: adminGmail,
-      subject: '🔐 User Login — ' + data.name,
-      message: `User logged in!\n\n👤 Name: ${data.name}\n📧 Gmail: ${data.gmail}\n🕐 Time: ${new Date().toLocaleString('en-IN')}\n\n— Anil EduTech`
-    },
-  };
+  let to, subject, htmlBody;
 
-  const t = templates[type];
-  if (!t || !t.to) return;
+  if (type === 'register') {
+    to = adminGmail;
+    subject = '🆕 New Registration — ' + data.name;
+    htmlBody = _buildEmailHTML(
+      'linear-gradient(135deg,#1A73E8,#0EA5E9)',
+      '👤', 'New User Registered!',
+      `<div class="greeting">నమస్కారం Admin 👋</div>
+       <p style="color:#475569;font-size:14px;margin-bottom:4px">కొత్త user మీ platform లో register అయ్యారు. వివరాలు చూడండి:</p>
+       <div class="info-card">
+         ${_infoRow('👤','Student Name', data.name, '#e0e7ff')}
+         ${_infoRow('📧','Gmail Address', data.gmail, '#fce7f3')}
+         ${_infoRow('🕐','Registered At', now, '#f0fdf4')}
+       </div>
+       <div class="highlight-msg">✅ Admin Panel → Subscribers లో వెళ్ళి approve చేయండి</div>
+       <a href="https://aniledutech.in" class="cta-btn">🔗 Admin Panel తెరవండి</a>`,
+      'This is an automated notification from your platform.'
+    );
+
+  } else if (type === 'approved') {
+    to = data.gmail;
+    subject = '🎉 మీ Account Approve అయింది — Anil EduTech';
+    htmlBody = _buildEmailHTML(
+      'linear-gradient(135deg,#10b981,#059669)',
+      '🎉', 'Account Approved!',
+      `<div class="greeting">నమస్కారం ${data.name} గారు! 🙏</div>
+       <p style="color:#475569;font-size:14px;margin-bottom:20px">మీ <strong>Anil EduTech</strong> account successfully approve అయింది. ఇప్పుడు మీరు అన్ని exams access చేయవచ్చు!</p>
+       <div class="info-card">
+         ${_infoRow('✅','Account Status', 'Active & Approved', '#f0fdf4')}
+         ${_infoRow('🕐','Approved At', now, '#e0e7ff')}
+       </div>
+       <div class="highlight-msg">🚀 ఇప్పుడే login చేసి మీ preparation start చేయండి!</div>
+       <a href="https://aniledutech.in" class="cta-btn">📚 Exams Start చేయండి</a>`,
+      'TSPSC · SSC · Banking · GK — అన్ని exams free గా!'
+    );
+
+  } else if (type === 'result') {
+    to = data.gmail;
+    subject = `📊 Exam Result: ${data.examName} — Score: ${data.pct}%`;
+    const pct = Number(data.pct) || 0;
+    const barColor = pct >= 75 ? '#10b981' : pct >= 50 ? '#f59e0b' : '#ef4444';
+    const perfMsg  = pct >= 75 ? '🌟 Excellent! చాలా బాగా చేశారు!' : pct >= 50 ? '👍 Good effort! ఇంకా practice చేయండి.' : '💪 Keep going! మీరు తప్పకుండా improve అవుతారు.';
+    const perfBg   = pct >= 75 ? 'linear-gradient(135deg,#f0fdf4,#dcfce7)' : pct >= 50 ? 'linear-gradient(135deg,#fffbeb,#fef3c7)' : 'linear-gradient(135deg,#fff1f2,#ffe4e6)';
+    const perfBdr  = pct >= 75 ? '#86efac' : pct >= 50 ? '#fde047' : '#fca5a5';
+    const perfClr  = pct >= 75 ? '#166534' : pct >= 50 ? '#713f12' : '#991b1b';
+    htmlBody = _buildEmailHTML(
+      'linear-gradient(135deg,#7c3aed,#6366f1)',
+      '📊', 'Exam Result',
+      `<div class="greeting">నమస్కారం ${data.name} గారు! 🙏</div>
+       <p style="color:#475569;font-size:14px;margin-bottom:4px">మీ <strong>${data.examName}</strong> exam result ఇక్కడ ఉంది:</p>
+       <div class="score-bar-wrap">
+         <div class="score-label"><span>మీ Score</span><span style="color:${barColor}">${pct}%</span></div>
+         <div class="score-bar-bg"><div class="score-bar-fill" style="width:${pct}%;background:${barColor}"></div></div>
+       </div>
+       <div class="stat-grid">
+         <div class="stat-box"><div class="stat-num" style="color:#10b981">${data.correct}</div><div class="stat-lbl">✅ Correct</div></div>
+         <div class="stat-box"><div class="stat-num" style="color:#ef4444">${data.wrong||0}</div><div class="stat-lbl">❌ Wrong</div></div>
+         <div class="stat-box"><div class="stat-num" style="color:#f59e0b">${data.skip||0}</div><div class="stat-lbl">⏭ Skipped</div></div>
+         <div class="stat-box"><div class="stat-num" style="color:#6366f1">${data.correct}/${data.total}</div><div class="stat-lbl">📊 Score</div></div>
+       </div>
+       <div style="background:${perfBg};border:1.5px solid ${perfBdr};border-radius:12px;padding:16px 20px;margin:20px 0;color:${perfClr};font-weight:600;font-size:14px;text-align:center">${perfMsg}</div>
+       ${pct>=50?'<div class="highlight-msg">🏅 మీ Certificate prepare అవుతోంది — separate email లో వస్తుంది!</div>':''}
+       <a href="https://aniledutech.in" class="cta-btn">📚 ఇంకా Exams చేయండి</a>`,
+      'Regular practice తో మీరు తప్పకుండా succeed అవుతారు!'
+    );
+
+  } else if (type === 'payment') {
+    to = data.gmail;
+    subject = '⭐ Premium Activated — Anil EduTech';
+    htmlBody = _buildEmailHTML(
+      'linear-gradient(135deg,#f59e0b,#d97706)',
+      '⭐', 'Premium Activated!',
+      `<div class="greeting">నమస్కారం ${data.name} గారు! 🙏</div>
+       <p style="color:#475569;font-size:14px;margin-bottom:4px">మీ Premium subscription successful గా activate అయింది! ధన్యవాదాలు 💛</p>
+       <div class="info-card">
+         ${_infoRow('💳','Payment ID', data.paymentId, '#fef3c7')}
+         ${_infoRow('📦','Plan', data.plan==='yearly'?'Yearly Premium ⭐':'Monthly Premium', '#e0e7ff')}
+         ${_infoRow('💰','Amount Paid', '₹'+data.amount, '#f0fdf4')}
+         ${_infoRow('🕐','Activated At', now, '#fce7f3')}
+       </div>
+       <div class="highlight-msg">🔓 అన్ని locked exams ఇప్పుడు unlock అయ్యాయి!</div>
+       <a href="https://aniledutech.in" class="cta-btn">📚 Premium Exams చూడండి</a>`,
+      'మీ support కి ధన్యవాదాలు! మీ preparation కి all the best!'
+    );
+
+  } else if (type === 'payment_admin') {
+    to = adminGmail;
+    subject = '💰 New Payment Received — ' + data.name;
+    htmlBody = _buildEmailHTML(
+      'linear-gradient(135deg,#10b981,#059669)',
+      '💰', 'Payment Received!',
+      `<div class="greeting">నమస్కారం Admin 👋</div>
+       <p style="color:#475569;font-size:14px;margin-bottom:4px">కొత్త payment వచ్చింది!</p>
+       <div class="info-card">
+         ${_infoRow('👤','Student Name', data.name, '#e0e7ff')}
+         ${_infoRow('📧','Gmail', data.gmail, '#fce7f3')}
+         ${_infoRow('💳','Payment ID', data.paymentId, '#fef3c7')}
+         ${_infoRow('📦','Plan', data.plan, '#f0fdf4')}
+         ${_infoRow('💰','Amount', '₹'+data.amount, '#dcfce7')}
+         ${_infoRow('🕐','Time', now, '#e0e7ff')}
+       </div>
+       <a href="https://aniledutech.in" class="cta-btn">📊 Admin Panel చూడండి</a>`,
+      'This is an automated payment notification.'
+    );
+
+  } else if (type === 'forgot') {
+    to = adminGmail;
+    subject = '🔑 Password Reset Request — ' + data.name;
+    htmlBody = _buildEmailHTML(
+      'linear-gradient(135deg,#f59e0b,#ef4444)',
+      '🔑', 'Password Reset Request',
+      `<div class="greeting">నమస్కారం Admin 👋</div>
+       <p style="color:#475569;font-size:14px;margin-bottom:4px">ఒక user password reset request చేశారు:</p>
+       <div class="info-card">
+         ${_infoRow('👤','Name', data.name, '#e0e7ff')}
+         ${_infoRow('📧','Gmail', data.gmail, '#fce7f3')}
+         ${_infoRow('🕐','Requested At', now, '#fef3c7')}
+       </div>
+       <div class="warn-msg">⚠️ Admin Panel → Subscribers లో వెళ్ళి reset చేయండి</div>
+       <a href="https://aniledutech.in" class="cta-btn">🔓 Reset చేయండి</a>`,
+      'This is an automated security notification.'
+    );
+
+  } else if (type === 'login') {
+    to = adminGmail;
+    subject = '🔐 User Login Alert — ' + data.name;
+    htmlBody = _buildEmailHTML(
+      'linear-gradient(135deg,#6366f1,#8b5cf6)',
+      '🔐', 'User Login',
+      `<div class="greeting">నమస్కారం Admin 👋</div>
+       <p style="color:#475569;font-size:14px;margin-bottom:4px">ఒక user login అయ్యారు:</p>
+       <div class="info-card">
+         ${_infoRow('👤','Name', data.name, '#e0e7ff')}
+         ${_infoRow('📧','Gmail', data.gmail, '#fce7f3')}
+         ${_infoRow('🕐','Login Time', now, '#f0fdf4')}
+       </div>`,
+      'This is an automated login notification.'
+    );
+  } else {
+    return;
+  }
 
   try {
     await emailjs.send(cfg.serviceId, cfg.templateId, {
-      to_email: t.to,
-      subject:  t.subject,
-      message:  t.message,
+      to_email:  to,
+      subject:   subject,
+      message:   htmlBody,
+      html_message: htmlBody,
       from_name: 'Anil EduTech'
     }, cfg.publicKey);
   } catch(e) { console.warn('EmailJS error:', e); }
@@ -16496,7 +16679,7 @@ async function adminResetPw(gmail) {
 
 /* ─── CAROUSEL ─── */
 let _carIdx = 0;
-const _carTotal = 4;
+const _carTotal = 5;
 let _carTimer = null;
 let _carProgress = 0;
 let _carProgressTimer = null;
@@ -20040,29 +20223,10 @@ document.addEventListener('DOMContentLoaded', function() {
 });
 </script>
 <script>
-// ══ PREMIUM BANNER INIT ══
+// ══ PREMIUM BANNER — disabled ══
 window._refreshPremiumBanner = function(){
   var el = document.getElementById('premium-exams-banner');
-  if(!el) return;
-  var u = typeof getCurrentUser === 'function' ? getCurrentUser() : null;
-  if(u && u.isPremium){ el.style.display='none'; el.innerHTML=''; return; }
-  el.style.display='block';
-  el.innerHTML = '<div class="ae-prem-banner" onclick="if(typeof openPricing===\'function\')openPricing()">'
-    + '<div class="ae-prem-glow"></div>'
-    + '<div class="ae-prem-stars">★ ★ ★ ★ ★</div>'
-    + '<div class="ae-prem-left">'
-    + '<div class="ae-prem-badge">👑 PREMIUM — ₹99/month మాత్రమే</div>'
-    + '<div class="ae-prem-title">అన్ని Exams Unlock చేయండి! 🚀</div>'
-    + '<div class="ae-prem-sub">Free users కంటే 3× faster preparation చేయండి</div>'
-    + '<div class="ae-prem-perks">'
-    + '<span class="ae-prem-perk">✅ TSPSC Full Access</span>'
-    + '<span class="ae-prem-perk">✅ SSC CGL Complete</span>'
-    + '<span class="ae-prem-perk">✅ Banking + RRB</span>'
-    + '<span class="ae-prem-perk">✅ Unlimited Tests</span>'
-    + '</div>'
-    + '</div>'
-    + '<button class="ae-prem-cta" onclick="event.stopPropagation();if(typeof openPricing===\'function\')openPricing()">⚡ Premium తీసుకోండి<span class="ae-prem-cta-sub">ONLY ₹99/MONTH</span></button>'
-    + '</div>';
+  if(el){ el.style.display='none'; el.innerHTML=''; }
 };
 </script>
 </html>
@@ -20531,4 +20695,68 @@ async function showProfile() {
   }
 }
 
+</script>
+
+<!-- 💎 PREMIUM BANNERS -->
+<style>
+.prem-inline-banner {
+  background: linear-gradient(135deg,#fffbeb,#fff7ed);
+  border: 1.5px solid #fcd34d; border-radius: 12px;
+  padding: 12px 16px; margin: 14px auto;
+  max-width: 860px; display: flex; align-items: center; gap: 12px;
+}
+.prem-inline-banner span { flex:1; color:#92400e; font-weight:600; font-size:13px; }
+.prem-inline-banner button {
+  background: linear-gradient(135deg,#F5B731,#E8640A);
+  color:#fff; border:none; border-radius:20px;
+  padding:8px 14px; font-weight:700; font-size:12px;
+  cursor:pointer; white-space:nowrap; flex-shrink:0;
+}
+</style>
+<script>
+(function(){
+  function _isPrem(){try{return !!(getCurrentUser&&getCurrentUser()?.isPremium);}catch(e){return false;}}
+
+  function _banner(id,icon,text,btn){
+    if(_isPrem()||document.getElementById(id)) return null;
+    const d=document.createElement('div');
+    d.id=id; d.className='prem-inline-banner';
+    d.innerHTML=`<span>${icon} ${text}</span><button onclick="openPricing()">${btn}</button>`;
+    return d;
+  }
+
+  function hookShowPage(){
+    const orig=window.showPage;
+    if(typeof orig!=='function'){setTimeout(hookShowPage,500);return;}
+    window.showPage=function(name){
+      orig.apply(this,arguments);
+      if(_isPrem()) return;
+
+      if(name==='exams') setTimeout(()=>{
+        // no banner on exams page
+      },300);
+
+      if(name==='result') setTimeout(()=>{
+        const el=document.getElementById('answer-review');
+        if(!el||document.getElementById('prem-b2')) return;
+        const b=_banner('prem-b2','👑','Premium తో మరిన్ని exclusive exams practice చేయండి — ₹99/month','⚡ Premium తీసుకోండి');
+        if(b) el.before(b);
+      },500);
+
+      if(name==='progress') setTimeout(()=>{
+        const el=document.querySelector('#page-progress .prog-header');
+        if(!el||document.getElementById('prem-b3')) return;
+        const b=_banner('prem-b3','📊','Advanced analytics కావాలా? Premium తీసుకోండి — ₹99/month','👑 Upgrade');
+        if(b) el.after(b);
+      },300);
+    };
+  }
+
+  window._removePremiumBanners=function(){
+    ['prem-b1','prem-b2','prem-b3'].forEach(id=>document.getElementById(id)?.remove());
+  };
+
+  if(document.readyState==='loading') document.addEventListener('DOMContentLoaded',hookShowPage);
+  else setTimeout(hookShowPage,500);
+})();
 </script>

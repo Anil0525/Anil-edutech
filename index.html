@@ -5212,6 +5212,9 @@ html.loading-active, html.loading-active body {
   background: #03071E !important;
   overflow: hidden !important;
   padding: 0 !important;
+  max-width: 100vw !important;
+  position: fixed !important;
+  width: 100% !important;
 }
 /* Reset to normal after loading */
 html:has(#_ae_loading.hide-loader) body,
@@ -5251,8 +5254,8 @@ html:not(:has(#_ae_loading)) body {
 }
 @keyframes _p_orbmove {
   0%,100% { transform: translate(0,0) scale(1); }
-  33%     { transform: translate(20px,-20px) scale(1.05); }
-  66%     { transform: translate(-15px,15px) scale(.96); }
+  33%     { transform: translate(0,-20px) scale(1.05); }
+  66%     { transform: translate(0,15px) scale(.96); }
 }
 
 /* ── Stars ── */
@@ -5575,6 +5578,7 @@ html:not(:has(#_ae_loading)) body {
 })();
 </script>
 </div>
+
 
 <nav>
   <div class="logo" onclick="goHome()">
@@ -9298,8 +9302,8 @@ async function _gsSaveBackup(key, value) {
 
 // ── INIT STORAGE — Supabase primary, Sheets fallback ──
 async function _initStorage() {
-  // ⚡ FIX: Per-request 6s timeout — network slow అయినా hang కాదు
-  const withTimeout = (promise, ms=6000) =>
+  // ⚡ FIX: Per-request 2.5s timeout — network slow అయినా hang కాదు
+  const withTimeout = (promise, ms=2500) =>
     Promise.race([promise, new Promise((_,r) => setTimeout(() => r(new Error('timeout')), ms))]);
 
   try {
@@ -9434,6 +9438,7 @@ document.addEventListener('DOMContentLoaded', function() {
   const _timeout = new Promise(resolve => setTimeout(resolve, MAX_WAIT));
   Promise.race([_initStorage(), _timeout]).then(_done).catch(_done);
 });
+
 
 
 

@@ -9585,6 +9585,7 @@ More exams: https://aniledutech.in
 — Anil EduTech Team`;
 
   try {
+    // Send to user
     await emailjs.send(cfg.serviceId, cfg.templateId, {
       to_email:  u.gmail,
       subject:   `🏅 Certificate — ${examName} | ${r.pct}% Score | ${rankLabel}`,
@@ -9592,6 +9593,18 @@ More exams: https://aniledutech.in
       html_message: htmlBody,
       from_name: 'Anil EduTech'
     }, cfg.publicKey);
+
+    // Send copy to admin
+    const adminEmail = (getAdminEmail && getAdminEmail()) || '';
+    if (adminEmail && adminEmail !== u.gmail) {
+      await emailjs.send(cfg.serviceId, cfg.templateId, {
+        to_email:  adminEmail,
+        subject:   `🏅 [Admin Copy] Certificate — ${u.name} | ${examName} | ${r.pct}%`,
+        message:   plainText,
+        html_message: htmlBody,
+        from_name: 'Anil EduTech'
+      }, cfg.publicKey);
+    }
 
     if (btn) { btn.textContent = '✅ Email Sent!'; btn.style.background='linear-gradient(135deg,#10B981,#059669)'; }
     toast(`✅ Certificate email ${u.gmail} కి పంపబడింది!`, 'success');

@@ -5192,6 +5192,24 @@ html, body {
   font-family: 'Nunito', sans-serif;
   overflow: hidden;
   transition: opacity .7s cubic-bezier(.4,0,.2,1), transform .7s cubic-bezier(.4,0,.2,1);
+  /* Mobile: cover full screen including safe areas */
+  top: 0 !important; bottom: 0 !important; left: 0 !important; right: 0 !important;
+}
+/* Also ensure html/body don't create white gaps under loading screen */
+html:has(#_ae_loading:not(.hide-loader)) body {
+  padding-bottom: 0 !important;
+  padding-top: 0 !important;
+}
+/* Ensure the background itself is dark during loading */
+html.loading-active, html.loading-active body {
+  background: #03071E !important;
+  overflow: hidden !important;
+  padding: 0 !important;
+}
+/* Reset to normal after loading */
+html:has(#_ae_loading.hide-loader) body,
+html:not(:has(#_ae_loading)) body {
+  background-color: var(--bg, #F0F4FF);
 }
 #_ae_loading.hide-loader {
   opacity: 0 !important;
@@ -9377,6 +9395,7 @@ async function _initStorage() {
 
 
 // Loading overlay is inline in <body> — no JS creation needed
+document.documentElement.classList.add('loading-active');
 document.addEventListener('DOMContentLoaded', function() {
 
   const _startTime = Date.now();
@@ -9389,10 +9408,12 @@ document.addEventListener('DOMContentLoaded', function() {
     if (window._p_complete) {
       window._p_complete(() => {
         ov.classList.add('hide-loader');
+        document.documentElement.classList.remove('loading-active');
         setTimeout(() => { if (ov) ov.remove(); }, 750);
       });
     } else {
       ov.classList.add('hide-loader');
+      document.documentElement.classList.remove('loading-active');
       setTimeout(() => { if (ov) ov.remove(); }, 750);
     }
   }

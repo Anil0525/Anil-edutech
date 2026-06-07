@@ -2874,7 +2874,7 @@
 
   /* ── Mobile Bottom Nav ── */
   .mob-bottom-nav {
-    display: none;
+    display: none !important;
     position: fixed; bottom: 0; left: 0; right: 0;
     height: 64px;
     background: rgba(255,255,255,0.95);
@@ -2933,8 +2933,8 @@
   [data-theme="dark"] .mob-nav-item.active { color: var(--primary); }
 
   @media (max-width: 640px) {
-    .mob-bottom-nav { display: block; }
-    body { padding-bottom: 62px; padding-top: 52px; }
+    .mob-bottom-nav { display: none !important; }
+    body { padding-bottom: 0; padding-top: 52px; }
     /* Show slim mobile header — logo + hamburger only */
     nav {
       display: flex !important;
@@ -4908,10 +4908,7 @@ html {
   .lang-toggle-wrap { display: none !important; }
 }
 
-/* 2. Body bottom padding — always enough for mob-bottom-nav */
-@media (max-width: 640px) {
-  body { padding-bottom: max(64px, calc(64px + env(safe-area-inset-bottom, 0px))) !important; }
-}
+/* 2. Body bottom padding — mob-bottom-nav removed, no extra padding needed */
 
 /* 3. Nav — prevent right side overflow on small screens */
 @media (max-width: 640px) {
@@ -5628,35 +5625,7 @@ html, body {
 </nav>
 
 <!-- MOBILE BOTTOM NAV -->
-<div class="mob-bottom-nav" id="mob-bottom-nav">
-  <div class="mob-nav-inner">
-    <button class="mob-nav-item active" id="mob-nav-home" onclick="goHome();setMobNav('home')">
-      <span class="mob-nav-pill"></span>
-      <span class="mob-nav-icon">🏠</span>
-      <span class="mob-nav-label">Home</span>
-    </button>
-    <button class="mob-nav-item" id="mob-nav-exams" onclick="goExams();setMobNav('exams')">
-      <span class="mob-nav-pill"></span>
-      <span class="mob-nav-icon">📝</span>
-      <span class="mob-nav-label">Exams</span>
-    </button>
-    <button class="mob-nav-item" id="mob-nav-progress" onclick="goProgress();setMobNav('progress')">
-      <span class="mob-nav-pill"></span>
-      <span class="mob-nav-icon">📊</span>
-      <span class="mob-nav-label">Progress</span>
-    </button>
-    <button class="mob-nav-item" id="mob-nav-videos" onclick="goVideos();setMobNav('videos')">
-      <span class="mob-nav-pill"></span>
-      <span class="mob-nav-icon">🎥</span>
-      <span class="mob-nav-label">Videos</span>
-    </button>
-    <button class="mob-nav-item" id="mob-nav-more" onclick="toggleMenu()">
-      <span class="mob-nav-pill"></span>
-      <span class="mob-nav-icon">☰</span>
-      <span class="mob-nav-label">More</span>
-    </button>
-  </div>
-</div>
+<!-- mob-bottom-nav removed -->
 
 <!-- HOME -->
 <div id="page-home" class="page active">

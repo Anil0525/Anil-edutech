@@ -5189,6 +5189,392 @@ html, body {
 </head>
 <body>
 <!-- ⚡ INSTANT LOADING SCREEN — inline in body, first paint -->
+<div id="_ae_loading">
+<style>
+
+#_ae_loading {
+  position: fixed; inset: 0; z-index: 99999;
+  background: #03071E;
+  display: flex; align-items: center; justify-content: center;
+  font-family: 'Nunito', sans-serif;
+  overflow: hidden;
+  transition: opacity .7s cubic-bezier(.4,0,.2,1), transform .7s cubic-bezier(.4,0,.2,1);
+  /* Mobile: cover full screen including safe areas */
+  top: 0 !important; bottom: 0 !important; left: 0 !important; right: 0 !important;
+}
+/* Also ensure html/body don't create white gaps under loading screen */
+html:has(#_ae_loading:not(.hide-loader)) body {
+  padding-bottom: 0 !important;
+  padding-top: 0 !important;
+}
+/* Ensure the background itself is dark during loading */
+html.loading-active, html.loading-active body {
+  background: #03071E !important;
+  overflow: hidden !important;
+  padding: 0 !important;
+}
+/* Reset to normal after loading */
+html:has(#_ae_loading.hide-loader) body,
+html:not(:has(#_ae_loading)) body {
+  background-color: var(--bg, #F0F4FF);
+}
+#_ae_loading.hide-loader {
+  opacity: 0 !important;
+  transform: scale(1.06) !important;
+  pointer-events: none;
+}
+
+/* ── Background gradient orbs ── */
+._p_orb {
+  position: absolute; border-radius: 50%;
+  filter: blur(80px);
+  animation: _p_orbmove 8s ease-in-out infinite;
+  pointer-events: none;
+}
+._p_orb-1 {
+  width: 400px; height: 400px;
+  background: radial-gradient(circle, rgba(26,115,232,.25) 0%, transparent 70%);
+  top: -100px; right: -80px;
+  animation-delay: 0s;
+}
+._p_orb-2 {
+  width: 350px; height: 350px;
+  background: radial-gradient(circle, rgba(124,58,237,.18) 0%, transparent 70%);
+  bottom: -80px; left: -60px;
+  animation-delay: -3s;
+}
+._p_orb-3 {
+  width: 250px; height: 250px;
+  background: radial-gradient(circle, rgba(0,180,216,.15) 0%, transparent 70%);
+  top: 40%; left: 40%;
+  animation-delay: -5s;
+}
+@keyframes _p_orbmove {
+  0%,100% { transform: translate(0,0) scale(1); }
+  33%     { transform: translate(20px,-20px) scale(1.05); }
+  66%     { transform: translate(-15px,15px) scale(.96); }
+}
+
+/* ── Stars ── */
+._p_stars { position: absolute; inset: 0; pointer-events: none; }
+._p_star {
+  position: absolute; border-radius: 50%; background: #fff;
+  animation: _p_twinkle ease-in-out infinite;
+}
+@keyframes _p_twinkle {
+  0%,100% { opacity:.08; transform:scale(1); }
+  50%     { opacity:.7;  transform:scale(1.6); }
+}
+
+/* ── Center wrapper ── */
+._p_center {
+  position: relative; z-index: 5;
+  display: flex; flex-direction: column;
+  align-items: center; justify-content: center;
+  animation: _p_enter .8s cubic-bezier(.2,.8,.2,1) .05s both;
+}
+@keyframes _p_enter {
+  from { opacity:0; transform: translateY(24px) scale(.94); }
+  to   { opacity:1; transform: translateY(0) scale(1); }
+}
+
+/* ── Orbital rings ── */
+._p_orbits {
+  position: relative;
+  width: 180px; height: 180px;
+  display: flex; align-items: center; justify-content: center;
+}
+._p_orbit {
+  position: absolute; border-radius: 50%;
+  animation: _p_spin linear infinite;
+  will-change: transform;
+}
+._p_orbit-1 {
+  width: 180px; height: 180px;
+  border: 1.5px solid rgba(26,115,232,.4);
+  animation-duration: 5s;
+}
+._p_orbit-2 {
+  width: 138px; height: 138px;
+  border: 1px solid rgba(0,180,216,.35);
+  animation-duration: 3.5s;
+  animation-direction: reverse;
+}
+._p_orbit-3 {
+  width: 98px; height: 98px;
+  border: 1px solid rgba(124,58,237,.4);
+  animation-duration: 2.5s;
+}
+@keyframes _p_spin { to { transform: rotate(360deg); } }
+
+/* glowing dot on each orbit */
+._p_orbit::before {
+  content: '';
+  position: absolute; top: -5px; left: 50%;
+  transform: translateX(-50%);
+  border-radius: 50%;
+}
+._p_orbit-1::before {
+  width:10px; height:10px;
+  background: #1A73E8;
+  box-shadow: 0 0 8px 2px #1A73E8, 0 0 20px 4px rgba(26,115,232,.5);
+}
+._p_orbit-2::before {
+  width:8px; height:8px; top:-4px;
+  background: #00B4D8;
+  box-shadow: 0 0 8px 2px #00B4D8, 0 0 18px 3px rgba(0,180,216,.5);
+}
+._p_orbit-3::before {
+  width:7px; height:7px; top:-3.5px;
+  background: #A78BFA;
+  box-shadow: 0 0 8px 2px #A78BFA, 0 0 16px 3px rgba(167,139,250,.5);
+}
+
+/* ── Core logo ── */
+._p_core {
+  position: absolute;
+  width: 72px; height: 72px; border-radius: 20px;
+  background: linear-gradient(135deg, #1254B8 0%, #1A73E8 50%, #0EA5E9 100%);
+  display: flex; align-items: center; justify-content: center;
+  box-shadow: 0 0 0 1px rgba(26,115,232,.5), 0 0 30px rgba(26,115,232,.8), 0 0 70px rgba(26,115,232,.3);
+  animation: _p_pulse 2.2s ease-in-out infinite;
+}
+@keyframes _p_pulse {
+  0%,100% {
+    box-shadow: 0 0 0 1px rgba(26,115,232,.5), 0 0 30px rgba(26,115,232,.8), 0 0 70px rgba(26,115,232,.3);
+  }
+  50% {
+    box-shadow: 0 0 0 2px rgba(26,115,232,.7), 0 0 50px rgba(26,115,232,1), 0 0 100px rgba(26,115,232,.5);
+  }
+}
+._p_core-txt {
+  font-size: 26px; font-weight: 900; color: #fff;
+  letter-spacing: -1px;
+  text-shadow: 0 2px 10px rgba(0,0,0,.3);
+}
+
+/* ── Brand ── */
+._p_brand { margin-top: 24px; text-align: center; }
+._p_brand-name {
+  font-size: 26px; font-weight: 900; color: #fff;
+  letter-spacing: .5px;
+  animation: _p_brandslide .9s cubic-bezier(.2,.8,.2,1) .5s both;
+}
+@keyframes _p_brandslide {
+  from { opacity:0; transform: translateY(12px); letter-spacing: 6px; }
+  to   { opacity:1; transform: translateY(0);    letter-spacing: .5px; }
+}
+._p_brand-name em {
+  font-style: normal;
+  background: linear-gradient(90deg, #4F8EFF, #00B4D8, #A78BFA);
+  -webkit-background-clip: text; -webkit-text-fill-color: transparent;
+  background-clip: text;
+  background-size: 200% 100%;
+  animation: _p_gradshift 3s linear infinite;
+}
+@keyframes _p_gradshift {
+  0%   { background-position: 0% 50%; }
+  50%  { background-position: 100% 50%; }
+  100% { background-position: 0% 50%; }
+}
+._p_brand-sub {
+  font-size: 9.5px; font-weight: 700; letter-spacing: 3.5px;
+  text-transform: uppercase; color: rgba(255,255,255,.28);
+  margin-top: 4px;
+  animation: _p_fadein .6s ease 1.1s both;
+}
+
+/* ── Progress bar ── */
+._p_prog-wrap {
+  margin-top: 30px; width: 200px;
+  animation: _p_fadein .5s ease .9s both;
+}
+._p_prog-track {
+  width: 100%; height: 3px;
+  background: rgba(255,255,255,.07);
+  border-radius: 2px; overflow: hidden;
+  position: relative;
+}
+._p_prog-fill {
+  height: 100%; width: 0%;
+  background: linear-gradient(90deg, #1A73E8, #00B4D8, #A78BFA);
+  background-size: 200% 100%;
+  border-radius: 2px;
+  transition: width .08s linear;
+  position: relative;
+}
+/* Shimmer on fill */
+._p_prog-fill::after {
+  content: '';
+  position: absolute; top: 0; right: 0;
+  width: 40px; height: 100%;
+  background: linear-gradient(90deg, transparent, rgba(255,255,255,.6), transparent);
+  animation: _p_shimmer 1.2s ease-in-out infinite;
+}
+@keyframes _p_shimmer {
+  0%   { transform: translateX(-40px); opacity:0; }
+  30%  { opacity:1; }
+  100% { transform: translateX(40px);  opacity:0; }
+}
+._p_prog-label {
+  display: flex; justify-content: space-between;
+  margin-top: 8px;
+  font-size: 10px; font-weight: 800; color: rgba(255,255,255,.25);
+}
+._p_prog-pct { color: #4F8EFF !important; font-weight: 900; }
+
+/* ── Tip text ── */
+._p_tip {
+  margin-top: 22px; max-width: 240px; text-align: center;
+  font-size: 11px; font-weight: 600; color: rgba(255,255,255,.2);
+  line-height: 1.5; letter-spacing: .2px;
+  animation: _p_fadein .5s ease 1.3s both;
+  min-height: 18px;
+  transition: opacity .4s ease;
+}
+
+/* ── Fade in keyframe ── */
+@keyframes _p_fadein { from{opacity:0;transform:translateY(6px)} to{opacity:1;transform:translateY(0)} }
+</style>
+
+<!-- Background orbs -->
+<div class="_p_orb _p_orb-1"></div>
+<div class="_p_orb _p_orb-2"></div>
+<div class="_p_orb _p_orb-3"></div>
+
+<!-- Stars -->
+<div class="_p_stars">
+  <div class="_p_star" style="width:2px;height:2px;top:8%;left:12%;animation-duration:2.4s;animation-delay:.3s"></div>
+  <div class="_p_star" style="width:1px;height:1px;top:15%;left:78%;animation-duration:3.1s;animation-delay:.8s"></div>
+  <div class="_p_star" style="width:2px;height:2px;top:28%;left:6%;animation-duration:2.8s;animation-delay:1.2s"></div>
+  <div class="_p_star" style="width:3px;height:3px;top:35%;left:91%;animation-duration:2.2s;animation-delay:.5s"></div>
+  <div class="_p_star" style="width:1px;height:1px;top:55%;left:18%;animation-duration:3.4s;animation-delay:1.6s"></div>
+  <div class="_p_star" style="width:2px;height:2px;top:62%;left:85%;animation-duration:2.6s;animation-delay:.2s"></div>
+  <div class="_p_star" style="width:1px;height:1px;top:72%;left:42%;animation-duration:3.8s;animation-delay:1s"></div>
+  <div class="_p_star" style="width:2px;height:2px;top:80%;left:70%;animation-duration:2.1s;animation-delay:1.8s"></div>
+  <div class="_p_star" style="width:3px;height:3px;top:88%;left:25%;animation-duration:2.9s;animation-delay:.6s"></div>
+  <div class="_p_star" style="width:1px;height:1px;top:20%;left:55%;animation-duration:3.3s;animation-delay:1.4s"></div>
+  <div class="_p_star" style="width:2px;height:2px;top:45%;left:64%;animation-duration:2.5s;animation-delay:.9s"></div>
+  <div class="_p_star" style="width:1px;height:1px;top:92%;left:88%;animation-duration:3.6s;animation-delay:.4s"></div>
+  <div class="_p_star" style="width:2px;height:2px;top:5%;left:45%;animation-duration:2.3s;animation-delay:1.7s"></div>
+  <div class="_p_star" style="width:1px;height:1px;top:48%;left:3%;animation-duration:3s;animation-delay:.7s"></div>
+  <div class="_p_star" style="width:3px;height:3px;top:78%;left:50%;animation-duration:2.7s;animation-delay:1.1s"></div>
+  <div class="_p_star" style="width:1px;height:1px;top:38%;left:33%;animation-duration:4s;animation-delay:2s"></div>
+  <div class="_p_star" style="width:2px;height:2px;top:67%;left:22%;animation-duration:2.9s;animation-delay:.15s"></div>
+  <div class="_p_star" style="width:1px;height:1px;top:12%;left:67%;animation-duration:3.5s;animation-delay:1.35s"></div>
+</div>
+
+<!-- Center content -->
+<div class="_p_center">
+  <!-- Orbital system -->
+  <div class="_p_orbits">
+    <div class="_p_orbit _p_orbit-1"></div>
+    <div class="_p_orbit _p_orbit-2"></div>
+    <div class="_p_orbit _p_orbit-3"></div>
+    <div class="_p_core">
+      <span class="_p_core-txt">AE</span>
+    </div>
+  </div>
+
+  <!-- Brand -->
+  <div class="_p_brand">
+    <div class="_p_brand-name">Anil <em>EduTech</em></div>
+    <div class="_p_brand-sub">Free Online Mock Tests</div>
+  </div>
+
+  <!-- Progress -->
+  <div class="_p_prog-wrap">
+    <div class="_p_prog-track">
+      <div class="_p_prog-fill" id="_p_fill"></div>
+    </div>
+    <div class="_p_prog-label">
+      <span>Loading...</span>
+      <span class="_p_prog-pct" id="_p_pct">0%</span>
+    </div>
+  </div>
+
+  <!-- Rotating tip -->
+  <div class="_p_tip" id="_p_tip">TSPSC · SSC · Banking · GK</div>
+</div>
+
+<script>
+(function () {
+  /* ── Smooth animated progress counter ── */
+  var tips = [
+    'TSPSC · SSC · Banking · GK',
+    '500+ Free Mock Tests',
+    'Telugu & English lo Practice',
+    'Leaderboard · Certificates',
+    'Daily Challenges · Analytics'
+  ];
+  var tipEl  = document.getElementById('_p_tip');
+  var fillEl = document.getElementById('_p_fill');
+  var pctEl  = document.getElementById('_p_pct');
+
+  var current = 0;
+  var tipIdx  = 0;
+
+  /* tip rotation */
+  var tipTimer = setInterval(function () {
+    if (!tipEl) return;
+    tipEl.style.opacity = '0';
+    setTimeout(function () {
+      tipIdx = (tipIdx + 1) % tips.length;
+      if (tipEl) {
+        tipEl.textContent = tips[tipIdx];
+        tipEl.style.opacity = '1';
+      }
+    }, 400);
+  }, 2000);
+
+  /* progress: ease-in-out curve — slow → fast → slow → holds at 95 */
+  var startTime = null;
+  var DURATION  = 2600; // ms to reach 95%
+
+  function easeInOut(t) {
+    return t < .5 ? 2*t*t : -1+(4-2*t)*t;
+  }
+
+  function step(ts) {
+    if (!startTime) startTime = ts;
+    var elapsed = ts - startTime;
+    var t = Math.min(elapsed / DURATION, 1);
+    var pct = Math.round(easeInOut(t) * 95);
+    current = pct;
+
+    if (fillEl) fillEl.style.width = pct + '%';
+    if (pctEl)  pctEl.textContent  = pct + '%';
+
+    if (t < 1) {
+      requestAnimationFrame(step);
+    } else {
+      /* hold at 95% until app ready */
+      if (pctEl) pctEl.textContent = '95%';
+    }
+  }
+
+  requestAnimationFrame(step);
+
+  /* expose so _hideLoader can complete to 100% */
+  window._p_complete = function (cb) {
+    clearInterval(tipTimer);
+    /* jump to 100% smoothly */
+    var from = current;
+    var start2 = null;
+    function finish(ts) {
+      if (!start2) start2 = ts;
+      var p = Math.min((ts - start2) / 300, 1);
+      var val = Math.round(from + (100 - from) * p);
+      if (fillEl) fillEl.style.width = val + '%';
+      if (pctEl)  pctEl.textContent  = val + '%';
+      if (p < 1) { requestAnimationFrame(finish); }
+      else { if (cb) setTimeout(cb, 120); }
+    }
+    requestAnimationFrame(finish);
+  };
+})();
+</script>
+</div>
 
 <nav>
   <div class="logo" onclick="goHome()">
@@ -8912,8 +9298,8 @@ async function _gsSaveBackup(key, value) {
 
 // ── INIT STORAGE — Supabase primary, Sheets fallback ──
 async function _initStorage() {
-  // ⚡ FIX: Per-request 2.5s timeout — network slow అయినా hang కాదు
-  const withTimeout = (promise, ms=2500) =>
+  // ⚡ FIX: Per-request 6s timeout — network slow అయినా hang కాదు
+  const withTimeout = (promise, ms=6000) =>
     Promise.race([promise, new Promise((_,r) => setTimeout(() => r(new Error('timeout')), ms))]);
 
   try {
@@ -9015,10 +9401,38 @@ async function _initStorage() {
 }
 
 
-// No preloader — direct init
+// Loading overlay is inline in <body> — no JS creation needed
+document.documentElement.classList.add('loading-active');
 document.addEventListener('DOMContentLoaded', function() {
-  const _timeout = new Promise(resolve => setTimeout(resolve, 800));
-  Promise.race([_initStorage(), _timeout]).then(_appInit).catch(_appInit);
+
+  const _startTime = Date.now();
+  const MIN_SHOW   = 2000;  // minimum 2s show చేయాలి (too fast అయితే flash అవుతుంది)
+  const MAX_WAIT   = 5000;  // max 5s wait చేస్తాం
+
+  function _hideLoader() {
+    const ov = document.getElementById('_ae_loading');
+    if (!ov) return;
+    if (window._p_complete) {
+      window._p_complete(() => {
+        ov.classList.add('hide-loader');
+        document.documentElement.classList.remove('loading-active');
+        setTimeout(() => { if (ov) ov.remove(); }, 750);
+      });
+    } else {
+      ov.classList.add('hide-loader');
+      document.documentElement.classList.remove('loading-active');
+      setTimeout(() => { if (ov) ov.remove(); }, 750);
+    }
+  }
+
+  function _done() {
+    const elapsed  = Date.now() - _startTime;
+    const remaining = Math.max(0, MIN_SHOW - elapsed);
+    setTimeout(() => { _hideLoader(); _appInit(); }, remaining);
+  }
+
+  const _timeout = new Promise(resolve => setTimeout(resolve, MAX_WAIT));
+  Promise.race([_initStorage(), _timeout]).then(_done).catch(_done);
 });
 
 

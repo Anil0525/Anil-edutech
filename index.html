@@ -4897,6 +4897,285 @@ html {
   }
   .pw-left { flex: none; padding: 28px 20px; }
 }
+
+/* ═══════════════════════════════════════════════════
+   MOBILE FRIENDLY COMPREHENSIVE FIXES
+   ═══════════════════════════════════════════════════ */
+
+/* 1. Nav right side — hide dark toggle text overflow on tiny screens */
+@media (max-width: 400px) {
+  .dark-toggle { font-size: 16px !important; padding: 6px !important; }
+  .lang-toggle-wrap { display: none !important; }
+}
+
+/* 2. Body bottom padding — always enough for mob-bottom-nav */
+@media (max-width: 640px) {
+  body { padding-bottom: max(64px, calc(64px + env(safe-area-inset-bottom, 0px))) !important; }
+}
+
+/* 3. Nav — prevent right side overflow on small screens */
+@media (max-width: 640px) {
+  nav > div:last-child {
+    display: flex !important;
+    align-items: center !important;
+    gap: 2px !important;
+    flex-shrink: 0 !important;
+    min-width: 0 !important;
+  }
+  /* Hide lang toggle in nav on mobile (already in mob hamburger menu) */
+  nav .lang-toggle-wrap { display: none !important; }
+  /* Dark toggle small */
+  nav .dark-toggle { padding: 6px 8px !important; font-size: 17px !important; }
+  /* Login badge compact */
+  nav #nav-login-btn {
+    font-size: 11px !important;
+    padding: 4px 8px !important;
+    gap: 4px !important;
+  }
+  /* User nav button compact on mobile */
+  nav .user-nav-btn {
+    padding: 5px 8px 5px 6px !important;
+    font-size: 11px !important;
+    gap: 5px !important;
+  }
+  nav #user-nav-name { display: none !important; }
+}
+
+/* 4. Hamburger menu dropdown z-index fix */
+@media (max-width: 640px) {
+  .nav-links {
+    z-index: 9990 !important;
+  }
+  .nav-links.open {
+    display: flex !important;
+  }
+}
+
+/* 5. Exam running screen mobile — right panel as bottom strip */
+@media (max-width: 640px) {
+  /* exam-right panel — horizontal scrollable strip at bottom */
+  .exam-right {
+    width: 100% !important;
+    min-width: unset !important;
+    max-width: unset !important;
+    flex-direction: row !important;
+    height: auto !important;
+    min-height: unset !important;
+    border-left: none !important;
+    border-top: 1px solid #1E293B !important;
+    overflow-x: auto !important;
+    overflow-y: hidden !important;
+    -webkit-overflow-scrolling: touch !important;
+    scrollbar-width: none !important;
+    padding: 8px !important;
+    flex-shrink: 0 !important;
+    max-height: 110px !important;
+  }
+  .exam-right::-webkit-scrollbar { display: none !important; }
+
+  /* Back button visible on mobile */
+  .back-btn { display: flex !important; }
+
+  /* Topbar title shorter on mobile */
+  .exam-topbar-title {
+    font-size: 12px !important;
+    max-width: 160px !important;
+  }
+
+  /* fullscreen hint hide on mobile */
+  .fullscreen-hint { display: none !important; }
+}
+
+/* 6. Exam card — fix stacking on mobile */
+@media (max-width: 640px) {
+  .exam-card {
+    flex-direction: column !important;
+    align-items: flex-start !important;
+    gap: 10px !important;
+  }
+  .exam-card .start-btn {
+    width: 100% !important;
+    text-align: center !important;
+  }
+}
+
+/* 7. Result page — fix button row on mobile */
+@media (max-width: 640px) {
+  .result-body > div:first-child {
+    flex-direction: column !important;
+    gap: 10px !important;
+  }
+  .result-body > div:first-child button {
+    width: 100% !important;
+  }
+  /* Result chart wrap */
+  .result-chart-wrap { padding: 14px 12px !important; }
+  .result-donut-wrap { flex-direction: column !important; align-items: center !important; gap: 14px !important; }
+  .result-bars { width: 100% !important; min-width: unset !important; }
+}
+
+/* 8. Leaderboard cards — prevent text overflow */
+@media (max-width: 640px) {
+  .lb-card { padding: 10px 12px !important; }
+  .lb-name {
+    font-size: 13px !important;
+    max-width: 140px !important;
+    overflow: hidden !important;
+    text-overflow: ellipsis !important;
+    white-space: nowrap !important;
+  }
+}
+
+/* 9. Progress page tabs — horizontal scroll */
+@media (max-width: 640px) {
+  .prog-tabs {
+    overflow-x: auto !important;
+    -webkit-overflow-scrolling: touch !important;
+    scrollbar-width: none !important;
+    flex-wrap: nowrap !important;
+    gap: 6px !important;
+    padding-bottom: 2px !important;
+  }
+  .prog-tabs::-webkit-scrollbar { display: none !important; }
+  .prog-tab { flex-shrink: 0 !important; white-space: nowrap !important; }
+}
+
+/* 10. Modal overlays — center properly on iOS */
+@media (max-width: 640px) {
+  .name-overlay,
+  .cert-overlay,
+  .edit-overlay {
+    align-items: center !important;
+    padding: 16px !important;
+    overflow-y: auto !important;
+  }
+  .name-box {
+    max-height: calc(100vh - 40px) !important;
+    overflow-y: auto !important;
+  }
+}
+
+/* 11. Pricing overlay — better mobile */
+@media (max-width: 640px) {
+  .pricing-overlay {
+    overflow-y: auto !important;
+    -webkit-overflow-scrolling: touch !important;
+  }
+}
+
+/* 12. Toast — stay above mob-bottom-nav */
+@media (max-width: 640px) {
+  .ae-toast-wrap {
+    bottom: 76px !important;
+    right: 12px !important;
+    left: 12px !important;
+    align-items: stretch !important;
+  }
+  .ae-toast {
+    min-width: unset !important;
+    font-size: 13px !important;
+  }
+}
+
+/* 13. Categories grid — consistent mobile */
+@media (max-width: 480px) {
+  .categories-grid {
+    grid-template-columns: repeat(3, 1fr) !important;
+    gap: 8px !important;
+  }
+}
+@media (max-width: 320px) {
+  .categories-grid {
+    grid-template-columns: repeat(2, 1fr) !important;
+  }
+}
+
+/* 14. Hero buttons full width on mobile */
+@media (max-width: 480px) {
+  .hero-actions {
+    flex-direction: column !important;
+  }
+  .hero-actions .btn-primary,
+  .hero-actions .btn-outline {
+    width: 100% !important;
+    text-align: center !important;
+  }
+}
+
+/* 15. Prevent horizontal scroll on whole page */
+html, body {
+  max-width: 100vw;
+  overflow-x: hidden;
+}
+
+/* 16. Admin tabs — scrollable on mobile */
+@media (max-width: 640px) {
+  .admin-tabs {
+    overflow-x: auto !important;
+    -webkit-overflow-scrolling: touch !important;
+    scrollbar-width: none !important;
+    flex-wrap: nowrap !important;
+  }
+  .admin-tabs::-webkit-scrollbar { display: none !important; }
+  .admin-tab {
+    flex-shrink: 0 !important;
+    white-space: nowrap !important;
+  }
+}
+
+/* 17. Exam running — left panel full height */
+@media (max-width: 640px) {
+  .exam-layout {
+    flex-direction: column !important;
+  }
+  .exam-left {
+    border-right: none !important;
+    flex: 1 !important;
+    min-height: 0 !important;
+  }
+  .exam-nav-bar {
+    padding: 8px 12px !important;
+    gap: 6px !important;
+    flex-wrap: wrap !important;
+  }
+  .btn-nav, .btn-submit, .btn-mark-review {
+    font-size: 12px !important;
+    padding: 8px 10px !important;
+  }
+}
+
+/* 18. input, select — fix iOS zoom (16px minimum) */
+@media (max-width: 640px) {
+  input[type="text"],
+  input[type="email"],
+  input[type="password"],
+  input[type="number"],
+  input[type="tel"],
+  select,
+  textarea {
+    font-size: 16px !important;
+  }
+}
+
+/* 19. Cheat warning — below nav on mobile */
+@media (max-width: 640px) {
+  .cheat-warn {
+    top: 52px !important;
+  }
+}
+
+/* 20. User dropdown — fit screen on mobile */
+@media (max-width: 640px) {
+  .user-dropdown {
+    position: fixed !important;
+    top: 56px !important;
+    right: 10px !important;
+    left: 10px !important;
+    width: auto !important;
+    max-height: calc(100vh - 80px) !important;
+    overflow-y: auto !important;
+  }
+}
 </style>
 
 <!-- ADSENSE_SCRIPT_2 — duplicate removed, enable only after approval -->

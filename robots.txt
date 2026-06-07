@@ -1,3 +1,8 @@
 User-agent: *
 Allow: /
-Sitemap: https://aniledutech.in/sitemap.xml
+
+Sitemap: https://www.aniledutech.in/sitemap.xml
+
+# Block admin paths from indexing
+Disallow: /?admin=true
+Disallow: /?page=admin

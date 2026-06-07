@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<meta name="theme-color" content="#1A73E8">
+<meta name="theme-color" content="#03071E" id="meta-theme-color">
 <title>Anil EduTech | TSPSC SSC Banking Free Mock Tests Telugu | తెలుగు మాక్ టెస్ట్</title>
 <meta name="description" content="Anil EduTech — TSPSC, SSC CGL/CHSL, Banking, APPSC, RRB పరీక్షలకు తెలుగులో Free Mock Tests. 500+ questions, leaderboard, certificates. 100% Free! తెలుగు మాక్ టెస్ట్ పోర్టల్.">
 <meta name="robots" content="index, follow">
@@ -9396,6 +9396,11 @@ async function _initStorage() {
 
 // Loading overlay is inline in <body> — no JS creation needed
 document.documentElement.classList.add('loading-active');
+// Set theme-color to match loading screen background
+(function(){
+  var m = document.querySelector('meta[name="theme-color"]');
+  if(m) m.setAttribute('content','#03071E');
+})();
 document.addEventListener('DOMContentLoaded', function() {
 
   const _startTime = Date.now();
@@ -9405,6 +9410,9 @@ document.addEventListener('DOMContentLoaded', function() {
   function _hideLoader() {
     const ov = document.getElementById('_ae_loading');
     if (!ov) return;
+    // Restore theme-color
+    const m = document.querySelector('meta[name="theme-color"]');
+    if(m) m.setAttribute('content','#1A73E8');
     if (window._p_complete) {
       window._p_complete(() => {
         ov.classList.add('hide-loader');

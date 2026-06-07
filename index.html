@@ -17571,7 +17571,7 @@ function exportBackupCSV() {
 
 <script src="https://cdn.jsdelivr.net/npm/@emailjs/browser@4/dist/email.min.js" defer></script>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.11.174/pdf.min.js" defer></script>
-<script src="https://checkout.razorpay.com/v1/checkout.js" async></script>
+<!-- Razorpay loaded on-demand when payment starts -->
 
 <!-- PRICING MODAL -->
 <div class="pricing-overlay" id="pricing-overlay" onclick="if(event.target===this)closePricing()">
@@ -17991,6 +17991,14 @@ async function _startPremiumPolling() {
 }
 
 // ── RAZORPAY PAYMENT ──
+function _loadRazorpay(cb) {
+  if (window.Razorpay) { cb(); return; }
+  var s = document.createElement('script');
+  s.src = 'https://checkout.razorpay.com/v1/checkout.js';
+  s.onload = cb;
+  s.onerror = function(){ toast('Payment gateway load failed. Try again.', 'error'); };
+  document.head.appendChild(s);
+}
 function startPayment(plan) {
   const currentUser = _getCurrentUser ? _getCurrentUser() : null;
   const amount = plan === 'yearly' ? PLAN_PRICES.yearly : PLAN_PRICES.monthly;
@@ -18018,15 +18026,17 @@ function startPayment(plan) {
     }
   };
 
-  try {
-    const rzp = new Razorpay(options);
-    rzp.on('payment.failed', function(resp) {
-      toast('❌ Payment failed: ' + (resp.error.description || 'Try again'), 'error');
-    });
-    rzp.open();
-  } catch(e) {
-    toast('❌ Razorpay load error. Internet check చేయండి.', 'error');
-  }
+  _loadRazorpay(function() {
+    try {
+      const rzp = new Razorpay(options);
+      rzp.on('payment.failed', function(resp) {
+        toast('❌ Payment failed: ' + (resp.error.description || 'Try again'), 'error');
+      });
+      rzp.open();
+    } catch(e) {
+      toast('❌ Razorpay load error. Internet check చేయండి.', 'error');
+    }
+  });
 }
 
 function _getCurrentUser() {

@@ -8859,6 +8859,11 @@ const SITE_CONFIG = {
   RZP_DEFAULT: 'rzp_live_xxxxxxxxxx', // ← Replace with your rzp_live_ key before going live
 };
 
+// ── PAYMENT GLOBALS (declared early to avoid ReferenceError) ──
+let PAYMENT_ENABLED = false;
+let RZP_KEY = SITE_CONFIG.RZP_DEFAULT;
+let PLAN_PRICES = { monthly: 99, yearly: 499 };
+
 
 
 // ── SUPABASE CONFIG ──
@@ -10772,9 +10777,14 @@ function updateNavUser() {
 
     // Load exam stats for this user
     _loadUserStats(u.gmail);
+    // Show/hide premium nav button based on premium status
+    if (typeof _updatePremiumNavBtn === 'function') _updatePremiumNavBtn();
   } else {
     loginBtn.style.display   = 'inline-flex';
     if (profileWrap) profileWrap.style.display = 'none';
+    // Hide premium button when logged out
+    const _pb = document.getElementById('nav-premium-btn');
+    if (_pb) _pb.style.display = 'none';
   }
 }
 
@@ -11256,12 +11266,21 @@ async function adminGrantPremium(gmail) {
   if (cur && cur.gmail === gmail) {
     setCurrentUser({ ...cur, isPremium: true });
     updateNavUser(); filterExams();
+    if (typeof _refreshPremiumBanner === 'function') _refreshPremiumBanner();
     toast('👑 Premium granted & instantly activated for ' + u.name + '!', 'success');
   } else {
     toast('👑 Premium granted for ' + u.name + '! వారు next login లో access పొందుతారు.', 'success');
   }
 
   renderSubscriberTables();
+  // Send "Premium Activated" email to user (only from Subscribers tab direct grant)
+  sendEmailNotification('payment', {
+    name: u.name,
+    gmail,
+    plan: u.premiumPlan || 'manual',
+    amount: '',
+    paymentId: 'Admin Grant'
+  });
 }
 
 async function adminRevokePremium(gmail) {
@@ -16861,6 +16880,46 @@ async function sendEmailNotification(type, data) {
       'This is an automated payment notification.'
     );
 
+  } else if (type === 'utr_admin') {
+    to = adminGmail;
+    subject = '🔔 New UTR Submitted — Verify చేయండి! (' + data.name + ')';
+    htmlBody = _buildEmailHTML(
+      'linear-gradient(135deg,#f59e0b,#d97706)',
+      '🔔', 'New UTR Payment — Verify Pending!',
+      `<div class="greeting">నమస్కారం Admin 👋</div>
+       <p style="color:#475569;font-size:14px;margin-bottom:4px">ఒక student UTR submit చేశారు. దయచేసి verify చేసి approve చేయండి:</p>
+       <div class="info-card">
+         ${_infoRow('👤','Student Name', data.name, '#e0e7ff')}
+         ${_infoRow('📧','Gmail', data.gmail, '#fce7f3')}
+         ${_infoRow('🔑','UTR Number', data.utr, '#fef3c7')}
+         ${_infoRow('📦','Plan', data.plan === 'yearly' ? 'Yearly ₹'+data.amount : 'Monthly ₹'+data.amount, '#f0fdf4')}
+         ${_infoRow('💰','Amount', '₹'+data.amount, '#dcfce7')}
+         ${_infoRow('🕐','Submitted At', now, '#e0e7ff')}
+       </div>
+       <div class="warn-msg">⚠️ Admin Panel → Payments లో వెళ్ళి UTR verify చేసి approve చేయండి</div>
+       <a href="https://aniledutech.in" class="cta-btn">📊 Admin Panel తెరవండి</a>`,
+      'This is an automated UTR submission notification.'
+    );
+
+  } else if (type === 'utr_user') {
+    to = data.gmail;
+    subject = '⏳ Payment Received — Verification Pending | Anil EduTech';
+    htmlBody = _buildEmailHTML(
+      'linear-gradient(135deg,#6366f1,#8b5cf6)',
+      '⏳', 'Payment Under Verification',
+      `<div class="greeting">నమస్కారం ${data.name} గారు! 🙏</div>
+       <p style="color:#475569;font-size:14px;margin-bottom:4px">మీ UTR successfully submit అయింది. Admin verify చేసిన తర్వాత Premium activate అవుతుంది.</p>
+       <div class="info-card">
+         ${_infoRow('🔑','UTR Number', data.utr, '#fef3c7')}
+         ${_infoRow('📦','Plan', data.plan === 'yearly' ? 'Yearly Premium ⭐' : 'Monthly Premium', '#e0e7ff')}
+         ${_infoRow('💰','Amount', '₹'+data.amount, '#f0fdf4')}
+         ${_infoRow('🕐','Submitted At', now, '#fce7f3')}
+       </div>
+       <div class="highlight-msg">✅ సాధారణంగా 1–2 గంటల్లో activate అవుతుంది. Activate అయినప్పుడు మళ్ళీ email వస్తుంది!</div>
+       <a href="https://aniledutech.in" class="cta-btn">📚 Platform తెరవండి</a>`,
+      'మీ payment కి ధన్యవాదాలు! మీ preparation కి all the best! 💛'
+    );
+
   } else if (type === 'forgot') {
     to = adminGmail;
     subject = '🔑 Password Reset Request — ' + data.name;
@@ -17678,12 +17737,7 @@ function exportBackupCSV() {
 <script>
 
 
-// ⚠️ MAIN SWITCH — 3 నెలల తర్వాత true చేయండి
-let PAYMENT_ENABLED = false;
-
-// Razorpay config
-let RZP_KEY = (typeof SITE_CONFIG !== 'undefined' ? SITE_CONFIG.RZP_DEFAULT : '');
-let PLAN_PRICES = { monthly: 99, yearly: 499 };
+// ⚠️ PAYMENT_ENABLED, RZP_KEY, PLAN_PRICES — declared in main script block above
 
 function _loadPaymentConfig() {
   try {
@@ -17828,6 +17882,19 @@ function switchPayMethod(method, btn) {
 
 // ── PRICING MODAL ──
 function openPricing() {
+  // Guard: must be logged in to open pricing
+  const _pricingUser = getCurrentUser ? getCurrentUser() : null;
+  if (!_pricingUser) {
+    toast('⚠️ ముందు Login చేయండి — then Premium తీసుకోవచ్చు!', 'warn');
+    if (typeof goLogin === 'function') goLogin();
+    else if (typeof showPage === 'function') showPage('login');
+    return;
+  }
+  // Guard: already premium
+  if (_pricingUser.isPremium) {
+    toast('👑 మీరు ఇప్పటికే Premium Member! అన్ని exams access చేయవచ్చు.', 'success');
+    return;
+  }
   document.getElementById('pricing-overlay').classList.add('show');
   // Push history state so device back button closes payment overlay instead of leaving site
   _safeHistoryPush({ ae_page: 'pricing' });
@@ -17950,7 +18017,14 @@ function copyUpiId() {
 
 function _updatePremiumNavBtn() {
   const btn = document.getElementById('nav-premium-btn');
-  if (btn) btn.style.display = PAYMENT_ENABLED ? 'inline-flex' : 'none';
+  if (!btn) return;
+  const u = getCurrentUser ? getCurrentUser() : null;
+  // Hide if payment disabled OR user already has premium
+  if (!PAYMENT_ENABLED || (u && u.isPremium)) {
+    btn.style.display = 'none';
+  } else {
+    btn.style.display = 'inline-flex';
+  }
 }
 
 // ── REAL-TIME PREMIUM POLLING ──
@@ -17971,6 +18045,7 @@ async function _startPremiumPolling() {
         // Premium granted! Update session instantly
         setCurrentUser({ ...cur, isPremium: true });
         updateNavUser(); filterExams();
+        if (typeof _refreshPremiumBanner === 'function') _refreshPremiumBanner();
         clearInterval(_premPollTimer); _premPollTimer = null;
         // Show celebration
         toast('🎉 Premium Activated! అన్ని exams unlock అయ్యాయి! 👑', 'success');
@@ -18001,6 +18076,18 @@ function _loadRazorpay(cb) {
 }
 function startPayment(plan) {
   const currentUser = _getCurrentUser ? _getCurrentUser() : null;
+  if (!currentUser) {
+    toast('⚠️ ముందు Login చేయండి', 'warn');
+    closePricing();
+    if (typeof goLogin === 'function') goLogin();
+    else if (typeof showPage === 'function') showPage('login');
+    return;
+  }
+  if (currentUser.isPremium) {
+    toast('👑 మీరు ఇప్పటికే Premium Member!', 'success');
+    closePricing();
+    return;
+  }
   const amount = plan === 'yearly' ? PLAN_PRICES.yearly : PLAN_PRICES.monthly;
   const planLabel = plan === 'yearly' ? 'Yearly Premium' : 'Monthly Premium';
 
@@ -18085,6 +18172,7 @@ function _onPaymentSuccess(response, plan, amount, user) {
     setCurrentUser(sess);
   }
   closePricing();renderPaymentsTable();renderPaymentStats();updateNavUser();filterExams();
+  if (typeof _refreshPremiumBanner === 'function') _refreshPremiumBanner();
   // ── Email notifications ──
   if (user) {
     sendEmailNotification('payment', { name: user.name, gmail: user.gmail, plan, amount, paymentId: response.razorpay_payment_id });
@@ -18122,8 +18210,8 @@ function renderPaymentsTable() {
     <td style="font-size:11px;color:var(--text3)">${r.date||''}</td>
     <td>
       ${isPending
-        ? `<span style="background:rgba(245,183,49,.15);color:#E8640A;padding:2px 8px;border-radius:8px;font-size:11px;font-weight:800">⏳ Verify చేయండి</span>
-           <button onclick="adminRevokePremium('${escHtml(r.gmail)}')" style="margin-left:4px;background:#ef4444;color:#fff;border:none;border-radius:6px;padding:2px 7px;font-size:10px;cursor:pointer">Revoke</button>`
+        ? `<button onclick="adminApproveUTR('${escHtml(r.gmail)}','${escHtml(r.utr||'')}','${escHtml(r.plan||'')}',${r.amount||0})" style="background:linear-gradient(135deg,#10b981,#059669);color:#fff;border:none;border-radius:6px;padding:3px 9px;font-size:10px;font-weight:800;cursor:pointer">✅ Approve</button>
+           <button onclick="adminRevokePremium('${escHtml(r.gmail)}')" style="margin-left:4px;background:#ef4444;color:#fff;border:none;border-radius:6px;padding:3px 7px;font-size:10px;cursor:pointer">❌ Reject</button>`
         : `<span style="background:var(--teal-soft);color:var(--teal);padding:2px 8px;border-radius:8px;font-size:11px;font-weight:800">✅ ${r.status||''}</span>`
       }
     </td>
@@ -18152,9 +18240,48 @@ function renderPaymentStats() {
 
 // adminRevokePremium is defined above (async version) — duplicate removed
 
+async function adminApproveUTR(gmail, utr, plan, amount) {
+  if (!confirm(`${gmail} కి Premium grant చేయాలా?\nUTR: ${utr}`)) return;
+
+  // 1. Grant premium via existing function
+  await adminGrantPremium(gmail);
+
+  // 2. Update payment record status in localStorage
+  const records = JSON.parse(_ls.getItem('ae_payment_records') || '[]');
+  const rec = records.find(r => r.utr === utr && r.gmail === gmail);
+  if (rec) {
+    rec.status = 'Approved';
+    _ls.setItem('ae_payment_records', JSON.stringify(records));
+  }
+
+  // 3. Update Supabase ae_payments status
+  try {
+    await fetch(`${SB_URL}/rest/v1/ae_payments?gmail=eq.${encodeURIComponent(gmail)}&payment_id=eq.${encodeURIComponent(utr)}`, {
+      method: 'PATCH',
+      headers: { ...SB_HEADERS, 'Content-Type': 'application/json', 'Prefer': 'return=minimal' },
+      body: JSON.stringify({ status: 'Approved' })
+    });
+  } catch(e) { console.warn('ae_payments status update:', e); }
+
+  // 4. Send "Premium Activated" email to user
+  const approved = getSubApproved();
+  const u = approved.find(s => s.gmail === gmail);
+  sendEmailNotification('payment', {
+    name: u?.name || gmail,
+    gmail,
+    plan,
+    amount,
+    paymentId: utr
+  });
+
+  renderPaymentsTable();
+  renderPaymentStats();
+  toast(`✅ ${gmail} Premium activated & email sent!`, 'success');
+}
 
 
-function submitUTR() {
+
+async function submitUTR() {
   const utrRaw  = (document.getElementById('utr-input')?.value || '').trim();
   const plan    = _activePricingTab || 'monthly';
   const user    = getCurrentUser();
@@ -18175,6 +18302,15 @@ function submitUTR() {
     toast('❌ ఈ UTR ఇప్పటికే submit చేయబడింది', 'error');
     return;
   }
+
+  // Check duplicate UTR — Supabase (cross-device protection)
+  try {
+    const sbCheck = await sbGet('ae_payments', `payment_id=eq.${encodeURIComponent(utrRaw)}`);
+    if (sbCheck && sbCheck.length > 0) {
+      toast('❌ ఈ UTR ఇప్పటికే submit చేయబడింది', 'error');
+      return;
+    }
+  } catch(e) { console.warn('UTR Supabase check:', e); }
 
   const amount  = plan === 'yearly' ? PLAN_PRICES.yearly : PLAN_PRICES.monthly;
   const now     = new Date();
@@ -18212,6 +18348,10 @@ function submitUTR() {
     `🕐 Time: ${encodeURIComponent(dateStr)}%0A` +
     `✅ Admin panel లో verify చేసి approve చేయండి`;
   window.open('https://wa.me/' + SITE_CONFIG.WA_NUMBER + '?text=' + waMsg, '_blank');
+
+  // 3b️⃣ Email notifications — Admin + User
+  sendEmailNotification('utr_admin', { name: user.name, gmail: user.gmail, utr: utrRaw, plan, amount });
+  sendEmailNotification('utr_user',  { name: user.name, gmail: user.gmail, utr: utrRaw, plan, amount });
 
   // 4️⃣ UI update — premium grant చేయకుండా
   closePricing();
@@ -20511,6 +20651,12 @@ document.addEventListener('DOMContentLoaded', function() {
 window._refreshPremiumBanner = function(){
   var el = document.getElementById('premium-exams-banner');
   if(el){ el.style.display='none'; el.innerHTML=''; }
+  // Remove all inline premium banners for premium users
+  if (typeof _removePremiumBanners === 'function') _removePremiumBanners();
+  ['prem-b1','prem-b2','prem-b3'].forEach(function(id){
+    var b = document.getElementById(id);
+    if(b) b.remove();
+  });
 };
 </script>
 </html>

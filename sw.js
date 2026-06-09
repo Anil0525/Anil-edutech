@@ -1,29 +1,32 @@
-// Anil EduTech Service Worker
-const CACHE = 'ae-v1';
+// Anil EduTech — Service Worker
+// Handles local push notifications
 
-self.addEventListener('install', e => {
+const CACHE_NAME = 'ae-cache-v1';
+
+// Install
+self.addEventListener('install', (e) => {
   self.skipWaiting();
 });
 
-self.addEventListener('activate', e => {
-  e.waitUntil(clients.claim());
+// Activate
+self.addEventListener('activate', (e) => {
+  e.waitUntil(self.clients.claim());
 });
 
-self.addEventListener('push', e => {
-  const data = e.data ? e.data.json() : {};
+// Notification click — open site
+self.addEventListener('notificationclick', (e) => {
+  e.notification.close();
+  const url = (e.notification.data && e.notification.data.url)
+    ? e.notification.data.url
+    : 'https://aniledutech.in';
   e.waitUntil(
-    self.registration.showNotification(data.title || 'Anil EduTech', {
-      body: data.body || 'New notification',
-      icon: '/logo.png',
-      badge: '/logo.png',
-      tag: data.tag || 'ae',
-      data: { url: data.url || 'https://aniledutech.in' }
+    clients.matchAll({ type: 'window', includeUncontrolled: true }).then((list) => {
+      for (const client of list) {
+        if (client.url.includes('aniledutech.in') && 'focus' in client) {
+          return client.focus();
+        }
+      }
+      return clients.openWindow(url);
     })
   );
-});
-
-self.addEventListener('notificationclick', e => {
-  e.notification.close();
-  const url = e.notification.data?.url || 'https://aniledutech.in';
-  e.waitUntil(clients.openWindow(url));
 });

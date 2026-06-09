@@ -2300,6 +2300,7 @@
   .admin-tab:nth-child(11).active { color:#7c3aed; border-bottom-color:#7c3aed; background:linear-gradient(180deg,#f5f3ff,#fdf4ff); }
   .admin-tab:nth-child(12).active { color:#0891b2; border-bottom-color:#0891b2; background:linear-gradient(180deg,#ecfeff,#f0fdfa); }
   .admin-tab:nth-child(13).active { color:#e11d48; border-bottom-color:#e11d48; background:linear-gradient(180deg,#fff1f2,#fdf2f8); }
+  .admin-tab:nth-child(14).active { color:#7c3aed; border-bottom-color:#7c3aed; background:linear-gradient(180deg,#fdf4ff,#f5f3ff); }
 
   [data-theme="dark"] .admin-tab { color: #475569; }
   [data-theme="dark"] .admin-tab:hover { background: rgba(99,102,241,.1) !important; color: #a5b4fc !important; border-radius: 10px 10px 0 0; }
@@ -6419,6 +6420,12 @@ html:not(:has(#_ae_loading)) body {
       <div id="pf-history"></div>
     </div>
 
+    <!-- Subscription Management -->
+    <div id="pf-subscription-section" style="display:none;background:var(--card);border:1.5px solid var(--border);border-radius:16px;padding:18px;margin-bottom:16px;">
+      <div style="font-size:14px;font-weight:900;color:var(--text);margin-bottom:14px;">💎 My Subscription</div>
+      <div id="pf-sub-content"></div>
+    </div>
+
     <!-- Quick links -->
     <div style="display:grid;grid-template-columns:1fr 1fr;gap:10px;">
       <button onclick="goProgress()" style="background:var(--surface);border:1.5px solid var(--border);border-radius:14px;padding:14px;font-size:13px;font-weight:800;cursor:pointer;font-family:inherit;color:var(--text);">📊 Full Progress</button>
@@ -7805,6 +7812,7 @@ html:not(:has(#_ae_loading)) body {
       <button class="admin-tab" onclick="switchAdminTab('scheduled',this)">🗓 Scheduled</button>
       <button class="admin-tab" onclick="switchAdminTab('settings',this)">🔧 Settings</button>
       <button class="admin-tab" onclick="switchAdminTab('userbackup',this)">📋 User Backup</button>
+      <button class="admin-tab" onclick="switchAdminTab('notifications',this)">🔔 Notifications</button>
     </div>
 
     <!-- MAIN AREA -->
@@ -8842,6 +8850,122 @@ html:not(:has(#_ae_loading)) body {
 
     </div>
     <!-- end atab-userbackup -->
+
+    <!-- ══════════════════════════════════════════════════════════
+         NOTIFICATIONS TAB
+    ══════════════════════════════════════════════════════════ -->
+    <div id="atab-notifications" class="admin-panel">
+
+      <!-- Header Stats -->
+      <div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(160px,1fr));gap:14px;margin-bottom:20px">
+        <div class="admin-card" style="padding:18px;text-align:center;border-color:rgba(124,58,237,.3)">
+          <div style="font-size:28px;font-weight:900;color:#7c3aed" id="notif-total-count">0</div>
+          <div style="font-size:12px;color:var(--text3);margin-top:4px">👥 Total Recipients</div>
+        </div>
+        <div class="admin-card" style="padding:18px;text-align:center;border-color:rgba(16,185,129,.3)">
+          <div style="font-size:28px;font-weight:900;color:var(--teal)" id="notif-sent-count">0</div>
+          <div style="font-size:12px;color:var(--text3);margin-top:4px">✅ Sent</div>
+        </div>
+        <div class="admin-card" style="padding:18px;text-align:center;border-color:rgba(239,68,68,.3)">
+          <div style="font-size:28px;font-weight:900;color:var(--red)" id="notif-fail-count">0</div>
+          <div style="font-size:12px;color:var(--text3);margin-top:4px">❌ Failed</div>
+        </div>
+        <div class="admin-card" style="padding:18px;text-align:center;border-color:rgba(245,158,11,.3)">
+          <div style="font-size:28px;font-weight:900;color:#f59e0b" id="notif-pending-count">—</div>
+          <div style="font-size:12px;color:var(--text3);margin-top:4px">⏳ Pending</div>
+        </div>
+      </div>
+
+      <!-- Compose Notification -->
+      <div class="admin-card" style="border-color:rgba(124,58,237,.3);margin-bottom:16px">
+        <h3 style="color:#7c3aed">🔔 Broadcast Notification పంపండి</h3>
+        <div style="padding:18px 22px;display:flex;flex-direction:column;gap:14px">
+
+          <!-- Target Audience -->
+          <div>
+            <label style="font-size:13px;font-weight:600;color:var(--text2);display:block;margin-bottom:6px">📢 Recipients ఎంచుకోండి</label>
+            <div style="display:flex;gap:10px;flex-wrap:wrap">
+              <label style="display:flex;align-items:center;gap:6px;cursor:pointer;font-size:13px;padding:8px 14px;border:1.5px solid var(--border2);border-radius:8px;background:var(--bg);color:var(--text)">
+                <input type="radio" name="notif-audience" value="all" checked style="accent-color:#7c3aed"> 👥 All Users
+              </label>
+              <label style="display:flex;align-items:center;gap:6px;cursor:pointer;font-size:13px;padding:8px 14px;border:1.5px solid var(--border2);border-radius:8px;background:var(--bg);color:var(--text)">
+                <input type="radio" name="notif-audience" value="premium" style="accent-color:#7c3aed"> 💎 Premium Only
+              </label>
+              <label style="display:flex;align-items:center;gap:6px;cursor:pointer;font-size:13px;padding:8px 14px;border:1.5px solid var(--border2);border-radius:8px;background:var(--bg);color:var(--text)">
+                <input type="radio" name="notif-audience" value="free" style="accent-color:#7c3aed"> 🆓 Free Only
+              </label>
+            </div>
+          </div>
+
+          <!-- Subject -->
+          <div>
+            <label style="font-size:13px;font-weight:600;color:var(--text2);display:block;margin-bottom:6px">📧 Email Subject</label>
+            <input type="text" id="notif-subject" placeholder="eg: కొత్త Exams వచ్చాయి! చూడండి 🚀" style="width:100%;padding:10px 14px;border:1.5px solid var(--border2);border-radius:10px;font-size:14px;background:var(--bg);color:var(--text);outline:none;font-family:inherit">
+          </div>
+
+          <!-- Heading -->
+          <div>
+            <label style="font-size:13px;font-weight:600;color:var(--text2);display:block;margin-bottom:6px">🏷 Email Heading (bold title)</label>
+            <input type="text" id="notif-heading" placeholder="eg: నమస్కారం! మీకు ముఖ్యమైన వార్త ఉంది" style="width:100%;padding:10px 14px;border:1.5px solid var(--border2);border-radius:10px;font-size:14px;background:var(--bg);color:var(--text);outline:none;font-family:inherit">
+          </div>
+
+          <!-- Message Body -->
+          <div>
+            <label style="font-size:13px;font-weight:600;color:var(--text2);display:block;margin-bottom:6px">✍ Message (Telugu / English)</label>
+            <textarea id="notif-body" rows="5" placeholder="మీ notification message ఇక్కడ type చేయండి..." style="width:100%;padding:10px 14px;border:1.5px solid var(--border2);border-radius:10px;font-size:14px;background:var(--bg);color:var(--text);outline:none;resize:vertical;font-family:inherit;line-height:1.6"></textarea>
+          </div>
+
+          <!-- CTA Button (optional) -->
+          <div style="display:grid;grid-template-columns:1fr 1fr;gap:12px">
+            <div>
+              <label style="font-size:13px;font-weight:600;color:var(--text2);display:block;margin-bottom:6px">🔗 Button Text (optional)</label>
+              <input type="text" id="notif-btn-text" placeholder="eg: Exams చూడండి" style="width:100%;padding:10px 14px;border:1.5px solid var(--border2);border-radius:10px;font-size:14px;background:var(--bg);color:var(--text);outline:none;font-family:inherit">
+            </div>
+            <div>
+              <label style="font-size:13px;font-weight:600;color:var(--text2);display:block;margin-bottom:6px">🌐 Button URL (optional)</label>
+              <input type="text" id="notif-btn-url" placeholder="https://aniledutech.in" style="width:100%;padding:10px 14px;border:1.5px solid var(--border2);border-radius:10px;font-size:14px;background:var(--bg);color:var(--text);outline:none;font-family:inherit">
+            </div>
+          </div>
+
+          <!-- Action Buttons -->
+          <div style="display:flex;gap:10px;flex-wrap:wrap;margin-top:4px">
+            <button class="add-btn" onclick="previewBroadcastNotification()" style="background:linear-gradient(135deg,#6366f1,#8b5cf6)">👁 Preview</button>
+            <button class="add-btn" onclick="sendBroadcastNotification()" style="background:linear-gradient(135deg,#7c3aed,#6d28d9)" id="notif-send-btn">📨 Send to All</button>
+            <button class="del-btn" onclick="resetNotificationForm()" style="background:rgba(239,68,68,.1);color:var(--red);border-color:rgba(239,68,68,.3)">🗑 Clear</button>
+          </div>
+
+          <!-- Progress Bar -->
+          <div id="notif-progress-wrap" style="display:none;margin-top:8px">
+            <div style="font-size:13px;color:var(--text2);margin-bottom:6px" id="notif-progress-label">📨 Sending...</div>
+            <div style="background:var(--border2);border-radius:20px;height:10px;overflow:hidden">
+              <div id="notif-progress-bar" style="height:100%;background:linear-gradient(90deg,#7c3aed,#6366f1);width:0%;transition:width .3s ease;border-radius:20px"></div>
+            </div>
+          </div>
+
+          <!-- Status message -->
+          <div id="notif-status" style="display:none;font-size:14px;font-weight:600;padding:12px 16px;border-radius:10px;margin-top:4px"></div>
+        </div>
+      </div>
+
+      <!-- Preview Modal area -->
+      <div id="notif-preview-box" style="display:none" class="admin-card">
+        <h3 style="color:#6366f1">👁 Email Preview</h3>
+        <div style="padding:18px 22px">
+          <div id="notif-preview-frame" style="border:1.5px solid var(--border2);border-radius:12px;overflow:hidden;max-height:500px;overflow-y:auto"></div>
+        </div>
+      </div>
+
+      <!-- Send Log -->
+      <div class="admin-card" style="border-color:rgba(16,185,129,.3);margin-top:0">
+        <h3 style="color:var(--teal)">📜 Recent Send Log</h3>
+        <div style="padding:0 22px 18px">
+          <div id="notif-log" style="font-size:13px;max-height:250px;overflow-y:auto;display:flex;flex-direction:column;gap:6px;margin-top:10px">
+            <div style="color:var(--text3);text-align:center;padding:20px">Send Log ఇక్కడ కనిపిస్తుంది</div>
+          </div>
+        </div>
+      </div>
+
+    </div><!-- end atab-notifications -->
 
     </div><!-- /admin-content-wrap -->
     </div><!-- /admin-main-area -->
@@ -11128,7 +11252,9 @@ function doGoogleLogin() {
     updateNavUser();
     closeSubModal();
     filterExams();
-    toast('🎉 Welcome ' + name + '!'+(user.isPremium?' 👑 Premium':''), 'success');
+    // BUG FIX: Read premium from getCurrentUser() since sbGet may have already updated it
+    const _toastUser = getCurrentUser();
+    toast('🎉 Welcome ' + name + '!'+(_toastUser && _toastUser.isPremium?' 👑 Premium':''), 'success');
     // New user → register email to admin; existing → login email
     sendEmailNotification(isNewUser ? 'register' : 'login', { name, gmail });
     _applyPendingReferral(user);
@@ -11265,6 +11391,10 @@ async function adminGrantPremium(gmail) {
   const cur = getCurrentUser();
   if (cur && cur.gmail === gmail) {
     setCurrentUser({ ...cur, isPremium: true });
+    // BUG FIX: Stop polling timer since premium is now active
+    if (typeof _premPollTimer !== 'undefined' && _premPollTimer) {
+      clearInterval(_premPollTimer); _premPollTimer = null;
+    }
     updateNavUser(); filterExams();
     if (typeof _refreshPremiumBanner === 'function') _refreshPremiumBanner();
     toast('👑 Premium granted & instantly activated for ' + u.name + '!', 'success');
@@ -13137,6 +13267,7 @@ function switchAdminTab(tab, btnEl) {
   if (tab === 'payments')    { if(typeof renderPaymentsTable==='function') renderPaymentsTable(); if(typeof renderPaymentStats==='function') renderPaymentStats(); }
   if (tab === 'bulkimport')  { setTimeout(function(){ if(typeof _populateBulkExamDropdown==='function') _populateBulkExamDropdown(); }, 50); }
   if (tab === 'userbackup')  { setTimeout(function(){ loadBackupData(); }, 50); }
+  if (tab === 'notifications') { setTimeout(function(){ loadNotificationRecipients(); }, 50); }
 }
 
 function switchGenTab(tab, btnEl) {
@@ -14551,6 +14682,8 @@ function toggleMockFolderPremium(folderId) {
   const f = folders.find(x => x.id === folderId);
   if (!f) return;
   f.isPremium = !f.isPremium;
+  // BUG FIX: access check uses .locked — keep in sync with .isPremium
+  f.locked = f.isPremium;
   saveMockFolders(folders);
   renderMockFolderAdminTable();
   renderMockFoldersGrid();
@@ -15578,6 +15711,11 @@ function _applyPendingReferral(user) {
           refUser.premiumSince = new Date().toISOString();
           setCurrentUser(refUser);
           _ls.setItem('ae_referral_premium', newCount >= 20 ? 'lifetime' : (newCount >= 10 ? '90days' : '30days'));
+          // BUG FIX: Save referral premium to Supabase so it persists after logout
+          const premKey = 'premium_gmail_' + refUser.gmail.replace(/[@.]/g, '_');
+          const premVal = JSON.stringify({ gmail: refUser.gmail, since: refUser.premiumSince, plan: 'referral' });
+          sbUpsert('ae_settings', { key: premKey, value: premVal, updated_at: new Date().toISOString() }).catch(e => console.warn('referral premium sb:', e));
+          sbSubUpsert({ name: refUser.name, gmail: refUser.gmail, is_premium: true, premium_since: refUser.premiumSince, status: 'approved' }).catch(e => console.warn('referral sbSubUpsert:', e));
           toast('🎉 ' + top.reward + ' — Premium activated!', 'success');
         }
       }
@@ -16317,9 +16455,12 @@ function _appInit() {
           ? '✅ Payment: Enabled — Users కి pricing page కనిపిస్తుంది'
           : '⏸ Payment: Disabled — Users కి pricing కనిపించదు';
       }
-      // Nav premium button
-      const navPrem = document.getElementById('nav-premium-btn');
-      if (navPrem) navPrem.style.display = PAYMENT_ENABLED ? 'inline-flex' : 'none';
+      // Nav premium button — use _updatePremiumNavBtn so isPremium users are excluded
+      if (typeof _updatePremiumNavBtn === 'function') _updatePremiumNavBtn();
+      else {
+        const navPrem = document.getElementById('nav-premium-btn');
+        if (navPrem) navPrem.style.display = PAYMENT_ENABLED ? 'inline-flex' : 'none';
+      }
       // Admin inputs
       const pcfg2 = JSON.parse(_ls.getItem('ae_payment_config') || '{}');
       const ki = document.getElementById('rzp-key-input');
@@ -18134,6 +18275,7 @@ function _getCurrentUser() {
 function _onPaymentSuccess(response, plan, amount, user) {
   const record = {
     id: response.razorpay_payment_id,
+    pid: response.razorpay_payment_id,
     name: user ? user.name : 'Guest',
     gmail: user ? user.gmail : '',
     plan: plan,
@@ -18291,32 +18433,49 @@ async function submitUTR() {
     closePricing();
     return;
   }
+  if (user.isPremium) {
+    toast('👑 మీరు ఇప్పటికే Premium Member! అన్ని exams access చేయవచ్చు.', 'success');
+    closePricing();
+    return;
+  }
+
+  // ── STEP 1: Format Validation ──
   if (utrRaw.length < 8) {
     toast('⚠️ Valid UTR / Transaction ID enter చేయండి (min 8 characters)', 'warn');
     return;
   }
 
-  // Check duplicate UTR — localStorage
+  // Show loading state on button
+  const unlockBtn = document.querySelector('.pm-unlock-btn');
+  if (unlockBtn) { unlockBtn.disabled = true; unlockBtn.textContent = '⏳ Checking...'; }
+
+  // ── STEP 2: Duplicate Check — localStorage ──
   const records = JSON.parse(_ls.getItem('ae_payment_records') || '[]');
   if (records.find(r => r.utr === utrRaw)) {
-    toast('❌ ఈ UTR ఇప్పటికే submit చేయబడింది', 'error');
+    toast('❌ ఈ UTR ఇప్పటికే use అయింది', 'error');
+    if (unlockBtn) { unlockBtn.disabled = false; unlockBtn.textContent = '🔓 Unlock'; }
     return;
   }
 
-  // Check duplicate UTR — Supabase (cross-device protection)
+  // ── STEP 3: Duplicate Check — Supabase (cross-device) ──
   try {
     const sbCheck = await sbGet('ae_payments', `payment_id=eq.${encodeURIComponent(utrRaw)}`);
     if (sbCheck && sbCheck.length > 0) {
-      toast('❌ ఈ UTR ఇప్పటికే submit చేయబడింది', 'error');
+      toast('❌ ఈ UTR ఇప్పటికే use అయింది', 'error');
+      if (unlockBtn) { unlockBtn.disabled = false; unlockBtn.textContent = '🔓 Unlock'; }
       return;
     }
   } catch(e) { console.warn('UTR Supabase check:', e); }
 
-  const amount  = plan === 'yearly' ? PLAN_PRICES.yearly : PLAN_PRICES.monthly;
-  const now     = new Date();
-  const dateStr = now.toLocaleString('te-IN');
+  // ── Both checks passed → ACTIVATE PREMIUM ──
+  if (unlockBtn) { unlockBtn.textContent = '✅ Activating...'; }
 
-  // 1️⃣ Save as PENDING — premium grant చేయకూడదు
+  const amount      = plan === 'yearly' ? PLAN_PRICES.yearly : PLAN_PRICES.monthly;
+  const now         = new Date();
+  const dateStr     = now.toLocaleString('te-IN');
+  const premiumSince = now.toISOString();
+
+  // 1️⃣ Save payment record as PAID
   records.unshift({
     name:   user.name,
     gmail:  user.gmail,
@@ -18324,61 +18483,87 @@ async function submitUTR() {
     amount,
     utr:    utrRaw,
     date:   dateStr,
-    status: 'UTR Submitted',
+    status: 'Premium Activated',
     method: 'UPI'
   });
   _ls.setItem('ae_payment_records', JSON.stringify(records));
 
-  // 2️⃣ Supabase ae_payments లో pending గా save
+  // 2️⃣ Supabase ae_payments — activated గా save
   sbInsert('ae_payments', {
-    gmail: user.gmail,
-    name: user.name,
+    gmail:      user.gmail,
+    name:       user.name,
     plan,
     amount,
     payment_id: utrRaw,
-    status: 'UTR Submitted'
-  }).catch(e => console.warn('ae_payments UTR:', e));
+    status:     'Premium Activated'
+  }).catch(e => console.warn('ae_payments UTR insert:', e));
 
-  // 3️⃣ Send WhatsApp alert to admin
-  const waMsg = `🔔 *New UTR — Verify చేయండి!*%0A` +
+  // 3️⃣ Premium activate — local user object
+  user.isPremium    = true;
+  user.premiumSince = premiumSince;
+  user.premiumPlan  = plan;
+  const allUsers = JSON.parse(_ls.getItem('ae_users') || '[]');
+  const uidx = allUsers.findIndex(u => u.gmail === user.gmail);
+  if (uidx > -1) {
+    allUsers[uidx].isPremium    = true;
+    allUsers[uidx].premiumSince = premiumSince;
+    allUsers[uidx].premiumPlan  = plan;
+    _ls.setItem('ae_users', JSON.stringify(allUsers));
+  }
+  // Update current session user
+  _ls.setItem('ae_current_user', JSON.stringify(user));
+
+  // 4️⃣ Supabase subscribers లో is_premium = true
+  sbSubUpsert({
+    name:          user.name,
+    gmail:         user.gmail,
+    is_premium:    true,
+    premium_since: premiumSince,
+    status:        'approved'
+  }).catch(e => console.warn('sbSubUpsert UTR premium:', e));
+
+  // 5️⃣ WhatsApp alert to admin (FYI — already activated)
+  const waMsg = `✅ *UTR Premium Auto-Activated!*%0A` +
     `👤 Name: ${encodeURIComponent(user.name)}%0A` +
     `📧 Gmail: ${encodeURIComponent(user.gmail)}%0A` +
     `📋 Plan: ${plan} — ₹${amount}%0A` +
     `🔑 UTR: ${utrRaw}%0A` +
     `🕐 Time: ${encodeURIComponent(dateStr)}%0A` +
-    `✅ Admin panel లో verify చేసి approve చేయండి`;
+    `🏅 Premium automatically activated!`;
   window.open('https://wa.me/' + SITE_CONFIG.WA_NUMBER + '?text=' + waMsg, '_blank');
 
-  // 3b️⃣ Email notifications — Admin + User
-  sendEmailNotification('utr_admin', { name: user.name, gmail: user.gmail, utr: utrRaw, plan, amount });
-  sendEmailNotification('utr_user',  { name: user.name, gmail: user.gmail, utr: utrRaw, plan, amount });
+  // 6️⃣ Email notifications
+  sendEmailNotification('payment', { name: user.name, gmail: user.gmail, plan, amount, paymentId: utrRaw });
+  sendEmailNotification('payment_admin', { name: user.name, gmail: user.gmail, plan, amount, paymentId: utrRaw });
 
-  // 4️⃣ UI update — premium grant చేయకుండా
+  // 7️⃣ UI refresh
   closePricing();
+  if (typeof updatePremiumUI   === 'function') updatePremiumUI();
   if (typeof renderPaymentsTable === 'function') renderPaymentsTable();
   if (typeof renderPaymentStats  === 'function') renderPaymentStats();
+  if (unlockBtn) { unlockBtn.disabled = false; unlockBtn.textContent = '🔓 Unlock'; }
 
-  // 5️⃣ Pending confirmation modal
+  // 8️⃣ Success modal — Premium activated!
   setTimeout(() => {
     document.getElementById('premium-success-modal')?.remove();
     const m = document.createElement('div');
     m.id = 'premium-success-modal';
-    m.style.cssText = 'position:fixed;inset:0;z-index:9999;background:rgba(10,18,45,.8);backdrop-filter:blur(16px);display:flex;align-items:center;justify-content:center;padding:16px;';
+    m.style.cssText = 'position:fixed;inset:0;z-index:9999;background:rgba(10,18,45,.85);backdrop-filter:blur(18px);display:flex;align-items:center;justify-content:center;padding:16px;';
     m.innerHTML = `
-      <div style="background:var(--surface);border-radius:24px;width:100%;max-width:400px;padding:36px 28px;text-align:center;border:2px solid rgba(245,183,49,.4);">
-        <div style="font-size:60px">⏳</div>
-        <div style="font-size:22px;font-weight:900;color:#F5B731;margin-bottom:6px">Payment Submitted!</div>
-        <div style="font-size:12px;color:var(--text3);margin-bottom:4px">UTR: <b>${utrRaw}</b></div>
-        <div style="font-size:12px;color:var(--text3);margin-bottom:20px">Plan: <b>${plan === 'yearly' ? 'Yearly ₹'+PLAN_PRICES.yearly : 'Monthly ₹'+PLAN_PRICES.monthly}</b></div>
-        <div style="background:rgba(245,183,49,.1);border:1.5px solid rgba(245,183,49,.3);border-radius:14px;padding:16px;margin-bottom:24px">
-          <div style="font-size:13px;font-weight:700;color:#F5B731;line-height:2;">
-            ✅ UTR Admin కి submit అయింది<br>
-            ⏳ Admin verify చేసిన తర్వాత Premium activate అవుతుంది<br>
-            📱 సాధారణంగా 1–2 గంటల్లో activate అవుతుంది
+      <div style="background:var(--surface);border-radius:24px;width:100%;max-width:420px;padding:36px 28px;text-align:center;border:2px solid rgba(245,183,49,.5);box-shadow:0 0 60px rgba(245,183,49,.2);">
+        <div style="font-size:64px;margin-bottom:8px">🎉</div>
+        <div style="font-size:24px;font-weight:900;background:linear-gradient(135deg,#F5B731,#E8640A);-webkit-background-clip:text;-webkit-text-fill-color:transparent;margin-bottom:6px">Premium Activated!</div>
+        <div style="font-size:13px;color:var(--text3);margin-bottom:4px">UTR: <b style="color:var(--text)">${utrRaw}</b></div>
+        <div style="font-size:13px;color:var(--text3);margin-bottom:22px">Plan: <b style="color:var(--text)">${plan === 'yearly' ? 'Yearly — ₹'+PLAN_PRICES.yearly : 'Monthly — ₹'+PLAN_PRICES.monthly}</b></div>
+        <div style="background:linear-gradient(135deg,rgba(245,183,49,.12),rgba(232,100,10,.08));border:1.5px solid rgba(245,183,49,.35);border-radius:16px;padding:18px;margin-bottom:26px">
+          <div style="font-size:14px;font-weight:700;color:#F5B731;line-height:2.1;">
+            ✅ UTR verified — Duplicate కాదు<br>
+            👑 Premium ఇప్పుడే activate అయింది<br>
+            📚 అన్ని Premium exams unlock అయ్యాయి!
           </div>
         </div>
-        <button onclick="document.getElementById('premium-success-modal').remove();" style="width:100%;padding:14px;border-radius:14px;border:none;cursor:pointer;font-size:15px;font-weight:800;background:linear-gradient(135deg,#F5B731,#E8640A);color:#fff">
-          OK, నేను wait చేస్తాను
+        <button onclick="document.getElementById('premium-success-modal').remove();location.reload();" style="width:100%;padding:14px;border-radius:14px;border:none;cursor:pointer;font-size:15px;font-weight:800;background:linear-gradient(135deg,#F5B731,#E8640A);color:#fff;box-shadow:0 4px 20px rgba(245,183,49,.4);">
+          🚀 Exams Start చేయండి!
         </button>
       </div>`;
     document.body.appendChild(m);
@@ -20647,6 +20832,130 @@ document.addEventListener('DOMContentLoaded', function() {
 });
 </script>
 <script>
+// ── RECEIPT DOWNLOAD ──
+function _downloadReceipt() {
+  const u   = window._pfUser || getCurrentUser();
+  const rec = window._pfPaymentRecord;
+  if (!u) { toast('User info కనపడలేదు', 'error'); return; }
+
+  const planLabel = (u.premiumPlan === 'yearly') ? 'Yearly Premium — ₹499/yr' :
+                    (u.premiumPlan === 'referral') ? 'Referral Reward (Free)' :
+                    (u.premiumPlan === 'manual')   ? 'Admin Grant (Complimentary)' :
+                    'Monthly Premium — ₹99/mo';
+  const sinceDate = u.premiumSince
+    ? new Date(u.premiumSince).toLocaleDateString('en-IN', { day:'2-digit', month:'short', year:'numeric' })
+    : new Date().toLocaleDateString('en-IN', { day:'2-digit', month:'short', year:'numeric' });
+  const receiptNo = rec ? (rec.utr || rec.pid || ('AE-' + Date.now())) : ('AE-' + Date.now());
+  const amount    = rec ? (rec.amount || 0) : 0;
+  const payDate   = rec ? (rec.date || sinceDate) : sinceDate;
+
+  const html = `<!DOCTYPE html>
+<html lang="en">
+<head><meta charset="UTF-8"><title>Receipt - Anil EduTech</title>
+<style>
+  body{font-family:'Segoe UI',sans-serif;margin:0;padding:0;background:#f4f7fc;color:#1a1a2e;}
+  .wrap{max-width:520px;margin:40px auto;background:#fff;border-radius:18px;overflow:hidden;box-shadow:0 8px 40px rgba(26,115,232,.12);}
+  .header{background:linear-gradient(135deg,#1a0533,#1A73E8);padding:32px 28px;text-align:center;}
+  .header h1{color:#fff;font-size:22px;font-weight:900;margin:0;}
+  .header p{color:rgba(255,255,255,.7);font-size:13px;margin:6px 0 0;}
+  .badge{display:inline-block;background:rgba(245,183,49,.2);color:#F5B731;border:1px solid rgba(245,183,49,.4);border-radius:20px;padding:4px 14px;font-size:12px;font-weight:800;margin-top:10px;}
+  .body{padding:28px;}
+  .receipt-no{background:#f4f7fc;border-radius:10px;padding:12px 16px;margin-bottom:22px;display:flex;justify-content:space-between;align-items:center;}
+  .receipt-no span{font-size:11px;color:#6b7280;font-weight:600;}
+  .receipt-no b{font-size:12px;color:#1A73E8;font-family:monospace;}
+  .row{display:flex;justify-content:space-between;padding:10px 0;border-bottom:1px solid #f0f0f0;}
+  .row:last-child{border-bottom:none;}
+  .label{font-size:12px;color:#6b7280;font-weight:600;}
+  .val{font-size:13px;color:#1a1a2e;font-weight:800;text-align:right;}
+  .total{background:linear-gradient(135deg,rgba(245,183,49,.08),rgba(232,100,10,.08));border:1.5px solid rgba(245,183,49,.3);border-radius:12px;padding:16px;margin:18px 0;display:flex;justify-content:space-between;align-items:center;}
+  .total .tl{font-size:14px;font-weight:700;color:#92400e;}
+  .total .tv{font-size:22px;font-weight:900;color:#E8640A;}
+  .status{text-align:center;margin:16px 0;}
+  .status span{background:rgba(16,185,129,.1);color:#10b981;border:1px solid rgba(16,185,129,.3);border-radius:20px;padding:6px 18px;font-size:12px;font-weight:800;}
+  .footer{text-align:center;padding:18px 28px;border-top:1px solid #f0f0f0;}
+  .footer p{font-size:11px;color:#9ca3af;margin:4px 0;}
+  .footer a{color:#1A73E8;text-decoration:none;font-weight:700;}
+  @media print{body{background:#fff;}.wrap{box-shadow:none;border-radius:0;margin:0;}}
+</style>
+</head>
+<body>
+<div class="wrap">
+  <div class="header">
+    <h1>🎓 Anil EduTech</h1>
+    <p>aniledutech.in</p>
+    <div class="badge">👑 PREMIUM RECEIPT</div>
+  </div>
+  <div class="body">
+    <div class="receipt-no">
+      <span>Receipt No.</span>
+      <b>${receiptNo}</b>
+    </div>
+    <div class="row"><span class="label">Member Name</span><span class="val">${u.name || '—'}</span></div>
+    <div class="row"><span class="label">Email</span><span class="val" style="font-size:11px;">${u.gmail || '—'}</span></div>
+    <div class="row"><span class="label">Plan</span><span class="val">${planLabel}</span></div>
+    <div class="row"><span class="label">Activated On</span><span class="val">${sinceDate}</span></div>
+    <div class="row"><span class="label">Payment Date</span><span class="val">${payDate}</span></div>
+    ${amount ? '<div class="row"><span class="label">Payment Method</span><span class="val">UPI</span></div>' : ''}
+    <div class="total">
+      <span class="tl">Total Paid</span>
+      <span class="tv">${amount ? '₹' + amount : 'Complimentary'}</span>
+    </div>
+    <div class="status"><span>✅ Payment Confirmed</span></div>
+  </div>
+  <div class="footer">
+    <p>Thank you for choosing <strong>Anil EduTech Premium!</strong></p>
+    <p>Questions? <a href="mailto:aniledutech@gmail.com">aniledutech@gmail.com</a></p>
+    <p style="margin-top:8px;font-size:10px;">This is a computer-generated receipt. No signature required.</p>
+  </div>
+</div>
+</body></html>`;
+
+  const blob = new Blob([html], { type: 'text/html' });
+  const url  = URL.createObjectURL(blob);
+  const a    = document.createElement('a');
+  a.href     = url;
+  a.download = 'AE-Premium-Receipt-' + (u.gmail || 'user').replace(/[@.]/g,'_') + '.html';
+  a.click();
+  URL.revokeObjectURL(url);
+  toast('🧾 Receipt downloaded!', 'success');
+}
+
+function _emailReceipt() {
+  const u = window._pfUser || getCurrentUser();
+  if (!u) return;
+  const rec = window._pfPaymentRecord;
+  const amount = rec ? ('₹' + rec.amount) : 'N/A';
+  const sinceDate = u.premiumSince
+    ? new Date(u.premiumSince).toLocaleDateString('en-IN', { day:'2-digit', month:'short', year:'numeric' })
+    : '—';
+  const txnId = rec ? (rec.utr || rec.pid || '—') : '—';
+
+  const subject = encodeURIComponent('Anil EduTech Premium Receipt');
+  const body = encodeURIComponent(
+    'Hi ' + (u.name || 'User') + ',\n\n' +
+    'Thank you for subscribing to Anil EduTech Premium!\n\n' +
+    '--- Receipt Details ---\n' +
+    'Plan: ' + (u.premiumPlan === 'yearly' ? 'Yearly' : u.premiumPlan === 'referral' ? 'Referral' : 'Monthly') + '\n' +
+    'Amount Paid: ' + amount + '\n' +
+    'Activated On: ' + sinceDate + '\n' +
+    'Transaction ID: ' + txnId + '\n' +
+    '\nFor support: aniledutech@gmail.com\n\nThank you!'
+  );
+  window.open('mailto:' + (u.gmail || '') + '?subject=' + subject + '&body=' + body);
+  toast('📧 Email app open అయింది!', 'info');
+}
+
+function _contactSupport() {
+  const u = window._pfUser || getCurrentUser();
+  const name  = u ? encodeURIComponent(u.name || 'User') : 'User';
+  const gmail = u ? encodeURIComponent(u.gmail || '') : '';
+  const plan  = u ? (u.premiumPlan || 'monthly') : 'unknown';
+  const msg = `నమస్కారం! Premium subscription గురించి help కావాలి.%0AName: ${name}%0AEmail: ${gmail}%0APlan: ${plan}`;
+  const waNum = (typeof SITE_CONFIG !== 'undefined' && SITE_CONFIG.WA_NUMBER) ? SITE_CONFIG.WA_NUMBER : '919876543210';
+  window.open('https://wa.me/' + waNum + '?text=' + msg, '_blank');
+}
+</script>
+<script>
 // ══ PREMIUM BANNER — disabled ══
 window._refreshPremiumBanner = function(){
   var el = document.getElementById('premium-exams-banner');
@@ -21118,6 +21427,105 @@ async function showProfile() {
       histEl.innerHTML = '<div style="text-align:center;padding:20px;color:var(--text3);font-size:13px;">ఇంకా exams ఇవ్వలేదు!<br>Exam చేస్తే ఇక్కడ కనిపిస్తుంది.</div>';
     }
   }
+
+  // ── Subscription Management ──
+  const subSection = document.getElementById('pf-subscription-section');
+  const subContent = document.getElementById('pf-sub-content');
+  if (subSection && subContent) {
+    if (u.isPremium) {
+      subSection.style.display = 'block';
+
+      // Get payment record for this user
+      const allRecords = JSON.parse(_ls.getItem('ae_payment_records') || '[]');
+      const myRecord = allRecords.find(r => r.gmail === u.gmail && (r.status === 'paid' || r.status === 'Approved'));
+      const planLabel = (u.premiumPlan === 'yearly') ? 'Yearly Plan — ₹499/yr' :
+                        (u.premiumPlan === 'referral') ? 'Referral Reward' :
+                        (u.premiumPlan === 'manual') ? 'Admin Grant' :
+                        'Monthly Plan — ₹99/mo';
+      const sinceDate = u.premiumSince
+        ? new Date(u.premiumSince).toLocaleDateString('en-IN', { day:'2-digit', month:'short', year:'numeric' })
+        : '—';
+
+      // Fetch from Supabase if local record not found
+      let sbRecord = null;
+      try {
+        const sbRes = await fetch(
+          SB_URL + '/rest/v1/ae_payments?gmail=eq.' + encodeURIComponent(u.gmail) + '&status=in.(paid,Approved)&order=created_at.desc&limit=1',
+          { headers: SB_HEADERS }
+        );
+        if (sbRes.ok) {
+          const sbData = await sbRes.json();
+          if (sbData && sbData.length) sbRecord = sbData[0];
+        }
+      } catch(e) {}
+
+      const rec = myRecord || (sbRecord ? {
+        pid: sbRecord.payment_id, plan: sbRecord.plan,
+        amount: sbRecord.amount, date: sbRecord.created_at
+          ? new Date(sbRecord.created_at).toLocaleString('en-IN') : '—',
+        status: sbRecord.status, name: sbRecord.name, gmail: sbRecord.gmail
+      } : null);
+
+      subContent.innerHTML = `
+        <!-- Plan badge -->
+        <div style="display:flex;align-items:center;gap:10px;padding:14px;background:linear-gradient(135deg,rgba(124,58,237,.08),rgba(245,183,49,.08));border:1.5px solid rgba(245,183,49,.3);border-radius:14px;margin-bottom:14px;">
+          <div style="font-size:28px;">👑</div>
+          <div style="flex:1;">
+            <div style="font-size:15px;font-weight:900;color:var(--text);">Premium Active</div>
+            <div style="font-size:12px;color:var(--text3);margin-top:2px;">${planLabel}</div>
+          </div>
+          <div style="background:rgba(16,185,129,.15);color:#10b981;font-size:10px;font-weight:800;padding:4px 10px;border-radius:20px;border:1px solid rgba(16,185,129,.3);">✅ Active</div>
+        </div>
+
+        <!-- Subscription details -->
+        <div style="display:flex;flex-direction:column;gap:8px;margin-bottom:14px;">
+          <div style="display:flex;justify-content:space-between;align-items:center;padding:8px 0;border-bottom:1px solid var(--border);">
+            <span style="font-size:12px;color:var(--text3);font-weight:600;">Plan</span>
+            <span style="font-size:13px;font-weight:800;color:var(--text);">${u.premiumPlan === 'yearly' ? '📅 Yearly' : u.premiumPlan === 'referral' ? '🎁 Referral' : u.premiumPlan === 'manual' ? '🛠️ Manual' : '📅 Monthly'}</span>
+          </div>
+          <div style="display:flex;justify-content:space-between;align-items:center;padding:8px 0;border-bottom:1px solid var(--border);">
+            <span style="font-size:12px;color:var(--text3);font-weight:600;">Member Since</span>
+            <span style="font-size:13px;font-weight:800;color:var(--text);">${sinceDate}</span>
+          </div>
+          ${rec ? `
+          <div style="display:flex;justify-content:space-between;align-items:center;padding:8px 0;border-bottom:1px solid var(--border);">
+            <span style="font-size:12px;color:var(--text3);font-weight:600;">Amount Paid</span>
+            <span style="font-size:13px;font-weight:800;color:#10b981;">₹${rec.amount || '—'}</span>
+          </div>
+          <div style="display:flex;justify-content:space-between;align-items:center;padding:8px 0;border-bottom:1px solid var(--border);">
+            <span style="font-size:12px;color:var(--text3);font-weight:600;">Transaction ID</span>
+            <span style="font-size:11px;font-weight:700;color:var(--text2);font-family:monospace;">${escHtml(rec.utr || rec.pid || '—')}</span>
+          </div>
+          <div style="display:flex;justify-content:space-between;align-items:center;padding:8px 0;">
+            <span style="font-size:12px;color:var(--text3);font-weight:600;">Payment Date</span>
+            <span style="font-size:12px;font-weight:700;color:var(--text2);">${rec.date || '—'}</span>
+          </div>
+          ` : ''}
+        </div>
+
+        <!-- Actions -->
+        <div style="display:flex;gap:8px;flex-wrap:wrap;">
+          ${rec ? `<button onclick="_downloadReceipt()" style="flex:1;min-width:120px;padding:11px 8px;border-radius:12px;border:none;cursor:pointer;font-size:12px;font-weight:800;background:linear-gradient(135deg,#1A73E8,#0D47A1);color:#fff;font-family:inherit;">🧾 Download Receipt</button>` : ''}
+          <button onclick="_emailReceipt()" style="flex:1;min-width:120px;padding:11px 8px;border-radius:12px;border:1.5px solid var(--border);cursor:pointer;font-size:12px;font-weight:800;background:var(--surface);color:var(--text);font-family:inherit;">📧 Email Receipt</button>
+          <button onclick="_contactSupport()" style="flex:1;min-width:120px;padding:11px 8px;border-radius:12px;border:1.5px solid var(--border);cursor:pointer;font-size:12px;font-weight:800;background:var(--surface);color:var(--text);font-family:inherit;">💬 Support</button>
+        </div>`;
+
+      // Store current record for download/email functions
+      window._pfPaymentRecord = rec;
+      window._pfUser = u;
+
+    } else {
+      // Not premium — show upgrade prompt
+      subSection.style.display = 'block';
+      subContent.innerHTML = `
+        <div style="text-align:center;padding:12px 0;">
+          <div style="font-size:32px;margin-bottom:8px;">⭐</div>
+          <div style="font-size:14px;font-weight:900;color:var(--text);margin-bottom:6px;">Free Plan</div>
+          <div style="font-size:12px;color:var(--text3);margin-bottom:16px;line-height:1.6;">Premium తీసుకొని అన్ని locked exams unlock చేయండి!</div>
+          <button onclick="openPricing()" style="width:100%;padding:13px;border-radius:14px;border:none;cursor:pointer;font-size:14px;font-weight:900;background:linear-gradient(135deg,#F5B731,#E8640A);color:#fff;font-family:inherit;">⚡ Premium తీసుకోండి — ₹99/mo</button>
+        </div>`;
+    }
+  }
 }
 
 </script>
@@ -21267,6 +21675,201 @@ document.addEventListener('DOMContentLoaded', async () => {
   // Check daily reminder
   setTimeout(() => AE_NOTIF.checkDailyReminder(), 3000);
 });
+
+// ══════════════════════════════════════════════════════════════════
+//  BROADCAST NOTIFICATION — Admin Panel
+// ══════════════════════════════════════════════════════════════════
+let _notifRecipients = [];
+
+async function loadNotificationRecipients() {
+  // Get users from Supabase subscribers + localStorage
+  let users = [];
+  try {
+    const sbApproved = await sbSubGet('approved');
+    if (Array.isArray(sbApproved)) {
+      sbApproved.forEach(u => {
+        if (u.gmail && u.name) {
+          users.push({ name: u.name, gmail: u.gmail, isPremium: u.is_premium || false });
+        }
+      });
+    }
+  } catch(e) {}
+
+  // Also merge localStorage approved
+  try {
+    const localApproved = getSubApproved ? getSubApproved() : [];
+    localApproved.forEach(u => {
+      if (!users.find(x => x.gmail === u.gmail) && u.gmail && u.name) {
+        users.push({ name: u.name, gmail: u.gmail, isPremium: u.isPremium || false });
+      }
+    });
+  } catch(e) {}
+
+  _notifRecipients = users;
+  document.getElementById('notif-total-count').textContent = users.length;
+  document.getElementById('notif-sent-count').textContent = 0;
+  document.getElementById('notif-fail-count').textContent = 0;
+  document.getElementById('notif-pending-count').textContent = '—';
+}
+
+function _getNotifAudience() {
+  const val = document.querySelector('input[name="notif-audience"]:checked')?.value || 'all';
+  if (val === 'premium') return _notifRecipients.filter(u => u.isPremium);
+  if (val === 'free') return _notifRecipients.filter(u => !u.isPremium);
+  return _notifRecipients;
+}
+
+function _buildBroadcastEmailHTML(name, heading, body, btnText, btnUrl) {
+  const btnHtml = (btnText && btnUrl)
+    ? `<a href="${btnUrl}" class="cta-btn">${btnText}</a>`
+    : (btnText ? `<a href="https://aniledutech.in" class="cta-btn">${btnText}</a>` : '');
+  const bodyLines = body.split('\n').map(l => `<p style="color:#475569;font-size:14px;line-height:1.7;margin-bottom:8px">${l}</p>`).join('');
+  return _buildEmailHTML(
+    'linear-gradient(135deg,#7c3aed,#6366f1)',
+    '🔔', heading || 'Important Notification',
+    `<div class="greeting">నమస్కారం ${name} గారు! 🙏</div>
+     <div style="margin:16px 0">${bodyLines}</div>
+     ${btnHtml}`,
+    'Anil EduTech — TSPSC · SSC · Banking · GK'
+  );
+}
+
+function previewBroadcastNotification() {
+  const heading = document.getElementById('notif-heading').value.trim() || 'Important Notification';
+  const body    = document.getElementById('notif-body').value.trim();
+  const btnText = document.getElementById('notif-btn-text').value.trim();
+  const btnUrl  = document.getElementById('notif-btn-url').value.trim();
+
+  if (!body) { toast('❌ Message రాయండి!', 'warn'); return; }
+
+  const html = _buildBroadcastEmailHTML('మీరు', heading, body, btnText, btnUrl);
+  const preview = document.getElementById('notif-preview-frame');
+  if (preview) { preview.innerHTML = html; }
+  const previewBox = document.getElementById('notif-preview-box');
+  if (previewBox) { previewBox.style.display = ''; previewBox.scrollIntoView({behavior:'smooth', block:'start'}); }
+}
+
+async function sendBroadcastNotification() {
+  const subject = document.getElementById('notif-subject').value.trim();
+  const heading = document.getElementById('notif-heading').value.trim();
+  const body    = document.getElementById('notif-body').value.trim();
+  const btnText = document.getElementById('notif-btn-text').value.trim();
+  const btnUrl  = document.getElementById('notif-btn-url').value.trim();
+
+  if (!subject) { toast('❌ Subject రాయండి!', 'warn'); return; }
+  if (!body)    { toast('❌ Message రాయండి!', 'warn'); return; }
+
+  const cfg = getEmailJSConfig();
+  if (!cfg || !cfg.serviceId || !cfg.templateId || !cfg.publicKey) {
+    toast('❌ Settings లో EmailJS config set చేయండి!', 'warn'); return;
+  }
+
+  const targets = _getNotifAudience();
+  if (targets.length === 0) {
+    toast('⚠ Recipients లేరు. Users load అయ్యారా?', 'warn'); return;
+  }
+
+  const confirmed = confirm(`📨 ${targets.length} users కి notification send చేయాలా?\n\nSubject: ${subject}`);
+  if (!confirmed) return;
+
+  // UI setup
+  const sendBtn = document.getElementById('notif-send-btn');
+  if (sendBtn) { sendBtn.disabled = true; sendBtn.textContent = '⏳ Sending...'; }
+  const progressWrap = document.getElementById('notif-progress-wrap');
+  if (progressWrap) progressWrap.style.display = '';
+  const statusEl = document.getElementById('notif-status');
+  if (statusEl) statusEl.style.display = 'none';
+
+  const logEl = document.getElementById('notif-log');
+  if (logEl) logEl.innerHTML = '';
+
+  let sent = 0, failed = 0;
+  const total = targets.length;
+
+  for (let i = 0; i < targets.length; i++) {
+    const user = targets[i];
+    const pct = Math.round(((i + 1) / total) * 100);
+
+    document.getElementById('notif-progress-bar').style.width = pct + '%';
+    document.getElementById('notif-progress-label').textContent = `📨 Sending... ${i+1}/${total} (${pct}%)`;
+    document.getElementById('notif-pending-count').textContent = total - i - 1;
+
+    try {
+      const htmlBody = _buildBroadcastEmailHTML(user.name, heading, body, btnText, btnUrl);
+      await emailjs.send(cfg.serviceId, cfg.templateId, {
+        to_email:    user.gmail,
+        to_name:     user.name,
+        subject:     subject,
+        html_body:   htmlBody,
+        message:     body
+      }, cfg.publicKey);
+
+      sent++;
+      document.getElementById('notif-sent-count').textContent = sent;
+      if (logEl) {
+        const row = document.createElement('div');
+        row.style.cssText = 'display:flex;align-items:center;gap:8px;padding:6px 10px;background:rgba(16,185,129,.08);border-radius:8px;border:1px solid rgba(16,185,129,.2)';
+        row.innerHTML = `<span style="color:var(--teal);font-size:15px">✅</span><span style="font-size:12px;color:var(--text2)"><b>${user.name}</b> — ${user.gmail}</span><span style="margin-left:auto;font-size:11px;color:var(--text3)">${new Date().toLocaleTimeString('te-IN',{hour:'2-digit',minute:'2-digit'})}</span>`;
+        logEl.prepend(row);
+      }
+    } catch(e) {
+      failed++;
+      document.getElementById('notif-fail-count').textContent = failed;
+      if (logEl) {
+        const row = document.createElement('div');
+        row.style.cssText = 'display:flex;align-items:center;gap:8px;padding:6px 10px;background:rgba(239,68,68,.08);border-radius:8px;border:1px solid rgba(239,68,68,.2)';
+        row.innerHTML = `<span style="color:var(--red);font-size:15px">❌</span><span style="font-size:12px;color:var(--text2)"><b>${user.name}</b> — ${user.gmail}</span><span style="margin-left:auto;font-size:11px;color:var(--text3)">Failed</span>`;
+        logEl.prepend(row);
+      }
+    }
+
+    // Small delay to avoid EmailJS rate limit
+    await new Promise(r => setTimeout(r, 300));
+  }
+
+  // Done
+  document.getElementById('notif-progress-label').textContent = `✅ Completed! ${sent} sent, ${failed} failed`;
+  document.getElementById('notif-pending-count').textContent = 0;
+  if (sendBtn) { sendBtn.disabled = false; sendBtn.textContent = '📨 Send to All'; }
+
+  if (statusEl) {
+    statusEl.style.display = '';
+    if (failed === 0) {
+      statusEl.style.background = 'rgba(16,185,129,.1)';
+      statusEl.style.color = 'var(--teal)';
+      statusEl.style.border = '1.5px solid rgba(16,185,129,.3)';
+      statusEl.textContent = `🎉 అన్ని ${sent} emails successfully send అయ్యాయి!`;
+    } else {
+      statusEl.style.background = 'rgba(245,158,11,.1)';
+      statusEl.style.color = '#d97706';
+      statusEl.style.border = '1.5px solid rgba(245,158,11,.3)';
+      statusEl.textContent = `⚠ ${sent} sent, ${failed} failed. EmailJS limits check చేయండి.`;
+    }
+  }
+
+  toast(`📨 ${sent}/${total} emails sent!`, sent === total ? 'success' : 'warn');
+}
+
+function resetNotificationForm() {
+  document.getElementById('notif-subject').value = '';
+  document.getElementById('notif-heading').value = '';
+  document.getElementById('notif-body').value = '';
+  document.getElementById('notif-btn-text').value = '';
+  document.getElementById('notif-btn-url').value = '';
+  const statusEl = document.getElementById('notif-status');
+  if (statusEl) statusEl.style.display = 'none';
+  const previewBox = document.getElementById('notif-preview-box');
+  if (previewBox) previewBox.style.display = 'none';
+  const progressWrap = document.getElementById('notif-progress-wrap');
+  if (progressWrap) progressWrap.style.display = 'none';
+  document.querySelector('input[name="notif-audience"][value="all"]').checked = true;
+  document.getElementById('notif-sent-count').textContent = 0;
+  document.getElementById('notif-fail-count').textContent = 0;
+  document.getElementById('notif-pending-count').textContent = '—';
+  const logEl = document.getElementById('notif-log');
+  if (logEl) logEl.innerHTML = '<div style="color:var(--text3);text-align:center;padding:20px">Send Log ఇక్కడ కనిపిస్తుంది</div>';
+}
+// ══════════════════════════════════════════════════════════════════
 
 // Hook into saveScoreAndShow — trigger notification after exam
 const _origSaveScore = window.saveScoreAndShow;

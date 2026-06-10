@@ -5694,7 +5694,7 @@ html:not(:has(#_ae_loading)) body {
       <div class="cat-card" data-cat="live-test" onclick="goExams('Live Test')" style="--cat-grad:linear-gradient(135deg,#D42B3A,#FF6584);--cat-soft:rgba(212,43,58,.06);--cat-shadow:rgba(212,43,58,.35);"><div class="cat-icon-wrap"><span class="cat-icon">🔴</span></div><div class="cat-name">Live Test</div><div class="cat-count">Real-time</div></div>
       <div class="cat-card" data-cat="free-test" onclick="goExams('Free Test')" style="--cat-grad:linear-gradient(135deg,#0A8C5C,#12B579);--cat-soft:rgba(10,140,92,.06);--cat-shadow:rgba(10,140,92,.35);"><div class="cat-icon-wrap"><span class="cat-icon">✅</span></div><div class="cat-name">Free Test</div><div class="cat-count">100% Free</div></div>
       <div class="cat-card" data-cat="mock-test" onclick="openMockFoldersPage()" style="--cat-grad:linear-gradient(135deg,#1A73E8,#4F8EFF);--cat-soft:rgba(26,115,232,.06);--cat-shadow:rgba(26,115,232,.35);"><div class="cat-icon-wrap"><span class="cat-icon">📝</span></div><div class="cat-name">Mock Test</div><div class="cat-count">Full length</div></div>
-      <div class="cat-card" data-cat="quiz" onclick="goExams('Quiz')" style="--cat-grad:linear-gradient(135deg,#0891B2,#22D3EE);--cat-soft:rgba(8,145,178,.06);--cat-shadow:rgba(8,145,178,.35);"><div class="cat-icon-wrap"><span class="cat-icon">🧩</span></div><div class="cat-name">Quiz Test</div><div class="cat-count">Quick rounds</div></div>
+      <div class="cat-card" data-cat="quiz" onclick="loadContestPage()" style="--cat-grad:linear-gradient(135deg,#f57c00,#ff9800);--cat-soft:rgba(245,124,0,.06);--cat-shadow:rgba(245,124,0,.35);"><div class="cat-icon-wrap"><span class="cat-icon">🏆</span></div><div class="cat-name">Quiz Contest</div><div class="cat-count">Win Prize Money!</div></div>
       <!-- Important -->
       <div class="cat-card" data-cat="pyq" onclick="goExams('Previous Papers')" style="--cat-grad:linear-gradient(135deg,#B45309,#F59E0B);--cat-soft:rgba(180,83,9,.06);--cat-shadow:rgba(180,83,9,.35);"><div class="cat-icon-wrap"><span class="cat-icon">📂</span></div><div class="cat-name">Previous Papers</div><div class="cat-count">Year-wise</div></div>
       <div class="cat-card" data-cat="ebook" onclick="goExams('eBook')" style="--cat-grad:linear-gradient(135deg,#1B2D5E,#2563EB);--cat-soft:rgba(27,45,94,.06);--cat-shadow:rgba(27,45,94,.35);"><div class="cat-icon-wrap"><span class="cat-icon">📖</span></div><div class="cat-name">eBook</div><div class="cat-count">PDF books</div></div>
@@ -7771,6 +7771,114 @@ html:not(:has(#_ae_loading)) body {
 </footer>
 </div>
 
+<!-- CONTEST PAGE -->
+<div id="page-contest" class="page">
+  <div style="max-width:860px;margin:0 auto;padding:16px">
+
+    <!-- Header -->
+    <div style="display:flex;align-items:center;gap:12px;margin-bottom:20px">
+      <button onclick="showPage('home')" style="background:var(--card);border:1.5px solid var(--border2);border-radius:10px;padding:8px 14px;font-family:inherit;font-size:13px;font-weight:700;cursor:pointer;color:var(--text2)">← వెనక్కి</button>
+      <h2 style="margin:0;font-size:20px;font-weight:900;color:var(--text)">🏆 Quiz Contests</h2>
+    </div>
+
+    <!-- How it works banner -->
+    <div style="background:linear-gradient(135deg,#1A237E,#283593);border-radius:16px;padding:20px;margin-bottom:20px;color:#fff">
+      <div style="font-size:15px;font-weight:900;margin-bottom:10px">⚡ ఎలా పని చేస్తుంది?</div>
+      <div style="display:grid;grid-template-columns:repeat(3,1fr);gap:12px;font-size:12px">
+        <div style="background:rgba(255,255,255,.1);border-radius:10px;padding:12px;text-align:center">
+          <div style="font-size:22px;margin-bottom:6px">1️⃣</div>
+          <div style="font-weight:800">Entry Fee Pay చేయండి</div>
+          <div style="color:rgba(255,255,255,.7);margin-top:4px">UPI / Razorpay తో</div>
+        </div>
+        <div style="background:rgba(255,255,255,.1);border-radius:10px;padding:12px;text-align:center">
+          <div style="font-size:22px;margin-bottom:6px">2️⃣</div>
+          <div style="font-weight:800">Quiz చేయండి</div>
+          <div style="color:rgba(255,255,255,.7);margin-top:4px">Time limit లో best score సాధించండి</div>
+        </div>
+        <div style="background:rgba(255,255,255,.1);border-radius:10px;padding:12px;text-align:center">
+          <div style="font-size:22px;margin-bottom:6px">3️⃣</div>
+          <div style="font-weight:800">Prize గెలుచుకోండి</div>
+          <div style="color:rgba(255,255,255,.7);margin-top:4px">UPI కి directly prize money</div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Contest Cards -->
+    <div id="contest-cards-wrap">
+      <div style="text-align:center;padding:40px;color:var(--text3)">
+        <div style="font-size:36px">⏳</div>
+        <div style="font-size:14px;font-weight:700;margin-top:8px">Contests load అవుతున్నాయి...</div>
+      </div>
+    </div>
+
+  </div>
+</div>
+
+<!-- CONTEST ENTRY MODAL -->
+<div id="contest-entry-modal" style="display:none;position:fixed;inset:0;background:rgba(0,0,0,.6);z-index:9000;align-items:center;justify-content:center;padding:16px">
+  <div style="background:var(--card);border-radius:20px;padding:28px;max-width:420px;width:100%;box-shadow:0 20px 60px rgba(0,0,0,.4)">
+    <div style="font-size:20px;font-weight:900;color:var(--text);margin-bottom:6px" id="cem-title">Contest Name</div>
+    <div style="font-size:13px;color:var(--text2);margin-bottom:20px" id="cem-desc"></div>
+
+    <!-- Prize info -->
+    <div style="background:linear-gradient(135deg,rgba(255,215,0,.1),rgba(255,152,0,.1));border:1.5px solid rgba(255,215,0,.3);border-radius:14px;padding:16px;margin-bottom:16px">
+      <div style="display:flex;justify-content:space-between;margin-bottom:8px">
+        <span style="font-size:12px;color:var(--text2);font-weight:700">💰 Prize Pool</span>
+        <span style="font-size:15px;font-weight:900;color:#f57c00" id="cem-prize">₹0</span>
+      </div>
+      <div style="display:flex;justify-content:space-between;margin-bottom:8px">
+        <span style="font-size:12px;color:var(--text2);font-weight:700">🥇 1st Prize</span>
+        <span style="font-size:13px;font-weight:800;color:#FFD700" id="cem-p1">₹0</span>
+      </div>
+      <div style="display:flex;justify-content:space-between;margin-bottom:8px">
+        <span style="font-size:12px;color:var(--text2);font-weight:700">🥈 2nd Prize</span>
+        <span style="font-size:13px;font-weight:800;color:#C0C0C0" id="cem-p2">₹0</span>
+      </div>
+      <div style="display:flex;justify-content:space-between">
+        <span style="font-size:12px;color:var(--text2);font-weight:700">🥉 3rd Prize</span>
+        <span style="font-size:13px;font-weight:800;color:#CD7F32" id="cem-p3">₹0</span>
+      </div>
+    </div>
+
+    <!-- Participants -->
+    <div style="display:flex;justify-content:space-between;background:var(--bg);border-radius:12px;padding:12px;margin-bottom:16px">
+      <div style="text-align:center">
+        <div style="font-size:18px;font-weight:900;color:var(--primary)" id="cem-joined">0</div>
+        <div style="font-size:11px;color:var(--text3);font-weight:700">Joined</div>
+      </div>
+      <div style="text-align:center">
+        <div style="font-size:18px;font-weight:900;color:var(--amber)" id="cem-maxp">∞</div>
+        <div style="font-size:11px;color:var(--text3);font-weight:700">Max Spots</div>
+      </div>
+      <div style="text-align:center">
+        <div style="font-size:18px;font-weight:900;color:#4CAF50" id="cem-fee-disp">₹0</div>
+        <div style="font-size:11px;color:var(--text3);font-weight:700">Entry Fee</div>
+      </div>
+    </div>
+
+    <!-- UPI Payment -->
+    <div style="background:var(--bg);border-radius:14px;padding:16px;margin-bottom:16px">
+      <div style="font-size:13px;font-weight:800;color:var(--text);margin-bottom:12px">📱 Entry Fee Pay చేయండి</div>
+      <div style="text-align:center;margin-bottom:12px">
+        <img id="cem-qr" src="" alt="QR Code" style="width:140px;height:140px;border-radius:10px;border:2px solid var(--border2)">
+      </div>
+      <div style="font-size:12px;color:var(--text2);text-align:center;margin-bottom:8px">
+        UPI ID: <strong id="cem-upi" style="color:var(--primary);user-select:all">sekhar1108@kvb</strong>
+      </div>
+      <input id="cem-utr" class="edit-box" placeholder="UTR Number enter చేయండి (pay చేసిన తర్వాత)" style="width:100%;box-sizing:border-box;margin-top:8px">
+    </div>
+
+    <div style="display:flex;gap:10px">
+      <button onclick="closeContestModal()" style="flex:1;background:var(--bg);color:var(--text2);border:1.5px solid var(--border2);border-radius:12px;padding:12px;font-family:inherit;font-size:14px;font-weight:700;cursor:pointer">Cancel</button>
+      <button onclick="submitContestEntry()" id="cem-submit-btn" style="flex:2;background:linear-gradient(135deg,#f57c00,#ff9800);color:#fff;border:none;border-radius:12px;padding:12px;font-family:inherit;font-size:14px;font-weight:800;cursor:pointer">
+        ✅ Entry Submit చేయండి
+      </button>
+    </div>
+    <div id="cem-msg" style="margin-top:10px;font-size:12px;font-weight:700;text-align:center;min-height:18px"></div>
+  </div>
+</div>
+
+
 <!-- ADMIN -->
 <div id="page-admin" class="page">
   <div class="admin-layout">
@@ -7809,6 +7917,7 @@ html:not(:has(#_ae_loading)) body {
       <button class="admin-tab" onclick="switchAdminTab('settings',this)">🔧 Settings</button>
       <button class="admin-tab" onclick="switchAdminTab('userbackup',this)">📋 User Backup</button>
       <button class="admin-tab" onclick="switchAdminTab('notifications',this)">🔔 Notifications</button>
+      <button class="admin-tab" onclick="switchAdminTab('contests',this)">🏆 Contests</button>
     </div>
 
     <!-- MAIN AREA -->
@@ -8400,6 +8509,97 @@ html:not(:has(#_ae_loading)) body {
           </table>
         </div>
       </div>
+    </div>
+
+
+    <!-- ── TAB: CONTESTS ── -->
+    <div id="atab-contests" class="admin-panel">
+
+      <!-- Create Contest -->
+      <div class="admin-card" style="border-color:rgba(245,124,0,.3)">
+        <h3 style="color:#f57c00">🏆 New Contest Create చేయండి</h3>
+        <div style="display:grid;grid-template-columns:1fr 1fr;gap:14px;margin-top:14px">
+          <div>
+            <label style="font-size:12px;font-weight:700;color:var(--text2);display:block;margin-bottom:6px">Contest Title</label>
+            <input id="ctest-title" class="edit-box" placeholder="e.g. GK Quiz Contest #1" style="width:100%;box-sizing:border-box">
+          </div>
+          <div>
+            <label style="font-size:12px;font-weight:700;color:var(--text2);display:block;margin-bottom:6px">Exam Select చేయండి</label>
+            <select id="ctest-exam" class="edit-box" style="width:100%;box-sizing:border-box">
+              <option value="">-- Exam Select --</option>
+            </select>
+          </div>
+          <div>
+            <label style="font-size:12px;font-weight:700;color:var(--text2);display:block;margin-bottom:6px">Entry Fee (₹)</label>
+            <input id="ctest-fee" type="number" class="edit-box" placeholder="e.g. 10" min="1" style="width:100%;box-sizing:border-box">
+          </div>
+          <div>
+            <label style="font-size:12px;font-weight:700;color:var(--text2);display:block;margin-bottom:6px">Prize Pool (₹) — Auto లేదా Manual</label>
+            <input id="ctest-prize" type="number" class="edit-box" placeholder="e.g. 500 (0 = entry fees నుండి auto)" min="0" style="width:100%;box-sizing:border-box">
+          </div>
+          <div>
+            <label style="font-size:12px;font-weight:700;color:var(--text2);display:block;margin-bottom:6px">Start Date & Time</label>
+            <input id="ctest-start" type="datetime-local" class="edit-box" style="width:100%;box-sizing:border-box">
+          </div>
+          <div>
+            <label style="font-size:12px;font-weight:700;color:var(--text2);display:block;margin-bottom:6px">End Date & Time</label>
+            <input id="ctest-end" type="datetime-local" class="edit-box" style="width:100%;box-sizing:border-box">
+          </div>
+          <div>
+            <label style="font-size:12px;font-weight:700;color:var(--text2);display:block;margin-bottom:6px">1st Prize (%)</label>
+            <input id="ctest-p1" type="number" class="edit-box" placeholder="50" value="50" min="1" max="100" style="width:100%;box-sizing:border-box">
+          </div>
+          <div>
+            <label style="font-size:12px;font-weight:700;color:var(--text2);display:block;margin-bottom:6px">2nd Prize (%)</label>
+            <input id="ctest-p2" type="number" class="edit-box" placeholder="30" value="30" min="0" max="100" style="width:100%;box-sizing:border-box">
+          </div>
+          <div>
+            <label style="font-size:12px;font-weight:700;color:var(--text2);display:block;margin-bottom:6px">3rd Prize (%)</label>
+            <input id="ctest-p3" type="number" class="edit-box" placeholder="20" value="20" min="0" max="100" style="width:100%;box-sizing:border-box">
+          </div>
+          <div>
+            <label style="font-size:12px;font-weight:700;color:var(--text2);display:block;margin-bottom:6px">Max Participants (0 = unlimited)</label>
+            <input id="ctest-maxp" type="number" class="edit-box" placeholder="0" value="0" min="0" style="width:100%;box-sizing:border-box">
+          </div>
+        </div>
+        <div style="margin-top:14px">
+          <label style="font-size:12px;font-weight:700;color:var(--text2);display:block;margin-bottom:6px">Description (optional)</label>
+          <textarea id="ctest-desc" class="edit-box" rows="2" placeholder="Contest గురించి చిన్న description..." style="width:100%;box-sizing:border-box;resize:vertical"></textarea>
+        </div>
+        <button onclick="adminCreateContest()" style="margin-top:16px;background:linear-gradient(135deg,#f57c00,#ff9800);color:#fff;border:none;border-radius:12px;padding:12px 28px;font-family:inherit;font-size:14px;font-weight:800;cursor:pointer;box-shadow:0 4px 16px rgba(245,124,0,.35)">
+          🏆 Contest Create చేయండి
+        </button>
+      </div>
+
+      <!-- Active Contests List -->
+      <div class="admin-card" style="margin-top:16px">
+        <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:14px">
+          <h3>📋 All Contests</h3>
+          <button onclick="loadAdminContests()" style="background:var(--primary-soft);color:var(--primary);border:none;border-radius:10px;padding:8px 16px;font-family:inherit;font-size:12px;font-weight:700;cursor:pointer">🔄 Refresh</button>
+        </div>
+        <div id="admin-contests-list">
+          <div style="color:var(--text3);text-align:center;padding:30px">Refresh click చేయండి...</div>
+        </div>
+      </div>
+
+      <!-- Winner Declaration -->
+      <div class="admin-card" style="margin-top:16px;border-color:rgba(255,215,0,.3)">
+        <h3 style="color:#FFD700">🥇 Winner Declare చేయండి</h3>
+        <div style="font-size:13px;color:var(--text2);margin-bottom:14px">Contest end అయిన తర్వాత leaderboard చూసి winner select చేయండి. Winner కి UPI ద్వారా manually prize పంపండి.</div>
+        <div style="display:flex;gap:12px;align-items:flex-end;flex-wrap:wrap">
+          <div style="flex:1;min-width:200px">
+            <label style="font-size:12px;font-weight:700;color:var(--text2);display:block;margin-bottom:6px">Contest Select</label>
+            <select id="winner-contest-sel" class="edit-box" style="width:100%;box-sizing:border-box">
+              <option value="">-- Contest Select --</option>
+            </select>
+          </div>
+          <button onclick="loadContestLeaderboard()" style="background:linear-gradient(135deg,#1A73E8,#4F7CFF);color:#fff;border:none;border-radius:12px;padding:10px 20px;font-family:inherit;font-size:13px;font-weight:800;cursor:pointer">
+            📊 Leaderboard చూడండి
+          </button>
+        </div>
+        <div id="contest-leaderboard-admin" style="margin-top:16px"></div>
+      </div>
+
     </div>
 
     <!-- ── TAB: SETTINGS ── -->
@@ -10062,13 +10262,20 @@ function goProgress() {
   renderProgressDashboard();
 }
 
+// ── IST DATE HELPER (UTC+5:30) ──
+function _istDate(ts) {
+  const d = ts ? new Date(ts) : new Date();
+  const ist = new Date(d.getTime() + (5.5 * 60 * 60 * 1000));
+  return ist.toISOString().slice(0, 10);
+}
+
 // ── STREAK COUNTER ──
 function _getStreakData(myScores) {
   if (!myScores.length) return { current: 0, best: 0, todayDone: false };
-  // Get unique exam days sorted desc
-  const days = [...new Set(myScores.filter(s=>s.ts).map(s => new Date(s.ts).toISOString().slice(0,10)))].sort().reverse();
-  const today = new Date().toISOString().slice(0,10);
-  const yesterday = new Date(Date.now()-86400000).toISOString().slice(0,10);
+  // Get unique exam days sorted desc (IST)
+  const days = [...new Set(myScores.filter(s=>s.ts).map(s => _istDate(s.ts)))].sort().reverse();
+  const today = _istDate();
+  const yesterday = _istDate(Date.now() - 86400000);
   const todayDone = days[0] === today;
 
   // Current streak: count consecutive days back from today or yesterday
@@ -10077,7 +10284,7 @@ function _getStreakData(myScores) {
   for (const d of days) {
     if (d === checkDay) {
       current++;
-      const prev = new Date(new Date(checkDay).getTime() - 86400000).toISOString().slice(0,10);
+      const prev = _istDate(new Date(checkDay).getTime() - 86400000);
       checkDay = prev;
     } else if (d < checkDay) break;
   }
@@ -10111,7 +10318,7 @@ function _renderStreakCard(streak) {
 
   // Mini calendar: last 7 days
   const cal = Array.from({length:7},(_,i)=>{
-    const d = new Date(Date.now() - (6-i)*86400000).toISOString().slice(0,10);
+    const d = _istDate(Date.now() - (6-i)*86400000);
     return d;
   });
 
@@ -10136,7 +10343,7 @@ function _renderStreakCard(streak) {
       ${cal.map(d => {
         const dd = new Date(d); const dayNames=['S','M','T','W','T','F','S'];
         const label = dayNames[dd.getDay()];
-        const isToday = d === new Date().toISOString().slice(0,10);
+        const isToday = d === _istDate();
         // We pass done info via data attribute, filled after render
         return `<div data-calday="${d}" style="text-align:center;flex:1;">
           <div style="font-size:8px;color:rgba(255,255,255,.45);margin-bottom:3px;">${label}</div>
@@ -10148,7 +10355,7 @@ function _renderStreakCard(streak) {
 }
 
 function _fillStreakCalendar(myScores) {
-  const doneDays = new Set(myScores.filter(s=>s.ts).map(s=>new Date(s.ts).toISOString().slice(0,10)));
+  const doneDays = new Set(myScores.filter(s=>s.ts).map(s=>_istDate(s.ts)));
   document.querySelectorAll('.streak-cal-dot').forEach(el => {
     const d = el.dataset.calday;
     if (doneDays.has(d)) {
@@ -15510,7 +15717,7 @@ function _renderBadges() {
 }
 
 
-function _getDailyKey() { return new Date().toISOString().slice(0,10); }
+function _getDailyKey() { return _istDate(); }
 
 function _pickDailyExam() {
   const exams = DB.exams.filter(e => DB.questions.filter(q=>q.examId===e.id).length > 0);
@@ -21866,6 +22073,471 @@ function resetNotificationForm() {
   if (logEl) logEl.innerHTML = '<div style="color:var(--text3);text-align:center;padding:20px">Send Log ఇక్కడ కనిపిస్తుంది</div>';
 }
 // ══════════════════════════════════════════════════════════════════
+
+
+// ══════════════════════════════════════════════════════════════════
+// 🏆 CONTEST SYSTEM
+// ══════════════════════════════════════════════════════════════════
+
+// Current contest being entered
+let _activeContest = null;
+
+// ── Supabase table: ae_contests
+// columns: id, title, desc, exam_id, exam_name, entry_fee, prize_pool,
+//          prize_p1, prize_p2, prize_p3, max_participants, start_at,
+//          end_at, status (active/closed/upcoming), created_at
+//
+// ── Supabase table: ae_contest_entries
+// columns: id, contest_id, gmail, name, utr, status (pending/approved/rejected),
+//          score, rank, created_at
+
+// ── Load contests on user page ──
+async function loadContestPage() {
+  showPage('contest');
+  const wrap = document.getElementById('contest-cards-wrap');
+  wrap.innerHTML = '<div style="text-align:center;padding:40px;color:var(--text3)"><div style="font-size:36px">⏳</div><div style="font-size:14px;font-weight:700;margin-top:8px">Loading...</div></div>';
+  try {
+    const res = await fetch(`${SB_URL}/rest/v1/ae_contests?order=created_at.desc`, { headers: SB_HEADERS });
+    const contests = res.ok ? await res.json() : [];
+    if (!contests.length) {
+      wrap.innerHTML = '<div style="text-align:center;padding:40px;color:var(--text3)"><div style="font-size:36px">🏆</div><div style="font-size:15px;font-weight:700;margin-top:10px">త్వరలో contests వస్తాయి!</div><div style="font-size:13px;margin-top:6px">Admin కొత్త contest add చేస్తే ఇక్కడ కనిపిస్తుంది.</div></div>';
+      return;
+    }
+    wrap.innerHTML = contests.map(c => _contestCardHtml(c)).join('');
+  } catch(e) {
+    wrap.innerHTML = '<div style="text-align:center;padding:30px;color:var(--error)">Load కాలేదు. Retry చేయండి.</div>';
+  }
+}
+
+// ── Single contest card HTML ──
+function _contestCardHtml(c) {
+  const now = Date.now();
+  const start = new Date(c.start_at).getTime();
+  const end = new Date(c.end_at).getTime();
+  const isActive = now >= start && now <= end;
+  const isUpcoming = now < start;
+  const isClosed = now > end;
+
+  const statusBadge = isActive
+    ? '<span style="background:#4CAF50;color:#fff;font-size:11px;font-weight:800;padding:3px 10px;border-radius:20px">🟢 LIVE</span>'
+    : isUpcoming
+    ? '<span style="background:#1A73E8;color:#fff;font-size:11px;font-weight:800;padding:3px 10px;border-radius:20px">⏰ Coming Soon</span>'
+    : '<span style="background:var(--border2);color:var(--text3);font-size:11px;font-weight:800;padding:3px 10px;border-radius:20px">🔒 Closed</span>';
+
+  const prize = c.prize_pool > 0 ? c.prize_pool : '?';
+  const endStr = new Date(c.end_at).toLocaleString('te-IN', {day:'numeric',month:'short',hour:'2-digit',minute:'2-digit'});
+
+  return `<div style="background:var(--card);border:1.5px solid ${isActive?'rgba(76,175,80,.4)':isUpcoming?'rgba(26,115,232,.3)':'var(--border2)'};border-radius:18px;padding:20px;margin-bottom:16px;transition:box-shadow .2s" onmouseover="this.style.boxShadow='0 8px 28px rgba(0,0,0,.15)'" onmouseout="this.style.boxShadow=''">
+    <div style="display:flex;align-items:flex-start;justify-content:space-between;gap:12px;flex-wrap:wrap">
+      <div style="flex:1;min-width:200px">
+        <div style="display:flex;align-items:center;gap:10px;margin-bottom:8px">
+          ${statusBadge}
+          <span style="font-size:12px;color:var(--text3);font-weight:600">Ends: ${endStr}</span>
+        </div>
+        <div style="font-size:17px;font-weight:900;color:var(--text);margin-bottom:4px">${escHtml(c.title)}</div>
+        <div style="font-size:12px;color:var(--text2);margin-bottom:12px">${escHtml(c.desc||'')}</div>
+        <div style="display:flex;gap:10px;flex-wrap:wrap">
+          <span style="background:rgba(245,124,0,.12);color:#f57c00;font-size:12px;font-weight:800;padding:4px 12px;border-radius:20px">💰 Prize: ₹${prize}</span>
+          <span style="background:rgba(26,115,232,.1);color:var(--primary);font-size:12px;font-weight:800;padding:4px 12px;border-radius:20px">🎟 Entry: ₹${c.entry_fee}</span>
+          <span style="background:var(--bg);color:var(--text2);font-size:12px;font-weight:700;padding:4px 12px;border-radius:20px">🥇 ₹${Math.round((c.prize_pool||0)*((c.prize_p1||50)/100))} | 🥈 ₹${Math.round((c.prize_pool||0)*((c.prize_p2||30)/100))} | 🥉 ₹${Math.round((c.prize_pool||0)*((c.prize_p3||20)/100))}</span>
+        </div>
+      </div>
+      <div style="display:flex;flex-direction:column;gap:8px;align-items:flex-end">
+        ${isActive ? `<button onclick='openContestEntry(${JSON.stringify(c)})' style="background:linear-gradient(135deg,#f57c00,#ff9800);color:#fff;border:none;border-radius:12px;padding:10px 20px;font-family:inherit;font-size:13px;font-weight:800;cursor:pointer;box-shadow:0 4px 14px rgba(245,124,0,.35)">🎯 Join చేయండి</button>` : ''}
+        <button onclick='showContestLeaderboardUser(${c.id})' style="background:var(--bg);color:var(--text2);border:1.5px solid var(--border2);border-radius:12px;padding:8px 16px;font-family:inherit;font-size:12px;font-weight:700;cursor:pointer">📊 Leaderboard</button>
+      </div>
+    </div>
+  </div>`;
+}
+
+// ── Open contest entry modal ──
+function openContestEntry(c) {
+  const u = getCurrentUser();
+  if (!u) { showToast('ముందు login చేయండి!', 'warn'); return; }
+  _activeContest = c;
+
+  document.getElementById('cem-title').textContent = c.title;
+  document.getElementById('cem-desc').textContent = c.desc || '';
+  document.getElementById('cem-prize').textContent = '₹' + (c.prize_pool || '?');
+  document.getElementById('cem-p1').textContent = '₹' + Math.round((c.prize_pool||0)*((c.prize_p1||50)/100));
+  document.getElementById('cem-p2').textContent = '₹' + Math.round((c.prize_pool||0)*((c.prize_p2||30)/100));
+  document.getElementById('cem-p3').textContent = '₹' + Math.round((c.prize_pool||0)*((c.prize_p3||20)/100));
+  document.getElementById('cem-fee-disp').textContent = '₹' + c.entry_fee;
+  document.getElementById('cem-maxp').textContent = c.max_participants > 0 ? c.max_participants : '∞';
+  document.getElementById('cem-utr').value = '';
+  document.getElementById('cem-msg').textContent = '';
+
+  // QR code (use UPI QR)
+  const upiId = 'sekhar1108@kvb';
+  const upiAmt = c.entry_fee;
+  const upiStr = `upi://pay?pa=${upiId}&pn=AnilEduTech&am=${upiAmt}&cu=INR&tn=Contest:${encodeURIComponent(c.title)}`;
+  document.getElementById('cem-upi').textContent = upiId;
+  document.getElementById('cem-qr').src = `https://api.qrserver.com/v1/create-qr-code/?size=140x140&data=${encodeURIComponent(upiStr)}`;
+
+  // Joined count
+  fetch(`${SB_URL}/rest/v1/ae_contest_entries?contest_id=eq.${c.id}&status=eq.approved&select=id`, { headers: SB_HEADERS })
+    .then(r => r.json()).then(d => {
+      document.getElementById('cem-joined').textContent = Array.isArray(d) ? d.length : 0;
+    }).catch(()=>{});
+
+  const modal = document.getElementById('contest-entry-modal');
+  modal.style.display = 'flex';
+}
+
+function closeContestModal() {
+  document.getElementById('contest-entry-modal').style.display = 'none';
+  _activeContest = null;
+}
+
+// ── Submit contest entry ──
+async function submitContestEntry() {
+  const u = getCurrentUser();
+  if (!u || !_activeContest) return;
+  const utr = document.getElementById('cem-utr').value.trim();
+  if (!utr) { document.getElementById('cem-msg').innerHTML = '<span style="color:var(--error)">UTR number enter చేయండి!</span>'; return; }
+
+  const btn = document.getElementById('cem-submit-btn');
+  btn.disabled = true; btn.textContent = '⏳ Submitting...';
+
+  try {
+    // Duplicate check
+    const dupRes = await fetch(`${SB_URL}/rest/v1/ae_contest_entries?contest_id=eq.${_activeContest.id}&gmail=eq.${encodeURIComponent(u.gmail)}`, { headers: SB_HEADERS });
+    const dupData = await dupRes.json();
+    if (Array.isArray(dupData) && dupData.length > 0) {
+      document.getElementById('cem-msg').innerHTML = '<span style="color:var(--amber)">⚠ మీరు ఈ contest లో already join చేశారు!</span>';
+      btn.disabled = false; btn.textContent = '✅ Entry Submit చేయండి';
+      return;
+    }
+
+    // Save entry
+    const entryRes = await fetch(`${SB_URL}/rest/v1/ae_contest_entries`, {
+      method: 'POST',
+      headers: { ...SB_HEADERS, 'Prefer': 'return=minimal' },
+      body: JSON.stringify({
+        contest_id: _activeContest.id,
+        gmail: u.gmail,
+        name: u.name || u.gmail,
+        utr: utr,
+        status: 'pending',
+        created_at: new Date().toISOString()
+      })
+    });
+
+    if (entryRes.ok || entryRes.status === 201) {
+      document.getElementById('cem-msg').innerHTML = '<span style="color:#4CAF50">✅ Entry submit అయింది! Admin approve చేసిన తర్వాత quiz unlock అవుతుంది.</span>';
+      btn.textContent = '✅ Submitted!';
+      // Notify admin via WhatsApp
+      const waMsg = encodeURIComponent(`🏆 New Contest Entry!
+Contest: ${_activeContest.title}
+Name: ${u.name||u.gmail}
+UTR: ${utr}
+Fee: ₹${_activeContest.entry_fee}`);
+      setTimeout(() => { window.open(`https://wa.me/916309535287?text=${waMsg}`, '_blank'); }, 1000);
+    } else {
+      throw new Error('Save failed');
+    }
+  } catch(e) {
+    document.getElementById('cem-msg').innerHTML = '<span style="color:var(--error)">Error వచ్చింది. మళ్ళీ try చేయండి.</span>';
+    btn.disabled = false; btn.textContent = '✅ Entry Submit చేయండి';
+  }
+}
+
+// ── User leaderboard ──
+async function showContestLeaderboardUser(contestId) {
+  try {
+    const res = await fetch(`${SB_URL}/rest/v1/ae_contest_entries?contest_id=eq.${contestId}&status=eq.approved&order=score.desc&limit=10`, { headers: SB_HEADERS });
+    const entries = res.ok ? await res.json() : [];
+    if (!entries.length) { showToast('Leaderboard ఇంకా empty గా ఉంది!', 'info'); return; }
+    const medals = ['🥇','🥈','🥉'];
+    const rows = entries.map((e,i) => `<div style="display:flex;align-items:center;gap:12px;padding:10px;border-bottom:1px solid var(--border2)">
+      <div style="font-size:20px;width:28px;text-align:center">${medals[i]||'#'+(i+1)}</div>
+      <div style="flex:1;font-weight:700;color:var(--text)">${escHtml(e.name||e.gmail)}</div>
+      <div style="font-weight:900;color:var(--primary)">${e.score||0} pts</div>
+    </div>`).join('');
+    showToast('Leaderboard loaded!', 'success');
+    // Simple alert-style display
+    const html = `<div style="background:var(--card);border-radius:16px;padding:20px;max-width:360px;width:90%;position:fixed;top:50%;left:50%;transform:translate(-50%,-50%);z-index:9999;box-shadow:0 20px 60px rgba(0,0,0,.4)">
+      <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:14px">
+        <div style="font-size:16px;font-weight:900">📊 Leaderboard</div>
+        <button onclick="this.closest('[style*=fixed]').remove()" style="background:none;border:none;font-size:20px;cursor:pointer;color:var(--text2)">✕</button>
+      </div>
+      ${rows}
+    </div><div onclick="this.previousElementSibling.remove();this.remove()" style="position:fixed;inset:0;background:rgba(0,0,0,.5);z-index:9998"></div>`;
+    document.body.insertAdjacentHTML('beforeend', html);
+  } catch(e) { showToast('Load కాలేదు!', 'error'); }
+}
+
+// ── ADMIN: Create Contest ──
+async function adminCreateContest() {
+  const title = document.getElementById('ctest-title').value.trim();
+  const examId = document.getElementById('ctest-exam').value;
+  const fee = parseInt(document.getElementById('ctest-fee').value) || 0;
+  const prize = parseInt(document.getElementById('ctest-prize').value) || 0;
+  const start = document.getElementById('ctest-start').value;
+  const end = document.getElementById('ctest-end').value;
+  const p1 = parseInt(document.getElementById('ctest-p1').value) || 50;
+  const p2 = parseInt(document.getElementById('ctest-p2').value) || 30;
+  const p3 = parseInt(document.getElementById('ctest-p3').value) || 20;
+  const maxp = parseInt(document.getElementById('ctest-maxp').value) || 0;
+  const desc = document.getElementById('ctest-desc').value.trim();
+
+  if (!title || !examId || !fee || !start || !end) {
+    showToast('అన్ని required fields fill చేయండి!', 'warn'); return;
+  }
+  if (p1+p2+p3 !== 100) {
+    showToast('Prize percentages మొత్తం 100% అయి ఉండాలి!', 'warn'); return;
+  }
+
+  const exam = DB.exams.find(e => String(e.id) === String(examId));
+  try {
+    const res = await fetch(`${SB_URL}/rest/v1/ae_contests`, {
+      method: 'POST',
+      headers: { ...SB_HEADERS, 'Prefer': 'return=minimal' },
+      body: JSON.stringify({
+        title, desc, exam_id: examId,
+        exam_name: exam ? exam.name : '',
+        entry_fee: fee, prize_pool: prize,
+        prize_p1: p1, prize_p2: p2, prize_p3: p3,
+        max_participants: maxp,
+        start_at: new Date(start).toISOString(),
+        end_at: new Date(end).toISOString(),
+        status: 'active',
+        created_at: new Date().toISOString()
+      })
+    });
+    if (res.ok || res.status === 201) {
+      showToast('🏆 Contest created!', 'success');
+      // Clear form
+      ['ctest-title','ctest-fee','ctest-prize','ctest-start','ctest-end','ctest-desc'].forEach(id => { document.getElementById(id).value = ''; });
+      loadAdminContests();
+    } else { throw new Error(); }
+  } catch(e) { showToast('Error! మళ్ళీ try చేయండి.', 'error'); }
+}
+
+// ── ADMIN: Load all contests ──
+async function loadAdminContests() {
+  const wrap = document.getElementById('admin-contests-list');
+  wrap.innerHTML = '<div style="color:var(--text3);text-align:center;padding:20px">Loading...</div>';
+  try {
+    const res = await fetch(`${SB_URL}/rest/v1/ae_contests?order=created_at.desc`, { headers: SB_HEADERS });
+    const contests = res.ok ? await res.json() : [];
+
+    // Populate winner contest select
+    const sel = document.getElementById('winner-contest-sel');
+    sel.innerHTML = '<option value="">-- Contest Select --</option>' +
+      contests.map(c => `<option value="${c.id}">${escHtml(c.title)}</option>`).join('');
+
+    if (!contests.length) { wrap.innerHTML = '<div style="color:var(--text3);text-align:center;padding:20px">Contest లేవు.</div>'; return; }
+
+    wrap.innerHTML = `<div style="overflow-x:auto"><table style="width:100%;border-collapse:collapse;font-size:13px">
+      <thead><tr style="background:var(--bg)">
+        <th style="padding:10px;text-align:left;font-weight:800;color:var(--text2)">Title</th>
+        <th style="padding:10px;text-align:center;font-weight:800;color:var(--text2)">Fee</th>
+        <th style="padding:10px;text-align:center;font-weight:800;color:var(--text2)">Prize</th>
+        <th style="padding:10px;text-align:center;font-weight:800;color:var(--text2)">Entries</th>
+        <th style="padding:10px;text-align:center;font-weight:800;color:var(--text2)">End</th>
+        <th style="padding:10px;text-align:center;font-weight:800;color:var(--text2)">Actions</th>
+      </tr></thead>
+      <tbody>${contests.map(c => `<tr style="border-bottom:1px solid var(--border2)">
+        <td style="padding:10px;font-weight:700;color:var(--text)">${escHtml(c.title)}</td>
+        <td style="padding:10px;text-align:center;color:#f57c00;font-weight:800">₹${c.entry_fee}</td>
+        <td style="padding:10px;text-align:center;color:#FFD700;font-weight:800">₹${c.prize_pool||'auto'}</td>
+        <td style="padding:10px;text-align:center" id="cnt-entries-${c.id}">—</td>
+        <td style="padding:10px;text-align:center;font-size:11px;color:var(--text3)">${new Date(c.end_at).toLocaleDateString('te-IN')}</td>
+        <td style="padding:10px;text-align:center">
+          <button onclick="loadContestEntriesAdmin(${c.id})" style="background:var(--primary-soft);color:var(--primary);border:none;border-radius:8px;padding:5px 10px;font-family:inherit;font-size:11px;font-weight:700;cursor:pointer;margin:2px">👥 Entries</button>
+          <button onclick="deleteContest(${c.id})" style="background:rgba(229,57,53,.1);color:#E53935;border:none;border-radius:8px;padding:5px 10px;font-family:inherit;font-size:11px;font-weight:700;cursor:pointer;margin:2px">🗑 Delete</button>
+        </td>
+      </tr>`).join('')}
+      </tbody></table></div>`;
+
+    // Load entry counts
+    contests.forEach(c => {
+      fetch(`${SB_URL}/rest/v1/ae_contest_entries?contest_id=eq.${c.id}&select=id`, { headers: SB_HEADERS })
+        .then(r => r.json()).then(d => {
+          const el = document.getElementById(`cnt-entries-${c.id}`);
+          if (el) el.textContent = Array.isArray(d) ? d.length : 0;
+        }).catch(()=>{});
+    });
+  } catch(e) { wrap.innerHTML = '<div style="color:var(--error);text-align:center;padding:20px">Load కాలేదు!</div>'; }
+}
+
+// ── ADMIN: Load entries for a contest ──
+async function loadContestEntriesAdmin(contestId) {
+  try {
+    const res = await fetch(`${SB_URL}/rest/v1/ae_contest_entries?contest_id=eq.${contestId}&order=created_at.desc`, { headers: SB_HEADERS });
+    const entries = res.ok ? await res.json() : [];
+    if (!entries.length) { showToast('Entries లేవు!', 'info'); return; }
+
+    const rows = entries.map(e => `<tr style="border-bottom:1px solid var(--border2)">
+      <td style="padding:8px;font-weight:700;color:var(--text);font-size:12px">${escHtml(e.name||e.gmail)}</td>
+      <td style="padding:8px;font-size:11px;color:var(--text2)">${escHtml(e.utr||'')}</td>
+      <td style="padding:8px;text-align:center">
+        <span style="padding:3px 10px;border-radius:20px;font-size:11px;font-weight:800;background:${e.status==='approved'?'rgba(76,175,80,.15)':e.status==='rejected'?'rgba(229,57,53,.1)':'rgba(255,152,0,.15)'};color:${e.status==='approved'?'#4CAF50':e.status==='rejected'?'#E53935':'#ff9800'}">${e.status}</span>
+      </td>
+      <td style="padding:8px;text-align:center">
+        ${e.status==='pending'?`<button onclick="approveContestEntry(${e.id},${contestId})" style="background:rgba(76,175,80,.15);color:#4CAF50;border:none;border-radius:8px;padding:4px 8px;font-family:inherit;font-size:11px;font-weight:800;cursor:pointer;margin:2px">✅ Approve</button>
+        <button onclick="rejectContestEntry(${e.id},${contestId})" style="background:rgba(229,57,53,.1);color:#E53935;border:none;border-radius:8px;padding:4px 8px;font-family:inherit;font-size:11px;font-weight:800;cursor:pointer;margin:2px">❌ Reject</button>`:'—'}
+      </td>
+    </tr>`).join('');
+
+    const html = `<div style="background:var(--card);border-radius:16px;padding:20px;max-width:600px;width:95%;position:fixed;top:50%;left:50%;transform:translate(-50%,-50%);z-index:9999;box-shadow:0 20px 60px rgba(0,0,0,.4);max-height:80vh;overflow-y:auto">
+      <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:14px">
+        <div style="font-size:15px;font-weight:900">👥 Contest Entries</div>
+        <button onclick="this.closest('[style*=fixed]').remove();document.querySelector('[onclick*=entries-overlay]')&&document.querySelector('[onclick*=entries-overlay]').remove()" style="background:none;border:none;font-size:20px;cursor:pointer;color:var(--text2)">✕</button>
+      </div>
+      <div style="overflow-x:auto"><table style="width:100%;border-collapse:collapse;font-size:12px">
+        <thead><tr style="background:var(--bg)">
+          <th style="padding:8px;text-align:left;font-weight:800;color:var(--text2)">Name</th>
+          <th style="padding:8px;text-align:left;font-weight:800;color:var(--text2)">UTR</th>
+          <th style="padding:8px;text-align:center;font-weight:800;color:var(--text2)">Status</th>
+          <th style="padding:8px;text-align:center;font-weight:800;color:var(--text2)">Action</th>
+        </tr></thead>
+        <tbody>${rows}</tbody>
+      </table></div>
+    </div><div onclick="this.previousElementSibling.remove();this.remove()" style="position:fixed;inset:0;background:rgba(0,0,0,.5);z-index:9998"></div>`;
+    document.body.insertAdjacentHTML('beforeend', html);
+  } catch(e) { showToast('Load కాలేదు!', 'error'); }
+}
+
+// ── ADMIN: Approve/Reject entry ──
+async function approveContestEntry(entryId, contestId) {
+  try {
+    await fetch(`${SB_URL}/rest/v1/ae_contest_entries?id=eq.${entryId}`, {
+      method: 'PATCH', headers: SB_HEADERS,
+      body: JSON.stringify({ status: 'approved' })
+    });
+    showToast('✅ Approved!', 'success');
+    // Close popup and reload
+    document.querySelectorAll('[style*="position:fixed"][style*="z-index:9999"]').forEach(el => el.remove());
+    document.querySelectorAll('[style*="position:fixed"][style*="z-index:9998"]').forEach(el => el.remove());
+    setTimeout(() => loadContestEntriesAdmin(contestId), 300);
+  } catch(e) { showToast('Error!', 'error'); }
+}
+
+async function rejectContestEntry(entryId, contestId) {
+  try {
+    await fetch(`${SB_URL}/rest/v1/ae_contest_entries?id=eq.${entryId}`, {
+      method: 'PATCH', headers: SB_HEADERS,
+      body: JSON.stringify({ status: 'rejected' })
+    });
+    showToast('❌ Rejected!', 'success');
+    document.querySelectorAll('[style*="position:fixed"][style*="z-index:9999"]').forEach(el => el.remove());
+    document.querySelectorAll('[style*="position:fixed"][style*="z-index:9998"]').forEach(el => el.remove());
+    setTimeout(() => loadContestEntriesAdmin(contestId), 300);
+  } catch(e) { showToast('Error!', 'error'); }
+}
+
+// ── ADMIN: Delete contest ──
+async function deleteContest(contestId) {
+  if (!confirm('Contest delete చేయాలా? Entries కూడా delete అవుతాయి!')) return;
+  try {
+    await fetch(`${SB_URL}/rest/v1/ae_contest_entries?contest_id=eq.${contestId}`, { method: 'DELETE', headers: SB_HEADERS });
+    await fetch(`${SB_URL}/rest/v1/ae_contests?id=eq.${contestId}`, { method: 'DELETE', headers: SB_HEADERS });
+    showToast('🗑 Deleted!', 'success');
+    loadAdminContests();
+  } catch(e) { showToast('Error!', 'error'); }
+}
+
+// ── ADMIN: Contest leaderboard ──
+async function loadContestLeaderboard() {
+  const contestId = document.getElementById('winner-contest-sel').value;
+  if (!contestId) { showToast('Contest select చేయండి!', 'warn'); return; }
+  const wrap = document.getElementById('contest-leaderboard-admin');
+  wrap.innerHTML = '<div style="color:var(--text3);text-align:center;padding:20px">Loading...</div>';
+  try {
+    const res = await fetch(`${SB_URL}/rest/v1/ae_contest_entries?contest_id=eq.${contestId}&status=eq.approved&order=score.desc`, { headers: SB_HEADERS });
+    const entries = res.ok ? await res.json() : [];
+    if (!entries.length) { wrap.innerHTML = '<div style="color:var(--text3);text-align:center;padding:20px">Approved entries లేవు.</div>'; return; }
+
+    const contest = null; // fetch if needed
+    const medals = ['🥇','🥈','🥉'];
+    wrap.innerHTML = `<div style="overflow-x:auto"><table style="width:100%;border-collapse:collapse;font-size:13px">
+      <thead><tr style="background:var(--bg)">
+        <th style="padding:10px;text-align:center">#</th>
+        <th style="padding:10px;text-align:left">Name</th>
+        <th style="padding:10px;text-align:left">Gmail</th>
+        <th style="padding:10px;text-align:center">Score</th>
+        <th style="padding:10px;text-align:center">Prize Payout</th>
+      </tr></thead>
+      <tbody>${entries.map((e,i) => `<tr style="border-bottom:1px solid var(--border2)${i<3?';background:rgba(255,215,0,.05)':''}">
+        <td style="padding:10px;text-align:center;font-size:18px">${medals[i]||i+1}</td>
+        <td style="padding:10px;font-weight:700;color:var(--text)">${escHtml(e.name||'')}</td>
+        <td style="padding:10px;font-size:11px;color:var(--text2)">${escHtml(e.gmail||'')}</td>
+        <td style="padding:10px;text-align:center;font-weight:900;color:var(--primary)">${e.score||'(not played)'}</td>
+        <td style="padding:10px;text-align:center">
+          ${i<3?`<button onclick="markPrizePaid(${e.id},'${escHtml(e.name||e.gmail)}')" style="background:rgba(76,175,80,.15);color:#4CAF50;border:none;border-radius:8px;padding:5px 12px;font-family:inherit;font-size:11px;font-weight:800;cursor:pointer">💸 Paid గా Mark</button>`:'—'}
+        </td>
+      </tr>`).join('')}
+      </tbody></table></div>`;
+  } catch(e) { wrap.innerHTML = '<div style="color:var(--error);text-align:center;padding:20px">Error!</div>'; }
+}
+
+async function markPrizePaid(entryId, name) {
+  if (!confirm(`${name} కి prize paid గా mark చేయాలా?`)) return;
+  try {
+    await fetch(`${SB_URL}/rest/v1/ae_contest_entries?id=eq.${entryId}`, {
+      method: 'PATCH', headers: SB_HEADERS,
+      body: JSON.stringify({ status: 'prize_paid' })
+    });
+    showToast('💸 Prize Paid గా mark అయింది!', 'success');
+    loadContestLeaderboard();
+  } catch(e) { showToast('Error!', 'error'); }
+}
+
+// ── Populate exam dropdown in admin contests tab ──
+function _populateContestExamSelect() {
+  const sel = document.getElementById('ctest-exam');
+  if (!sel) return;
+  sel.innerHTML = '<option value="">-- Exam Select --</option>' +
+    (DB.exams||[]).map(e => `<option value="${e.id}">${escHtml(e.name)}</option>`).join('');
+}
+
+// ── Hook: populate exam select when admin contests tab is opened ──
+const _origSwitchAdminTab = window.switchAdminTab;
+window.switchAdminTab = function(tab, btn) {
+  _origSwitchAdminTab && _origSwitchAdminTab.call(this, tab, btn);
+  if (tab === 'contests') {
+    _populateContestExamSelect();
+    loadAdminContests();
+  }
+};
+
+// ── Hook: update contest score when exam completed ──
+const _origSaveScoreContest = window.saveScoreAndShow;
+window.saveScoreAndShow = async function() {
+  _origSaveScoreContest && _origSaveScoreContest.apply(this, arguments);
+  // If this exam is part of an active contest the user joined, update score
+  try {
+    const u = getCurrentUser();
+    if (!u || !exam.current) return;
+    const examId = exam.current.id;
+    const pct = exam?._result?.pct ?? 0;
+    // Check if user has approved entry for a contest with this exam
+    const entryRes = await fetch(`${SB_URL}/rest/v1/ae_contest_entries?gmail=eq.${encodeURIComponent(u.gmail)}&status=eq.approved`, { headers: SB_HEADERS });
+    const entries = entryRes.ok ? await entryRes.json() : [];
+    for (const entry of entries) {
+      // Get contest to check exam_id
+      const cRes = await fetch(`${SB_URL}/rest/v1/ae_contests?id=eq.${entry.contest_id}&select=exam_id,end_at`, { headers: SB_HEADERS });
+      const cData = cRes.ok ? await cRes.json() : [];
+      if (cData[0] && String(cData[0].exam_id) === String(examId) && new Date(cData[0].end_at) > new Date()) {
+        // Update score if this is better
+        if (!entry.score || pct > entry.score) {
+          await fetch(`${SB_URL}/rest/v1/ae_contest_entries?id=eq.${entry.id}`, {
+            method: 'PATCH', headers: SB_HEADERS,
+            body: JSON.stringify({ score: pct })
+          });
+        }
+      }
+    }
+  } catch(e) { /* silent fail */ }
+};
+
+// ── Close modal on outside click ──
+document.getElementById('contest-entry-modal').addEventListener('click', function(e) {
+  if (e.target === this) closeContestModal();
+});
+
 
 // Hook into saveScoreAndShow — trigger notification after exam
 const _origSaveScore = window.saveScoreAndShow;

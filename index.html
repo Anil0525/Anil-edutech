@@ -9992,20 +9992,10 @@ function _applyScreenshotBlock(enable) {
   }
 }
 
-// ── DevTools detect ──
+// ── DevTools detect (disabled — too many false positives on mobile) ──
 let _devToolsCheck = null;
 function _startDevToolsDetect() {
-  if (_devToolsCheck) return;
-  _devToolsCheck = setInterval(() => {
-    if (!_antiCheatActive) { clearInterval(_devToolsCheck); _devToolsCheck = null; return; }
-    const threshold = 160;
-    const widthDiff  = window.outerWidth  - window.innerWidth  > threshold;
-    const heightDiff = window.outerHeight - window.innerHeight > threshold;
-    if (widthDiff || heightDiff) {
-      showCheatWarn('⛔ DevTools detect అయింది! Exam లో DevTools open చేయడం allowed కాదు.');
-      // Don't auto-submit on devtools — just warn (prevents false positives on mobile/small screens)
-    }
-  }, 1000);
+  // Disabled to prevent false positives
 }
 
 // ── Tab visibility detection ──
@@ -10072,16 +10062,7 @@ document.addEventListener('keydown', function(e) {
 
 // ── Screenshot overlay flash ──
 function _flashScreenshotOverlay() {
-  let overlay = document.getElementById('ae-ss-overlay');
-  if (!overlay) {
-    overlay = document.createElement('div');
-    overlay.id = 'ae-ss-overlay';
-    overlay.style.cssText = 'position:fixed;inset:0;background:#000;z-index:999999;display:flex;align-items:center;justify-content:center;color:#fff;font-size:24px;font-weight:900;';
-    overlay.textContent = '🚫 Screenshot Not Allowed — Anil EduTech';
-    document.body.appendChild(overlay);
-  }
-  overlay.style.display = 'flex';
-  setTimeout(() => { overlay.style.display = 'none'; }, 800);
+  // Disabled — causes false positive black screens
 }
 
 
@@ -12910,7 +12891,7 @@ function _launchExamUI(e, qs) {
   _cheatCount = 0;
   setTimeout(() => {
     enableAntiCheat(_isContestExam); // pass contestMode flag
-    if (_isContestExam) _startDevToolsDetect();
+    // DevTools detect disabled
   }, 1200);
 }
 

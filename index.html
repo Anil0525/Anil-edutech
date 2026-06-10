@@ -22329,11 +22329,16 @@ async function _checkAndJoinContest(c) {
 
 // Start exam in contest mode (strict anti-cheat + faster timer)
 function startContestExam(examId) {
+  if (!examId) { showToast('Contest కి exam assign కాలేదు! Admin లో exam select చేయండి.', 'error'); return; }
   const e = DB.exams.find(x => x.id === examId || String(x.id) === String(examId));
-  if (!e) { showToast('Exam కనపడలేదు!', 'error'); return; }
+  if (!e) {
+    console.error('startContestExam: exam not found. examId=', examId, 'DB.exams=', DB.exams.map(x=>x.id));
+    showToast('Exam కనపడలేదు! (ID: ' + examId + ') — Page reload చేసి try చేయండి.', 'error');
+    return;
+  }
   // Mark as contest mode
   e._contestMode = true;
-  startExam(examId);
+  startExam(e.id);
 }
 
 // ── Load contests on user page ──
@@ -22545,7 +22550,7 @@ async function adminCreateContest() {
         'Prefer': 'return=representation'
       },
       body: JSON.stringify({
-        title, description: desc, exam_id: examId,
+        title, description: desc, exam_id: parseInt(examId),
         exam_name: exam ? exam.name : '',
         entry_fee: fee, prize_pool: prize,
         prize_p1: p1, prize_p2: p2, prize_p3: p3,

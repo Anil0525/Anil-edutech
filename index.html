@@ -22135,7 +22135,7 @@ function _contestCardHtml(c) {
           <span style="font-size:12px;color:var(--text3);font-weight:600">Ends: ${endStr}</span>
         </div>
         <div style="font-size:17px;font-weight:900;color:var(--text);margin-bottom:4px">${escHtml(c.title)}</div>
-        <div style="font-size:12px;color:var(--text2);margin-bottom:12px">${escHtml(c.desc||'')}</div>
+        <div style="font-size:12px;color:var(--text2);margin-bottom:12px">${escHtml(c.description||c.desc||'')}</div>
         <div style="display:flex;gap:10px;flex-wrap:wrap">
           <span style="background:rgba(245,124,0,.12);color:#f57c00;font-size:12px;font-weight:800;padding:4px 12px;border-radius:20px">💰 Prize: ₹${prize}</span>
           <span style="background:rgba(26,115,232,.1);color:var(--primary);font-size:12px;font-weight:800;padding:4px 12px;border-radius:20px">🎟 Entry: ₹${c.entry_fee}</span>
@@ -22157,7 +22157,7 @@ function openContestEntry(c) {
   _activeContest = c;
 
   document.getElementById('cem-title').textContent = c.title;
-  document.getElementById('cem-desc').textContent = c.desc || '';
+  document.getElementById('cem-desc').textContent = c.description || c.desc || '';
   document.getElementById('cem-prize').textContent = '₹' + (c.prize_pool || '?');
   document.getElementById('cem-p1').textContent = '₹' + Math.round((c.prize_pool||0)*((c.prize_p1||50)/100));
   document.getElementById('cem-p2').textContent = '₹' + Math.round((c.prize_pool||0)*((c.prize_p2||30)/100));
@@ -22284,9 +22284,7 @@ async function adminCreateContest() {
   if (!title || !examId || !fee || !start || !end) {
     showToast('అన్ని required fields fill చేయండి!', 'warn'); return;
   }
-  if (p1+p2+p3 !== 100) {
-    showToast('Prize percentages మొత్తం 100% అయి ఉండాలి!', 'warn'); return;
-  }
+  // Prize % validation relaxed — admin decides distribution
 
   const exam = DB.exams.find(e => String(e.id) === String(examId));
   try {
@@ -22294,7 +22292,7 @@ async function adminCreateContest() {
       method: 'POST',
       headers: { ...SB_HEADERS, 'Prefer': 'return=minimal' },
       body: JSON.stringify({
-        title, desc, exam_id: examId,
+        title, description: desc, exam_id: examId,
         exam_name: exam ? exam.name : '',
         entry_fee: fee, prize_pool: prize,
         prize_p1: p1, prize_p2: p2, prize_p3: p3,

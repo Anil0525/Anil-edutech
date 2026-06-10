@@ -7875,7 +7875,7 @@ html:not(:has(#_ae_loading)) body {
     </div>
 
     <!-- UTR input -->
-    <input id="cem-utr" class="edit-box" placeholder="UTR Number enter చేయండి (pay చేసిన తర్వాత)" style="width:100%;box-sizing:border-box;margin-bottom:10px">
+    <input id="cem-utr" class="edit-box" placeholder="UTR Number enter చేయండి (12+ digits, e.g. 123456789012)" style="width:100%;box-sizing:border-box;margin-bottom:10px">
 
     <!-- Buttons -->
     <div style="display:flex;gap:8px">
@@ -10003,9 +10003,7 @@ function _startDevToolsDetect() {
     const heightDiff = window.outerHeight - window.innerHeight > threshold;
     if (widthDiff || heightDiff) {
       showCheatWarn('⛔ DevTools detect అయింది! Exam లో DevTools open చేయడం allowed కాదు.');
-      if (_contestMode) {
-        setTimeout(() => { if (_antiCheatActive) _doSubmit(); }, 2000);
-      }
+      // Don't auto-submit on devtools — just warn (prevents false positives on mobile/small screens)
     }
   }, 1000);
 }
@@ -10069,8 +10067,6 @@ document.addEventListener('keydown', function(e) {
   if (k === 'PrintScreen') {
     e.preventDefault();
     showCheatWarn('📸 Screenshot allowed కాదు! Exam లో screenshots తీయడం cheating గా పరిగణించబడుతుంది.');
-    // Briefly flash overlay to block screenshot content
-    _flashScreenshotOverlay();
   }
 });
 
@@ -22316,9 +22312,18 @@ async function _checkAndJoinContest(c) {
     const res = await fetch(`${SB_URL}/rest/v1/ae_contest_entries?contest_id=eq.${c.id}&gmail=eq.${encodeURIComponent(u.gmail)}&status=eq.approved&select=id`, { headers: SB_HEADERS });
     const entries = res.ok ? await res.json() : [];
     if (entries.length > 0) {
-      // Approved! Start exam in contest mode
+      // Approved! Fetch latest contest data to get exam_id
       toast('✅ Approved! Contest exam start అవుతోంది...', 'success');
-      setTimeout(() => startContestExam(c.exam_id), 800);
+      // Re-fetch contest from Supabase to get fresh exam_id
+      const cRes = await fetch(`${SB_URL}/rest/v1/ae_contests?id=eq.${c.id}&select=exam_id,title`, { headers: SB_HEADERS });
+      const cData = cRes.ok ? await cRes.json() : [];
+      const examId = cData[0]?.exam_id || c.exam_id;
+      console.log('Contest exam_id:', examId, 'contest:', cData[0]);
+      if (!examId) {
+        toast('⚠️ Contest కి exam assign కాలేదు! Admin తో contact చేయండి.', 'error');
+        return;
+      }
+      setTimeout(() => startContestExam(examId), 800);
     } else {
       // Check if pending
       const pRes = await fetch(`${SB_URL}/rest/v1/ae_contest_entries?contest_id=eq.${c.id}&gmail=eq.${encodeURIComponent(u.gmail)}&select=status`, { headers: SB_HEADERS });
@@ -22448,18 +22453,42 @@ function closeContestModal() {
 async function submitContestEntry() {
   const u = getCurrentUser();
   if (!u || !_activeContest) return;
-  const utr = document.getElementById('cem-utr').value.trim();
-  if (!utr) { document.getElementById('cem-msg').innerHTML = '<span style="color:var(--error)">UTR number enter చేయండి!</span>'; return; }
+  const utr = document.getElementById('cem-utr').value.trim().toUpperCase();
+  if (!utr) {
+    document.getElementById('cem-msg').innerHTML = '<span style="color:var(--error)">UTR number enter చేయండి!</span>'; return;
+  }
+  // UTR validation: 12-22 alphanumeric characters only
+  if (!/^[A-Z0-9]{12,22}$/.test(utr)) {
+    document.getElementById('cem-msg').innerHTML = '<span style="color:var(--error)">⚠️ Valid UTR number enter చేయండి! (12-22 digits/letters, e.g. 123456789012)</span>'; return;
+  }
 
   const btn = document.getElementById('cem-submit-btn');
   btn.disabled = true; btn.textContent = '⏳ Submitting...';
 
   try {
-    // Duplicate check
-    const dupRes = await fetch(`${SB_URL}/rest/v1/ae_contest_entries?contest_id=eq.${_activeContest.id}&gmail=eq.${encodeURIComponent(u.gmail)}`, { headers: SB_HEADERS });
+    // Check 1: Same user already joined this contest
+    const dupRes = await fetch(`${SB_URL}/rest/v1/ae_contest_entries?contest_id=eq.${_activeContest.id}&gmail=eq.${encodeURIComponent(u.gmail)}&select=id`, { headers: SB_HEADERS });
     const dupData = await dupRes.json();
     if (Array.isArray(dupData) && dupData.length > 0) {
       document.getElementById('cem-msg').innerHTML = '<span style="color:var(--amber)">⚠ మీరు ఈ contest లో already join చేశారు!</span>';
+      btn.disabled = false; btn.textContent = '✅ Entry Submit చేయండి';
+      return;
+    }
+
+    // Check 2: UTR already used anywhere (cross-contest duplicate)
+    const utrRes = await fetch(`${SB_URL}/rest/v1/ae_contest_entries?utr=eq.${encodeURIComponent(utr)}&select=id,contest_id`, { headers: SB_HEADERS });
+    const utrData = await utrRes.json();
+    if (Array.isArray(utrData) && utrData.length > 0) {
+      document.getElementById('cem-msg').innerHTML = '<span style="color:var(--error)">❌ ఈ UTR number already use అయింది! మీరు pay చేసిన UTR enter చేయండి.</span>';
+      btn.disabled = false; btn.textContent = '✅ Entry Submit చేయండి';
+      return;
+    }
+
+    // Check 3: UTR already used in ae_payments table (other payments)
+    const payRes = await fetch(`${SB_URL}/rest/v1/ae_payments?utr=eq.${encodeURIComponent(utr)}&select=id`, { headers: SB_HEADERS });
+    const payData = await payRes.json();
+    if (Array.isArray(payData) && payData.length > 0) {
+      document.getElementById('cem-msg').innerHTML = '<span style="color:var(--error)">❌ ఈ UTR number already వేరే payment కి use అయింది! Correct UTR enter చేయండి.</span>';
       btn.disabled = false; btn.textContent = '✅ Entry Submit చేయండి';
       return;
     }

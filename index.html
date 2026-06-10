@@ -8566,7 +8566,7 @@ html:not(:has(#_ae_loading)) body {
           <label style="font-size:12px;font-weight:700;color:var(--text2);display:block;margin-bottom:6px">Description (optional)</label>
           <textarea id="ctest-desc" class="edit-box" rows="2" placeholder="Contest గురించి చిన్న description..." style="width:100%;box-sizing:border-box;resize:vertical"></textarea>
         </div>
-        <button onclick="adminCreateContest()" style="margin-top:16px;background:linear-gradient(135deg,#f57c00,#ff9800);color:#fff;border:none;border-radius:12px;padding:12px 28px;font-family:inherit;font-size:14px;font-weight:800;cursor:pointer;box-shadow:0 4px 16px rgba(245,124,0,.35)">
+        <button onclick="this.disabled=true;adminCreateContest().finally(()=>this.disabled=false)" style="margin-top:16px;background:linear-gradient(135deg,#f57c00,#ff9800);color:#fff;border:none;border-radius:12px;padding:12px 28px;font-family:inherit;font-size:14px;font-weight:800;cursor:pointer;box-shadow:0 4px 16px rgba(245,124,0,.35)">
           🏆 Contest Create చేయండి
         </button>
       </div>
@@ -22441,12 +22441,23 @@ async function rejectContestEntry(entryId, contestId) {
 // ── ADMIN: Delete contest ──
 async function deleteContest(contestId) {
   if (!confirm('Contest delete చేయాలా? Entries కూడా delete అవుతాయి!')) return;
+  const delHeaders = {
+    'apikey': SB_KEY,
+    'Authorization': 'Bearer ' + SB_KEY,
+    'Content-Type': 'application/json'
+  };
   try {
-    await fetch(`${SB_URL}/rest/v1/ae_contest_entries?contest_id=eq.${contestId}`, { method: 'DELETE', headers: SB_HEADERS });
-    await fetch(`${SB_URL}/rest/v1/ae_contests?id=eq.${contestId}`, { method: 'DELETE', headers: SB_HEADERS });
-    showToast('🗑 Deleted!', 'success');
-    loadAdminContests();
-  } catch(e) { showToast('Error!', 'error'); }
+    const r1 = await fetch(`${SB_URL}/rest/v1/ae_contest_entries?contest_id=eq.${contestId}`, { method: 'DELETE', headers: delHeaders });
+    const r2 = await fetch(`${SB_URL}/rest/v1/ae_contests?id=eq.${contestId}`, { method: 'DELETE', headers: delHeaders });
+    if (r2.ok || r2.status === 204) {
+      showToast('🗑 Deleted!', 'success');
+      loadAdminContests();
+    } else {
+      const t = await r2.text();
+      console.error('Delete error:', r2.status, t);
+      showToast('Delete error: ' + r2.status, 'error');
+    }
+  } catch(e) { console.error('Delete catch:', e); showToast('Network error!', 'error'); }
 }
 
 // ── ADMIN: Contest leaderboard ──

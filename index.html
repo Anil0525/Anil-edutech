@@ -9123,6 +9123,15 @@ html:not(:has(#_ae_loading)) body {
             </div>
           </div>
 
+          <!-- Auto Notify Info -->
+          <div style="background:linear-gradient(135deg,rgba(16,185,129,.08),rgba(26,115,232,.08));border:1.5px solid rgba(16,185,129,.25);border-radius:12px;padding:12px 16px;margin-bottom:12px">
+            <div style="font-size:13px;font-weight:800;color:#10B981;margin-bottom:4px">⚡ Auto Notifications Active!</div>
+            <div style="font-size:12px;color:var(--text2);line-height:1.6">
+              కొత్త Exam add చేసినప్పుడు <strong>automatic గా</strong> push notification + email అన్ని users కి వెళ్తుంది.<br>
+              Manual గా పంపాలంటే కింద form fill చేసి Send చేయండి.
+            </div>
+          </div>
+
           <!-- Action Buttons -->
           <div style="display:flex;gap:10px;flex-wrap:wrap;margin-top:4px">
             <button class="add-btn" onclick="previewBroadcastNotification()" style="background:linear-gradient(135deg,#6366f1,#8b5cf6)">👁 Preview</button>
@@ -9908,18 +9917,24 @@ let exam = { current:null, questions:[], idx:0, answers:{}, timerInterval:null, 
 
 let _cheatCount = 0;
 let _antiCheatActive = false;
+let _contestMode = false; // true = strict contest mode
 
-function enableAntiCheat() {
+function enableAntiCheat(contestMode = false) {
   _cheatCount = 0;
   _antiCheatActive = true;
+  _contestMode = contestMode;
   document.getElementById('fs-hint').style.display = 'flex';
+  // Screenshot protection
+  _applyScreenshotBlock(true);
 }
 
 function disableAntiCheat() {
   _antiCheatActive = false;
+  _contestMode = false;
   _cheatCount = 0;
   document.getElementById('fs-hint').style.display = 'none';
   hideCheatWarn();
+  _applyScreenshotBlock(false);
 }
 
 function showCheatWarn(msg) {
@@ -9933,37 +9948,132 @@ function hideCheatWarn() {
   document.getElementById('cheat-warn').classList.remove('show');
 }
 
-// Tab visibility detection
+// ── Screenshot Block ──
+function _applyScreenshotBlock(enable) {
+  let el = document.getElementById('ae-screenshot-block');
+  if (enable) {
+    if (!el) {
+      el = document.createElement('style');
+      el.id = 'ae-screenshot-block';
+      el.textContent = `
+        /* Screenshot & screen-recording block */
+        #page-exam {
+          -webkit-user-select: none !important;
+          user-select: none !important;
+        }
+        @media print {
+          body * { visibility: hidden !important; }
+          body::after {
+            content: '🚫 Anil EduTech — Exam content printing not allowed!';
+            visibility: visible !important;
+            position: fixed; top: 50%; left: 50%;
+            transform: translate(-50%,-50%);
+            font-size: 24px; font-weight: 900; color: red;
+          }
+        }
+      `;
+      document.head.appendChild(el);
+    }
+  } else {
+    if (el) el.remove();
+  }
+}
+
+// ── DevTools detect ──
+let _devToolsCheck = null;
+function _startDevToolsDetect() {
+  if (_devToolsCheck) return;
+  _devToolsCheck = setInterval(() => {
+    if (!_antiCheatActive) { clearInterval(_devToolsCheck); _devToolsCheck = null; return; }
+    const threshold = 160;
+    const widthDiff  = window.outerWidth  - window.innerWidth  > threshold;
+    const heightDiff = window.outerHeight - window.innerHeight > threshold;
+    if (widthDiff || heightDiff) {
+      showCheatWarn('⛔ DevTools detect అయింది! Exam లో DevTools open చేయడం allowed కాదు.');
+      if (_contestMode) {
+        setTimeout(() => { if (_antiCheatActive) _doSubmit(); }, 2000);
+      }
+    }
+  }, 1000);
+}
+
+// ── Tab visibility detection ──
 let _acDebounce = null;
 document.addEventListener('visibilitychange', function() {
   if (!_antiCheatActive) return;
   if (!document.getElementById('page-exam')?.classList.contains('active')) return;
   if (document.hidden) {
-    // Debounce: wait 300ms to confirm it's a real tab switch, not page navigation
     _acDebounce = setTimeout(() => {
-      if (!document.hidden) return; // came back quickly — not a real switch
+      if (!document.hidden) return;
       _cheatCount++;
-      if (_cheatCount >= 3) {
-        showCheatWarn('⛔ 3 సార్లు tab switch చేశారు! Exam auto-submit అవుతోంది...');
-        setTimeout(() => { if(_antiCheatActive) _doSubmit(); }, 1500);
+      const maxChances = _contestMode ? 1 : 3; // Contest: 1 chance only!
+      if (_cheatCount >= maxChances) {
+        showCheatWarn('⛔ Tab switch చేశారు! Exam auto-submit అవుతోంది...');
+        setTimeout(() => { if (_antiCheatActive) _doSubmit(); }, 1500);
       } else {
-        showCheatWarn(`⚠️ Tab switch #${_cheatCount} detect అయింది! మళ్ళీ చేస్తే (${3-_cheatCount} chances మిగిలాయి) exam submit అవుతుంది!`);
+        const left = maxChances - _cheatCount;
+        showCheatWarn(`⚠️ Tab switch detect అయింది! (${left} chance${left>1?'s':''} మిగిలాయి) — మళ్ళీ చేస్తే submit అవుతుంది!`);
       }
     }, 300);
   } else {
-    // Tab came back — cancel pending debounce
     if (_acDebounce) { clearTimeout(_acDebounce); _acDebounce = null; }
   }
 });
 
-// Right-click block during exam
+// ── Right-click block ──
 document.addEventListener('contextmenu', function(e) {
   if (_antiCheatActive) { e.preventDefault(); showCheatWarn('⚠️ Exam లో right-click allowed కాదు!'); }
 });
 
-// Copy-paste block
-document.addEventListener('copy', function(e) { if(_antiCheatActive) e.preventDefault(); });
-document.addEventListener('paste', function(e) { if(_antiCheatActive) e.preventDefault(); });
+// ── Copy-paste block ──
+document.addEventListener('copy',  function(e) { if (_antiCheatActive) e.preventDefault(); });
+document.addEventListener('paste', function(e) { if (_antiCheatActive) e.preventDefault(); });
+document.addEventListener('cut',   function(e) { if (_antiCheatActive) e.preventDefault(); });
+
+// ── Keyboard shortcuts block ──
+document.addEventListener('keydown', function(e) {
+  if (!_antiCheatActive) return;
+  const k = e.key;
+  const ctrl = e.ctrlKey || e.metaKey;
+  // Block: F12, PrintScreen, Ctrl+P, Ctrl+S, Ctrl+U, Ctrl+Shift+I, Ctrl+Shift+J, Ctrl+Shift+C
+  if (
+    k === 'F12' ||
+    k === 'PrintScreen' ||
+    (ctrl && k === 'p') ||
+    (ctrl && k === 's') ||
+    (ctrl && k === 'u') ||
+    (ctrl && k === 'U') ||
+    (ctrl && e.shiftKey && (k === 'I' || k === 'i')) ||
+    (ctrl && e.shiftKey && (k === 'J' || k === 'j')) ||
+    (ctrl && e.shiftKey && (k === 'C' || k === 'c'))
+  ) {
+    e.preventDefault();
+    e.stopPropagation();
+    showCheatWarn('⚠️ Exam లో ఆ shortcut allowed కాదు!');
+    return false;
+  }
+  // PrintScreen special case
+  if (k === 'PrintScreen') {
+    e.preventDefault();
+    showCheatWarn('📸 Screenshot allowed కాదు! Exam లో screenshots తీయడం cheating గా పరిగణించబడుతుంది.');
+    // Briefly flash overlay to block screenshot content
+    _flashScreenshotOverlay();
+  }
+});
+
+// ── Screenshot overlay flash ──
+function _flashScreenshotOverlay() {
+  let overlay = document.getElementById('ae-ss-overlay');
+  if (!overlay) {
+    overlay = document.createElement('div');
+    overlay.id = 'ae-ss-overlay';
+    overlay.style.cssText = 'position:fixed;inset:0;background:#000;z-index:999999;display:flex;align-items:center;justify-content:center;color:#fff;font-size:24px;font-weight:900;';
+    overlay.textContent = '🚫 Screenshot Not Allowed — Anil EduTech';
+    document.body.appendChild(overlay);
+  }
+  overlay.style.display = 'flex';
+  setTimeout(() => { overlay.style.display = 'none'; }, 800);
+}
 
 
 
@@ -12751,6 +12861,8 @@ function _beginFreshExam(e, qs) {
   exam.idx       = 0;
   exam.answers   = {};
   exam.timeLeft  = (e.time || 60) * 60;
+  // Propagate contest mode flag
+  if (e._contestMode) exam.current._contestMode = true;
   _launchExamUI(e, qs);
 }
 
@@ -12775,7 +12887,10 @@ function _launchExamUI(e, qs) {
   const _mel = document.getElementById('mobile-timer-display');
   if (_mel) _mel.textContent = _initTime;
   let _saveThrottle = 0;
-  exam.timerInterval = setInterval(() => { tick(); if(++_saveThrottle >= 30){ _saveExamProgress(); _saveThrottle=0; } }, 1000);
+  // Contest mode: timer ticks faster (750ms = ~1.33x speed)
+  const _isContestExam = exam.current?._contestMode || false;
+  const _tickInterval = _isContestExam ? 750 : 1000;
+  exam.timerInterval = setInterval(() => { tick(); if(++_saveThrottle >= 30){ _saveExamProgress(); _saveThrottle=0; } }, _tickInterval);
 
   showPage('exam');
   applyLang();
@@ -12784,7 +12899,10 @@ function _launchExamUI(e, qs) {
   // Delay anti-cheat so page navigation visibilitychange doesn't false-trigger
   _antiCheatActive = false;
   _cheatCount = 0;
-  setTimeout(() => { enableAntiCheat(); }, 1200);
+  setTimeout(() => {
+    enableAntiCheat(_isContestExam); // pass contestMode flag
+    if (_isContestExam) _startDevToolsDetect();
+  }, 1200);
 }
 
 function stopTimer() {
@@ -13560,6 +13678,8 @@ function createExam() {
   // Save to localStorage IMMEDIATELY before async Supabase call
   saveDB();
   sbSaveExam(_newExamObj); // Supabase save (async)
+  // Auto-notify all users about new exam
+  setTimeout(() => _autoNotifyNewExam(_newExamObj), 2000);
   document.getElementById('exam-name').value = '';
   if(document.getElementById('exam-sec-reasoning')) document.getElementById('exam-sec-reasoning').value=0;
   if(document.getElementById('exam-sec-arithmetic')) document.getElementById('exam-sec-arithmetic').value=0;
@@ -22075,6 +22195,88 @@ function resetNotificationForm() {
 // ══════════════════════════════════════════════════════════════════
 
 
+
+// ══════════════════════════════════════════════════════════════════
+// 🔔 AUTO NOTIFICATION — New Exam / Update
+// ══════════════════════════════════════════════════════════════════
+
+// Auto notify when new exam is added
+async function _autoNotifyNewExam(exam) {
+  const examName = exam.name || 'New Exam';
+  const cat = exam.cat || 'General';
+
+  // 1. Push notification (to current browser — shows to logged-in user immediately)
+  await AE_NOTIF.show(
+    '🆕 కొత్త Exam వచ్చింది!',
+    `${examName} (${cat}) — ఇప్పుడే చేయండి! 🚀`,
+    'https://aniledutech.in',
+    'new-exam-' + exam.id
+  );
+
+  // 2. Email broadcast to all users (background)
+  _autoEmailBroadcast({
+    subject: `🆕 కొత్త Exam: ${examName} — Anil EduTech`,
+    heading: `కొత్త Exam వచ్చింది! 🎉`,
+    body: `${examName} exam (${cat} category) ఇప్పుడు available! వెంటనే practice చేయండి మరియు మీ score improve చేసుకోండి.`,
+    btnText: 'Exam చేయండి →',
+    btnUrl: 'https://aniledutech.in'
+  });
+}
+
+// Auto notify for any custom announcement (Admin can call this)
+// Usage: adminBroadcastUpdate('Title', 'Message body')
+async function adminBroadcastUpdate(title, message) {
+  // Push
+  await AE_NOTIF.show(
+    title,
+    message,
+    'https://aniledutech.in',
+    'update-' + Date.now()
+  );
+  // Email
+  _autoEmailBroadcast({
+    subject: title + ' — Anil EduTech',
+    heading: title,
+    body: message,
+    btnText: 'చూడండి →',
+    btnUrl: 'https://aniledutech.in'
+  });
+}
+
+// Background email broadcast — uses existing EmailJS config + users list
+async function _autoEmailBroadcast({ subject, heading, body, btnText, btnUrl }) {
+  try {
+    const cfg = getEmailJSConfig();
+    if (!cfg || !cfg.serviceId || !cfg.templateId || !cfg.publicKey) return;
+
+    // Get all users from Supabase
+    const res = await fetch(`${SB_URL}/rest/v1/ae_db?select=name,gmail&limit=500`, { headers: SB_HEADERS });
+    if (!res.ok) return;
+    const users = await res.json();
+    if (!Array.isArray(users) || !users.length) return;
+
+    // Send emails in background (no UI blocking)
+    let sent = 0;
+    for (const user of users) {
+      if (!user.gmail) continue;
+      try {
+        const htmlBody = _buildBroadcastEmailHTML(user.name || 'Student', heading, body, btnText, btnUrl);
+        await emailjs.send(cfg.serviceId, cfg.templateId, {
+          to_email:  user.gmail,
+          to_name:   user.name || 'Student',
+          subject:   subject,
+          html_body: htmlBody,
+          message:   body
+        }, cfg.publicKey);
+        sent++;
+        // Small delay to avoid rate limiting
+        await new Promise(r => setTimeout(r, 300));
+      } catch(e) { /* silent fail per user */ }
+    }
+    if (sent > 0) showToast(`📧 ${sent} users కి email notification పంపాం!`, 'success');
+  } catch(e) { console.warn('Auto email broadcast failed:', e); }
+}
+
 // ══════════════════════════════════════════════════════════════════
 // 🏆 CONTEST SYSTEM
 // ══════════════════════════════════════════════════════════════════
@@ -22090,6 +22292,41 @@ let _activeContest = null;
 // ── Supabase table: ae_contest_entries
 // columns: id, contest_id, gmail, name, utr, status (pending/approved/rejected),
 //          score, rank, created_at
+
+
+
+// Check if user has approved entry → start exam, else open join modal
+async function _checkAndJoinContest(c) {
+  const u = getCurrentUser();
+  if (!u) { showToast('ముందు login చేయండి!', 'warn'); return; }
+  try {
+    const res = await fetch(`${SB_URL}/rest/v1/ae_contest_entries?contest_id=eq.${c.id}&gmail=eq.${encodeURIComponent(u.gmail)}&status=eq.approved&select=id`, { headers: SB_HEADERS });
+    const entries = res.ok ? await res.json() : [];
+    if (entries.length > 0) {
+      // Approved! Start exam in contest mode
+      showToast('✅ Approved! Contest exam start అవుతోంది...', 'success');
+      setTimeout(() => startContestExam(c.exam_id), 800);
+    } else {
+      // Check if pending
+      const pRes = await fetch(`${SB_URL}/rest/v1/ae_contest_entries?contest_id=eq.${c.id}&gmail=eq.${encodeURIComponent(u.gmail)}&select=status`, { headers: SB_HEADERS });
+      const pData = pRes.ok ? await pRes.json() : [];
+      if (pData.length > 0) {
+        showToast(`⏳ మీ entry "${pData[0].status}" గా ఉంది. Admin approve చేసిన తర్వాత exam start అవుతుంది!`, 'info');
+      } else {
+        openContestEntry(c);
+      }
+    }
+  } catch(e) { openContestEntry(c); }
+}
+
+// Start exam in contest mode (strict anti-cheat + faster timer)
+function startContestExam(examId) {
+  const e = DB.exams.find(x => x.id === examId || String(x.id) === String(examId));
+  if (!e) { showToast('Exam కనపడలేదు!', 'error'); return; }
+  // Mark as contest mode
+  e._contestMode = true;
+  startExam(examId);
+}
 
 // ── Load contests on user page ──
 async function loadContestPage() {
@@ -22143,7 +22380,7 @@ function _contestCardHtml(c) {
         </div>
       </div>
       <div style="display:flex;flex-direction:column;gap:8px;align-items:flex-end">
-        ${isActive ? `<button onclick='openContestEntry(${JSON.stringify(c)})' style="background:linear-gradient(135deg,#f57c00,#ff9800);color:#fff;border:none;border-radius:12px;padding:10px 20px;font-family:inherit;font-size:13px;font-weight:800;cursor:pointer;box-shadow:0 4px 14px rgba(245,124,0,.35)">🎯 Join చేయండి</button>` : ''}
+        ${isActive ? `<button onclick='_checkAndJoinContest(${JSON.stringify(c)})' style="background:linear-gradient(135deg,#f57c00,#ff9800);color:#fff;border:none;border-radius:12px;padding:10px 20px;font-family:inherit;font-size:13px;font-weight:800;cursor:pointer;box-shadow:0 4px 14px rgba(245,124,0,.35)">🎯 Join / Start</button>` : ''}
         <button onclick='showContestLeaderboardUser(${c.id})' style="background:var(--bg);color:var(--text2);border:1.5px solid var(--border2);border-radius:12px;padding:8px 16px;font-family:inherit;font-size:12px;font-weight:700;cursor:pointer">📊 Leaderboard</button>
       </div>
     </div>

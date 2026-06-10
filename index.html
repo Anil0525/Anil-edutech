@@ -7925,7 +7925,7 @@ html:not(:has(#_ae_loading)) body {
       <button class="admin-tab" onclick="switchAdminTab('settings',this)">🔧 Settings</button>
       <button class="admin-tab" onclick="switchAdminTab('userbackup',this)">📋 User Backup</button>
       <button class="admin-tab" onclick="switchAdminTab('notifications',this)">🔔 Notifications</button>
-      <button class="admin-tab" onclick="switchAdminTab('contests',this)">🏆 Contests</button>
+      <button class="admin-tab" onclick="switchAdminTab('contests',this);_populateContestExamSelect();loadAdminContests()">🏆 Contests</button>
     </div>
 
     <!-- MAIN AREA -->
@@ -9293,7 +9293,12 @@ async function sbSaveResult(scoreObj, _retryCount) {
   try {
     const r = await fetch(`${SB_URL}/rest/v1/ae_results`, {
       method: 'POST',
-      headers: { ...SB_HEADERS, 'Prefer': 'return=minimal' },
+      headers: {
+        'Content-Type': 'application/json',
+        'apikey': SB_KEY,
+        'Authorization': 'Bearer ' + SB_KEY,
+        'Prefer': 'return=representation'
+      },
       body: JSON.stringify({
         user_name:  scoreObj.name,
         user_gmail: scoreObj.gmail || '',
@@ -22473,18 +22478,16 @@ async function submitContestEntry() {
       })
     });
 
+    const entryText = await entryRes.text();
+    console.log('Entry save:', entryRes.status, entryText);
     if (entryRes.ok || entryRes.status === 201) {
       document.getElementById('cem-msg').innerHTML = '<span style="color:#4CAF50">✅ Entry submit అయింది! Admin approve చేసిన తర్వాత quiz unlock అవుతుంది.</span>';
       btn.textContent = '✅ Submitted!';
-      // Notify admin via WhatsApp
-      const waMsg = encodeURIComponent(`🏆 New Contest Entry!
-Contest: ${_activeContest.title}
-Name: ${u.name||u.gmail}
-UTR: ${utr}
-Fee: ₹${_activeContest.entry_fee}`);
-      setTimeout(() => { window.open(`https://wa.me/916309535287?text=${waMsg}`, '_blank'); }, 1000);
+      const waMsg = encodeURIComponent('🏆 New Contest Entry!\nContest: ' + _activeContest.title + '\nName: ' + (u.name||u.gmail) + '\nUTR: ' + utr + '\nFee: ₹' + _activeContest.entry_fee);
+      setTimeout(() => { window.open('https://wa.me/916309535287?text=' + waMsg, '_blank'); }, 1000);
     } else {
-      throw new Error('Save failed');
+      document.getElementById('cem-msg').innerHTML = '<span style="color:var(--error)">Error ' + entryRes.status + ': ' + entryText.slice(0,100) + '</span>';
+      btn.disabled = false; btn.textContent = '✅ Entry Submit చేయండి';
     }
   } catch(e) {
     document.getElementById('cem-msg').innerHTML = '<span style="color:var(--error)">Error వచ్చింది. మళ్ళీ try చేయండి.</span>';

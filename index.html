@@ -22281,8 +22281,11 @@ async function adminCreateContest() {
   const maxp = parseInt(document.getElementById('ctest-maxp').value) || 0;
   const desc = document.getElementById('ctest-desc').value.trim();
 
-  if (!title || !examId || !fee || !start || !end) {
-    showToast('అన్ని required fields fill చేయండి!', 'warn'); return;
+  if (!title || !examId || !start || !end) {
+    showToast('Title, Exam, Start, End date fill చేయండి!', 'warn'); return;
+  }
+  if (!fee || fee < 1) {
+    showToast('Entry Fee కనీసం ₹1 పెట్టండి!', 'warn'); return;
   }
   // Prize % validation relaxed — admin decides distribution
 
@@ -22290,7 +22293,12 @@ async function adminCreateContest() {
   try {
     const res = await fetch(`${SB_URL}/rest/v1/ae_contests`, {
       method: 'POST',
-      headers: { ...SB_HEADERS, 'Prefer': 'return=minimal' },
+      headers: {
+        'Content-Type': 'application/json',
+        'apikey': SB_KEY,
+        'Authorization': 'Bearer ' + SB_KEY,
+        'Prefer': 'return=representation'
+      },
       body: JSON.stringify({
         title, description: desc, exam_id: examId,
         exam_name: exam ? exam.name : '',
@@ -22308,8 +22316,12 @@ async function adminCreateContest() {
       // Clear form
       ['ctest-title','ctest-fee','ctest-prize','ctest-start','ctest-end','ctest-desc'].forEach(id => { document.getElementById(id).value = ''; });
       loadAdminContests();
-    } else { throw new Error(); }
-  } catch(e) { showToast('Error! మళ్ళీ try చేయండి.', 'error'); }
+    } else {
+      const errText = await res.text();
+      console.error('Contest create error:', res.status, errText);
+      showToast('Error ' + res.status + ': ' + errText.slice(0,80), 'error');
+    }
+  } catch(e) { console.error('Contest catch:', e); showToast('Network error: ' + e.message, 'error'); }
 }
 
 // ── ADMIN: Load all contests ──

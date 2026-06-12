@@ -5599,6 +5599,22 @@ html:not(:has(#_ae_loading)) body {
     </div>
   </div>
   <div style="display:flex;align-items:center;gap:4px;flex-shrink:0;flex-wrap:nowrap;overflow:visible">
+    <!-- Notification Bell -->
+    <div class="ae-bell-wrap" id="ae-bell-wrap" style="position:relative;display:none">
+      <button id="ae-bell-btn" onclick="toggleNotifDropdown()" style="background:none;border:none;font-size:20px;cursor:pointer;position:relative;padding:6px;color:var(--text)">
+        🔔
+        <span id="ae-bell-badge" style="display:none;position:absolute;top:0;right:0;background:#EF4444;color:#fff;font-size:10px;font-weight:800;border-radius:10px;padding:1px 5px;min-width:16px;line-height:1.4;text-align:center">0</span>
+      </button>
+      <div id="ae-bell-dropdown" style="display:none;position:absolute;right:0;top:calc(100% + 8px);width:320px;max-width:90vw;max-height:420px;overflow-y:auto;background:var(--card);border:1.5px solid var(--border2);border-radius:14px;box-shadow:0 10px 40px rgba(0,0,0,.18);z-index:9999">
+        <div style="display:flex;align-items:center;justify-content:space-between;padding:12px 16px;border-bottom:1px solid var(--border2)">
+          <span style="font-weight:800;font-size:14px;color:var(--text)">🔔 Notifications</span>
+          <button onclick="markAllNotifsRead()" style="background:none;border:none;color:#7c3aed;font-size:12px;font-weight:700;cursor:pointer">Mark all read</button>
+        </div>
+        <div id="ae-bell-list" style="display:flex;flex-direction:column">
+          <div style="padding:24px;text-align:center;color:var(--text3);font-size:13px">Loading...</div>
+        </div>
+      </div>
+    </div>
     <button class="login-badge" id="nav-login-btn" onclick="openSubModal()" style="display:none">👤 Login</button>
     <!-- User profile dropdown -->
     <div class="user-profile-wrap" id="user-profile-wrap" style="display:none">
@@ -9143,7 +9159,8 @@ html:not(:has(#_ae_loading)) body {
           <!-- Action Buttons -->
           <div style="display:flex;gap:10px;flex-wrap:wrap;margin-top:4px">
             <button class="add-btn" onclick="previewBroadcastNotification()" style="background:linear-gradient(135deg,#6366f1,#8b5cf6)">👁 Preview</button>
-            <button class="add-btn" onclick="sendBroadcastNotification()" style="background:linear-gradient(135deg,#7c3aed,#6d28d9)" id="notif-send-btn">📨 Send to All</button>
+            <button class="add-btn" onclick="sendBroadcastNotification()" style="background:linear-gradient(135deg,#7c3aed,#6d28d9)" id="notif-send-btn">📨 Send to All (Email+Bell)</button>
+            <button class="add-btn" onclick="sendWhatsAppBroadcast()" style="background:linear-gradient(135deg,#25D366,#128C7E)">💬 WhatsApp Alert</button>
             <button class="del-btn" onclick="resetNotificationForm()" style="background:rgba(239,68,68,.1);color:var(--red);border-color:rgba(239,68,68,.3)">🗑 Clear</button>
           </div>
 
@@ -11177,6 +11194,7 @@ function setCurrentUser(u) {
 // Update nav login badge
 function updateNavUser() {
   const u = getCurrentUser();
+  if (typeof refreshBellVisibility === 'function') refreshBellVisibility();
   const loginBtn   = document.getElementById('nav-login-btn');
   const profileWrap = document.getElementById('user-profile-wrap');
   const navBtn     = document.getElementById('user-nav-btn');
@@ -21990,6 +22008,196 @@ document.addEventListener('DOMContentLoaded', async () => {
 });
 
 // ══════════════════════════════════════════════════════════════════
+//  🔔 IN-APP BELL NOTIFICATIONS — ae_notifications table
+// ══════════════════════════════════════════════════════════════════
+let _bellNotifs = [];
+let _bellPollTimer = null;
+
+// Insert notification rows for target users (segment: 'all'|'premium'|'free')
+async function createBellNotifications(title, message, segment, link) {
+  try {
+    let recipients = _notifRecipients;
+    if (!recipients || !recipients.length) {
+      await loadNotificationRecipients();
+      recipients = _notifRecipients;
+    }
+    let targets = recipients;
+    if (segment === 'premium') targets = recipients.filter(u => u.isPremium);
+    else if (segment === 'free') targets = recipients.filter(u => !u.isPremium);
+    if (!targets.length) return 0;
+
+    const rows = targets.map(u => ({
+      gmail: u.gmail,
+      title: title,
+      message: message,
+      link: link || 'https://aniledutech.in',
+      is_read: false,
+      created_at: new Date().toISOString()
+    }));
+
+    // Insert in batches of 200
+    for (let i = 0; i < rows.length; i += 200) {
+      await fetch(`${SB_URL}/rest/v1/ae_notifications`, {
+        method: 'POST',
+        headers: SB_HEADERS,
+        body: JSON.stringify(rows.slice(i, i + 200))
+      });
+    }
+    return rows.length;
+  } catch(e) { console.warn('createBellNotifications failed:', e); return 0; }
+}
+
+// Fetch unread/recent notifications for current user
+async function fetchBellNotifications() {
+  const u = getCurrentUser();
+  if (!u || !u.gmail) return;
+  try {
+    const res = await fetch(`${SB_URL}/rest/v1/ae_notifications?gmail=eq.${encodeURIComponent(u.gmail)}&order=created_at.desc&limit=30`, { headers: SB_HEADERS });
+    if (!res.ok) return;
+    _bellNotifs = await res.json();
+    renderBellDropdown();
+    updateBellBadge();
+  } catch(e) {}
+}
+
+function updateBellBadge() {
+  const unread = _bellNotifs.filter(n => !n.is_read).length;
+  const badge = document.getElementById('ae-bell-badge');
+  if (!badge) return;
+  if (unread > 0) {
+    badge.style.display = '';
+    badge.textContent = unread > 9 ? '9+' : unread;
+  } else {
+    badge.style.display = 'none';
+  }
+}
+
+function renderBellDropdown() {
+  const list = document.getElementById('ae-bell-list');
+  if (!list) return;
+  if (!_bellNotifs.length) {
+    list.innerHTML = '<div style="padding:24px;text-align:center;color:var(--text3);font-size:13px">📭 Notifications లేవు</div>';
+    return;
+  }
+  list.innerHTML = _bellNotifs.map(n => {
+    const time = new Date(n.created_at).toLocaleString('te-IN', { day:'2-digit', month:'short', hour:'2-digit', minute:'2-digit' });
+    const unreadStyle = n.is_read ? '' : 'background:rgba(124,58,237,.06)';
+    return `<div onclick="onBellNotifClick(${n.id}, '${(n.link||'').replace(/'/g,"\\'")}')" style="padding:12px 16px;border-bottom:1px solid var(--border2);cursor:pointer;${unreadStyle}">
+      <div style="font-weight:700;font-size:13px;color:var(--text);display:flex;align-items:center;gap:6px">
+        ${!n.is_read ? '<span style="width:8px;height:8px;border-radius:50%;background:#7c3aed;display:inline-block;flex-shrink:0"></span>' : ''}
+        ${n.title}
+      </div>
+      <div style="font-size:12.5px;color:var(--text2);margin-top:4px;line-height:1.5">${n.message}</div>
+      <div style="font-size:11px;color:var(--text3);margin-top:4px">${time}</div>
+    </div>`;
+  }).join('');
+}
+
+async function onBellNotifClick(id, link) {
+  try {
+    await fetch(`${SB_URL}/rest/v1/ae_notifications?id=eq.${id}`, {
+      method: 'PATCH', headers: SB_HEADERS, body: JSON.stringify({ is_read: true })
+    });
+    const n = _bellNotifs.find(x => x.id === id);
+    if (n) n.is_read = true;
+    renderBellDropdown();
+    updateBellBadge();
+  } catch(e) {}
+  if (link && link !== 'https://aniledutech.in') {
+    closeNotifDropdown();
+    if (link.startsWith('http')) window.open(link, '_blank');
+  }
+}
+
+async function markAllNotifsRead() {
+  const u = getCurrentUser();
+  if (!u || !u.gmail) return;
+  try {
+    await fetch(`${SB_URL}/rest/v1/ae_notifications?gmail=eq.${encodeURIComponent(u.gmail)}&is_read=eq.false`, {
+      method: 'PATCH', headers: SB_HEADERS, body: JSON.stringify({ is_read: true })
+    });
+    _bellNotifs.forEach(n => n.is_read = true);
+    renderBellDropdown();
+    updateBellBadge();
+  } catch(e) {}
+}
+
+function toggleNotifDropdown() {
+  const dd = document.getElementById('ae-bell-dropdown');
+  if (!dd) return;
+  const open = dd.style.display !== 'none';
+  dd.style.display = open ? 'none' : '';
+  if (!open) fetchBellNotifications();
+}
+
+function closeNotifDropdown() {
+  const dd = document.getElementById('ae-bell-dropdown');
+  if (dd) dd.style.display = 'none';
+}
+
+document.addEventListener('click', function(e) {
+  const wrap = document.getElementById('ae-bell-wrap');
+  if (wrap && !wrap.contains(e.target)) closeNotifDropdown();
+});
+
+// Show/hide bell based on login state + start polling
+function refreshBellVisibility() {
+  const wrap = document.getElementById('ae-bell-wrap');
+  if (!wrap) return;
+  const u = getCurrentUser();
+  if (u && u.gmail) {
+    wrap.style.display = '';
+    fetchBellNotifications();
+    if (!_bellPollTimer) _bellPollTimer = setInterval(fetchBellNotifications, 60000);
+  } else {
+    wrap.style.display = 'none';
+    if (_bellPollTimer) { clearInterval(_bellPollTimer); _bellPollTimer = null; }
+  }
+}
+document.addEventListener('DOMContentLoaded', () => setTimeout(refreshBellVisibility, 1000));
+
+// ══════════════════════════════════════════════════════════════════
+//  📣 UNIFIED sendNotification() — used by auto-triggers & admin
+//  Inserts bell notifications + (optionally) email broadcast + local push
+// ══════════════════════════════════════════════════════════════════
+async function sendNotification(type, title, message, segment = 'all', opts = {}) {
+  segment = segment || 'all';
+  // 1. Bell (in-app) — for all matching users
+  createBellNotifications(title, message, segment, opts.url);
+
+  // 2. Local push (current device only, if permission granted)
+  if (opts.localPush !== false) {
+    AE_NOTIF.show(title, message, opts.url || 'https://aniledutech.in', type + '-' + Date.now());
+  }
+
+  // 3. Email broadcast (background, all matching users)
+  if (opts.email !== false) {
+    let recipients = _notifRecipients;
+    if (!recipients || !recipients.length) { await loadNotificationRecipients(); recipients = _notifRecipients; }
+    let targets = recipients;
+    if (segment === 'premium') targets = recipients.filter(u => u.isPremium);
+    else if (segment === 'free') targets = recipients.filter(u => !u.isPremium);
+
+    const cfg = getEmailJSConfig();
+    if (cfg && cfg.serviceId && cfg.templateId && cfg.publicKey && targets.length) {
+      (async () => {
+        for (const user of targets) {
+          if (!user.gmail) continue;
+          try {
+            const htmlBody = _buildBroadcastEmailHTML(user.name || 'Student', title, message, opts.btnText || 'చూడండి →', opts.url || 'https://aniledutech.in');
+            await emailjs.send(cfg.serviceId, cfg.templateId, {
+              to_email: user.gmail, to_name: user.name || 'Student',
+              subject: title + ' — Anil EduTech', html_body: htmlBody, message: message
+            }, cfg.publicKey);
+            await new Promise(r => setTimeout(r, 300));
+          } catch(e) {}
+        }
+      })();
+    }
+  }
+}
+
+// ══════════════════════════════════════════════════════════════════
 //  BROADCAST NOTIFICATION — Admin Panel
 // ══════════════════════════════════════════════════════════════════
 let _notifRecipients = [];
@@ -22082,6 +22290,10 @@ async function sendBroadcastNotification() {
     toast('⚠ Recipients లేరు. Users load అయ్యారా?', 'warn'); return;
   }
 
+  // Also create in-app bell notifications for the same audience
+  const audienceVal = document.querySelector('input[name="notif-audience"]:checked')?.value || 'all';
+  createBellNotifications(heading || subject, body, audienceVal, btnUrl);
+
   const confirmed = confirm(`📨 ${targets.length} users కి notification send చేయాలా?\n\nSubject: ${subject}`);
   if (!confirmed) return;
 
@@ -22163,6 +22375,19 @@ async function sendBroadcastNotification() {
   toast(`📨 ${sent}/${total} emails sent!`, sent === total ? 'success' : 'warn');
 }
 
+function sendWhatsAppBroadcast() {
+  const heading = document.getElementById('notif-heading').value.trim();
+  const body    = document.getElementById('notif-body').value.trim();
+  const btnUrl  = document.getElementById('notif-btn-url').value.trim() || 'https://aniledutech.in';
+
+  if (!body) { toast('❌ Message రాయండి!', 'warn'); return; }
+
+  const waText = `*${heading || 'Anil EduTech'}*\n\n${body}\n\n🔗 ${btnUrl}`;
+  const waUrl = `https://wa.me/?text=${encodeURIComponent(waText)}`;
+  window.open(waUrl, '_blank');
+  toast('💬 WhatsApp open అయింది — Status/Group కి share చేయండి!', 'success');
+}
+
 function resetNotificationForm() {
   document.getElementById('notif-subject').value = '';
   document.getElementById('notif-heading').value = '';
@@ -22195,6 +22420,14 @@ async function _autoNotifyNewExam(exam) {
   const examName = exam.name || 'New Exam';
   const cat = exam.cat || 'General';
 
+  // 0. In-app bell notification for all users
+  createBellNotifications(
+    '🆕 కొత్త Exam వచ్చింది!',
+    `${examName} (${cat}) — ఇప్పుడే చేయండి! 🚀`,
+    'all',
+    'https://aniledutech.in'
+  );
+
   // 1. Push notification (to current browser — shows to logged-in user immediately)
   await AE_NOTIF.show(
     '🆕 కొత్త Exam వచ్చింది!',
@@ -22216,6 +22449,9 @@ async function _autoNotifyNewExam(exam) {
 // Auto notify for any custom announcement (Admin can call this)
 // Usage: adminBroadcastUpdate('Title', 'Message body')
 async function adminBroadcastUpdate(title, message) {
+  // In-app bell
+  createBellNotifications(title, message, 'all', 'https://aniledutech.in');
+
   // Push
   await AE_NOTIF.show(
     title,

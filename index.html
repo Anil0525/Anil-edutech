@@ -10891,25 +10891,56 @@ function _renderProgressContent(u, myScores, contentEl) {
           <div class="prog-section-title" style="margin:0;">🕐 Full Exam History (${total} exams)</div>
           <div style="font-size:12px;color:var(--text3);font-weight:600;">Latest first</div>
         </div>
-        ${myScores.map((s,i) => {
-          const col = s.pct>=75?'#0A8C5C':s.pct>=50?'#1A73E8':'#E53E3E';
-          const bg  = s.pct>=75?'rgba(10,140,92,.12)':s.pct>=50?'rgba(26,115,232,.1)':'rgba(229,62,62,.1)';
-          const ico = s.pct>=90?'🏆':s.pct>=75?'🥇':s.pct>=60?'🥈':s.pct>=50?'💪':'📚';
-          return `<div class="prog-history-card">
-            <div class="prog-hist-rank" style="background:${bg};color:${col};min-width:32px;text-align:center">${ico}</div>
-            <div class="prog-hist-info">
-              <div class="prog-hist-name">${escHtml(s.examName||'Exam')}</div>
-              <div class="prog-hist-meta">✅ ${s.correct||0}/${s.total||0} correct &nbsp;·&nbsp; ❌ ${s.wrong||0} wrong &nbsp;·&nbsp; 📅 ${s.date||''}</div>
-            </div>
-            <div class="prog-hist-pct" style="color:${col};font-size:17px;font-weight:900">${s.pct}%</div>
-          </div>`;
-        }).join('')}
+        <div id="prog-history-list"></div>
+        <div id="prog-history-pagination"></div>
       </div>
     </div>
   `;
 
   // Fill streak calendar
   _fillStreakCalendar(myScoresWithTs);
+
+  // ── Init Progress History Pagination ──
+  (function() {
+    const listEl = document.getElementById('prog-history-list');
+    if (!listEl) return;
+    window._phScores = myScores.map(function(s){ return {pct:s.pct,examName:s.examName,correct:s.correct,total:s.total,wrong:s.wrong,date:s.date}; });
+    window._phPage = 0;
+    window._renderPH = function() {
+      const PH_PER = 10;
+      const total = window._phScores.length;
+      const totalPages = Math.ceil(total / PH_PER);
+      const start = window._phPage * PH_PER;
+      const pageItems = window._phScores.slice(start, start + PH_PER);
+      const pagEl = document.getElementById('prog-history-pagination');
+      if (!listEl) return;
+      listEl.innerHTML = pageItems.map(function(s) {
+        const col = s.pct>=75?'#0A8C5C':s.pct>=50?'#1A73E8':'#E53E3E';
+        const bg  = s.pct>=75?'rgba(10,140,92,.12)':s.pct>=50?'rgba(26,115,232,.1)':'rgba(229,62,62,.1)';
+        const ico = s.pct>=90?'🏆':s.pct>=75?'🥇':s.pct>=60?'🥈':s.pct>=50?'💪':'📚';
+        return '<div class="prog-history-card">'
+          + '<div class="prog-hist-rank" style="background:'+bg+';color:'+col+';min-width:32px;text-align:center">'+ico+'</div>'
+          + '<div class="prog-hist-info">'
+          + '<div class="prog-hist-name">'+(s.examName||'Exam')+'</div>'
+          + '<div class="prog-hist-meta">✅ '+(s.correct||0)+'/'+(s.total||0)+' correct &nbsp;·&nbsp; ❌ '+(s.wrong||0)+' wrong &nbsp;·&nbsp; 📅 '+(s.date||'')+'</div>'
+          + '</div>'
+          + '<div class="prog-hist-pct" style="color:'+col+';font-size:17px;font-weight:900">'+s.pct+'%</div>'
+          + '</div>';
+      }).join('');
+      if (pagEl) {
+        if (totalPages > 1) {
+          pagEl.innerHTML = '<div style="display:flex;align-items:center;justify-content:center;gap:10px;margin:18px 0 8px;flex-wrap:wrap;">'
+            + '<button onclick="window._phPage--;window._renderPH()" ' + (window._phPage===0?'disabled':'') + ' style="padding:8px 18px;border-radius:10px;border:1.5px solid var(--border2);background:var(--card);color:var(--text);font-family:inherit;font-size:13px;font-weight:700;cursor:pointer;opacity:' + (window._phPage===0?'0.4':'1') + '">← Prev</button>'
+            + '<span style="font-size:13px;font-weight:800;color:var(--text2);padding:6px 14px;background:var(--bg);border-radius:8px;border:1px solid var(--border2);">' + (window._phPage+1) + ' / ' + totalPages + ' <span style="font-size:11px;color:var(--text3);font-weight:600;"> (' + total + ' exams)</span></span>'
+            + '<button onclick="window._phPage++;window._renderPH();document.getElementById(\'prog-history-list\').scrollIntoView({behavior:\'smooth\',block:\'start\'})" ' + (window._phPage>=totalPages-1?'disabled':'') + ' style="padding:8px 18px;border-radius:10px;border:1.5px solid var(--border2);background:var(--card);color:var(--text);font-family:inherit;font-size:13px;font-weight:700;cursor:pointer;opacity:' + (window._phPage>=totalPages-1?'0.4':'1') + '">Next →</button>'
+            + '</div>';
+        } else {
+          pagEl.innerHTML = '';
+        }
+      }
+    };
+    window._renderPH();
+  })();
 
   // ── Draw Chart.js line chart ──
   _drawProgressLineChart(myScoresWithTs, 'weekly');
@@ -13362,32 +13393,62 @@ function showResultPage() {
     }
   }
 
-  document.getElementById('answer-review').innerHTML = qs.map((q,i) => {
-    const a   = exam.answers[q.id];
-    // Normalize ans: support both 'A'/'B'/'C'/'D' (string) and 0/1/2/3 (number)
-    const normAns = (v) => {
-      if (v === undefined || v === null || v === '') return null;
-      if (typeof v === 'number') return String.fromCharCode(65 + v); // 0→'A', 1→'B'
-      if (typeof v === 'string' && v.length === 1 && v >= 'A' && v <= 'D') return v;
-      if (typeof v === 'string' && !isNaN(v)) return String.fromCharCode(65 + parseInt(v));
-      return v;
-    };
-    const ansLetter = normAns(q.ans);
-    const myLetter  = normAns(a);
-    const ok = myLetter && ansLetter && myLetter === ansLetter;
-    const optIdx = (L) => L ? L.charCodeAt(0) - 65 : -1;
-    const myAns  = myLetter ? `${myLetter}: ${escHtml(q.opts[optIdx(myLetter)] || '')}` : 'Skip చేశారు';
-    const corAns = ansLetter ? escHtml(q.opts[optIdx(ansLetter)] || '') : '';
-    const _secNames = {reasoning:'🧠 Reasoning', arithmetic:'🔢 Arithmetic', ga:'🌍 GA', english:'📖 English', science:'🔬 Science'};
-    const _secTag = q.section && _secNames[q.section] ? `<span style="font-size:10px;font-weight:800;background:var(--primary-soft);color:var(--primary);padding:2px 8px;border-radius:10px;margin-left:6px">${_secNames[q.section]}</span>` : '';
-    return `<div class="review-card ${ok?'correct-card':'wrong-card'}">
-      <div class="review-q">${i+1}. ${escHtml(q.q)}${_secTag}</div>
-      <div class="review-answers">
-        <span class="your-ans${ok?' ok':''}">మీ answer: ${myAns}</span>
-        ${!ok?`<span class="correct-ans">✓ Correct: ${ansLetter}: ${corAns}</span>`:''}
-      </div>
-    </div>`;
-  }).join('');
+  // Build answer review cards data
+  const _arNormAns = (v) => {
+    if (v === undefined || v === null || v === '') return null;
+    if (typeof v === 'number') return String.fromCharCode(65 + v);
+    if (typeof v === 'string' && v.length === 1 && v >= 'A' && v <= 'D') return v;
+    if (typeof v === 'string' && !isNaN(v)) return String.fromCharCode(65 + parseInt(v));
+    return v;
+  };
+  const _secNames = {reasoning:'🧠 Reasoning', arithmetic:'🔢 Arithmetic', ga:'🌍 GA', english:'📖 English', science:'🔬 Science'};
+  window._arQs = qs;
+  window._arPage = 0;
+  const AR_PER_PAGE = 10;
+
+  function _renderArPage() {
+    const totalPages = Math.ceil(window._arQs.length / AR_PER_PAGE);
+    const start = window._arPage * AR_PER_PAGE;
+    const pageQs = window._arQs.slice(start, start + AR_PER_PAGE);
+
+    const cards = pageQs.map((q, i) => {
+      const globalIdx = start + i;
+      const a = exam.answers[q.id];
+      const ansLetter = _arNormAns(q.ans);
+      const myLetter  = _arNormAns(a);
+      const ok = myLetter && ansLetter && myLetter === ansLetter;
+      const optIdx = (L) => L ? L.charCodeAt(0) - 65 : -1;
+      const myAns  = myLetter ? `${myLetter}: ${escHtml(q.opts[optIdx(myLetter)] || '')}` : 'Skip చేశారు';
+      const corAns = ansLetter ? escHtml(q.opts[optIdx(ansLetter)] || '') : '';
+      const _secTag = q.section && _secNames[q.section] ? `<span style="font-size:10px;font-weight:800;background:var(--primary-soft);color:var(--primary);padding:2px 8px;border-radius:10px;margin-left:6px">${_secNames[q.section]}</span>` : '';
+      return `<div class="review-card ${ok?'correct-card':'wrong-card'}">
+        <div class="review-q">${globalIdx+1}. ${escHtml(q.q)}${_secTag}</div>
+        <div class="review-answers">
+          <span class="your-ans${ok?' ok':''}">మీ answer: ${myAns}</span>
+          ${!ok?`<span class="correct-ans">✓ Correct: ${ansLetter}: ${corAns}</span>`:''}
+        </div>
+      </div>`;
+    }).join('');
+
+    const pagination = totalPages > 1 ? `
+      <div style="display:flex;align-items:center;justify-content:center;gap:10px;margin:18px 0 8px;flex-wrap:wrap;">
+        <button onclick="window._arPage--;_renderArPage()" ${window._arPage===0?'disabled':''}
+          style="padding:8px 18px;border-radius:10px;border:1.5px solid var(--border2);background:var(--card);color:var(--text);font-family:inherit;font-size:13px;font-weight:700;cursor:pointer;opacity:${window._arPage===0?'0.4':'1'}">
+          ← Prev
+        </button>
+        <span style="font-size:13px;font-weight:800;color:var(--text2);padding:6px 14px;background:var(--bg);border-radius:8px;border:1px solid var(--border2);">
+          ${window._arPage+1} / ${totalPages}
+          <span style="font-size:11px;color:var(--text3);font-weight:600;"> (${window._arQs.length} questions)</span>
+        </span>
+        <button onclick="window._arPage++;_renderArPage();document.querySelector('.result-body .section-title')?.scrollIntoView({behavior:'smooth',block:'start'})" ${window._arPage>=totalPages-1?'disabled':''}
+          style="padding:8px 18px;border-radius:10px;border:1.5px solid var(--border2);background:var(--card);color:var(--text);font-family:inherit;font-size:13px;font-weight:700;cursor:pointer;opacity:${window._arPage>=totalPages-1?'0.4':'1'}">
+          Next →
+        </button>
+      </div>` : '';
+
+    document.getElementById('answer-review').innerHTML = cards + pagination;
+  }
+  _renderArPage();
 
   showPage('result');
 }
@@ -13404,6 +13465,8 @@ function retakeExam() {
 let _lbFilter = 'all'; // 'all' | 'today' | 'week'
 let _lbRefreshTimer = null;
 let _lbAllScores = [];
+let _lbPage = 0;
+const _LB_PER_PAGE = 10;
 
 function _renderLeaderboardUI(scores) {
   const el = document.getElementById('leaderboard-list');
@@ -13413,7 +13476,7 @@ function _renderLeaderboardUI(scores) {
   const now = new Date();
   let filtered = scores;
   if (_lbFilter === 'today') {
-    const todayStr = now.toLocaleDateString('en-CA'); // YYYY-MM-DD
+    const todayStr = now.toLocaleDateString('en-CA');
     filtered = scores.filter(s => {
       if (!s.ts) return false;
       return new Date(s.ts).toLocaleDateString('en-CA') === todayStr;
@@ -13429,12 +13492,22 @@ function _renderLeaderboardUI(scores) {
     return;
   }
 
+  // Clamp page
+  const totalPages = Math.ceil(filtered.length / _LB_PER_PAGE);
+  if (_lbPage >= totalPages) _lbPage = totalPages - 1;
+  if (_lbPage < 0) _lbPage = 0;
+
+  const start = _lbPage * _LB_PER_PAGE;
+  const pageItems = filtered.slice(start, start + _LB_PER_PAGE);
+
   const medals = ['🥇','🥈','🥉'];
   const cardCls = ['lb-gold','lb-silver','lb-bronze'];
-  el.innerHTML = filtered.map((s, i) => {
-    const isTop = i < 3;
-    return `<div class="lb-card ${isTop ? cardCls[i] : ''}">
-      ${isTop ? `<div class="lb-rank">${medals[i]}</div>` : `<div class="lb-rank-num">${i+1}</div>`}
+
+  const cards = pageItems.map((s, i) => {
+    const globalIdx = start + i;
+    const isTop = globalIdx < 3;
+    return `<div class="lb-card ${isTop ? cardCls[globalIdx] : ''}">
+      ${isTop ? `<div class="lb-rank">${medals[globalIdx]}</div>` : `<div class="lb-rank-num">${globalIdx+1}</div>`}
       <div class="lb-info">
         <div class="lb-name">${escHtml(s.name)}</div>
         <div class="lb-meta">📝 ${escHtml(s.examName)} &nbsp;·&nbsp; 📅 ${s.date||''}</div>
@@ -13445,10 +13518,38 @@ function _renderLeaderboardUI(scores) {
       </div>
     </div>`;
   }).join('');
+
+  // Pagination bar
+  const pagination = totalPages > 1 ? `
+    <div style="display:flex;align-items:center;justify-content:center;gap:10px;margin:18px 0 8px;flex-wrap:wrap;">
+      <button onclick="_lbGoPage(${_lbPage - 1})" ${_lbPage === 0 ? 'disabled' : ''}
+        style="padding:8px 18px;border-radius:10px;border:1.5px solid var(--border2);background:var(--card);color:var(--text);font-family:inherit;font-size:13px;font-weight:700;cursor:pointer;opacity:${_lbPage === 0 ? '0.4' : '1'}">
+        ← Prev
+      </button>
+      <span style="font-size:13px;font-weight:800;color:var(--text2);padding:6px 14px;background:var(--bg);border-radius:8px;border:1px solid var(--border2);">
+        ${_lbPage + 1} / ${totalPages}
+        <span style="font-size:11px;color:var(--text3);font-weight:600;"> (${filtered.length} total)</span>
+      </span>
+      <button onclick="_lbGoPage(${_lbPage + 1})" ${_lbPage >= totalPages - 1 ? 'disabled' : ''}
+        style="padding:8px 18px;border-radius:10px;border:1.5px solid var(--border2);background:var(--card);color:var(--text);font-family:inherit;font-size:13px;font-weight:700;cursor:pointer;opacity:${_lbPage >= totalPages - 1 ? '0.4' : '1'}">
+        Next →
+      </button>
+    </div>` : '';
+
+  el.innerHTML = cards + pagination;
+}
+
+function _lbGoPage(page) {
+  _lbPage = page;
+  _renderLeaderboardUI(_lbAllScores);
+  // Scroll to leaderboard top smoothly
+  const lb = document.querySelector('.lb-header');
+  if (lb) lb.scrollIntoView({ behavior: 'smooth', block: 'start' });
 }
 
 function _lbSetFilter(f) {
   _lbFilter = f;
+  _lbPage = 0; // reset to first page on filter change
   document.querySelectorAll('.lb-tab-btn').forEach(b => b.classList.toggle('active', b.dataset.f === f));
   _renderLeaderboardUI(_lbAllScores);
 }
@@ -13499,6 +13600,7 @@ async function renderLeaderboard(silent) {
   if (merged.length > 100) merged.length = 100;
 
   _lbAllScores = merged;
+  _lbPage = 0;
   _renderLeaderboardUI(_lbAllScores);
   _lbUpdateTimestamp();
 
@@ -21068,6 +21170,11 @@ function switchCATab(tab) {
   loadCAPdfs(tab);
 }
 
+var _caAllPdfs = [];
+var _caCurrentFolder = '';
+var _caPageNum = 0;
+var CA_PAGE_SIZE = 9;
+
 async function loadCAPdfs(tab) {
   var grid    = document.getElementById('ca-pdf-grid');
   var loading = document.getElementById('ca-loading');
@@ -21075,23 +21182,58 @@ async function loadCAPdfs(tab) {
   grid.innerHTML = '';
   loading.style.display = 'block';
   empty.style.display   = 'none';
+  _caPageNum = 0;
   var folder = CA_FOLDERS[tab] || tab;
+  _caCurrentFolder = folder;
   var url = CA_SUPABASE_URL + '/storage/v1/object/list/' + CA_BUCKET;
   try {
     var res  = await fetch(url, { method: 'POST', headers: { 'apikey': CA_SUPABASE_KEY, 'Authorization': 'Bearer ' + CA_SUPABASE_KEY, 'Content-Type': 'application/json' }, body: JSON.stringify({ prefix: folder + '/', limit: 100, offset: 0, sortBy: { column: 'created_at', order: 'desc' } }) });
     var data = await res.json();
     loading.style.display = 'none';
-    var pdfs = (Array.isArray(data) ? data : []).filter(function(f) { return f.name && (f.name.toLowerCase().endsWith('.pdf') || f.name.toLowerCase().endsWith('.html')); });
-    if (!pdfs.length) { empty.style.display = 'block'; return; }
-    pdfs.forEach(function(file) {
-      var publicUrl = CA_SUPABASE_URL + '/storage/v1/object/public/' + CA_BUCKET + '/' + folder + '/' + file.name;
-      grid.appendChild(_caCreateCard(file, publicUrl, tab));
-    });
+    _caAllPdfs = (Array.isArray(data) ? data : []).filter(function(f) { return f.name && (f.name.toLowerCase().endsWith('.pdf') || f.name.toLowerCase().endsWith('.html')); });
+    if (!_caAllPdfs.length) { empty.style.display = 'block'; return; }
+    _renderCAPage(tab);
   } catch(err) {
     loading.style.display = 'none';
     empty.style.display   = 'block';
     console.error('CA load error:', err);
   }
+}
+
+function _renderCAPage(tab) {
+  var grid = document.getElementById('ca-pdf-grid');
+  if (!grid) return;
+  var totalPages = Math.ceil(_caAllPdfs.length / CA_PAGE_SIZE);
+  var start = _caPageNum * CA_PAGE_SIZE;
+  var pageItems = _caAllPdfs.slice(start, start + CA_PAGE_SIZE);
+
+  grid.innerHTML = '';
+  pageItems.forEach(function(file) {
+    var publicUrl = CA_SUPABASE_URL + '/storage/v1/object/public/' + CA_BUCKET + '/' + _caCurrentFolder + '/' + file.name;
+    grid.appendChild(_caCreateCard(file, publicUrl, tab || _caCurrentFolder));
+  });
+
+  // Remove old pagination if exists
+  var oldPag = document.getElementById('ca-pagination');
+  if (oldPag) oldPag.remove();
+
+  if (totalPages > 1) {
+    var pag = document.createElement('div');
+    pag.id = 'ca-pagination';
+    pag.style.cssText = 'display:flex;align-items:center;justify-content:center;gap:10px;margin:18px 0 8px;flex-wrap:wrap;';
+    pag.innerHTML =
+      '<button onclick="_caGoPage(_caPageNum-1)" ' + (_caPageNum===0?'disabled':'') + ' style="padding:8px 18px;border-radius:10px;border:1.5px solid var(--border2);background:var(--card);color:var(--text);font-family:inherit;font-size:13px;font-weight:700;cursor:pointer;opacity:' + (_caPageNum===0?'0.4':'1') + '">← Prev</button>'
+      + '<span style="font-size:13px;font-weight:800;color:var(--text2);padding:6px 14px;background:var(--bg);border-radius:8px;border:1px solid var(--border2);">' + (_caPageNum+1) + ' / ' + totalPages + '<span style="font-size:11px;color:var(--text3);font-weight:600;"> (' + _caAllPdfs.length + ' items)</span></span>'
+      + '<button onclick="_caGoPage(_caPageNum+1)" ' + (_caPageNum>=totalPages-1?'disabled':'') + ' style="padding:8px 18px;border-radius:10px;border:1.5px solid var(--border2);background:var(--card);color:var(--text);font-family:inherit;font-size:13px;font-weight:700;cursor:pointer;opacity:' + (_caPageNum>=totalPages-1?'0.4':'1') + '">Next →</button>';
+    grid.parentNode.insertBefore(pag, grid.nextSibling);
+  }
+}
+
+function _caGoPage(page) {
+  _caPageNum = page;
+  var tab = document.getElementById('ca-tab-daily')?.classList.contains('ca-active') ? 'daily' : 'monthly';
+  _renderCAPage(tab);
+  document.getElementById('ca-pdf-grid')?.scrollIntoView({ behavior: 'smooth', block: 'start' });
 }
 
 function _caCreateCard(file, publicUrl, tab) {
@@ -22148,7 +22290,7 @@ function refreshBellVisibility() {
   if (u && u.gmail) {
     wrap.style.display = '';
     fetchBellNotifications();
-    if (!_bellPollTimer) _bellPollTimer = setInterval(fetchBellNotifications, 60000);
+    if (!_bellPollTimer) _bellPollTimer = setInterval(fetchBellNotifications, 30000);
   } else {
     wrap.style.display = 'none';
     if (_bellPollTimer) { clearInterval(_bellPollTimer); _bellPollTimer = null; }
@@ -22996,11 +23138,32 @@ async function loadContestLeaderboard() {
 async function markPrizePaid(entryId, name) {
   if (!confirm(`${name} కి prize paid గా mark చేయాలా?`)) return;
   try {
+    // Get entry details for winner notification
+    const eRes = await fetch(`${SB_URL}/rest/v1/ae_contest_entries?id=eq.${entryId}&select=gmail,name,contest_id`, { headers: SB_HEADERS });
+    const eData = eRes.ok ? await eRes.json() : [];
+    const entry = eData[0];
+
     await fetch(`${SB_URL}/rest/v1/ae_contest_entries?id=eq.${entryId}`, {
       method: 'PATCH', headers: SB_HEADERS,
       body: JSON.stringify({ status: 'prize_paid' })
     });
-    toast('💸 Prize Paid గా mark అయింది!', 'success');
+
+    // Send winner bell notification to winner
+    if (entry && entry.gmail) {
+      await fetch(`${SB_URL}/rest/v1/ae_notifications`, {
+        method: 'POST', headers: SB_HEADERS,
+        body: JSON.stringify([{
+          gmail: entry.gmail,
+          title: '\uD83C\uDF89 మీరు Prize గెలిచారు!',
+          message: `అభినందనలు ${entry.name || name}! మీ Prize అందించబడింది. Check చేయండి \uD83C\uDFC6`,
+          link: 'https://aniledutech.in',
+          is_read: false,
+          created_at: new Date().toISOString()
+        }])
+      });
+    }
+
+    toast('\uD83D\uDCB8 Prize Paid గా mark అయింది! \uD83D\uDD14 Winner కి notification వెళ్ళింది.', 'success');
     loadContestLeaderboard();
   } catch(e) { toast('Error!', 'error'); }
 }
@@ -23023,30 +23186,48 @@ window.switchAdminTab = function(tab, btn) {
   }
 };
 
-// ── Hook: update contest score when exam completed ──
+// ── Hook: update contest score + push notification when exam completed (MERGED) ──
 const _origSaveScoreContest = window.saveScoreAndShow;
 window.saveScoreAndShow = async function() {
   _origSaveScoreContest && _origSaveScoreContest.apply(this, arguments);
-  // If this exam is part of an active contest the user joined, update score
+
+  // 1. Push notification (ask permission at natural moment)
+  const granted = await AE_NOTIF.requestPermission();
+  if (granted) {
+    setTimeout(async () => {
+      const examName = exam?.current?.name || 'Exam';
+      const pct = exam?._result?.pct ?? 0;
+      const u = getCurrentUser && getCurrentUser();
+      const name = u?.name || 'User';
+      await AE_NOTIF.onExamComplete(name, examName, pct);
+    }, 1500);
+  }
+
+  // 2. Contest score update
   try {
     const u = getCurrentUser();
     if (!u || !exam.current) return;
     const examId = exam.current.id;
     const pct = exam?._result?.pct ?? 0;
-    // Check if user has approved entry for a contest with this exam
     const entryRes = await fetch(`${SB_URL}/rest/v1/ae_contest_entries?gmail=eq.${encodeURIComponent(u.gmail)}&status=eq.approved`, { headers: SB_HEADERS });
     const entries = entryRes.ok ? await entryRes.json() : [];
     for (const entry of entries) {
-      // Get contest to check exam_id
-      const cRes = await fetch(`${SB_URL}/rest/v1/ae_contests?id=eq.${entry.contest_id}&select=exam_id,end_at`, { headers: SB_HEADERS });
+      const cRes = await fetch(`${SB_URL}/rest/v1/ae_contests?id=eq.${entry.contest_id}&select=exam_id,end_at,title`, { headers: SB_HEADERS });
       const cData = cRes.ok ? await cRes.json() : [];
       if (cData[0] && String(cData[0].exam_id) === String(examId) && new Date(cData[0].end_at) > new Date()) {
-        // Update score if this is better
         if (!entry.score || pct > entry.score) {
           await fetch(`${SB_URL}/rest/v1/ae_contest_entries?id=eq.${entry.id}`, {
             method: 'PATCH', headers: SB_HEADERS,
             body: JSON.stringify({ score: pct })
           });
+          // Bell notification: contest score updated
+          const contestName = cData[0].title || 'Contest';
+          createBellNotifications(
+            '🏆 Contest Score Update!',
+            `${contestName} లో మీ score: ${pct}% — Leaderboard చూడండి 🚀`,
+            'all',
+            'https://aniledutech.in'
+          );
         }
       }
     }
@@ -23057,24 +23238,6 @@ window.saveScoreAndShow = async function() {
 document.getElementById('contest-entry-modal').addEventListener('click', function(e) {
   if (e.target === this) closeContestModal();
 });
-
-
-// Hook into saveScoreAndShow — trigger notification after exam
-const _origSaveScore = window.saveScoreAndShow;
-window.saveScoreAndShow = async function() {
-  _origSaveScore && _origSaveScore.apply(this, arguments);
-  // Ask permission on first exam submit (natural moment)
-  const granted = await AE_NOTIF.requestPermission();
-  if (!granted) return;
-  // Wait for result to render then notify
-  setTimeout(async () => {
-    const examName = exam?.current?.name || 'Exam';
-    const pct = exam?._result?.pct ?? 0;
-    const u = getCurrentUser && getCurrentUser();
-    const name = u?.name || 'User';
-    await AE_NOTIF.onExamComplete(name, examName, pct);
-  }, 1500);
-};
 </script>
 
 <!-- ═══════════════════════════════════════════════════════════════ -->

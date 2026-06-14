@@ -6119,7 +6119,7 @@ html:not(:has(#_ae_loading)) body {
         <!-- Slide 1: Mobile App -->
         <div class="ae-slide ae-slide-app">
           <div class="ae-slide-dots-bg"></div>
-          <div class="ae-slide-counter" id="ae-counter">1 / 5</div>
+          <div class="ae-slide-counter" id="ae-counter">1 / 7</div>
           <div class="ae-slide-content">
             <div class="ae-slide-tag">🚀 Coming Soon</div>
             <div class="ae-slide-title">Anil EduTech<br><span>Mobile App</span></div>
@@ -6226,6 +6226,38 @@ html:not(:has(#_ae_loading)) body {
           </div>
         </div>
 
+        <!-- Slide 6: Government Exams -->
+        <div class="ae-slide ae-slide-gov" style="background:linear-gradient(135deg,#0a1f3c 0%,#0d3270 50%,#1a5276 100%);">
+          <div class="ae-slide-dots-bg"></div>
+          <div class="ae-slide-content" style="z-index:1">
+            <div class="ae-slide-tag" style="background:linear-gradient(135deg,#1E90FF,#00BFFF);color:#fff;border:none;">🏛️ Government Jobs</div>
+            <div class="ae-slide-title" style="color:#fff">Govt Exams<br><span style="background:linear-gradient(135deg,#00BFFF,#1E90FF);-webkit-background-clip:text;-webkit-text-fill-color:transparent">Prepare చేయండి!</span></div>
+            <div class="ae-slide-desc" style="color:rgba(255,255,255,.8)">TSPSC · APPSC · SSC · RRB · Banking<br>అన్ని Govt exams కి complete preparation!</div>
+            <button onclick="goExams()" class="ae-slide-btn" style="background:linear-gradient(135deg,#1E90FF,#00BFFF);color:#0a1f3c;font-weight:900;">📚 Exams చూడండి <span style="font-size:14px">→</span></button>
+          </div>
+          <div class="ae-slide-phone" style="z-index:1;display:flex;flex-direction:column;gap:8px;">
+            <div style="background:rgba(30,144,255,.18);border:1.5px solid rgba(30,144,255,.4);border-radius:12px;padding:10px 14px;color:#00BFFF;font-size:12px;font-weight:700;">🏛️ TSPSC Group-1</div>
+            <div style="background:rgba(30,144,255,.18);border:1.5px solid rgba(30,144,255,.4);border-radius:12px;padding:10px 14px;color:#00BFFF;font-size:12px;font-weight:700;">📋 SSC CGL / CHSL</div>
+            <div style="background:rgba(30,144,255,.18);border:1.5px solid rgba(30,144,255,.4);border-radius:12px;padding:10px 14px;color:#00BFFF;font-size:12px;font-weight:700;">🚂 RRB NTPC / ALP</div>
+          </div>
+        </div>
+
+        <!-- Slide 7: Quiz Contest -->
+        <div class="ae-slide ae-slide-quiz" style="background:linear-gradient(135deg,#1a0a00 0%,#3d1a00 50%,#7a3500 100%);">
+          <div class="ae-slide-dots-bg"></div>
+          <div class="ae-slide-content" style="z-index:1">
+            <div class="ae-slide-tag" style="background:linear-gradient(135deg,#FF8C00,#FF4500);color:#fff;border:none;">🎯 Quiz Contest</div>
+            <div class="ae-slide-title" style="color:#fff">Daily Quiz<br><span style="background:linear-gradient(135deg,#FF8C00,#FFD700);-webkit-background-clip:text;-webkit-text-fill-color:transparent">Challenge!</span></div>
+            <div class="ae-slide-desc" style="color:rgba(255,255,255,.8)">రోజూ Quiz attend చేయండి · Score పెంచుకోండి<br>Top rankers కి special rewards!</div>
+            <button onclick="goExams()" class="ae-slide-btn" style="background:linear-gradient(135deg,#FF8C00,#FFD700);color:#1a0a00;font-weight:900;">🎮 Quiz Play చేయండి <span style="font-size:14px">→</span></button>
+          </div>
+          <div class="ae-slide-phone" style="z-index:1;display:flex;flex-direction:column;gap:8px;">
+            <div style="background:rgba(255,140,0,.18);border:1.5px solid rgba(255,140,0,.4);border-radius:12px;padding:10px 14px;color:#FFD700;font-size:12px;font-weight:700;">⏱️ 10 Min Challenge</div>
+            <div style="background:rgba(255,140,0,.18);border:1.5px solid rgba(255,140,0,.4);border-radius:12px;padding:10px 14px;color:#FFD700;font-size:12px;font-weight:700;">🏆 Weekly Winners</div>
+            <div style="background:rgba(255,140,0,.18);border:1.5px solid rgba(255,140,0,.4);border-radius:12px;padding:10px 14px;color:#FFD700;font-size:12px;font-weight:700;">🎁 Special Rewards</div>
+          </div>
+        </div>
+
       </div><!-- /.ae-carousel -->
     </div><!-- /.ae-carousel-track -->
 
@@ -6237,6 +6269,8 @@ html:not(:has(#_ae_loading)) body {
         <button class="ae-dot" onclick="goSlide(2)"></button>
         <button class="ae-dot" onclick="goSlide(3)"></button>
         <button class="ae-dot" onclick="goSlide(4)"></button>
+        <button class="ae-dot" onclick="goSlide(5)"></button>
+        <button class="ae-dot" onclick="goSlide(6)"></button>
       </div>
       <div class="ae-car-progress">
         <div class="ae-car-progress-fill" id="ae-progress-fill"></div>
@@ -7869,6 +7903,7 @@ html:not(:has(#_ae_loading)) body {
 <!-- GOVT JOBS & RESULTS PAGE -->
 <div id="page-jobs" class="page">
   <div class="prog-header">
+    <button class="ca-back-btn" onclick="goHome()">← వెనక్కి</button>
     <h2>💼 Latest Govt Jobs & Results</h2>
     <p>Notifications · Results · Admit Cards · Answer Keys — అన్నీ ఒకే చోట</p>
   </div>
@@ -8062,6 +8097,7 @@ html:not(:has(#_ae_loading)) body {
       <button class="admin-tab" onclick="switchAdminTab('settings',this)">🔧 Settings</button>
       <button class="admin-tab" onclick="switchAdminTab('userbackup',this)">📋 User Backup</button>
       <button class="admin-tab" onclick="switchAdminTab('notifications',this)">🔔 Notifications</button>
+      <button class="admin-tab" onclick="switchAdminTab('carousel',this);loadCarouselAdmin()">🎠 Carousel</button>
       <button class="admin-tab" onclick="switchAdminTab('contests',this);_populateContestExamSelect();loadAdminContests()">🏆 Contests</button>
       <button class="admin-tab" onclick="switchAdminTab('jobs',this);loadAdminJobArticles()">💼 Govt Jobs</button>
     </div>
@@ -9410,7 +9446,128 @@ html:not(:has(#_ae_loading)) body {
         </div>
       </div>
 
+
     </div><!-- end atab-notifications -->
+
+    <!-- ══════════════════ CAROUSEL MANAGER TAB ══════════════════ -->
+    <div id="atab-carousel" class="admin-panel">
+
+      <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:20px;flex-wrap:wrap;gap:12px">
+        <div>
+          <h2 style="font-size:20px;font-weight:900;color:var(--text);margin:0">🎠 Carousel Manager</h2>
+          <p style="font-size:13px;color:var(--text3);margin:4px 0 0">Homepage carousel slides manage చేయండి</p>
+        </div>
+        <button class="add-btn" onclick="openCarouselForm()" style="background:linear-gradient(135deg,#6366f1,#8b5cf6)">➕ కొత్త Slide Add</button>
+      </div>
+
+      <!-- Stats row -->
+      <div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(140px,1fr));gap:12px;margin-bottom:20px">
+        <div class="admin-card" style="padding:16px;text-align:center;border-color:rgba(99,102,241,.3)">
+          <div style="font-size:26px;font-weight:900;color:#6366f1" id="cs-total">0</div>
+          <div style="font-size:12px;color:var(--text3);margin-top:3px">🎠 Total Slides</div>
+        </div>
+        <div class="admin-card" style="padding:16px;text-align:center;border-color:rgba(16,185,129,.3)">
+          <div style="font-size:26px;font-weight:900;color:var(--teal)" id="cs-active">0</div>
+          <div style="font-size:12px;color:var(--text3);margin-top:3px">✅ Active</div>
+        </div>
+        <div class="admin-card" style="padding:16px;text-align:center;border-color:rgba(245,158,11,.3)">
+          <div style="font-size:26px;font-weight:900;color:#f59e0b" id="cs-inactive">0</div>
+          <div style="font-size:12px;color:var(--text3);margin-top:3px">⏸ Hidden</div>
+        </div>
+      </div>
+
+      <!-- Slides List -->
+      <div class="admin-card" style="border-color:rgba(99,102,241,.2);margin-bottom:20px">
+        <h3 style="color:#6366f1;margin-bottom:16px">📋 Existing Slides</h3>
+        <div id="cs-list">
+          <div style="text-align:center;padding:40px;color:var(--text3)">Loading slides...</div>
+        </div>
+      </div>
+
+      <!-- Add / Edit Form -->
+      <div class="admin-card" id="cs-form-card" style="border-color:rgba(99,102,241,.3);display:none">
+        <h3 style="color:#6366f1;margin-bottom:16px" id="cs-form-title">➕ కొత్త Slide</h3>
+        <input type="hidden" id="cs-edit-id">
+
+        <div style="display:grid;grid-template-columns:1fr 1fr;gap:14px;margin-bottom:14px">
+          <div>
+            <label style="font-size:13px;font-weight:600;color:var(--text2);display:block;margin-bottom:5px">🏷 Tag Text</label>
+            <input type="text" id="cs-tag" placeholder="eg: 🏛️ Government Jobs" style="width:100%;padding:9px 12px;border:1.5px solid var(--border2);border-radius:8px;font-size:13px;background:var(--bg);color:var(--text);outline:none;font-family:inherit">
+          </div>
+          <div>
+            <label style="font-size:13px;font-weight:600;color:var(--text2);display:block;margin-bottom:5px">🎨 Tag Color (gradient)</label>
+            <input type="text" id="cs-tag-color" placeholder="eg: #1E90FF,#00BFFF" style="width:100%;padding:9px 12px;border:1.5px solid var(--border2);border-radius:8px;font-size:13px;background:var(--bg);color:var(--text);outline:none;font-family:inherit">
+          </div>
+        </div>
+
+        <div style="display:grid;grid-template-columns:1fr 1fr;gap:14px;margin-bottom:14px">
+          <div>
+            <label style="font-size:13px;font-weight:600;color:var(--text2);display:block;margin-bottom:5px">📝 Title (line 1)</label>
+            <input type="text" id="cs-title1" placeholder="eg: Govt Exams" style="width:100%;padding:9px 12px;border:1.5px solid var(--border2);border-radius:8px;font-size:13px;background:var(--bg);color:var(--text);outline:none;font-family:inherit">
+          </div>
+          <div>
+            <label style="font-size:13px;font-weight:600;color:var(--text2);display:block;margin-bottom:5px">✨ Title Span (line 2, colored)</label>
+            <input type="text" id="cs-title2" placeholder="eg: Prepare చేయండి!" style="width:100%;padding:9px 12px;border:1.5px solid var(--border2);border-radius:8px;font-size:13px;background:var(--bg);color:var(--text);outline:none;font-family:inherit">
+          </div>
+        </div>
+
+        <div style="margin-bottom:14px">
+          <label style="font-size:13px;font-weight:600;color:var(--text2);display:block;margin-bottom:5px">📄 Description</label>
+          <textarea id="cs-desc" rows="2" placeholder="eg: TSPSC · SSC · Banking · RRB అన్నిటికి complete preparation!" style="width:100%;padding:9px 12px;border:1.5px solid var(--border2);border-radius:8px;font-size:13px;background:var(--bg);color:var(--text);outline:none;font-family:inherit;resize:vertical"></textarea>
+        </div>
+
+        <div style="display:grid;grid-template-columns:1fr 1fr;gap:14px;margin-bottom:14px">
+          <div>
+            <label style="font-size:13px;font-weight:600;color:var(--text2);display:block;margin-bottom:5px">🔘 Button Text</label>
+            <input type="text" id="cs-btn-text" placeholder="eg: 📚 Exams చూడండి →" style="width:100%;padding:9px 12px;border:1.5px solid var(--border2);border-radius:8px;font-size:13px;background:var(--bg);color:var(--text);outline:none;font-family:inherit">
+          </div>
+          <div>
+            <label style="font-size:13px;font-weight:600;color:var(--text2);display:block;margin-bottom:5px">🔗 Button Action (JS function)</label>
+            <input type="text" id="cs-btn-action" placeholder="eg: goExams() or openPricing()" style="width:100%;padding:9px 12px;border:1.5px solid var(--border2);border-radius:8px;font-size:13px;background:var(--bg);color:var(--text);outline:none;font-family:inherit">
+          </div>
+        </div>
+
+        <div style="display:grid;grid-template-columns:1fr 1fr;gap:14px;margin-bottom:14px">
+          <div>
+            <label style="font-size:13px;font-weight:600;color:var(--text2);display:block;margin-bottom:5px">🎨 Background (CSS gradient)</label>
+            <input type="text" id="cs-bg" placeholder="eg: linear-gradient(135deg,#0a1f3c,#1a5276)" style="width:100%;padding:9px 12px;border:1.5px solid var(--border2);border-radius:8px;font-size:13px;background:var(--bg);color:var(--text);outline:none;font-family:inherit">
+          </div>
+          <div>
+            <label style="font-size:13px;font-weight:600;color:var(--text2);display:block;margin-bottom:5px">🌈 Span Gradient (title line 2)</label>
+            <input type="text" id="cs-span-color" placeholder="eg: #00BFFF,#1E90FF" style="width:100%;padding:9px 12px;border:1.5px solid var(--border2);border-radius:8px;font-size:13px;background:var(--bg);color:var(--text);outline:none;font-family:inherit">
+          </div>
+        </div>
+
+        <div style="margin-bottom:14px">
+          <label style="font-size:13px;font-weight:600;color:var(--text2);display:block;margin-bottom:5px">📦 Right Side Cards (one per line, eg: 🏛️ TSPSC Group-1)</label>
+          <textarea id="cs-cards" rows="3" placeholder="🏛️ TSPSC Group-1&#10;📋 SSC CGL / CHSL&#10;🚂 RRB NTPC / ALP" style="width:100%;padding:9px 12px;border:1.5px solid var(--border2);border-radius:8px;font-size:13px;background:var(--bg);color:var(--text);outline:none;font-family:inherit;resize:vertical"></textarea>
+        </div>
+
+        <div style="display:grid;grid-template-columns:1fr 1fr;gap:14px;margin-bottom:14px">
+          <div>
+            <label style="font-size:13px;font-weight:600;color:var(--text2);display:block;margin-bottom:5px">🃏 Card Text Color</label>
+            <input type="text" id="cs-card-color" placeholder="eg: #00BFFF" style="width:100%;padding:9px 12px;border:1.5px solid var(--border2);border-radius:8px;font-size:13px;background:var(--bg);color:var(--text);outline:none;font-family:inherit">
+          </div>
+          <div>
+            <label style="font-size:13px;font-weight:600;color:var(--text2);display:block;margin-bottom:5px">🔢 Sort Order</label>
+            <input type="number" id="cs-order" placeholder="eg: 1, 2, 3..." min="1" style="width:100%;padding:9px 12px;border:1.5px solid var(--border2);border-radius:8px;font-size:13px;background:var(--bg);color:var(--text);outline:none;font-family:inherit">
+          </div>
+        </div>
+
+        <div style="margin-bottom:18px">
+          <label style="display:flex;align-items:center;gap:8px;cursor:pointer;font-size:13px;font-weight:600;color:var(--text2)">
+            <input type="checkbox" id="cs-active-chk" checked style="accent-color:#6366f1;width:16px;height:16px">
+            ✅ Slide Active (carousel లో show అవుతుంది)
+          </label>
+        </div>
+
+        <div style="display:flex;gap:10px;flex-wrap:wrap">
+          <button class="add-btn" onclick="saveCarouselSlide()" style="background:linear-gradient(135deg,#6366f1,#8b5cf6)" id="cs-save-btn">💾 Save Slide</button>
+          <button class="del-btn" onclick="closeCarouselForm()" style="background:rgba(107,114,128,.1);color:var(--text2);border-color:var(--border2)">✖ Cancel</button>
+        </div>
+      </div>
+
+    </div><!-- /atab-carousel -->
 
     </div><!-- /admin-content-wrap -->
     </div><!-- /admin-main-area -->
@@ -17938,7 +18095,7 @@ async function adminResetPw(gmail) {
 
 
 let _carIdx = 0;
-const _carTotal = 5;
+const _carTotal = 7;
 let _carTimer = null;
 let _carProgress = 0;
 let _carProgressTimer = null;
@@ -23248,6 +23405,209 @@ function resetNotificationForm() {
 // ══════════════════════════════════════════════════════════════════
 
 
+
+
+// ══════════════════════════════════════════════════════════════════
+// 🎠 CAROUSEL MANAGER — Admin Panel
+// ══════════════════════════════════════════════════════════════════
+
+const CS_TABLE = 'ae_carousel_slides';
+
+function csHeaders() {
+  return { 'apikey': SB_KEY, 'Authorization': 'Bearer ' + SB_KEY, 'Content-Type': 'application/json', 'Prefer': 'return=representation' };
+}
+
+async function loadCarouselAdmin() {
+  const listEl = document.getElementById('cs-list');
+  if (!listEl) return;
+  listEl.innerHTML = '<div style="text-align:center;padding:30px;color:var(--text3)">⏳ Loading...</div>';
+  try {
+    const res = await fetch(SB_URL + '/rest/v1/' + CS_TABLE + '?select=*&order=sort_order.asc', { headers: csHeaders() });
+    const slides = await res.json();
+    if (!Array.isArray(slides) || slides.length === 0) {
+      listEl.innerHTML = '<div style="text-align:center;padding:30px;color:var(--text3)">Slides లేవు. కొత్తవి add చేయండి!</div>';
+      document.getElementById('cs-total').textContent = 0;
+      document.getElementById('cs-active').textContent = 0;
+      document.getElementById('cs-inactive').textContent = 0;
+      return;
+    }
+    document.getElementById('cs-total').textContent = slides.length;
+    document.getElementById('cs-active').textContent = slides.filter(s => s.is_active).length;
+    document.getElementById('cs-inactive').textContent = slides.filter(s => !s.is_active).length;
+    listEl.innerHTML = slides.map(function(s, i) {
+      var activeCls = s.is_active ? 'background:rgba(16,185,129,.12);color:var(--teal)' : 'background:rgba(107,114,128,.1);color:var(--text3)';
+      var activeLabel = s.is_active ? '✅ Active' : '⏸ Hidden';
+      var icon = (s.tag_text || '').split(' ')[0] || '🎠';
+      var title2part = s.title2 ? ' — ' + s.title2 : '';
+      var borderStyle = i === slides.length-1 ? 'border-bottom:none' : '';
+      var safeTile = (s.title1||'').replace(/'/g, "\'");
+      return '<div style="display:flex;align-items:center;gap:12px;padding:14px 16px;border-bottom:1px solid var(--border2);' + borderStyle + '">' +
+        '<div style="width:44px;height:44px;border-radius:10px;background:' + (s.bg_gradient||'linear-gradient(135deg,#6366f1,#8b5cf6)') + ';display:flex;align-items:center;justify-content:center;font-size:18px;flex-shrink:0">' + icon + '</div>' +
+        '<div style="flex:1;min-width:0">' +
+          '<div style="font-size:14px;font-weight:800;color:var(--text);white-space:nowrap;overflow:hidden;text-overflow:ellipsis">' + (s.title1||'') + title2part + '</div>' +
+          '<div style="font-size:12px;color:var(--text3);margin-top:2px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis">' + (s.tag_text||'') + ' · Order: ' + (s.sort_order||'-') + '</div>' +
+        '</div>' +
+        '<div style="display:flex;align-items:center;gap:6px;flex-shrink:0">' +
+          '<span style="font-size:11px;padding:3px 10px;border-radius:20px;font-weight:700;' + activeCls + '">' + activeLabel + '</span>' +
+          '<button onclick="editCarouselSlide(' + s.id + ')" style="background:rgba(99,102,241,.1);color:#6366f1;border:none;border-radius:7px;padding:6px 12px;font-size:12px;font-weight:700;cursor:pointer">✏️ Edit</button>' +
+          '<button onclick="deleteCarouselSlide(' + s.id + ',\'' + safeTile + '\')" style="background:rgba(239,68,68,.08);color:var(--red);border:none;border-radius:7px;padding:6px 12px;font-size:12px;font-weight:700;cursor:pointer">🗑</button>' +
+        '</div>' +
+      '</div>';
+    }).join('');
+    // Also refresh live carousel
+    await loadDynamicCarousel();
+  } catch(e) {
+    listEl.innerHTML = '<div style="text-align:center;padding:30px;color:var(--red)">❌ Error: ' + e.message + '</div>';
+  }
+}
+
+function openCarouselForm(data) {
+  document.getElementById('cs-form-card').style.display = 'block';
+  document.getElementById('cs-form-title').textContent = data ? '✏️ Slide Edit' : '➕ కొత్త Slide';
+  document.getElementById('cs-edit-id').value = data ? data.id : '';
+  document.getElementById('cs-tag').value = data ? (data.tag_text || '') : '';
+  document.getElementById('cs-tag-color').value = data ? (data.tag_color || '') : '';
+  document.getElementById('cs-title1').value = data ? (data.title1 || '') : '';
+  document.getElementById('cs-title2').value = data ? (data.title2 || '') : '';
+  document.getElementById('cs-desc').value = data ? (data.description || '') : '';
+  document.getElementById('cs-btn-text').value = data ? (data.btn_text || '') : '';
+  document.getElementById('cs-btn-action').value = data ? (data.btn_action || '') : '';
+  document.getElementById('cs-bg').value = data ? (data.bg_gradient || '') : '';
+  document.getElementById('cs-span-color').value = data ? (data.span_gradient || '') : '';
+  document.getElementById('cs-cards').value = data ? (data.side_cards || '') : '';
+  document.getElementById('cs-card-color').value = data ? (data.card_color || '') : '';
+  document.getElementById('cs-order').value = data ? (data.sort_order || '') : '';
+  document.getElementById('cs-active-chk').checked = data ? !!data.is_active : true;
+  document.getElementById('cs-form-card').scrollIntoView({ behavior: 'smooth' });
+}
+
+function closeCarouselForm() {
+  document.getElementById('cs-form-card').style.display = 'none';
+  document.getElementById('cs-edit-id').value = '';
+}
+
+async function editCarouselSlide(id) {
+  try {
+    const res = await fetch(SB_URL + '/rest/v1/' + CS_TABLE + '?id=eq.' + id + '&select=*', { headers: csHeaders() });
+    const rows = await res.json();
+    if (rows && rows[0]) openCarouselForm(rows[0]);
+  } catch(e) { showToast('Error loading slide: ' + e.message, 'error'); }
+}
+
+async function saveCarouselSlide() {
+  const editId = document.getElementById('cs-edit-id').value;
+  const payload = {
+    tag_text:     document.getElementById('cs-tag').value.trim(),
+    tag_color:    document.getElementById('cs-tag-color').value.trim(),
+    title1:       document.getElementById('cs-title1').value.trim(),
+    title2:       document.getElementById('cs-title2').value.trim(),
+    description:  document.getElementById('cs-desc').value.trim(),
+    btn_text:     document.getElementById('cs-btn-text').value.trim(),
+    btn_action:   document.getElementById('cs-btn-action').value.trim(),
+    bg_gradient:  document.getElementById('cs-bg').value.trim(),
+    span_gradient:document.getElementById('cs-span-color').value.trim(),
+    side_cards:   document.getElementById('cs-cards').value.trim(),
+    card_color:   document.getElementById('cs-card-color').value.trim(),
+    sort_order:   parseInt(document.getElementById('cs-order').value) || 99,
+    is_active:    document.getElementById('cs-active-chk').checked
+  };
+  if (!payload.title1) { showToast('Title అవసరం!', 'error'); return; }
+  const btn = document.getElementById('cs-save-btn');
+  btn.textContent = '⏳ Saving...'; btn.disabled = true;
+  try {
+    let res;
+    if (editId) {
+      res = await fetch(SB_URL + '/rest/v1/' + CS_TABLE + '?id=eq.' + editId, {
+        method: 'PATCH', headers: csHeaders(), body: JSON.stringify(payload)
+      });
+    } else {
+      res = await fetch(SB_URL + '/rest/v1/' + CS_TABLE, {
+        method: 'POST', headers: csHeaders(), body: JSON.stringify(payload)
+      });
+    }
+    if (res.ok) {
+      showToast(editId ? '✅ Slide updated!' : '✅ Slide added!', 'success');
+      closeCarouselForm();
+      await loadCarouselAdmin();
+    } else {
+      const err = await res.json();
+      showToast('Error: ' + (err.message || err.hint || JSON.stringify(err)), 'error');
+    }
+  } catch(e) { showToast('Error: ' + e.message, 'error'); }
+  finally { btn.textContent = '💾 Save Slide'; btn.disabled = false; }
+}
+
+async function deleteCarouselSlide(id, title) {
+  if (!confirm('"' + title + '" slide delete చేయాలా?')) return;
+  try {
+    const res = await fetch(SB_URL + '/rest/v1/' + CS_TABLE + '?id=eq.' + id, {
+      method: 'DELETE', headers: csHeaders()
+    });
+    if (res.ok) {
+      showToast('🗑 Slide deleted!', 'success');
+      await loadCarouselAdmin();
+    } else {
+      showToast('Delete failed', 'error');
+    }
+  } catch(e) { showToast('Error: ' + e.message, 'error'); }
+}
+
+// Load dynamic slides from Supabase and inject into carousel
+async function loadDynamicCarousel() {
+  try {
+    const res = await fetch(SB_URL + '/rest/v1/' + CS_TABLE + '?select=*&is_active=eq.true&order=sort_order.asc', { headers: { 'apikey': SB_KEY, 'Authorization': 'Bearer ' + SB_KEY } });
+    const slides = await res.json();
+    if (!Array.isArray(slides) || slides.length === 0) return;
+    const carousel = document.getElementById('ae-carousel');
+    if (!carousel) return;
+    carousel.querySelectorAll('[data-dynamic-slide]').forEach(function(el){ el.remove(); });
+    slides.forEach(function(s) {
+      var cardLines = (s.side_cards || '').split('\n').filter(function(c){ return c.trim(); });
+      var sideCardsHtml = cardLines.map(function(c) {
+        return '<div style="background:rgba(255,255,255,.12);border:1.5px solid rgba(255,255,255,.2);border-radius:12px;padding:10px 14px;color:' + (s.card_color||'#fff') + ';font-size:12px;font-weight:700;">' + c.trim() + '</div>';
+      }).join('');
+      var spanStyle = s.span_gradient ? 'background:linear-gradient(135deg,' + s.span_gradient + ');-webkit-background-clip:text;-webkit-text-fill-color:transparent' : 'color:#fff';
+      var tagStyle = s.tag_color ? 'background:linear-gradient(135deg,' + s.tag_color + ');color:#fff;border:none;' : '';
+      var btnHtml = s.btn_text ? '<button onclick="' + (s.btn_action||'') + '" class="ae-slide-btn" style="background:linear-gradient(135deg,' + (s.tag_color||'#6366f1,#8b5cf6') + ');color:#fff;font-weight:900;">' + s.btn_text + '</button>' : '';
+      var sideHtml = sideCardsHtml ? '<div class="ae-slide-phone" style="z-index:1;display:flex;flex-direction:column;gap:8px;">' + sideCardsHtml + '</div>' : '';
+      var descHtml = (s.description||'').replace(/\n/g,'<br>');
+      var div = document.createElement('div');
+      div.setAttribute('data-dynamic-slide', s.id);
+      div.className = 'ae-slide';
+      div.style.cssText = 'background:' + (s.bg_gradient || 'linear-gradient(135deg,#1e293b,#334155)');
+      div.innerHTML =
+        '<div class="ae-slide-dots-bg"></div>' +
+        '<div class="ae-slide-content" style="z-index:1">' +
+          '<div class="ae-slide-tag" style="' + tagStyle + '">' + (s.tag_text||'') + '</div>' +
+          '<div class="ae-slide-title" style="color:#fff">' + (s.title1||'') + '<br><span style="' + spanStyle + '">' + (s.title2||'') + '</span></div>' +
+          '<div class="ae-slide-desc" style="color:rgba(255,255,255,.8)">' + descHtml + '</div>' +
+          btnHtml +
+        '</div>' + sideHtml;
+      carousel.appendChild(div);
+    });
+    var total = carousel.querySelectorAll('.ae-slide').length;
+    if (typeof _carTotal !== 'undefined') window._carTotal = total;
+    var ctr = document.getElementById('ae-counter');
+    if (ctr) ctr.textContent = '1 / ' + total;
+    var dotsEl = document.getElementById('ae-dots');
+    if (dotsEl) {
+      dotsEl.innerHTML = '';
+      for (var i = 0; i < total; i++) {
+        (function(idx){
+          var btn = document.createElement('button');
+          btn.className = 'ae-dot' + (idx === 0 ? ' active' : '');
+          btn.onclick = function(){ goSlide(idx); };
+          dotsEl.appendChild(btn);
+        })(i);
+      }
+    }
+  } catch(e) { console.warn('Dynamic carousel load failed:', e); }
+}
+
+// Auto-load on page ready
+document.addEventListener('DOMContentLoaded', () => { loadDynamicCarousel(); });
+
+// ══════════════════════════════════════════════════════════════════
 
 // ══════════════════════════════════════════════════════════════════
 // 🔔 AUTO NOTIFICATION — New Exam / Update

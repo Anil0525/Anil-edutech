@@ -13197,39 +13197,39 @@ function _showPremiumLockModal(examName){
   const m=document.createElement('div');
   m.id='premium-lock-modal';
   m.style.cssText='position:fixed;inset:0;z-index:800;background:rgba(5,12,35,.85);backdrop-filter:blur(20px);display:flex;align-items:center;justify-content:center;padding:16px;';
-  m.innerHTML=`<div style="background:var(--surface);border-radius:28px;width:100%;max-width:440px;padding:0;box-shadow:0 30px 100px rgba(0,0,0,.6);text-align:center;position:relative;border:1.5px solid rgba(245,183,49,.4);overflow:hidden;">
-    <div style="height:5px;background:linear-gradient(90deg,#F5B731,#E8640A,#F5B731);background-size:200%;animation:gradientSlide 2s linear infinite;"></div>
+  m.innerHTML=`<div style="background:var(--surface);border-radius:24px;width:100%;max-width:400px;padding:0;box-shadow:0 30px 100px rgba(0,0,0,.6);text-align:center;position:relative;border:1.5px solid rgba(245,183,49,.4);overflow:hidden;">
+    <div style="height:4px;background:linear-gradient(90deg,#F5B731,#E8640A,#F5B731);background-size:200%;animation:gradientSlide 2s linear infinite;"></div>
     <style>@keyframes gradientSlide{0%{background-position:0%}100%{background-position:200%}}@keyframes lockBounce{from{transform:scale(.5);opacity:0}to{transform:scale(1);opacity:1}}@keyframes pulse{0%,100%{transform:scale(1)}50%{transform:scale(1.04)}}</style>
-    <div style="padding:28px 26px 24px;">
-    <button onclick="document.getElementById('premium-lock-modal').remove()" style="position:absolute;top:14px;right:16px;background:rgba(128,128,128,.15);border:none;font-size:16px;cursor:pointer;color:var(--text3);width:32px;height:32px;border-radius:50%;display:flex;align-items:center;justify-content:center;">✕</button>
-    <div style="font-size:50px;margin-bottom:8px;filter:drop-shadow(0 0 20px rgba(245,183,49,.6));animation:lockBounce .6s cubic-bezier(.2,.8,.2,1)">🔐</div>
-    <div style="font-size:20px;font-weight:900;color:var(--text);margin-bottom:4px">Premium Exam 👑</div>
-    <div style="font-size:13px;color:#F5B731;font-weight:800;margin-bottom:4px">${examName}</div>
-    <div style="font-size:12px;color:var(--text3);margin-bottom:16px;line-height:1.6">ఈ exam Premium members కోసం మాత్రమే.<br>మీ competitors ఈ exam practice చేస్తున్నారు — మీరు చేయట్లేదా?</div>
+    <div style="padding:20px 22px 18px;">
+    <button onclick="document.getElementById('premium-lock-modal').remove()" style="position:absolute;top:12px;right:14px;background:rgba(128,128,128,.15);border:none;font-size:15px;cursor:pointer;color:var(--text3);width:28px;height:28px;border-radius:50%;display:flex;align-items:center;justify-content:center;">✕</button>
+    <div style="font-size:42px;margin-bottom:6px;filter:drop-shadow(0 0 16px rgba(245,183,49,.5));animation:lockBounce .6s cubic-bezier(.2,.8,.2,1)">🔐</div>
+    <div style="font-size:18px;font-weight:900;color:var(--text);margin-bottom:3px">Premium Exam 👑</div>
+    <div style="font-size:12px;color:#F5B731;font-weight:800;margin-bottom:3px">${examName}</div>
+    <div style="font-size:11.5px;color:var(--text3);margin-bottom:12px;line-height:1.5">ఈ exam Premium members కోసం మాత్రమే.<br>మీ competitors ఈ exam practice చేస్తున్నారు — మీరు చేయట్లేదా?</div>
 
     <!-- Benefits grid -->
-    <div style="background:rgba(245,183,49,.07);border:1px solid rgba(245,183,49,.2);border-radius:16px;padding:14px;margin-bottom:14px;text-align:left;">
-      <div style="font-size:10.5px;font-weight:900;color:#F5B731;margin-bottom:10px;text-transform:uppercase;letter-spacing:1px;">👑 Premium లో ఏమి వస్తుంది?</div>
-      <div style="display:grid;grid-template-columns:1fr 1fr;gap:7px;">
-        <div style="font-size:11.5px;color:var(--text2);display:flex;gap:5px;align-items:flex-start;">✅ <span>50+ Premium<br>Exams Unlock</span></div>
-        <div style="font-size:11.5px;color:var(--text2);display:flex;gap:5px;align-items:flex-start;">✅ <span>Previous Year<br>Papers</span></div>
-        <div style="font-size:11.5px;color:var(--text2);display:flex;gap:5px;align-items:flex-start;">✅ <span>Live Tests &<br>Leaderboard</span></div>
-        <div style="font-size:11.5px;color:var(--text2);display:flex;gap:5px;align-items:flex-start;">✅ <span>Weak Area<br>Analytics</span></div>
-        <div style="font-size:11.5px;color:var(--text2);display:flex;gap:5px;align-items:flex-start;">✅ <span>Official<br>Certificates</span></div>
-        <div style="font-size:11.5px;color:var(--text2);display:flex;gap:5px;align-items:flex-start;">✅ <span>Daily Current<br>Affairs</span></div>
+    <div style="background:rgba(245,183,49,.07);border:1px solid rgba(245,183,49,.2);border-radius:14px;padding:12px;margin-bottom:12px;text-align:left;">
+      <div style="font-size:10px;font-weight:900;color:#F5B731;margin-bottom:8px;text-transform:uppercase;letter-spacing:1px;">👑 Premium లో ఏమి వస్తుంది?</div>
+      <div style="display:grid;grid-template-columns:1fr 1fr;gap:5px;">
+        <div style="font-size:11px;color:var(--text2);display:flex;gap:4px;align-items:center;">✅ 50+ Premium Exams</div>
+        <div style="font-size:11px;color:var(--text2);display:flex;gap:4px;align-items:center;">✅ Previous Year Papers</div>
+        <div style="font-size:11px;color:var(--text2);display:flex;gap:4px;align-items:center;">✅ Live Tests & Leaderboard</div>
+        <div style="font-size:11px;color:var(--text2);display:flex;gap:4px;align-items:center;">✅ Weak Area Analytics</div>
+        <div style="font-size:11px;color:var(--text2);display:flex;gap:4px;align-items:center;">✅ Official Certificates</div>
+        <div style="font-size:11px;color:var(--text2);display:flex;gap:4px;align-items:center;">✅ Daily Current Affairs</div>
       </div>
     </div>
 
     <!-- Price highlight -->
-    <div style="background:linear-gradient(135deg,#1a0533,#2d0a5e);border-radius:14px;padding:12px;margin-bottom:14px;">
-      <div style="font-size:11px;color:rgba(255,255,255,.6);font-weight:700;margin-bottom:2px;">కేవలం</div>
-      <div style="font-size:28px;font-weight:900;color:#F5B731;line-height:1;">₹99 <span style="font-size:14px;color:rgba(255,255,255,.7);font-weight:600;">/month</span></div>
-      <div style="font-size:11px;color:rgba(255,255,255,.5);margin-top:3px;">= రోజుకు ₹3.30 మాత్రమే ☕ ఒక్క tea కంటే తక్కువ!</div>
+    <div style="background:linear-gradient(135deg,#1a0533,#2d0a5e);border-radius:12px;padding:10px;margin-bottom:12px;">
+      <div style="font-size:10px;color:rgba(255,255,255,.6);font-weight:700;">కేవలం</div>
+      <div style="font-size:24px;font-weight:900;color:#F5B731;line-height:1.1;">₹99 <span style="font-size:13px;color:rgba(255,255,255,.7);font-weight:600;">/month</span></div>
+      <div style="font-size:10px;color:rgba(255,255,255,.5);margin-top:2px;">= రోజుకు ₹3.30 మాత్రమే ☕ ఒక్క tea కంటే తక్కువ!</div>
     </div>
 
-    <button onclick="document.getElementById('premium-lock-modal').remove();openPricing();" style="width:100%;padding:16px;border-radius:16px;border:none;cursor:pointer;font-size:16px;font-weight:900;background:linear-gradient(135deg,#F5B731,#E8640A);color:#fff;box-shadow:0 8px 28px rgba(245,183,49,.5);transition:transform .2s;animation:pulse 2s ease-in-out infinite;" onmouseover="this.style.transform='translateY(-2px)'" onmouseout="this.style.transform=''">⚡ Premium తీసుకోండి — ₹99/mo →</button>
-    <div style="font-size:10px;color:var(--text3);margin-top:8px;">🔒 Secure Payment · Cancel Anytime · Instant Unlock</div>
-    <button onclick="document.getElementById('premium-lock-modal').remove()" style="width:100%;padding:10px;border-radius:12px;border:none;cursor:pointer;font-size:12px;font-weight:600;background:none;color:var(--text3);margin-top:6px">తర్వాత చూస్తాను</button>
+    <button onclick="document.getElementById('premium-lock-modal').remove();openPricing();" style="width:100%;padding:13px;border-radius:14px;border:none;cursor:pointer;font-size:15px;font-weight:900;background:linear-gradient(135deg,#F5B731,#E8640A);color:#fff;box-shadow:0 6px 24px rgba(245,183,49,.5);transition:transform .2s;animation:pulse 2s ease-in-out infinite;" onmouseover="this.style.transform='translateY(-2px)'" onmouseout="this.style.transform=''">⚡ Premium తీసుకోండి — ₹99/mo →</button>
+    <div style="font-size:10px;color:var(--text3);margin-top:6px;">🔒 Secure Payment · Cancel Anytime · Instant Unlock</div>
+    <button onclick="document.getElementById('premium-lock-modal').remove()" style="width:100%;padding:8px;border-radius:10px;border:none;cursor:pointer;font-size:11.5px;font-weight:600;background:none;color:var(--text3);margin-top:4px">తర్వాత చూస్తాను</button>
     </div>
   </div>`;
   document.body.appendChild(m);

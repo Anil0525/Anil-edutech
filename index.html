@@ -4694,6 +4694,24 @@
   .job-btn-secondary { background: var(--bg); color: var(--text2); border: 1.5px solid var(--border2); }
   .job-empty { text-align: center; padding: 50px 20px; color: var(--text3); }
   .job-empty-icon { font-size: 42px; display: block; margin-bottom: 12px; }
+  /* ── JOB CARD — VIEWS / LIKES / SHARE / COMMENTS BAR ── */
+  .job-stats-bar {
+    display: flex; align-items: center; gap: 6px; margin-top: 12px; padding-top: 10px;
+    border-top: 1px solid var(--border2); flex-wrap: wrap;
+  }
+  .job-stat-item {
+    display: flex; align-items: center; gap: 5px; font-size: 12px; font-weight: 800;
+    color: var(--text2); cursor: pointer; background: none; border: none; font-family: inherit;
+    padding: 7px 11px; border-radius: 9px; transition: background .15s, color .15s; flex: 1;
+    justify-content: center; min-width: 0;
+  }
+  .job-stat-item:hover { background: var(--bg); }
+  .job-stat-views { cursor: default; }
+  .job-stat-views:hover { background: none; }
+  .job-stat-like.liked { color: #E53E3E; }
+  .job-stat-icon { display: inline-block; font-size: 14px; }
+  .job-stat-like.liked .job-stat-icon { animation: jobLikePop .35s ease; }
+  @keyframes jobLikePop { 0% { transform: scale(1); } 50% { transform: scale(1.35); } 100% { transform: scale(1); } }
   .prog-hist-meta { font-size: 11px; color: var(--text3); font-weight: 600; margin-top: 1px; }
   .prog-hist-pct  { font-size: 17px; font-weight: 900; font-family: 'Nunito', sans-serif; }
   .prog-bar-wrap { margin-bottom: 12px; }
@@ -7859,6 +7877,24 @@ html:not(:has(#_ae_loading)) body {
         <div style="font-size:36px">⏳</div>
         <div style="font-size:14px;font-weight:700;margin-top:8px">Loading...</div>
       </div>
+    </div>
+  </div>
+</div>
+
+<!-- JOB ARTICLE — COMMENTS MODAL -->
+<div id="job-comments-modal" style="display:none;position:fixed;inset:0;background:rgba(0,0,0,.65);z-index:9000;align-items:center;justify-content:center;padding:12px">
+  <div style="background:var(--card);border-radius:20px;padding:18px;width:100%;max-width:480px;max-height:85vh;display:flex;flex-direction:column;box-shadow:0 20px 60px rgba(0,0,0,.5)">
+    <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:12px">
+      <div style="font-size:15px;font-weight:900;color:var(--text)">💬 Comments</div>
+      <button onclick="_closeJobComments()" style="background:var(--bg);border:1.5px solid var(--border2);border-radius:8px;padding:4px 10px;font-size:16px;cursor:pointer;color:var(--text2)">✕</button>
+    </div>
+    <div id="job-comments-list" style="flex:1;overflow-y:auto;display:flex;flex-direction:column;gap:10px;margin-bottom:12px;min-height:80px"></div>
+    <div id="job-comment-name-wrap" style="margin-bottom:8px">
+      <input id="job-comment-name" type="text" placeholder="మీ పేరు" maxlength="40" style="width:100%;padding:10px 12px;border-radius:10px;border:1.5px solid var(--border2);background:var(--bg);color:var(--text);font-family:inherit;font-size:13px;box-sizing:border-box">
+    </div>
+    <div style="display:flex;gap:8px;align-items:flex-end">
+      <textarea id="job-comment-text" placeholder="మీ అభిప్రాయం రాయండి..." rows="2" maxlength="500" style="flex:1;padding:10px 12px;border-radius:10px;border:1.5px solid var(--border2);background:var(--bg);color:var(--text);font-family:inherit;font-size:13px;resize:none;box-sizing:border-box"></textarea>
+      <button id="job-comment-post-btn" onclick="_postJobComment()" style="background:linear-gradient(135deg,#1A73E8,#4F8EFF);color:#fff;border:none;border-radius:10px;padding:11px 16px;font-weight:800;font-size:13px;cursor:pointer;font-family:inherit;white-space:nowrap">పోస్ట్ ➤</button>
     </div>
   </div>
 </div>
@@ -21522,6 +21558,7 @@ function _renderJobsList() {
   const pageItems = filtered.slice(start, start + _JOBS_PER);
 
   const now = Date.now();
+  _trackJobViews(pageItems);
   const cards = pageItems.map(j => {
     const meta = _jobCategoryMeta(j.category);
     const isNew = j.created_at && (now - new Date(j.created_at).getTime()) < 3 * 24 * 60 * 60 * 1000;
@@ -21551,6 +21588,22 @@ function _renderJobsList() {
     if (j.notification_link) actions += `<a href="${escHtml(j.notification_link)}" target="_blank" rel="noopener" class="job-btn-secondary">📄 Official Notification</a>`;
     const actionsBlock = actions ? `<div class="job-actions">${actions}</div>` : '';
 
+    // Views / Likes / Comments / Share bar
+    const likedIds = _getJobLikedIds();
+    const isLiked = likedIds.includes(j.id);
+    const statsBar = `<div class="job-stats-bar">
+      <div class="job-stat-item job-stat-views" title="Views"><span class="job-stat-icon">👁️</span><span>${_fmtCount(j.views)}</span></div>
+      <button class="job-stat-item job-stat-like${isLiked ? ' liked' : ''}" onclick="_jobToggleLike(${j.id})">
+        <span class="job-stat-icon">${isLiked ? '❤️' : '🤍'}</span><span>${_fmtCount(j.likes)}</span>
+      </button>
+      <button class="job-stat-item" onclick="_openJobComments(${j.id})">
+        <span class="job-stat-icon">💬</span><span>${_fmtCount(j.comment_count)}</span>
+      </button>
+      <button class="job-stat-item" onclick="_jobShareArticle(${j.id})">
+        <span class="job-stat-icon">🔗</span><span>Share</span>
+      </button>
+    </div>`;
+
     return `<div class="job-card">
       <div class="job-card-header">
         <span class="job-cat-badge ${meta.cls}">${meta.label}</span>
@@ -21562,6 +21615,7 @@ function _renderJobsList() {
       ${datesBlock}
       ${descBlock}
       ${actionsBlock}
+      ${statsBar}
     </div>`;
   }).join('');
 
@@ -21582,6 +21636,199 @@ function _renderJobsList() {
     </div>` : '';
 
   listEl.innerHTML = cards + pagination;
+}
+
+// ══════════════════════════════════════════════
+// 💼 GOVT JOBS — VIEWS / LIKES / SHARE / COMMENTS
+// ══════════════════════════════════════════════
+const JOB_LIKED_KEY  = 'ae_job_liked_ids';
+const JOB_VIEWED_KEY = 'ae_job_viewed_ids';
+
+function _getJobLikedIds() {
+  try { return JSON.parse(localStorage.getItem(JOB_LIKED_KEY) || '[]'); } catch(e) { return []; }
+}
+function _saveJobLikedIds(arr) {
+  try { localStorage.setItem(JOB_LIKED_KEY, JSON.stringify(arr)); } catch(e) {}
+}
+function _getJobViewedIds() {
+  try { return JSON.parse(localStorage.getItem(JOB_VIEWED_KEY) || '[]'); } catch(e) { return []; }
+}
+function _saveJobViewedIds(arr) {
+  try { localStorage.setItem(JOB_VIEWED_KEY, JSON.stringify(arr)); } catch(e) {}
+}
+
+// Format counts like 1.2K / 3.4M
+function _fmtCount(n) {
+  n = Number(n) || 0;
+  if (n >= 1000000) return (n/1000000).toFixed(1).replace(/\.0$/,'') + 'M';
+  if (n >= 1000) return (n/1000).toFixed(1).replace(/\.0$/,'') + 'K';
+  return String(n);
+}
+
+// Atomic counter increment via Supabase RPC (views/likes/shares/comment_count)
+async function _jobIncCounter(id, col, delta) {
+  try {
+    await fetch(`${SB_URL}/rest/v1/rpc/increment_job_counter`, {
+      method: 'POST', headers: SB_HEADERS,
+      body: JSON.stringify({ p_id: id, p_column: col, p_delta: delta })
+    });
+  } catch(e) {}
+}
+
+// Views — counted once per device per article
+function _trackJobViews(pageItems) {
+  const viewed = _getJobViewedIds();
+  let changed = false;
+  pageItems.forEach(j => {
+    if (!viewed.includes(j.id)) {
+      viewed.push(j.id);
+      changed = true;
+      j.views = (j.views || 0) + 1;
+      _jobIncCounter(j.id, 'views', 1);
+    }
+  });
+  if (changed) _saveJobViewedIds(viewed);
+}
+
+// Likes — device based, no login required
+function _jobToggleLike(id) {
+  const liked = _getJobLikedIds();
+  const idx = liked.indexOf(id);
+  const j = _jobsAll.find(x => x.id === id);
+  if (!j) return;
+  if (idx === -1) {
+    liked.push(id);
+    j.likes = (j.likes || 0) + 1;
+    _jobIncCounter(id, 'likes', 1);
+  } else {
+    liked.splice(idx, 1);
+    j.likes = Math.max(0, (j.likes || 0) - 1);
+    _jobIncCounter(id, 'likes', -1);
+  }
+  _saveJobLikedIds(liked);
+  _renderJobsList();
+}
+
+// Share — Web Share API on mobile, WhatsApp fallback on desktop
+function _jobShareArticle(id) {
+  const j = _jobsAll.find(x => x.id === id);
+  if (!j) return;
+  let msg = `💼 *${j.title}*\n`;
+  if (j.organization) msg += `🏢 ${j.organization}\n`;
+  if (j.last_date) msg += `⏰ Last Date: ${j.last_date}\n`;
+  msg += `\n👉 పూర్తి వివరాలు Anil EduTech App లో చూడండి:\nhttps://aniledutech.in`;
+
+  if (navigator.share) {
+    navigator.share({ title: j.title, text: msg }).catch(() => {});
+  } else {
+    window.open('https://wa.me/?text=' + encodeURIComponent(msg), '_blank');
+  }
+  _jobIncCounter(id, 'shares', 1);
+}
+
+// ── Comments modal ──
+let _jobCommentsArticleId = null;
+let _jobCommentsCache = [];
+
+async function _openJobComments(id) {
+  _jobCommentsArticleId = id;
+  const modal = document.getElementById('job-comments-modal');
+  if (modal) modal.style.display = 'flex';
+
+  const listEl = document.getElementById('job-comments-list');
+  if (listEl) listEl.innerHTML = `<div style="text-align:center;color:var(--text3);padding:20px;font-size:13px">Loading...</div>`;
+
+  // Pre-fill name: logged-in users get auto name (hidden field), guests type their own
+  const u = getCurrentUser();
+  const nameInput = document.getElementById('job-comment-name');
+  const nameWrap = document.getElementById('job-comment-name-wrap');
+  if (u && u.name) {
+    if (nameInput) nameInput.value = u.name;
+    if (nameWrap) nameWrap.style.display = 'none';
+  } else {
+    if (nameInput) nameInput.value = localStorage.getItem('ae_job_comment_name') || '';
+    if (nameWrap) nameWrap.style.display = '';
+  }
+  const textInput = document.getElementById('job-comment-text');
+  if (textInput) textInput.value = '';
+
+  try {
+    const res = await fetch(`${SB_URL}/rest/v1/ae_job_comments?article_id=eq.${id}&order=created_at.desc&limit=100`, { headers: SB_HEADERS });
+    _jobCommentsCache = res.ok ? await res.json() : [];
+  } catch(e) {
+    _jobCommentsCache = [];
+  }
+  _renderJobComments();
+}
+
+function _renderJobComments() {
+  const listEl = document.getElementById('job-comments-list');
+  if (!listEl) return;
+  if (!_jobCommentsCache.length) {
+    listEl.innerHTML = `<div style="text-align:center;color:var(--text3);padding:20px;font-size:13px">ఇంకా కామెంట్స్ లేవు.<br>మొదటి కామెంట్ మీరే పెట్టండి! 💬</div>`;
+    return;
+  }
+  listEl.innerHTML = _jobCommentsCache.map(c => `
+    <div style="background:var(--bg);border-radius:10px;padding:10px 12px">
+      <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:4px;gap:8px">
+        <span style="font-size:12.5px;font-weight:800;color:var(--text);overflow:hidden;text-overflow:ellipsis;white-space:nowrap">👤 ${escHtml(c.name)}</span>
+        <span style="font-size:10.5px;color:var(--text3);flex-shrink:0">${_jobTimeAgo(c.created_at)}</span>
+      </div>
+      <div style="font-size:12.5px;color:var(--text2);line-height:1.5;white-space:pre-wrap;word-break:break-word">${escHtml(c.comment)}</div>
+    </div>
+  `).join('');
+}
+
+function _jobTimeAgo(ts) {
+  if (!ts) return '';
+  const diff = Date.now() - new Date(ts).getTime();
+  const mins = Math.floor(diff / 60000);
+  if (mins < 1) return 'ఇప్పుడే';
+  if (mins < 60) return mins + 'm';
+  const hrs = Math.floor(mins / 60);
+  if (hrs < 24) return hrs + 'h';
+  return Math.floor(hrs / 24) + 'd';
+}
+
+function _closeJobComments() {
+  const modal = document.getElementById('job-comments-modal');
+  if (modal) modal.style.display = 'none';
+  _jobCommentsArticleId = null;
+}
+
+async function _postJobComment() {
+  const id = _jobCommentsArticleId;
+  if (!id) return;
+  const u = getCurrentUser();
+  const nameInput = document.getElementById('job-comment-name');
+  const textInput = document.getElementById('job-comment-text');
+  let name = (u && u.name) ? u.name : (nameInput?.value || '').trim();
+  const comment = (textInput?.value || '').trim();
+  if (!name) { toast('మీ పేరు enter చేయండి!', 'warn'); return; }
+  if (!comment) { toast('కామెంట్ రాయండి!', 'warn'); return; }
+  if (!u || !u.name) { try { localStorage.setItem('ae_job_comment_name', name); } catch(e) {} }
+
+  const btn = document.getElementById('job-comment-post-btn');
+  if (btn) btn.disabled = true;
+  const payload = { article_id: id, name, comment, created_at: new Date().toISOString() };
+  try {
+    await fetch(`${SB_URL}/rest/v1/ae_job_comments`, {
+      method: 'POST', headers: SB_HEADERS, body: JSON.stringify([payload])
+    });
+    _jobCommentsCache.unshift(payload);
+    _renderJobComments();
+    if (textInput) textInput.value = '';
+
+    const j = _jobsAll.find(x => x.id === id);
+    if (j) j.comment_count = (j.comment_count || 0) + 1;
+    _jobIncCounter(id, 'comment_count', 1);
+    _renderJobsList();
+    toast('✅ Comment posted!', 'success');
+  } catch(e) {
+    toast('Error! మళ్ళీ try చేయండి.', 'error');
+  } finally {
+    if (btn) btn.disabled = false;
+  }
 }
 
 function switchCATab(tab) {
@@ -23654,6 +23901,7 @@ function _renderAdminJobsPage() {
         </div>
         <div style="font-size:14px;font-weight:800;color:var(--text)">${escHtml(j.title)}</div>
         <div style="font-size:11px;color:var(--text3);margin-top:2px">${escHtml(j.organization||'')}${j.last_date?' · ⏰ Last Date: '+escHtml(j.last_date):''}</div>
+        <div style="font-size:11px;color:var(--text3);margin-top:4px;font-weight:700">👁️ ${_fmtCount(j.views)} &nbsp;·&nbsp; ❤️ ${_fmtCount(j.likes)} &nbsp;·&nbsp; 💬 ${_fmtCount(j.comment_count)} &nbsp;·&nbsp; 🔗 ${_fmtCount(j.shares)}</div>
       </div>
       <div class="action-btns">
         <button class="edit-btn" onclick="_editJobArticle(${j.id})">✏️ Edit</button>
@@ -23860,6 +24108,10 @@ window.saveScoreAndShow = async function() {
 // ── Close modal on outside click ──
 document.getElementById('contest-entry-modal').addEventListener('click', function(e) {
   if (e.target === this) closeContestModal();
+});
+
+document.getElementById('job-comments-modal')?.addEventListener('click', function(e) {
+  if (e.target === this) _closeJobComments();
 });
 </script>
 

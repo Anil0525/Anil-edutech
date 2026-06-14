@@ -4643,6 +4643,57 @@
   }
   .prog-hist-info { flex: 1; min-width: 0; }
   .prog-hist-name { font-size: 13px; font-weight: 800; color: var(--text); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+
+  /* ── GOVT JOBS / ARTICLES CARDS ── */
+  .job-card {
+    background: var(--card); border: 1.5px solid var(--border2);
+    border-radius: 16px; padding: 16px; margin-bottom: 14px;
+    box-shadow: var(--shadow-sm); transition: box-shadow .2s, transform .2s;
+  }
+  .job-card:hover { box-shadow: 0 8px 24px rgba(0,0,0,.1); transform: translateY(-1px); }
+  .job-card-header { display: flex; align-items: center; gap: 8px; margin-bottom: 8px; flex-wrap: wrap; }
+  .job-cat-badge { font-size: 11px; font-weight: 800; padding: 3px 11px; border-radius: 20px; }
+  .job-cat-notification { background: rgba(26,115,232,.1); color: #1A73E8; }
+  .job-cat-result { background: rgba(16,185,129,.12); color: #0A8C5C; }
+  .job-cat-admit_card { background: rgba(124,58,237,.1); color: #7C3AED; }
+  .job-cat-answer_key { background: rgba(245,124,0,.1); color: #f57c00; }
+  .job-new-badge {
+    font-size: 10px; font-weight: 900; padding: 3px 10px; border-radius: 20px;
+    background: linear-gradient(135deg,#E53E3E,#FF6584); color: #fff;
+    animation: jobPulse 1.6s ease-in-out infinite;
+  }
+  @keyframes jobPulse { 0%,100% { opacity:1; } 50% { opacity:.55; } }
+  .job-title { font-size: 16px; font-weight: 900; color: var(--text); margin-bottom: 4px; line-height: 1.35; }
+  .job-org { font-size: 12.5px; color: var(--text2); font-weight: 700; margin-bottom: 12px; }
+  .job-info-grid {
+    display: grid; grid-template-columns: repeat(auto-fit, minmax(110px,1fr));
+    gap: 8px; margin-bottom: 10px;
+  }
+  .job-info-item {
+    background: var(--bg); border-radius: 10px; padding: 8px 10px; text-align: center;
+  }
+  .job-info-label { font-size: 10px; color: var(--text3); font-weight: 700; display: block; margin-bottom: 2px; }
+  .job-info-val { font-size: 12.5px; font-weight: 900; color: var(--text); }
+  .job-dates { display: flex; flex-direction: column; gap: 5px; margin-bottom: 10px; }
+  .job-date-item {
+    display: flex; justify-content: space-between; align-items: center;
+    font-size: 12px; padding: 6px 12px; border-radius: 8px;
+    background: var(--bg); color: var(--text2); font-weight: 700;
+  }
+  .job-date-item span:last-child { font-weight: 900; color: var(--text); }
+  .job-date-urgent { background: rgba(229,62,62,.08); color: #E53E3E !important; }
+  .job-date-urgent span:last-child { color: #E53E3E !important; }
+  .job-desc { font-size: 12.5px; color: var(--text2); line-height: 1.6; margin-bottom: 12px; white-space: pre-wrap; }
+  .job-actions { display: flex; gap: 8px; flex-wrap: wrap; }
+  .job-btn-primary, .job-btn-secondary {
+    flex: 1; min-width: 130px; text-align: center; padding: 10px 14px;
+    border-radius: 10px; font-size: 13px; font-weight: 800; text-decoration: none;
+    cursor: pointer; border: none; font-family: inherit;
+  }
+  .job-btn-primary { background: linear-gradient(135deg,#1A73E8,#4F8EFF); color: #fff; }
+  .job-btn-secondary { background: var(--bg); color: var(--text2); border: 1.5px solid var(--border2); }
+  .job-empty { text-align: center; padding: 50px 20px; color: var(--text3); }
+  .job-empty-icon { font-size: 42px; display: block; margin-bottom: 12px; }
   .prog-hist-meta { font-size: 11px; color: var(--text3); font-weight: 600; margin-top: 1px; }
   .prog-hist-pct  { font-size: 17px; font-weight: 900; font-family: 'Nunito', sans-serif; }
   .prog-bar-wrap { margin-bottom: 12px; }
@@ -5703,6 +5754,8 @@ html:not(:has(#_ae_loading)) body {
     <div class="section-title" id="categories-section">Exam Categories</div>
     <div class="section-sub">మీకు నచ్చిన category select చేయండి</div>
     <div class="categories-grid">
+      <!-- Govt Jobs -->
+      <div class="cat-card" data-cat="jobs" onclick="goPage('jobs');loadJobArticles()" style="--cat-grad:linear-gradient(135deg,#0F766E,#10B981);--cat-soft:rgba(15,118,110,.06);--cat-shadow:rgba(15,118,110,.35);"><div class="cat-icon-wrap"><span class="cat-icon">💼</span></div><div class="cat-name">Latest Govt Jobs</div><div class="cat-count">Apply Online</div></div>
       <!-- Current Affairs -->
       <div class="cat-card" data-cat="daily-ca" onclick="goCurrentAffairs('daily')" style="--cat-grad:linear-gradient(135deg,#E8640A,#FF9F1C);--cat-soft:rgba(232,100,10,.06);--cat-shadow:rgba(232,100,10,.35);"><div class="cat-icon-wrap"><span class="cat-icon">📰</span></div><div class="cat-name">Daily Current Affairs</div><div class="cat-count">రోజువారీ</div></div>
       <div class="cat-card" data-cat="monthly-ca" onclick="goCurrentAffairs('monthly')" style="--cat-grad:linear-gradient(135deg,#7C3AED,#A855F7);--cat-soft:rgba(124,58,237,.06);--cat-shadow:rgba(124,58,237,.35);"><div class="cat-icon-wrap"><span class="cat-icon">📅</span></div><div class="cat-name">CA Monthly Magazine</div><div class="cat-count">Monthly digest</div></div>
@@ -7787,9 +7840,33 @@ html:not(:has(#_ae_loading)) body {
 </footer>
 </div>
 
+<!-- GOVT JOBS & RESULTS PAGE -->
+<div id="page-jobs" class="page">
+  <div class="prog-header">
+    <h2>💼 Latest Govt Jobs & Results</h2>
+    <p>Notifications · Results · Admit Cards · Answer Keys — అన్నీ ఒకే చోట</p>
+  </div>
+  <div class="section" style="max-width:860px;margin:0 auto;padding:16px">
+    <div class="filter-chips" id="jobs-tabs" style="margin-bottom:16px">
+      <button class="filter-chip active" data-jf="all" onclick="_jobsSetFilter('all')">📋 All</button>
+      <button class="filter-chip" data-jf="notification" onclick="_jobsSetFilter('notification')">📢 Notifications</button>
+      <button class="filter-chip" data-jf="result" onclick="_jobsSetFilter('result')">✅ Results</button>
+      <button class="filter-chip" data-jf="admit_card" onclick="_jobsSetFilter('admit_card')">🎫 Admit Cards</button>
+      <button class="filter-chip" data-jf="answer_key" onclick="_jobsSetFilter('answer_key')">🔑 Answer Keys</button>
+    </div>
+    <div id="jobs-list">
+      <div style="text-align:center;padding:40px;color:var(--text3)">
+        <div style="font-size:36px">⏳</div>
+        <div style="font-size:14px;font-weight:700;margin-top:8px">Loading...</div>
+      </div>
+    </div>
+  </div>
+</div>
+
 <!-- CONTEST PAGE -->
 <div id="page-contest" class="page">
   <div style="max-width:860px;margin:0 auto;padding:16px">
+
 
     <!-- Header -->
     <div style="display:flex;align-items:center;gap:12px;margin-bottom:20px">
@@ -7942,6 +8019,7 @@ html:not(:has(#_ae_loading)) body {
       <button class="admin-tab" onclick="switchAdminTab('userbackup',this)">📋 User Backup</button>
       <button class="admin-tab" onclick="switchAdminTab('notifications',this)">🔔 Notifications</button>
       <button class="admin-tab" onclick="switchAdminTab('contests',this);_populateContestExamSelect();loadAdminContests()">🏆 Contests</button>
+      <button class="admin-tab" onclick="switchAdminTab('jobs',this);loadAdminJobArticles()">💼 Govt Jobs</button>
     </div>
 
     <!-- MAIN AREA -->
@@ -8625,6 +8703,99 @@ html:not(:has(#_ae_loading)) body {
       </div>
 
     </div>
+
+    <!-- ══════════════════════════════════
+         💼 TAB: GOVT JOBS & RESULTS
+    ══════════════════════════════════ -->
+    <div id="atab-jobs" class="admin-panel">
+
+      <!-- Create / Edit Job Article -->
+      <div class="admin-card" style="border-color:rgba(15,118,110,.3)">
+        <h3 style="color:#0F766E" id="job-form-title">💼 కొత్త Article Add చేయండి</h3>
+        <input type="hidden" id="job-edit-id" value="">
+        <div style="display:grid;grid-template-columns:1fr 1fr;gap:14px;margin-top:14px">
+          <div style="grid-column:1/-1">
+            <label style="font-size:12px;font-weight:700;color:var(--text2);display:block;margin-bottom:6px">Title / Post Name</label>
+            <input id="job-title" class="edit-box" placeholder="e.g. TSPSC Group-2 Recruitment 2026" style="width:100%;box-sizing:border-box">
+          </div>
+          <div>
+            <label style="font-size:12px;font-weight:700;color:var(--text2);display:block;margin-bottom:6px">Organization</label>
+            <input id="job-org" class="edit-box" placeholder="e.g. TSPSC" style="width:100%;box-sizing:border-box">
+          </div>
+          <div>
+            <label style="font-size:12px;font-weight:700;color:var(--text2);display:block;margin-bottom:6px">Category</label>
+            <select id="job-category" class="edit-box" style="width:100%;box-sizing:border-box">
+              <option value="notification">📢 Notification</option>
+              <option value="result">✅ Result</option>
+              <option value="admit_card">🎫 Admit Card</option>
+              <option value="answer_key">🔑 Answer Key</option>
+            </select>
+          </div>
+          <div>
+            <label style="font-size:12px;font-weight:700;color:var(--text2);display:block;margin-bottom:6px">Total Posts</label>
+            <input id="job-posts" class="edit-box" placeholder="e.g. 503" style="width:100%;box-sizing:border-box">
+          </div>
+          <div>
+            <label style="font-size:12px;font-weight:700;color:var(--text2);display:block;margin-bottom:6px">Qualification</label>
+            <input id="job-qual" class="edit-box" placeholder="e.g. Degree" style="width:100%;box-sizing:border-box">
+          </div>
+          <div>
+            <label style="font-size:12px;font-weight:700;color:var(--text2);display:block;margin-bottom:6px">Age Limit</label>
+            <input id="job-age" class="edit-box" placeholder="e.g. 18-44 years" style="width:100%;box-sizing:border-box">
+          </div>
+          <div>
+            <label style="font-size:12px;font-weight:700;color:var(--text2);display:block;margin-bottom:6px">Application Fee</label>
+            <input id="job-fee" class="edit-box" placeholder="e.g. ₹200 (Gen) / Free (SC/ST)" style="width:100%;box-sizing:border-box">
+          </div>
+          <div>
+            <label style="font-size:12px;font-weight:700;color:var(--text2);display:block;margin-bottom:6px">Notification Date</label>
+            <input id="job-notif-date" class="edit-box" placeholder="e.g. 01-06-2026" style="width:100%;box-sizing:border-box">
+          </div>
+          <div>
+            <label style="font-size:12px;font-weight:700;color:var(--text2);display:block;margin-bottom:6px">Last Date to Apply</label>
+            <input id="job-last-date" class="edit-box" placeholder="e.g. 30-06-2026" style="width:100%;box-sizing:border-box">
+          </div>
+          <div>
+            <label style="font-size:12px;font-weight:700;color:var(--text2);display:block;margin-bottom:6px">Exam Date</label>
+            <input id="job-exam-date" class="edit-box" placeholder="e.g. 15-08-2026" style="width:100%;box-sizing:border-box">
+          </div>
+          <div>
+            <label style="font-size:12px;font-weight:700;color:var(--text2);display:block;margin-bottom:6px">Apply Link</label>
+            <input id="job-apply-link" class="edit-box" placeholder="https://..." style="width:100%;box-sizing:border-box">
+          </div>
+          <div style="grid-column:1/-1">
+            <label style="font-size:12px;font-weight:700;color:var(--text2);display:block;margin-bottom:6px">Official Notification Link (PDF)</label>
+            <input id="job-notif-link" class="edit-box" placeholder="https://..." style="width:100%;box-sizing:border-box">
+          </div>
+          <div style="grid-column:1/-1">
+            <label style="font-size:12px;font-weight:700;color:var(--text2);display:block;margin-bottom:6px">Description / Application Process (optional)</label>
+            <textarea id="job-desc" class="edit-box" rows="3" placeholder="Eligibility details, application process steps, ఇతర సమాచారం..." style="width:100%;box-sizing:border-box;resize:vertical"></textarea>
+          </div>
+        </div>
+        <div style="margin-top:16px;display:flex;gap:10px;flex-wrap:wrap">
+          <button onclick="adminSaveJobArticle()" id="job-save-btn" style="background:linear-gradient(135deg,#0F766E,#10B981);color:#fff;border:none;border-radius:12px;padding:12px 28px;font-family:inherit;font-size:14px;font-weight:800;cursor:pointer;box-shadow:0 4px 16px rgba(15,118,110,.35)">
+            💾 Article Save చేయండి
+          </button>
+          <button onclick="_resetJobForm()" id="job-cancel-btn" style="display:none;background:var(--bg);color:var(--text2);border:1.5px solid var(--border2);border-radius:12px;padding:12px 24px;font-family:inherit;font-size:14px;font-weight:700;cursor:pointer">
+            ✕ Cancel Edit
+          </button>
+        </div>
+      </div>
+
+      <!-- All Job Articles List -->
+      <div class="admin-card" style="margin-top:16px">
+        <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:14px">
+          <h3>📋 All Articles</h3>
+          <button onclick="loadAdminJobArticles()" style="background:var(--primary-soft);color:var(--primary);border:none;border-radius:10px;padding:8px 16px;font-family:inherit;font-size:12px;font-weight:700;cursor:pointer">🔄 Refresh</button>
+        </div>
+        <div id="admin-jobs-list">
+          <div style="color:var(--text3);text-align:center;padding:30px">Loading...</div>
+        </div>
+        <div id="admin-jobs-pagination"></div>
+      </div>
+
+    </div>
+
 
     <!-- ── TAB: SETTINGS ── -->
     <!-- ══════════════════════════════════
@@ -11654,6 +11825,10 @@ async function doForgotPw() {
 }
 
 // ADMIN — render subscribers
+let _asPage = 0;
+const _AS_PER = 20;
+let _asApproved = [];
+
 async function renderSubscriberTables() {
   let approved = await sbSubGet('approved');
   if (!approved.length) approved = getSubApproved();
@@ -11663,32 +11838,67 @@ async function renderSubscriberTables() {
     premiumSince: s.premiumSince ?? s.premium_since ?? null,
     date: s.date ?? (s.joined_at ? new Date(s.joined_at).toLocaleDateString('te-IN') : '')
   }));
+  _asApproved = approved;
+  _asPage = 0;
+  _renderASPage();
+}
 
-  // Approved
+function _renderASPage() {
+  const approved = _asApproved;
   const atbody = document.getElementById('approved-table');
+  if (!atbody) return;
+
   if (!approved.length) {
     atbody.innerHTML = '<tr><td colspan="6" style="text-align:center;color:var(--text3);padding:20px">Approved subscribers లేరు</td></tr>';
-  } else {
-    atbody.innerHTML = approved.map((s, i) => {
-      const isPrem = !!s.isPremium;
-      const premBadge = isPrem
-        ? `<span class="meta-pill" style="background:rgba(245,183,49,.15);color:#E8640A;border:1px solid rgba(245,183,49,.4)">👑 Premium</span>`
-        : `<span class="meta-pill" style="background:rgba(100,100,100,.1);color:var(--text3)">Free</span>`;
-      const premBtn = isPrem
-        ? `<button class="del-btn" style="background:rgba(239,68,68,.15);color:#ef4444;border:1px solid rgba(239,68,68,.3);margin-left:4px" onclick="adminRevokePremium('${escHtml(s.gmail)}')">Revoke</button>`
-        : `<button class="edit-btn" style="background:linear-gradient(135deg,#F5B731,#E8640A);color:#fff;min-width:90px" onclick="adminGrantPremium('${escHtml(s.gmail)}')">👑 Grant</button>`;
-      return `<tr>
-        <td>${i+1}</td>
-        <td style="font-weight:700;color:var(--text)">${escHtml(s.name)}</td>
-        <td><span class="meta-pill pill-green">${escHtml(s.gmail)}</span></td>
-        <td style="font-size:12px;color:var(--text3)">${escHtml(s.date||'')}</td>
-        <td>${premBadge} ${premBtn}</td>
-        <td>
-          <button class="del-btn" onclick="removeSubscriber('${escHtml(s.gmail)}')">Remove</button>
-        </td>
-      </tr>`;
-    }).join('');
+    _renderASPagination(0);
+    return;
   }
+
+  const totalPages = Math.ceil(approved.length / _AS_PER);
+  if (_asPage >= totalPages) _asPage = totalPages - 1;
+  if (_asPage < 0) _asPage = 0;
+  const start = _asPage * _AS_PER;
+  const pageItems = approved.slice(start, start + _AS_PER);
+
+  atbody.innerHTML = pageItems.map((s, i) => {
+    const globalIdx = start + i;
+    const isPrem = !!s.isPremium;
+    const premBadge = isPrem
+      ? `<span class="meta-pill" style="background:rgba(245,183,49,.15);color:#E8640A;border:1px solid rgba(245,183,49,.4)">👑 Premium</span>`
+      : `<span class="meta-pill" style="background:rgba(100,100,100,.1);color:var(--text3)">Free</span>`;
+    const premBtn = isPrem
+      ? `<button class="del-btn" style="background:rgba(239,68,68,.15);color:#ef4444;border:1px solid rgba(239,68,68,.3);margin-left:4px" onclick="adminRevokePremium('${escHtml(s.gmail)}')">Revoke</button>`
+      : `<button class="edit-btn" style="background:linear-gradient(135deg,#F5B731,#E8640A);color:#fff;min-width:90px" onclick="adminGrantPremium('${escHtml(s.gmail)}')">👑 Grant</button>`;
+    return `<tr>
+      <td>${globalIdx+1}</td>
+      <td style="font-weight:700;color:var(--text)">${escHtml(s.name)}</td>
+      <td><span class="meta-pill pill-green">${escHtml(s.gmail)}</span></td>
+      <td style="font-size:12px;color:var(--text3)">${escHtml(s.date||'')}</td>
+      <td>${premBadge} ${premBtn}</td>
+      <td>
+        <button class="del-btn" onclick="removeSubscriber('${escHtml(s.gmail)}')">Remove</button>
+      </td>
+    </tr>`;
+  }).join('');
+
+  _renderASPagination(approved.length);
+}
+
+function _renderASPagination(total) {
+  let wrap = document.getElementById('as-approved-pagination');
+  if (!wrap) {
+    wrap = document.createElement('div');
+    wrap.id = 'as-approved-pagination';
+    const tbl = document.getElementById('approved-table');
+    if (tbl && tbl.closest('table')) tbl.closest('table').after(wrap);
+  }
+  const totalPages = Math.ceil(total / _AS_PER);
+  if (totalPages <= 1) { wrap.innerHTML = ''; return; }
+  wrap.innerHTML = `<div style="display:flex;align-items:center;justify-content:center;gap:10px;margin:12px 0;flex-wrap:wrap;">
+    <button onclick="_asPage--;_renderASPage()" ${_asPage===0?'disabled':''} style="padding:7px 16px;border-radius:8px;border:1.5px solid var(--border2);background:var(--card);color:var(--text);font-family:inherit;font-size:12px;font-weight:700;cursor:pointer;opacity:${_asPage===0?'0.4':'1'}">← Prev</button>
+    <span style="font-size:12px;font-weight:800;color:var(--text2);padding:5px 12px;background:var(--bg);border-radius:8px;border:1px solid var(--border2);">${_asPage+1} / ${totalPages} <span style="color:var(--text3);font-weight:600;">(${total} subscribers)</span></span>
+    <button onclick="_asPage++;_renderASPage()" ${_asPage>=totalPages-1?'disabled':''} style="padding:7px 16px;border-radius:8px;border:1.5px solid var(--border2);background:var(--card);color:var(--text);font-family:inherit;font-size:12px;font-weight:700;cursor:pointer;opacity:${_asPage>=totalPages-1?'0.4':'1'}">Next →</button>
+  </div>`;
 }
 
 async function removeSubscriber(gmail) {
@@ -13681,7 +13891,7 @@ function switchAdminTab(tab, btnEl) {
   if (btnEl) {
     btnEl.classList.add('active');
     const lbl = document.getElementById('admin-logged-label');
-    const labels = {exams:'Dashboard / Exams',questions:'Dashboard / Questions',pdfitems:'Dashboard / PDFs & Images',subscribers:'Dashboard / Subscribers',videos:'Dashboard / Videos',ai:'Dashboard / AI Tools',payments:'Dashboard / Payments',bulkimport:'Dashboard / Bulk Import',analytics:'Dashboard / Analytics',dailymock:'Dashboard / Daily Mock',scheduled:'Dashboard / Scheduled',settings:'Dashboard / Settings',userbackup:'Dashboard / User Backup'};
+    const labels = {exams:'Dashboard / Exams',questions:'Dashboard / Questions',pdfitems:'Dashboard / PDFs & Images',subscribers:'Dashboard / Subscribers',videos:'Dashboard / Videos',ai:'Dashboard / AI Tools',payments:'Dashboard / Payments',bulkimport:'Dashboard / Bulk Import',analytics:'Dashboard / Analytics',dailymock:'Dashboard / Daily Mock',scheduled:'Dashboard / Scheduled',settings:'Dashboard / Settings',userbackup:'Dashboard / User Backup',contests:'Dashboard / Contests',jobs:'Dashboard / Govt Jobs'};
     if (lbl && labels[tab]) lbl.textContent = labels[tab];
     const tabsBar = document.getElementById('admin-tabs-bar');
     if (tabsBar) tabsBar.scrollTo({ top: btnEl.offsetTop - 60, behavior: 'smooth' });
@@ -13920,17 +14130,36 @@ function deleteFilteredQuestions() {
   toast('🗑 ' + toDelete.length + ' questions delete అయ్యాయి!', 'warn');
 }
 
+let _aqPage = 0;
+const _AQ_PER = 20;
+let _aqList = [];
+
 function renderAdminTable() {
   const fVal  = document.getElementById('admin-filter')?.value;
   const fSec  = document.getElementById('admin-sec-filter')?.value;
   let list = fVal ? DB.questions.filter(q => q.examId === parseInt(fVal)) : DB.questions;
   if (fSec) list = list.filter(q => (q.section||'ga') === fSec);
+  _aqList = list;
+  _aqPage = 0;
+  _renderAQPage();
+}
+
+function _renderAQPage() {
   const tbody = document.getElementById('admin-table');
+  if (!tbody) return;
+  const list = _aqList;
   if (!list.length) {
-    tbody.innerHTML = '<tr><td colspan="5" style="text-align:center;color:var(--text3);padding:24px">Questions లేవు</td></tr>';
+    tbody.innerHTML = '<tr><td colspan="6" style="text-align:center;color:var(--text3);padding:24px">Questions లేవు</td></tr>';
+    _renderAQPagination(0);
     return;
   }
-  tbody.innerHTML = list.map((q,i) => {
+  const totalPages = Math.ceil(list.length / _AQ_PER);
+  if (_aqPage >= totalPages) _aqPage = totalPages - 1;
+  const start = _aqPage * _AQ_PER;
+  const pageItems = list.slice(start, start + _AQ_PER);
+
+  tbody.innerHTML = pageItems.map((q,i) => {
+    const globalIdx = start + i;
     const en = DB.exams.find(e => e.id === q.examId);
     const _na = (v) => { if(typeof v==='number') return String.fromCharCode(65+v); if(typeof v==='string'&&!isNaN(v)&&v!=='') return String.fromCharCode(65+parseInt(v)); return String(v||''); };
     const ansLetter = _na(q.ans);
@@ -13940,7 +14169,7 @@ function renderAdminTable() {
     const marksLabel = q.marks ? `<span style="font-size:10px;font-weight:800;color:#d97706;margin-left:4px;">⭐${q.marks}</span>` : '';
     const imgLabel = q.image ? `<span style="font-size:10px;font-weight:800;color:#7c3aed;margin-left:4px;">🖼️</span>` : '';
     return `<tr>
-      <td>${i+1}</td>
+      <td>${globalIdx+1}</td>
       <td style="max-width:200px;word-break:break-word;color:var(--text)">${escHtml(q.q)}${imgLabel}</td>
       <td><span style="font-size:11px;font-weight:700;color:var(--primary)">${secLabel}</span>${marksLabel}</td>
       <td><span class="meta-pill pill-green">${ansLetter}: ${escHtml(corText)}</span></td>
@@ -13948,6 +14177,24 @@ function renderAdminTable() {
       <td><div class="action-btns"><button class="edit-btn" onclick="openEditQModal(${q.id})">✏️ Edit</button><button class="del-btn" onclick="deleteQuestion(${q.id})">Delete</button></div></td>
     </tr>`;
   }).join('');
+  _renderAQPagination(list.length);
+}
+
+function _renderAQPagination(total) {
+  let wrap = document.getElementById('aq-pagination');
+  if (!wrap) {
+    wrap = document.createElement('div');
+    wrap.id = 'aq-pagination';
+    const tbl = document.getElementById('admin-table');
+    if (tbl && tbl.closest('table')) tbl.closest('table').after(wrap);
+  }
+  const totalPages = Math.ceil(total / _AQ_PER);
+  if (totalPages <= 1) { wrap.innerHTML = ''; return; }
+  wrap.innerHTML = `<div style="display:flex;align-items:center;justify-content:center;gap:10px;margin:12px 0;flex-wrap:wrap;">
+    <button onclick="_aqPage--;_renderAQPage()" ${_aqPage===0?'disabled':''} style="padding:7px 16px;border-radius:8px;border:1.5px solid var(--border2);background:var(--card);color:var(--text);font-family:inherit;font-size:12px;font-weight:700;cursor:pointer;opacity:${_aqPage===0?'0.4':'1'}">← Prev</button>
+    <span style="font-size:12px;font-weight:800;color:var(--text2);padding:5px 12px;background:var(--bg);border-radius:8px;border:1px solid var(--border2);">${_aqPage+1} / ${totalPages} <span style="color:var(--text3);font-weight:600;">(${total} questions)</span></span>
+    <button onclick="_aqPage++;_renderAQPage()" ${_aqPage>=totalPages-1?'disabled':''} style="padding:7px 16px;border-radius:8px;border:1.5px solid var(--border2);background:var(--card);color:var(--text);font-family:inherit;font-size:12px;font-weight:700;cursor:pointer;opacity:${_aqPage>=totalPages-1?'0.4':'1'}">Next →</button>
+  </div>`;
 }
 
 function updateStats() {
@@ -14435,10 +14682,19 @@ function changeAdminPassword() {
 }
 
 /* ---- EXAMS MANAGE TABLE ---- */
+let _aePage = 0;
+const _AE_PER = 20;
+
 function renderExamsManageTable(){
   const tbody=document.getElementById('exams-manage-table');
   if(!tbody)return;
-  if(!DB.exams.length){tbody.innerHTML='<tr><td colspan="9" style="text-align:center;color:var(--text3);padding:20px">Exams లేవు</td></tr>';return;}
+  if(!DB.exams.length){tbody.innerHTML='<tr><td colspan="9" style="text-align:center;color:var(--text3);padding:20px">Exams లేవు</td></tr>';_renderAEPagination(0);return;}
+
+  const totalPages = Math.ceil(DB.exams.length / _AE_PER);
+  if (_aePage >= totalPages) _aePage = totalPages - 1;
+  if (_aePage < 0) _aePage = 0;
+  const start = _aePage * _AE_PER;
+  const pageExams = DB.exams.slice(start, start + _AE_PER);
 
   // Build folder options HTML (2-level grouped)
   const allFolders = getMockFolders();
@@ -14460,7 +14716,8 @@ function renderExamsManageTable(){
     return html;
   }
 
-  tbody.innerHTML=DB.exams.map((e,i)=>{
+  tbody.innerHTML=pageExams.map((e,i)=>{
+    const globalIdx = start + i;
     const qc=DB.questions.filter(q=>q.examId===e.id).length;
     const lb=e.isPremium
       ?`<span class="meta-pill" style="background:rgba(245,183,49,.15);color:#E8640A;border:1px solid rgba(245,183,49,.4);font-size:10px">🔒 Premium</span>`
@@ -14473,7 +14730,7 @@ function renderExamsManageTable(){
       ${_folderOpts(e.mockFolder||'')}
     </select>`;
     return `<tr>
-      <td style="color:var(--text3);font-weight:700">${i+1}</td>
+      <td style="color:var(--text3);font-weight:700">${globalIdx+1}</td>
       <td style="color:var(--text);font-weight:700;max-width:170px;word-break:break-word">${escHtml(e.name)}</td>
       <td><span class="meta-pill ${catPill[e.cat]||'pill-blue'}">${e.cat}</span></td>
       <td>${e.time}m</td>
@@ -14484,6 +14741,25 @@ function renderExamsManageTable(){
       <td><div class="action-btns">${lbtn}<button class="edit-btn" onclick="openEditExamModal(${e.id})">✏️ Edit</button><button class="edit-btn" style="background:linear-gradient(135deg,#00B894,#077042)" onclick="copyExam(${e.id})">📋 Copy</button><button class="del-btn" onclick="deleteExam(${e.id})">Delete</button></div></td>
     </tr>`;
   }).join('');
+
+  _renderAEPagination(DB.exams.length);
+}
+
+function _renderAEPagination(total) {
+  let wrap = document.getElementById('ae-exams-pagination');
+  if (!wrap) {
+    wrap = document.createElement('div');
+    wrap.id = 'ae-exams-pagination';
+    const tbl = document.getElementById('exams-manage-table');
+    if (tbl && tbl.closest('table')) tbl.closest('table').after(wrap);
+  }
+  const totalPages = Math.ceil(total / _AE_PER);
+  if (totalPages <= 1) { wrap.innerHTML = ''; return; }
+  wrap.innerHTML = `<div style="display:flex;align-items:center;justify-content:center;gap:10px;margin:12px 0;flex-wrap:wrap;">
+    <button onclick="_aePage--;renderExamsManageTable()" ${_aePage===0?'disabled':''} style="padding:7px 16px;border-radius:8px;border:1.5px solid var(--border2);background:var(--card);color:var(--text);font-family:inherit;font-size:12px;font-weight:700;cursor:pointer;opacity:${_aePage===0?'0.4':'1'}">← Prev</button>
+    <span style="font-size:12px;font-weight:800;color:var(--text2);padding:5px 12px;background:var(--bg);border-radius:8px;border:1px solid var(--border2);">${_aePage+1} / ${totalPages} <span style="color:var(--text3);font-weight:600;">(${total} exams)</span></span>
+    <button onclick="_aePage++;renderExamsManageTable()" ${_aePage>=totalPages-1?'disabled':''} style="padding:7px 16px;border-radius:8px;border:1.5px solid var(--border2);background:var(--card);color:var(--text);font-family:inherit;font-size:12px;font-weight:700;cursor:pointer;opacity:${_aePage>=totalPages-1?'0.4':'1'}">Next →</button>
+  </div>`;
 }
 function toggleExamLock(id){const e=DB.exams.find(x=>x.id===id);if(!e)return;e.isPremium=!e.isPremium;sbSaveExam(e);saveDB();renderExamsManageTable();filterExams();toast(e.isPremium?`🔒 "${e.name}" — Premium Only!`:`🔓 "${e.name}" — Free!`,e.isPremium?'warn':'success');}
 
@@ -18765,18 +19041,30 @@ function _showPremiumSuccessModal(pid,plan){
 }
 
 // ── ADMIN: Payments Table ──
+let _apPage = 0;
+const _AP_PER = 20;
+
 function renderPaymentsTable() {
   const el = document.getElementById('payments-table');
   if (!el) return;
   const records = JSON.parse(_ls.getItem('ae_payment_records') || '[]');
   if (!records.length) {
     el.innerHTML = '<tr><td colspan="7" style="text-align:center;color:var(--text3);padding:16px">Payment records లేవు</td></tr>';
+    _renderAPPagination(0);
     return;
   }
-  el.innerHTML = records.map((r, i) => {
+
+  const totalPages = Math.ceil(records.length / _AP_PER);
+  if (_apPage >= totalPages) _apPage = totalPages - 1;
+  if (_apPage < 0) _apPage = 0;
+  const start = _apPage * _AP_PER;
+  const pageItems = records.slice(start, start + _AP_PER);
+
+  el.innerHTML = pageItems.map((r, i) => {
+    const globalIdx = start + i;
     const isPending = r.status === 'UTR Submitted';
     return `<tr>
-    <td>${i+1}</td>
+    <td>${globalIdx+1}</td>
     <td style="font-weight:700">${escHtml(r.name||'')}</td>
     <td style="font-size:11px">${escHtml(r.gmail||'')}</td>
     <td><span style="background:var(--primary-soft);color:var(--primary);padding:2px 8px;border-radius:8px;font-size:11px;font-weight:800">${r.plan||''}</span></td>
@@ -18792,6 +19080,25 @@ function renderPaymentsTable() {
     </td>
   </tr>`;
   }).join('');
+
+  _renderAPPagination(records.length);
+}
+
+function _renderAPPagination(total) {
+  let wrap = document.getElementById('ap-payments-pagination');
+  if (!wrap) {
+    wrap = document.createElement('div');
+    wrap.id = 'ap-payments-pagination';
+    const tbl = document.getElementById('payments-table');
+    if (tbl && tbl.closest('table')) tbl.closest('table').after(wrap);
+  }
+  const totalPages = Math.ceil(total / _AP_PER);
+  if (totalPages <= 1) { wrap.innerHTML = ''; return; }
+  wrap.innerHTML = `<div style="display:flex;align-items:center;justify-content:center;gap:10px;margin:12px 0;flex-wrap:wrap;">
+    <button onclick="_apPage--;renderPaymentsTable()" ${_apPage===0?'disabled':''} style="padding:7px 16px;border-radius:8px;border:1.5px solid var(--border2);background:var(--card);color:var(--text);font-family:inherit;font-size:12px;font-weight:700;cursor:pointer;opacity:${_apPage===0?'0.4':'1'}">← Prev</button>
+    <span style="font-size:12px;font-weight:800;color:var(--text2);padding:5px 12px;background:var(--bg);border-radius:8px;border:1px solid var(--border2);">${_apPage+1} / ${totalPages} <span style="color:var(--text3);font-weight:600;">(${total} records)</span></span>
+    <button onclick="_apPage++;renderPaymentsTable()" ${_apPage>=totalPages-1?'disabled':''} style="padding:7px 16px;border-radius:8px;border:1.5px solid var(--border2);background:var(--card);color:var(--text);font-family:inherit;font-size:12px;font-weight:700;cursor:pointer;opacity:${_apPage>=totalPages-1?'0.4':'1'}">Next →</button>
+  </div>`;
 }
 
 function renderPaymentStats() {
@@ -21157,6 +21464,126 @@ function goCurrentAffairs(tab) {
   switchCATab(_caCurrentTab);
 }
 
+// ══════════════════════════════════════════════
+// 💼 GOVT JOBS & RESULTS — ae_job_articles table
+// ══════════════════════════════════════════════
+let _jobsAll = [];
+let _jobsFilter = 'all';
+let _jobsPage = 0;
+const _JOBS_PER = 10;
+
+async function loadJobArticles() {
+  const listEl = document.getElementById('jobs-list');
+  if (!listEl) return;
+  listEl.innerHTML = `<div style="text-align:center;padding:40px;color:var(--text3)"><div style="font-size:36px">⏳</div><div style="font-size:14px;font-weight:700;margin-top:8px">Loading...</div></div>`;
+  try {
+    const res = await fetch(`${SB_URL}/rest/v1/ae_job_articles?is_active=eq.true&order=created_at.desc&limit=200`, { headers: SB_HEADERS });
+    const data = res.ok ? await res.json() : [];
+    _jobsAll = Array.isArray(data) ? data : [];
+  } catch(e) {
+    _jobsAll = [];
+  }
+  _jobsPage = 0;
+  _renderJobsList();
+}
+
+function _jobsSetFilter(f) {
+  _jobsFilter = f;
+  _jobsPage = 0;
+  document.querySelectorAll('#jobs-tabs .filter-chip').forEach(b => b.classList.toggle('active', b.dataset.jf === f));
+  _renderJobsList();
+}
+
+function _jobCategoryMeta(cat) {
+  const map = {
+    notification: { label: '📢 Notification', cls: 'job-cat-notification' },
+    result:       { label: '✅ Result',       cls: 'job-cat-result' },
+    admit_card:   { label: '🎫 Admit Card',   cls: 'job-cat-admit_card' },
+    answer_key:   { label: '🔑 Answer Key',   cls: 'job-cat-answer_key' }
+  };
+  return map[cat] || map.notification;
+}
+
+function _renderJobsList() {
+  const listEl = document.getElementById('jobs-list');
+  if (!listEl) return;
+
+  let filtered = _jobsFilter === 'all' ? _jobsAll : _jobsAll.filter(j => j.category === _jobsFilter);
+
+  if (!filtered.length) {
+    listEl.innerHTML = `<div class="job-empty"><span class="job-empty-icon">💼</span>ఇంకా ఎలాంటి articles లేవు.<br>త్వరలో update అవుతుంది!</div>`;
+    return;
+  }
+
+  const totalPages = Math.ceil(filtered.length / _JOBS_PER);
+  if (_jobsPage >= totalPages) _jobsPage = totalPages - 1;
+  if (_jobsPage < 0) _jobsPage = 0;
+  const start = _jobsPage * _JOBS_PER;
+  const pageItems = filtered.slice(start, start + _JOBS_PER);
+
+  const now = Date.now();
+  const cards = pageItems.map(j => {
+    const meta = _jobCategoryMeta(j.category);
+    const isNew = j.created_at && (now - new Date(j.created_at).getTime()) < 3 * 24 * 60 * 60 * 1000;
+
+    // Info grid (only show fields that have values)
+    let infoItems = '';
+    if (j.total_posts) infoItems += `<div class="job-info-item"><span class="job-info-label">📋 Total Posts</span><span class="job-info-val">${escHtml(j.total_posts)}</span></div>`;
+    if (j.qualification) infoItems += `<div class="job-info-item"><span class="job-info-label">🎓 Qualification</span><span class="job-info-val">${escHtml(j.qualification)}</span></div>`;
+    if (j.age_limit) infoItems += `<div class="job-info-item"><span class="job-info-label">🎂 Age Limit</span><span class="job-info-val">${escHtml(j.age_limit)}</span></div>`;
+    if (j.fee) infoItems += `<div class="job-info-item"><span class="job-info-label">💰 Fee</span><span class="job-info-val">${escHtml(j.fee)}</span></div>`;
+    const infoGrid = infoItems ? `<div class="job-info-grid">${infoItems}</div>` : '';
+
+    // Important dates
+    let datesHtml = '';
+    if (j.notification_date) datesHtml += `<div class="job-date-item"><span>📅 Notification Date</span><span>${escHtml(j.notification_date)}</span></div>`;
+    if (j.last_date) {
+      const isUrgent = !isNaN(Date.parse(j.last_date)) && new Date(j.last_date).getTime() > now && (new Date(j.last_date).getTime() - now) < 5*24*60*60*1000;
+      datesHtml += `<div class="job-date-item${isUrgent?' job-date-urgent':''}"><span>⏰ Last Date to Apply</span><span>${escHtml(j.last_date)}</span></div>`;
+    }
+    if (j.exam_date) datesHtml += `<div class="job-date-item"><span>📝 Exam Date</span><span>${escHtml(j.exam_date)}</span></div>`;
+    const datesBlock = datesHtml ? `<div class="job-dates">${datesHtml}</div>` : '';
+
+    const descBlock = j.description ? `<div class="job-desc">${escHtml(j.description)}</div>` : '';
+
+    let actions = '';
+    if (j.apply_link) actions += `<a href="${escHtml(j.apply_link)}" target="_blank" rel="noopener" class="job-btn-primary">🚀 Apply Now</a>`;
+    if (j.notification_link) actions += `<a href="${escHtml(j.notification_link)}" target="_blank" rel="noopener" class="job-btn-secondary">📄 Official Notification</a>`;
+    const actionsBlock = actions ? `<div class="job-actions">${actions}</div>` : '';
+
+    return `<div class="job-card">
+      <div class="job-card-header">
+        <span class="job-cat-badge ${meta.cls}">${meta.label}</span>
+        ${isNew ? '<span class="job-new-badge">🆕 NEW</span>' : ''}
+      </div>
+      <div class="job-title">${escHtml(j.title)}</div>
+      ${j.organization ? `<div class="job-org">🏢 ${escHtml(j.organization)}</div>` : ''}
+      ${infoGrid}
+      ${datesBlock}
+      ${descBlock}
+      ${actionsBlock}
+    </div>`;
+  }).join('');
+
+  const pagination = totalPages > 1 ? `
+    <div style="display:flex;align-items:center;justify-content:center;gap:10px;margin:18px 0 8px;flex-wrap:wrap;">
+      <button onclick="_jobsPage--;_renderJobsList()" ${_jobsPage===0?'disabled':''}
+        style="padding:8px 18px;border-radius:10px;border:1.5px solid var(--border2);background:var(--card);color:var(--text);font-family:inherit;font-size:13px;font-weight:700;cursor:pointer;opacity:${_jobsPage===0?'0.4':'1'}">
+        ← Prev
+      </button>
+      <span style="font-size:13px;font-weight:800;color:var(--text2);padding:6px 14px;background:var(--bg);border-radius:8px;border:1px solid var(--border2);">
+        ${_jobsPage+1} / ${totalPages}
+        <span style="font-size:11px;color:var(--text3);font-weight:600;"> (${filtered.length} items)</span>
+      </span>
+      <button onclick="_jobsPage++;_renderJobsList();document.getElementById('jobs-tabs')?.scrollIntoView({behavior:'smooth',block:'start'})" ${_jobsPage>=totalPages-1?'disabled':''}
+        style="padding:8px 18px;border-radius:10px;border:1.5px solid var(--border2);background:var(--card);color:var(--text);font-family:inherit;font-size:13px;font-weight:700;cursor:pointer;opacity:${_jobsPage>=totalPages-1?'0.4':'1'}">
+        Next →
+      </button>
+    </div>` : '';
+
+  listEl.innerHTML = cards + pagination;
+}
+
 function switchCATab(tab) {
   _caCurrentTab = tab;
   ['daily','monthly'].forEach(function(t) {
@@ -23176,6 +23603,199 @@ function _populateContestExamSelect() {
     (DB.exams||[]).map(e => `<option value="${e.id}">${escHtml(e.name)}</option>`).join('');
 }
 
+// ══════════════════════════════════════════════
+// 💼 ADMIN — GOVT JOBS & RESULTS CRUD
+// ══════════════════════════════════════════════
+let _ajAll = [];
+let _ajPage = 0;
+const _AJ_PER = 10;
+
+async function loadAdminJobArticles() {
+  const listEl = document.getElementById('admin-jobs-list');
+  if (!listEl) return;
+  listEl.innerHTML = '<div style="color:var(--text3);text-align:center;padding:30px">Loading...</div>';
+  try {
+    const res = await fetch(`${SB_URL}/rest/v1/ae_job_articles?order=created_at.desc&limit=500`, { headers: SB_HEADERS });
+    const data = res.ok ? await res.json() : [];
+    _ajAll = Array.isArray(data) ? data : [];
+  } catch(e) {
+    _ajAll = [];
+  }
+  _ajPage = 0;
+  _renderAdminJobsPage();
+}
+
+function _renderAdminJobsPage() {
+  const listEl = document.getElementById('admin-jobs-list');
+  if (!listEl) return;
+
+  if (!_ajAll.length) {
+    listEl.innerHTML = '<div style="color:var(--text3);text-align:center;padding:30px">ఇంకా articles లేవు. పైన form నుండి add చేయండి.</div>';
+    _renderAdminJobsPagination(0);
+    return;
+  }
+
+  const totalPages = Math.ceil(_ajAll.length / _AJ_PER);
+  if (_ajPage >= totalPages) _ajPage = totalPages - 1;
+  if (_ajPage < 0) _ajPage = 0;
+  const start = _ajPage * _AJ_PER;
+  const pageItems = _ajAll.slice(start, start + _AJ_PER);
+
+  listEl.innerHTML = pageItems.map(j => {
+    const meta = _jobCategoryMeta(j.category);
+    const activeBadge = j.is_active
+      ? `<span class="meta-pill pill-green">✅ Active</span>`
+      : `<span class="meta-pill" style="background:rgba(100,100,100,.1);color:var(--text3)">⏸ Hidden</span>`;
+    return `<div style="background:var(--bg);border:1.5px solid var(--border2);border-radius:12px;padding:12px 14px;margin-bottom:10px;display:flex;align-items:flex-start;justify-content:space-between;gap:10px;flex-wrap:wrap">
+      <div style="flex:1;min-width:200px">
+        <div style="display:flex;align-items:center;gap:8px;margin-bottom:4px;flex-wrap:wrap">
+          <span class="job-cat-badge ${meta.cls}">${meta.label}</span>
+          ${activeBadge}
+        </div>
+        <div style="font-size:14px;font-weight:800;color:var(--text)">${escHtml(j.title)}</div>
+        <div style="font-size:11px;color:var(--text3);margin-top:2px">${escHtml(j.organization||'')}${j.last_date?' · ⏰ Last Date: '+escHtml(j.last_date):''}</div>
+      </div>
+      <div class="action-btns">
+        <button class="edit-btn" onclick="_editJobArticle(${j.id})">✏️ Edit</button>
+        <button class="edit-btn" style="background:linear-gradient(135deg,#6B7280,#4B5563)" onclick="_toggleJobActive(${j.id},${j.is_active})">${j.is_active?'⏸ Hide':'▶️ Show'}</button>
+        <button class="del-btn" onclick="_deleteJobArticle(${j.id})">Delete</button>
+      </div>
+    </div>`;
+  }).join('');
+
+  _renderAdminJobsPagination(_ajAll.length);
+}
+
+function _renderAdminJobsPagination(total) {
+  const wrap = document.getElementById('admin-jobs-pagination');
+  if (!wrap) return;
+  const totalPages = Math.ceil(total / _AJ_PER);
+  if (totalPages <= 1) { wrap.innerHTML = ''; return; }
+  wrap.innerHTML = `<div style="display:flex;align-items:center;justify-content:center;gap:10px;margin:12px 0;flex-wrap:wrap;">
+    <button onclick="_ajPage--;_renderAdminJobsPage()" ${_ajPage===0?'disabled':''} style="padding:7px 16px;border-radius:8px;border:1.5px solid var(--border2);background:var(--card);color:var(--text);font-family:inherit;font-size:12px;font-weight:700;cursor:pointer;opacity:${_ajPage===0?'0.4':'1'}">← Prev</button>
+    <span style="font-size:12px;font-weight:800;color:var(--text2);padding:5px 12px;background:var(--bg);border-radius:8px;border:1px solid var(--border2);">${_ajPage+1} / ${totalPages} <span style="color:var(--text3);font-weight:600;">(${total} articles)</span></span>
+    <button onclick="_ajPage++;_renderAdminJobsPage()" ${_ajPage>=totalPages-1?'disabled':''} style="padding:7px 16px;border-radius:8px;border:1.5px solid var(--border2);background:var(--card);color:var(--text);font-family:inherit;font-size:12px;font-weight:700;cursor:pointer;opacity:${_ajPage>=totalPages-1?'0.4':'1'}">Next →</button>
+  </div>`;
+}
+
+function _resetJobForm() {
+  ['job-edit-id','job-title','job-org','job-posts','job-qual','job-age','job-fee','job-notif-date','job-last-date','job-exam-date','job-apply-link','job-notif-link','job-desc'].forEach(id => {
+    const el = document.getElementById(id);
+    if (el) el.value = '';
+  });
+  document.getElementById('job-category').value = 'notification';
+  document.getElementById('job-form-title').textContent = '💼 కొత్త Article Add చేయండి';
+  document.getElementById('job-save-btn').textContent = '💾 Article Save చేయండి';
+  document.getElementById('job-cancel-btn').style.display = 'none';
+}
+
+function _editJobArticle(id) {
+  const j = _ajAll.find(x => x.id === id);
+  if (!j) return;
+  document.getElementById('job-edit-id').value = j.id;
+  document.getElementById('job-title').value = j.title || '';
+  document.getElementById('job-org').value = j.organization || '';
+  document.getElementById('job-category').value = j.category || 'notification';
+  document.getElementById('job-posts').value = j.total_posts || '';
+  document.getElementById('job-qual').value = j.qualification || '';
+  document.getElementById('job-age').value = j.age_limit || '';
+  document.getElementById('job-fee').value = j.fee || '';
+  document.getElementById('job-notif-date').value = j.notification_date || '';
+  document.getElementById('job-last-date').value = j.last_date || '';
+  document.getElementById('job-exam-date').value = j.exam_date || '';
+  document.getElementById('job-apply-link').value = j.apply_link || '';
+  document.getElementById('job-notif-link').value = j.notification_link || '';
+  document.getElementById('job-desc').value = j.description || '';
+
+  document.getElementById('job-form-title').textContent = '✏️ Article Edit చేయండి';
+  document.getElementById('job-save-btn').textContent = '💾 Update చేయండి';
+  document.getElementById('job-cancel-btn').style.display = '';
+
+  document.querySelector('#atab-jobs .admin-card')?.scrollIntoView({ behavior: 'smooth', block: 'start' });
+}
+
+async function adminSaveJobArticle() {
+  const title = document.getElementById('job-title').value.trim();
+  if (!title) { toast('Title enter చేయండి!', 'warn'); return; }
+
+  const editId = document.getElementById('job-edit-id').value;
+  const payload = {
+    title,
+    organization: document.getElementById('job-org').value.trim(),
+    category: document.getElementById('job-category').value,
+    total_posts: document.getElementById('job-posts').value.trim(),
+    qualification: document.getElementById('job-qual').value.trim(),
+    age_limit: document.getElementById('job-age').value.trim(),
+    fee: document.getElementById('job-fee').value.trim(),
+    notification_date: document.getElementById('job-notif-date').value.trim(),
+    last_date: document.getElementById('job-last-date').value.trim(),
+    exam_date: document.getElementById('job-exam-date').value.trim(),
+    apply_link: document.getElementById('job-apply-link').value.trim(),
+    notification_link: document.getElementById('job-notif-link').value.trim(),
+    description: document.getElementById('job-desc').value.trim()
+  };
+
+  const btn = document.getElementById('job-save-btn');
+  btn.disabled = true;
+  try {
+    if (editId) {
+      // Update existing
+      await fetch(`${SB_URL}/rest/v1/ae_job_articles?id=eq.${editId}`, {
+        method: 'PATCH', headers: SB_HEADERS,
+        body: JSON.stringify(payload)
+      });
+      toast('✓ Article updated!', 'success');
+    } else {
+      // Create new
+      payload.is_active = true;
+      payload.created_at = new Date().toISOString();
+      await fetch(`${SB_URL}/rest/v1/ae_job_articles`, {
+        method: 'POST', headers: SB_HEADERS,
+        body: JSON.stringify([payload])
+      });
+
+      // 🔔 Bell notification to all users about new job article
+      const meta = _jobCategoryMeta(payload.category);
+      createBellNotifications(
+        `${meta.label}: ${payload.title}`,
+        `${payload.organization || 'New update'} — వివరాలు చూడండి 👀`,
+        'all',
+        'https://aniledutech.in'
+      );
+
+      toast('✓ Article added! 🔔 Users కి notification వెళ్ళింది.', 'success');
+    }
+    _resetJobForm();
+    loadAdminJobArticles();
+  } catch(e) {
+    toast('Error! మళ్ళీ try చేయండి.', 'error');
+  } finally {
+    btn.disabled = false;
+  }
+}
+
+async function _toggleJobActive(id, currentActive) {
+  try {
+    await fetch(`${SB_URL}/rest/v1/ae_job_articles?id=eq.${id}`, {
+      method: 'PATCH', headers: SB_HEADERS,
+      body: JSON.stringify({ is_active: !currentActive })
+    });
+    toast(currentActive ? '⏸ Article hidden!' : '▶️ Article shown!', 'info');
+    loadAdminJobArticles();
+  } catch(e) { toast('Error!', 'error'); }
+}
+
+async function _deleteJobArticle(id) {
+  if (!confirm('ఈ article delete చేయాలా?')) return;
+  try {
+    await fetch(`${SB_URL}/rest/v1/ae_job_articles?id=eq.${id}`, {
+      method: 'DELETE', headers: SB_HEADERS
+    });
+    toast('🗑 Article deleted!', 'warn');
+    loadAdminJobArticles();
+  } catch(e) { toast('Error!', 'error'); }
+}
+
 // ── Hook: populate exam select when admin contests tab is opened ──
 const _origSwitchAdminTab = window.switchAdminTab;
 window.switchAdminTab = function(tab, btn) {
@@ -23183,6 +23803,9 @@ window.switchAdminTab = function(tab, btn) {
   if (tab === 'contests') {
     _populateContestExamSelect();
     loadAdminContests();
+  }
+  if (tab === 'jobs') {
+    loadAdminJobArticles();
   }
 };
 

@@ -6195,14 +6195,15 @@ html:not(:has(#_ae_loading)) body {
           <div class="ae-slide-dots-bg"></div>
           <div class="ae-slide-content" style="z-index:1">
             <div class="ae-slide-tag" style="background:linear-gradient(135deg,#F5B731,#E8640A);color:#fff;border:none;">👑 PREMIUM</div>
-            <div class="ae-slide-title" style="color:#fff">అన్ని Exams<br><span style="background:linear-gradient(135deg,#F5B731,#E8640A);-webkit-background-clip:text;-webkit-text-fill-color:transparent">Unlock చేయండి!</span></div>
-            <div class="ae-slide-desc" style="color:rgba(255,255,255,.8)">TSPSC Group-1 · SSC Advanced · Banking Special<br>₹99/month మాత్రమే — Cancel anytime!</div>
-            <button onclick="openPricing()" class="ae-slide-btn" style="background:linear-gradient(135deg,#F5B731,#E8640A);color:#1a0533;font-weight:900;">⚡ Premium తీసుకోండి <span style="font-size:14px">→</span></button>
+            <div class="ae-slide-title" style="color:#fff">Exam Crack<br><span style="background:linear-gradient(135deg,#F5B731,#E8640A);-webkit-background-clip:text;-webkit-text-fill-color:transparent">చేయాలంటే?</span></div>
+            <div class="ae-slide-desc" style="color:rgba(255,255,255,.85)">50+ Premium Exams · Previous Papers · Live Tests<br><strong style="color:#F5B731;">కేవలం ₹99/month</strong> — రోజుకు ₹3 మాత్రమే!</div>
+            <button onclick="openPricing()" class="ae-slide-btn" style="background:linear-gradient(135deg,#F5B731,#E8640A);color:#1a0533;font-weight:900;">⚡ ఇప్పుడే Unlock చేయండి →</button>
           </div>
           <div class="ae-slide-phone" style="z-index:1;display:flex;flex-direction:column;gap:8px;">
-            <div style="background:rgba(245,183,49,.15);border:1.5px solid rgba(245,183,49,.4);border-radius:12px;padding:10px 14px;color:#F5B731;font-size:12px;font-weight:700;">🔓 Locked Exams</div>
-            <div style="background:rgba(245,183,49,.15);border:1.5px solid rgba(245,183,49,.4);border-radius:12px;padding:10px 14px;color:#F5B731;font-size:12px;font-weight:700;">📊 Advanced Analytics</div>
-            <div style="background:rgba(245,183,49,.15);border:1.5px solid rgba(245,183,49,.4);border-radius:12px;padding:10px 14px;color:#F5B731;font-size:12px;font-weight:700;">🏅 Certificates</div>
+            <div style="background:rgba(245,183,49,.18);border:1.5px solid rgba(245,183,49,.5);border-radius:12px;padding:10px 14px;color:#F5B731;font-size:12px;font-weight:700;">🔓 50+ Premium Exams</div>
+            <div style="background:rgba(245,183,49,.18);border:1.5px solid rgba(245,183,49,.5);border-radius:12px;padding:10px 14px;color:#F5B731;font-size:12px;font-weight:700;">📄 Previous Year Papers</div>
+            <div style="background:rgba(245,183,49,.18);border:1.5px solid rgba(245,183,49,.5);border-radius:12px;padding:10px 14px;color:#F5B731;font-size:12px;font-weight:700;">📊 Weak Area Analytics</div>
+            <div style="background:rgba(245,183,49,.18);border:1.5px solid rgba(245,183,49,.5);border-radius:12px;padding:10px 14px;color:#F5B731;font-size:12px;font-weight:700;">🏅 Official Certificates</div>
           </div>
         </div>
 
@@ -8125,7 +8126,14 @@ html:not(:has(#_ae_loading)) body {
 
       <!-- Manage existing exams -->
       <div class="admin-card">
-        <h3>📂 All Exams</h3>
+        <div style="display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:10px;margin-bottom:12px;">
+          <h3 style="margin:0">📂 All Exams</h3>
+          <div style="display:flex;gap:8px;align-items:center;flex-wrap:wrap;">
+            <span style="font-size:12px;color:var(--text3);font-weight:600;">First N free:</span>
+            <input type="number" id="bulk-free-count" value="10" min="0" style="width:60px;padding:6px 8px;border:1.5px solid var(--border2);border-radius:8px;font-size:13px;font-weight:700;background:var(--bg);color:var(--text);outline:none;text-align:center;">
+            <button onclick="bulkSetFreeLimit(parseInt(document.getElementById('bulk-free-count').value)||0)" style="padding:7px 16px;border-radius:8px;border:none;cursor:pointer;font-size:12px;font-weight:800;background:linear-gradient(135deg,#F5B731,#E8640A);color:#fff;">🔓 Apply</button>
+          </div>
+        </div>
         <div style="overflow-x:auto">
           <table class="exams-manage-table">
             <thead><tr><th>#</th><th>Exam Name</th><th>Category</th><th>Time</th><th>Difficulty</th><th>Questions</th><th>📁 Folder</th><th>Lock</th><th>Actions</th></tr></thead>
@@ -13188,32 +13196,40 @@ function _showPremiumLockModal(examName){
   document.getElementById('premium-lock-modal')?.remove();
   const m=document.createElement('div');
   m.id='premium-lock-modal';
-  m.style.cssText='position:fixed;inset:0;z-index:800;background:rgba(5,12,35,.82);backdrop-filter:blur(18px);display:flex;align-items:center;justify-content:center;padding:16px;';
-  m.innerHTML=`<div style="background:var(--surface);border-radius:28px;width:100%;max-width:420px;padding:0;box-shadow:0 30px 100px rgba(0,0,0,.5);text-align:center;position:relative;border:1.5px solid rgba(245,183,49,.35);overflow:hidden;">
-    <!-- Top gradient bar -->
+  m.style.cssText='position:fixed;inset:0;z-index:800;background:rgba(5,12,35,.85);backdrop-filter:blur(20px);display:flex;align-items:center;justify-content:center;padding:16px;';
+  m.innerHTML=`<div style="background:var(--surface);border-radius:28px;width:100%;max-width:440px;padding:0;box-shadow:0 30px 100px rgba(0,0,0,.6);text-align:center;position:relative;border:1.5px solid rgba(245,183,49,.4);overflow:hidden;">
     <div style="height:5px;background:linear-gradient(90deg,#F5B731,#E8640A,#F5B731);background-size:200%;animation:gradientSlide 2s linear infinite;"></div>
-    <style>@keyframes gradientSlide{0%{background-position:0%}100%{background-position:200%}}</style>
-    <div style="padding:32px 28px 28px;">
-    <button onclick="document.getElementById('premium-lock-modal').remove()" style="position:absolute;top:16px;right:18px;background:rgba(128,128,128,.15);border:none;font-size:16px;cursor:pointer;color:var(--text3);width:32px;height:32px;border-radius:50%;display:flex;align-items:center;justify-content:center;">✕</button>
-    <!-- Lock icon with glow -->
-    <div style="font-size:54px;margin-bottom:10px;filter:drop-shadow(0 0 16px rgba(245,183,49,.5));animation:lockBounce .6s cubic-bezier(.2,.8,.2,1)">🔐</div>
-    <style>@keyframes lockBounce{from{transform:scale(.5);opacity:0}to{transform:scale(1);opacity:1}}</style>
-    <div style="font-size:21px;font-weight:900;color:var(--text);margin-bottom:6px">Premium Exam 👑</div>
-    <div style="font-size:13.5px;color:#F5B731;font-weight:800;margin-bottom:6px">${examName}</div>
-    <div style="font-size:12.5px;color:var(--text3);margin-bottom:20px;line-height:1.7">ఈ exam Premium members కోసం మాత్రమే.<br>Unlock చేయడానికి ₹99/month మాత్రమే!</div>
-    <!-- Benefits list -->
-    <div style="background:rgba(245,183,49,.08);border:1px solid rgba(245,183,49,.2);border-radius:16px;padding:14px;margin-bottom:20px;text-align:left;">
-      <div style="font-size:11px;font-weight:800;color:#F5B731;margin-bottom:8px;text-transform:uppercase;letter-spacing:.8px;">Premium లో ఏమి వస్తుంది?</div>
-      <div style="font-size:12.5px;color:var(--text2);line-height:2;">
-        ✅ అన్ని TSPSC, SSC, Banking Exams<br>
-        ✅ Unlimited Mock Tests & Practice<br>
-        ✅ Detailed Analytics & Progress<br>
-        ✅ Certificate + Priority Support
+    <style>@keyframes gradientSlide{0%{background-position:0%}100%{background-position:200%}}@keyframes lockBounce{from{transform:scale(.5);opacity:0}to{transform:scale(1);opacity:1}}@keyframes pulse{0%,100%{transform:scale(1)}50%{transform:scale(1.04)}}</style>
+    <div style="padding:28px 26px 24px;">
+    <button onclick="document.getElementById('premium-lock-modal').remove()" style="position:absolute;top:14px;right:16px;background:rgba(128,128,128,.15);border:none;font-size:16px;cursor:pointer;color:var(--text3);width:32px;height:32px;border-radius:50%;display:flex;align-items:center;justify-content:center;">✕</button>
+    <div style="font-size:50px;margin-bottom:8px;filter:drop-shadow(0 0 20px rgba(245,183,49,.6));animation:lockBounce .6s cubic-bezier(.2,.8,.2,1)">🔐</div>
+    <div style="font-size:20px;font-weight:900;color:var(--text);margin-bottom:4px">Premium Exam 👑</div>
+    <div style="font-size:13px;color:#F5B731;font-weight:800;margin-bottom:4px">${examName}</div>
+    <div style="font-size:12px;color:var(--text3);margin-bottom:16px;line-height:1.6">ఈ exam Premium members కోసం మాత్రమే.<br>మీ competitors ఈ exam practice చేస్తున్నారు — మీరు చేయట్లేదా?</div>
+
+    <!-- Benefits grid -->
+    <div style="background:rgba(245,183,49,.07);border:1px solid rgba(245,183,49,.2);border-radius:16px;padding:14px;margin-bottom:14px;text-align:left;">
+      <div style="font-size:10.5px;font-weight:900;color:#F5B731;margin-bottom:10px;text-transform:uppercase;letter-spacing:1px;">👑 Premium లో ఏమి వస్తుంది?</div>
+      <div style="display:grid;grid-template-columns:1fr 1fr;gap:7px;">
+        <div style="font-size:11.5px;color:var(--text2);display:flex;gap:5px;align-items:flex-start;">✅ <span>50+ Premium<br>Exams Unlock</span></div>
+        <div style="font-size:11.5px;color:var(--text2);display:flex;gap:5px;align-items:flex-start;">✅ <span>Previous Year<br>Papers</span></div>
+        <div style="font-size:11.5px;color:var(--text2);display:flex;gap:5px;align-items:flex-start;">✅ <span>Live Tests &<br>Leaderboard</span></div>
+        <div style="font-size:11.5px;color:var(--text2);display:flex;gap:5px;align-items:flex-start;">✅ <span>Weak Area<br>Analytics</span></div>
+        <div style="font-size:11.5px;color:var(--text2);display:flex;gap:5px;align-items:flex-start;">✅ <span>Official<br>Certificates</span></div>
+        <div style="font-size:11.5px;color:var(--text2);display:flex;gap:5px;align-items:flex-start;">✅ <span>Daily Current<br>Affairs</span></div>
       </div>
     </div>
-    <button onclick="document.getElementById('premium-lock-modal').remove();openPricing();" style="width:100%;padding:15px;border-radius:16px;border:none;cursor:pointer;font-size:16px;font-weight:900;background:linear-gradient(135deg,#F5B731,#E8640A);color:#fff;box-shadow:0 6px 24px rgba(245,183,49,.45);transition:transform .2s;" onmouseover="this.style.transform='translateY(-2px)'" onmouseout="this.style.transform=''">⚡ Premium తీసుకోండి — ₹99/mo</button>
-    <div style="font-size:10.5px;color:var(--text3);margin-top:8px">Cancel anytime · Secure payment</div>
-    <button onclick="document.getElementById('premium-lock-modal').remove()" style="width:100%;padding:11px;border-radius:14px;border:1px solid var(--border2);cursor:pointer;font-size:13px;font-weight:600;background:none;color:var(--text3);margin-top:8px">తర్వాత చూస్తాను</button>
+
+    <!-- Price highlight -->
+    <div style="background:linear-gradient(135deg,#1a0533,#2d0a5e);border-radius:14px;padding:12px;margin-bottom:14px;">
+      <div style="font-size:11px;color:rgba(255,255,255,.6);font-weight:700;margin-bottom:2px;">కేవలం</div>
+      <div style="font-size:28px;font-weight:900;color:#F5B731;line-height:1;">₹99 <span style="font-size:14px;color:rgba(255,255,255,.7);font-weight:600;">/month</span></div>
+      <div style="font-size:11px;color:rgba(255,255,255,.5);margin-top:3px;">= రోజుకు ₹3.30 మాత్రమే ☕ ఒక్క tea కంటే తక్కువ!</div>
+    </div>
+
+    <button onclick="document.getElementById('premium-lock-modal').remove();openPricing();" style="width:100%;padding:16px;border-radius:16px;border:none;cursor:pointer;font-size:16px;font-weight:900;background:linear-gradient(135deg,#F5B731,#E8640A);color:#fff;box-shadow:0 8px 28px rgba(245,183,49,.5);transition:transform .2s;animation:pulse 2s ease-in-out infinite;" onmouseover="this.style.transform='translateY(-2px)'" onmouseout="this.style.transform=''">⚡ Premium తీసుకోండి — ₹99/mo →</button>
+    <div style="font-size:10px;color:var(--text3);margin-top:8px;">🔒 Secure Payment · Cancel Anytime · Instant Unlock</div>
+    <button onclick="document.getElementById('premium-lock-modal').remove()" style="width:100%;padding:10px;border-radius:12px;border:none;cursor:pointer;font-size:12px;font-weight:600;background:none;color:var(--text3);margin-top:6px">తర్వాత చూస్తాను</button>
     </div>
   </div>`;
   document.body.appendChild(m);
@@ -14963,6 +14979,26 @@ function _renderAEPagination(total) {
   </div>`;
 }
 function toggleExamLock(id){const e=DB.exams.find(x=>x.id===id);if(!e)return;e.isPremium=!e.isPremium;sbSaveExam(e);saveDB();renderExamsManageTable();filterExams();toast(e.isPremium?`🔒 "${e.name}" — Premium Only!`:`🔓 "${e.name}" — Free!`,e.isPremium?'warn':'success');}
+
+// Bulk: First N exams (by ID order) free, rest premium
+async function bulkSetFreeLimit(freeCount) {
+  if (!DB.exams || DB.exams.length === 0) { toast('❌ Exams load కాలేదు', 'error'); return; }
+  const sorted = [...DB.exams].sort((a, b) => a.id - b.id);
+  let changed = 0;
+  for (let i = 0; i < sorted.length; i++) {
+    const e = sorted[i];
+    const shouldBeFree = (i < freeCount);
+    if (e.isPremium === shouldBeFree) {
+      e.isPremium = !shouldBeFree;
+      await sbSaveExam(e);
+      changed++;
+    }
+  }
+  saveDB();
+  renderExamsManageTable();
+  filterExams();
+  toast(`✅ Done! First ${freeCount} = Free 🔓, remaining ${sorted.length - freeCount} = Premium 🔒 (${changed} updated)`, 'success');
+}
 
 function assignExamFolder(examId, folderId) {
   const e = DB.exams.find(x => x.id === examId);
@@ -18704,11 +18740,16 @@ function exportBackupCSV() {
       </div>
       <!-- Features -->
       <div class="billing-features">
-        <div class="billing-feature-item"><span class="bf-check">✓</span> All Mock Tests Unlock</div>
-        <div class="billing-feature-item"><span class="bf-check">✓</span> Live Tests Access</div>
-        <div class="billing-feature-item"><span class="bf-check">✓</span> Previous Papers</div>
-        <div class="billing-feature-item"><span class="bf-check">✓</span> Certificates</div>
-        <div class="billing-feature-item"><span class="bf-check">✓</span> Detailed Analytics</div>
+        <div class="billing-feature-item"><span class="bf-check">✓</span> అన్ని Premium Exams Unlock (50+)</div>
+        <div class="billing-feature-item"><span class="bf-check">✓</span> TSPSC · SSC · Banking · RRB Full Tests</div>
+        <div class="billing-feature-item"><span class="bf-check">✓</span> Previous Year Papers Access</div>
+        <div class="billing-feature-item"><span class="bf-check">✓</span> Live Competitive Tests + Leaderboard</div>
+        <div class="billing-feature-item"><span class="bf-check">✓</span> Detailed Score Analytics & Weak Areas</div>
+        <div class="billing-feature-item"><span class="bf-check">✓</span> Official Certificates Download</div>
+        <div class="billing-feature-item"><span class="bf-check">✓</span> Daily Current Affairs (Auto)</div>
+      </div>
+      <div style="background:linear-gradient(135deg,rgba(245,183,49,.12),rgba(232,100,10,.08));border:1px solid rgba(245,183,49,.3);border-radius:10px;padding:9px 12px;margin:10px 0;font-size:11px;font-weight:800;color:#E8640A;text-align:center;">
+        ⚡ ₹99/month = రోజుకు ₹3.30 మాత్రమే!
       </div>
       <hr class="billing-divider">
       <div class="billing-row"><span class="billing-row-label">Subtotal</span><span class="billing-row-val">₹<span id="billing-subtotal">99</span></span></div>
@@ -22282,16 +22323,43 @@ function _contactSupport() {
 }
 </script>
 <script>
-// ══ PREMIUM BANNER — disabled ══
+// ══ PREMIUM BANNER — sticky CTA for free users ══
 window._refreshPremiumBanner = function(){
   var el = document.getElementById('premium-exams-banner');
-  if(el){ el.style.display='none'; el.innerHTML=''; }
-  // Remove all inline premium banners for premium users
-  if (typeof _removePremiumBanners === 'function') _removePremiumBanners();
-  ['prem-b1','prem-b2','prem-b3'].forEach(function(id){
-    var b = document.getElementById(id);
-    if(b) b.remove();
-  });
+  var u = typeof getCurrentUser === 'function' ? getCurrentUser() : null;
+  var isPrem = u && u.isPremium;
+
+  if(isPrem){
+    if(el){ el.style.display='none'; el.innerHTML=''; }
+    if (typeof _removePremiumBanners === 'function') _removePremiumBanners();
+    ['prem-b1','prem-b2','prem-b3'].forEach(function(id){
+      var b = document.getElementById(id); if(b) b.remove();
+    });
+    return;
+  }
+
+  // Count locked exams
+  var lockedCount = 0;
+  if(typeof DB !== 'undefined' && DB.exams){
+    lockedCount = DB.exams.filter(function(e){ return e.isPremium || e.isLocked; }).length;
+  }
+
+  if(el && lockedCount > 0){
+    el.style.display='block';
+    el.innerHTML = `
+      <div style="background:linear-gradient(135deg,#1a0533,#2d0a5e);border:1.5px solid rgba(245,183,49,.4);border-radius:16px;padding:14px 18px;display:flex;align-items:center;justify-content:space-between;gap:12px;flex-wrap:wrap;margin-bottom:16px;">
+        <div style="display:flex;align-items:center;gap:12px;">
+          <div style="font-size:28px;filter:drop-shadow(0 0 8px rgba(245,183,49,.5))">🔐</div>
+          <div>
+            <div style="font-size:13px;font-weight:900;color:#F5B731;">${lockedCount} Premium Exams Locked 👑</div>
+            <div style="font-size:11px;color:rgba(255,255,255,.65);margin-top:2px;">TSPSC · SSC · Banking · Previous Papers — కేవలం ₹99/month</div>
+          </div>
+        </div>
+        <button onclick="openPricing()" style="background:linear-gradient(135deg,#F5B731,#E8640A);color:#1a0533;border:none;border-radius:10px;padding:10px 20px;font-size:13px;font-weight:900;cursor:pointer;white-space:nowrap;box-shadow:0 4px 16px rgba(245,183,49,.4);">⚡ Unlock చేయండి →</button>
+      </div>`;
+  } else if(el){
+    el.style.display='none'; el.innerHTML='';
+  }
 };
 </script>
 </html>
@@ -22898,14 +22966,14 @@ async function showProfile() {
       if(name==='result') setTimeout(()=>{
         const el=document.getElementById('answer-review');
         if(!el||document.getElementById('prem-b2')) return;
-        const b=_banner('prem-b2','👑','Premium తో మరిన్ని exclusive exams practice చేయండి — ₹99/month','⚡ Premium తీసుకోండి');
+        const b=_banner('prem-b2','👑','మీ competitors 50+ Premium exams practice చేస్తున్నారు. మీరు చేయట్లేదా? — ₹99/month మాత్రమే!','⚡ ఇప్పుడే Unlock →');
         if(b) el.before(b);
       },500);
 
       if(name==='progress') setTimeout(()=>{
         const el=document.querySelector('#page-progress .prog-header');
         if(!el||document.getElementById('prem-b3')) return;
-        const b=_banner('prem-b3','📊','Advanced analytics కావాలా? Premium తీసుకోండి — ₹99/month','👑 Upgrade');
+        const b=_banner('prem-b3','📊','మీ weak areas identify చేయాలంటే Premium Analytics కావాలి — రోజుకు ₹3 మాత్రమే!','👑 Upgrade Now →');
         if(b) el.after(b);
       },300);
     };

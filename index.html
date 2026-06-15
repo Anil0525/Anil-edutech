@@ -17523,7 +17523,8 @@ function _appInit() {
   // GitHub Pages SPA routing: 404.html redirects to /?p=/exams etc.
   // Here we read that ?p= param and navigate to correct page
   try {
-    const _ghPath = new URLSearchParams(window.location.search).get('p');
+    const _ghRaw = new URLSearchParams(window.location.search).get('p');
+    const _ghPath = _ghRaw ? decodeURIComponent(_ghRaw) : null;
     if (_ghPath) {
       // Clean URL: remove ?p= from address bar
       history.replaceState(null, '', _ghPath);

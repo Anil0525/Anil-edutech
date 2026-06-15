@@ -5,29 +5,34 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>Anil EduTech</title>
 <script>
-// Save target page in sessionStorage, then redirect cleanly to /
 var path = window.location.pathname;
-var pageMap = {
-  '/exams':           'exams',
-  '/mock-tests':      'mock-folders',
-  '/current-affairs': 'current-affairs',
-  '/syllabus':        'syllabus',
-  '/videos':          'videos',
-  '/jobs':            'jobs',
-  '/daily-challenge': 'daily',
-  '/progress':        'progress',
-  '/support':         'support',
-  '/referral':        'referral',
-  '/badges':          'badges',
-  '/profile':         'profile',
-  '/contest':         'contest',
-};
-var targetPage = pageMap[path];
-if (targetPage) {
-  sessionStorage.setItem('ae_goto_page', targetPage);
+
+// These paths have real static folders — add trailing slash so GitHub Pages serves them
+var staticPaths = ['/exams', '/mock-tests', '/syllabus', '/videos', '/jobs', '/current-affairs', '/daily-challenge', '/progress', '/support'];
+
+if (staticPaths.indexOf(path) !== -1) {
+  // Redirect to folder with trailing slash → GitHub Pages serves index.html
+  window.location.replace(path + '/');
+} else {
+  // Unknown path → go to main app
+  var pageMap = {
+    '/mock-tests': 'mock-folders',
+    '/current-affairs': 'current-affairs',
+    '/syllabus': 'syllabus',
+    '/videos': 'videos',
+    '/jobs': 'jobs',
+    '/daily-challenge': 'daily',
+    '/progress': 'progress',
+    '/support': 'support',
+    '/referral': 'referral',
+    '/badges': 'badges',
+    '/profile': 'profile',
+    '/contest': 'contest',
+  };
+  var targetPage = pageMap[path];
+  if (targetPage) sessionStorage.setItem('ae_goto_page', targetPage);
+  window.location.replace('/');
 }
-// Redirect to homepage cleanly (no ?p= params)
-window.location.replace('/');
 </script>
 </head>
 <body>

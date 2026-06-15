@@ -4837,56 +4837,6 @@ html {
 /* ── 2. EXAM LIST PAGE — mobile sidebar as horizontal scroll strip ── */
 @media (max-width: 640px) {
   /* Show sidebar as a horizontal scrollable strip instead of hiding it */
-  .ae-exams-sidebar {
-    display: flex !important;
-    flex-direction: row !important;
-    width: 100% !important;
-    min-width: unset !important;
-    min-height: unset !important;
-    position: sticky !important;
-    top: 52px !important;
-    z-index: 100 !important;
-    padding: 8px 12px !important;
-    overflow-x: auto !important;
-    overflow-y: hidden !important;
-    gap: 6px !important;
-    background: #111827 !important;
-    -webkit-overflow-scrolling: touch !important;
-    scrollbar-width: none !important;
-    border-bottom: 2px solid rgba(26,115,232,.4) !important;
-  }
-  .ae-exams-sidebar::-webkit-scrollbar { display: none; }
-  /* Hide logo and section label in horizontal mode */
-  .ae-sidebar-logo,
-  .ae-sidebar-section-label { display: none !important; }
-  .ae-sidebar-item {
-    padding: 7px 14px !important;
-    border-radius: 30px !important;
-    font-size: 12px !important;
-    white-space: nowrap !important;
-    flex-shrink: 0 !important;
-    width: auto !important;
-    border: 1.5px solid rgba(255,255,255,.12) !important;
-  }
-  .ae-sidebar-item.active {
-    background: rgba(26,115,232,.9) !important;
-    color: #fff !important;
-    border-color: #1A73E8 !important;
-  }
-  .ae-sidebar-item.active::before { display: none !important; }
-  .ae-sidebar-item:hover { background: rgba(255,255,255,.12) !important; }
-  /* Adjust main content top padding so it clears the sticky strip */
-  .ae-exams-main .section {
-    padding: 14px 14px 32px !important;
-  }
-  /* Smaller page title on mobile */
-  #exams-page-title {
-    font-size: 20px !important;
-  }
-  #exams-page-sub {
-    font-size: 12px !important;
-    margin-bottom: 14px !important;
-  }
   /* Exam card — better mobile layout */
   #page-exams .exam-card {
     padding: 14px 14px 14px 16px !important;
@@ -6753,73 +6703,139 @@ html:not(:has(#_ae_loading)) body {
 
 <!-- EXAMS LIST -->
 <div id="page-exams" class="page">
-  <!-- ══ SIDEBAR LAYOUT ══ -->
-  <div class="ae-exams-layout">
+  <div class="tb-layout">
 
-  <!-- LEFT SIDEBAR -->
-  <div class="ae-exams-sidebar">
-    <div class="ae-sidebar-logo">📝 Exams</div>
-    <div class="ae-sidebar-section-label">CATEGORIES</div>
-    <button class="ae-sidebar-item active" id="sb-all" onclick="goExams('');_setSbActive('sb-all')">
-      <span class="ae-sb-icon">🏠</span><span>All Exams</span>
-    </button>
-    <button class="ae-sidebar-item" id="sb-tspsc" onclick="goExams('TSPSC');_setSbActive('sb-tspsc')">
-      <span class="ae-sb-icon">🏛️</span><span>TSPSC</span>
-    </button>
-    <button class="ae-sidebar-item" id="sb-ssc" onclick="goExams('SSC');_setSbActive('sb-ssc')">
-      <span class="ae-sb-icon">📋</span><span>SSC</span>
-    </button>
-    <button class="ae-sidebar-item" id="sb-rrb" onclick="goExams('RRB');_setSbActive('sb-rrb')">
-      <span class="ae-sb-icon">🚂</span><span>RRB</span>
-    </button>
-    <button class="ae-sidebar-item" id="sb-bank" onclick="goExams('Banking');_setSbActive('sb-bank')">
-      <span class="ae-sb-icon">🏦</span><span>Banking</span>
-    </button>
-  </div>
+    <!-- LEFT SIDEBAR -->
+    <div class="tb-sidebar">
+      <div class="tb-sb-label">CATEGORIES</div>
+      <button class="tb-sb-item active" id="sb-all" onclick="goExams('');_setSbActive('sb-all')">
+        <span class="tb-sb-icon" style="background:linear-gradient(135deg,#6366f1,#8b5cf6)">🏠</span>All Exams
+      </button>
+      <button class="tb-sb-item" id="sb-tspsc" onclick="goExams('TSPSC');_setSbActive('sb-tspsc')">
+        <span class="tb-sb-icon" style="background:linear-gradient(135deg,#1A73E8,#0ea5e9)">🏛️</span>TSPSC
+      </button>
+      <button class="tb-sb-item" id="sb-ssc" onclick="goExams('SSC');_setSbActive('sb-ssc')">
+        <span class="tb-sb-icon" style="background:linear-gradient(135deg,#10b981,#059669)">📋</span>SSC
+      </button>
+      <button class="tb-sb-item" id="sb-rrb" onclick="goExams('RRB');_setSbActive('sb-rrb')">
+        <span class="tb-sb-icon" style="background:linear-gradient(135deg,#0ea5e9,#0284c7)">🚂</span>RRB
+      </button>
+      <button class="tb-sb-item" id="sb-bank" onclick="goExams('Banking');_setSbActive('sb-bank')">
+        <span class="tb-sb-icon" style="background:linear-gradient(135deg,#f59e0b,#d97706)">🏦</span>Banking
+      </button>
+      <button class="tb-sb-item" id="sb-gk" onclick="goExams('GK');_setSbActive('sb-gk')">
+        <span class="tb-sb-icon" style="background:linear-gradient(135deg,#ec4899,#db2777)">🌍</span>GK
+      </button>
+      <button class="tb-sb-item" id="sb-mock" onclick="goExams('Mock Test');_setSbActive('sb-mock')">
+        <span class="tb-sb-icon" style="background:linear-gradient(135deg,#f97316,#ea580c)">📝</span>Mock Tests
+      </button>
+      <button class="tb-sb-item" id="sb-ca" onclick="goExams('Current Affairs');_setSbActive('sb-ca')">
+        <span class="tb-sb-icon" style="background:linear-gradient(135deg,#14b8a6,#0d9488)">📰</span>Current Affairs
+      </button>
+      <button class="tb-sb-item" id="sb-live" onclick="goExams('Live Test');_setSbActive('sb-live')">
+        <span class="tb-sb-icon" style="background:linear-gradient(135deg,#ef4444,#dc2626)">🔴</span>Live Tests
+      </button>
+      <button class="tb-sb-item" id="sb-pp" onclick="goExams('Previous Papers');_setSbActive('sb-pp')">
+        <span class="tb-sb-icon" style="background:linear-gradient(135deg,#8b5cf6,#7c3aed)">📄</span>Previous Papers
+      </button>
+    </div>
 
-  <!-- MAIN CONTENT -->
-  <div class="ae-exams-main">
-  <div class="section">
-    <div class="section-title" id="exams-page-title">All Exams</div>
-    <div class="section-sub" id="exams-page-sub">Available exams చూపిస్తున్నాం</div>
-    <!-- ══ PREMIUM BANNER ══ -->
-    <div id="premium-exams-banner" style="display:none;"></div>
-    <!-- Search -->
-    <div class="search-bar-wrap">
-      <span class="search-icon">🔍</span>
-      <input class="search-bar" id="exam-search" type="text" placeholder="Exam search చేయండి..." oninput="filterExams()">
-      <button class="search-clear" id="search-clear" onclick="clearSearch()">✕</button>
-    </div>
-    <div class="filter-chips" id="main-filter-chips">
-      <button class="filter-chip active" id="bm-tab-all" data-filter="" onclick="setFilter(this,'');document.getElementById('bm-tab-fav').classList.remove('active');document.getElementById('bm-tab-all').classList.add('active')">All</button>
-      <button class="filter-chip" id="bm-tab-fav" onclick="setBmFavFilter(this)">⭐ Favourites</button>
-    </div>
-    <!-- SSC sub-filters: only when SSC selected -->
-    <div class="filter-chips" id="ssc-sub-filters" style="display:none;">
-      <button class="filter-chip" style="background:none;border:none;color:#E8640A;font-weight:800;padding:6px 4px;cursor:pointer;" onclick="goExams('')" title="Back">← Back</button>
-      <button class="filter-chip ssc-sub active" data-filter="SSC_ALL" onclick="setSSCSubFilter(this,'ALL')">📋 All SSC</button>
-      <button class="filter-chip ssc-sub" data-filter="SSC_CGL" onclick="setSSCSubFilter(this,'CGL')">🎯 CGL</button>
-      <button class="filter-chip ssc-sub" data-filter="SSC_CHSL" onclick="setSSCSubFilter(this,'CHSL')">📝 CHSL</button>
-      <button class="filter-chip ssc-sub" data-filter="SSC_MTS" onclick="setSSCSubFilter(this,'MTS')">📄 MTS</button>
-    </div>
-    <!-- RRB sub-filters: only when RRB selected -->
-    <div class="filter-chips" id="rrb-sub-filters" style="display:none;">
-      <button class="filter-chip" style="background:none;border:none;color:#E8640A;font-weight:800;padding:6px 4px;cursor:pointer;" onclick="goExams('')" title="Back">← Back</button>
-      <button class="filter-chip rrb-sub active" data-filter="RRB_ALL" onclick="setRRBSubFilter(this,'ALL')">🚂 All RRB</button>
-      <button class="filter-chip rrb-sub" data-filter="RRB_NTPC" onclick="setRRBSubFilter(this,'NTPC')">🚆 NTPC</button>
-      <button class="filter-chip rrb-sub" data-filter="RRB_GROUPD" onclick="setRRBSubFilter(this,'Group D')">👷 Group D</button>
-    </div>
-    <!-- Banking sub-filters: only when Banking selected -->
-    <div class="filter-chips" id="banking-sub-filters" style="display:none;">
-      <button class="filter-chip" style="background:none;border:none;color:#E8640A;font-weight:800;padding:6px 4px;cursor:pointer;" onclick="goExams('')" title="Back">← Back</button>
-      <button class="filter-chip bank-sub active" data-filter="BANK_ALL" onclick="setBankingSubFilter(this,'ALL')">🏦 All Banking</button>
-      <button class="filter-chip bank-sub" data-filter="BANK_IBPS" onclick="setBankingSubFilter(this,'IBPS')">🏛️ IBPS Clerk</button>
-      <button class="filter-chip bank-sub" data-filter="BANK_SBI" onclick="setBankingSubFilter(this,'SBI')">🏦 SBI Clerk</button>
-    </div>
-    <div class="exams-grid" id="exams-list"></div>
-  </div>
-  </div> <!-- /.ae-exams-main -->
-  </div> <!-- /.ae-exams-layout -->
+    <!-- RIGHT MAIN -->
+    <div class="tb-main">
+
+      <!-- TOP CATEGORY ICON GRID -->
+      <div class="tb-cat-header">
+        <div class="tb-cat-title">600+ Explore all Exams</div>
+        <div class="tb-cat-desc" id="exams-page-sub">Get exam-ready with concepts, questions and study notes as per the latest pattern</div>
+      </div>
+      <div class="tb-icon-grid">
+        <button class="tb-icon-item" id="ic-all" onclick="goExams('');_setSbActive('sb-all');_setIconActive('ic-all')">
+          <div class="tb-icon-circle" style="background:linear-gradient(135deg,#6366f1,#8b5cf6)">🏠</div>
+          <span>All Exams</span>
+        </button>
+        <button class="tb-icon-item" id="ic-tspsc" onclick="goExams('TSPSC');_setSbActive('sb-tspsc');_setIconActive('ic-tspsc')">
+          <div class="tb-icon-circle" style="background:linear-gradient(135deg,#1A73E8,#0ea5e9)">🏛️</div>
+          <span>TSPSC</span>
+        </button>
+        <button class="tb-icon-item" id="ic-ssc" onclick="goExams('SSC');_setSbActive('sb-ssc');_setIconActive('ic-ssc')">
+          <div class="tb-icon-circle" style="background:linear-gradient(135deg,#10b981,#059669)">📋</div>
+          <span>SSC</span>
+        </button>
+        <button class="tb-icon-item" id="ic-rrb" onclick="goExams('RRB');_setSbActive('sb-rrb');_setIconActive('ic-rrb')">
+          <div class="tb-icon-circle" style="background:linear-gradient(135deg,#0ea5e9,#0284c7)">🚂</div>
+          <span>RRB</span>
+        </button>
+        <button class="tb-icon-item" id="ic-bank" onclick="goExams('Banking');_setSbActive('sb-bank');_setIconActive('ic-bank')">
+          <div class="tb-icon-circle" style="background:linear-gradient(135deg,#f59e0b,#d97706)">🏦</div>
+          <span>Banking</span>
+        </button>
+        <button class="tb-icon-item" id="ic-gk" onclick="goExams('GK');_setSbActive('sb-gk');_setIconActive('ic-gk')">
+          <div class="tb-icon-circle" style="background:linear-gradient(135deg,#ec4899,#db2777)">🌍</div>
+          <span>GK</span>
+        </button>
+        <button class="tb-icon-item" id="ic-mock" onclick="goExams('Mock Test');_setSbActive('sb-mock');_setIconActive('ic-mock')">
+          <div class="tb-icon-circle" style="background:linear-gradient(135deg,#f97316,#ea580c)">📝</div>
+          <span>Mock Tests</span>
+        </button>
+        <button class="tb-icon-item" id="ic-ca" onclick="goExams('Current Affairs');_setSbActive('sb-ca');_setIconActive('ic-ca')">
+          <div class="tb-icon-circle" style="background:linear-gradient(135deg,#14b8a6,#0d9488)">📰</div>
+          <span>Current Affairs</span>
+        </button>
+        <button class="tb-icon-item" id="ic-live" onclick="goExams('Live Test');_setSbActive('sb-live');_setIconActive('ic-live')">
+          <div class="tb-icon-circle" style="background:linear-gradient(135deg,#ef4444,#dc2626)">🔴</div>
+          <span>Live Tests</span>
+        </button>
+        <button class="tb-icon-item" id="ic-pp" onclick="goExams('Previous Papers');_setSbActive('sb-pp');_setIconActive('ic-pp')">
+          <div class="tb-icon-circle" style="background:linear-gradient(135deg,#8b5cf6,#7c3aed)">📄</div>
+          <span>Previous Papers</span>
+        </button>
+      </div>
+
+      <!-- DIVIDER -->
+      <div style="border-top:1px solid var(--border2);margin:20px 0;"></div>
+
+      <!-- PREMIUM BANNER -->
+      <div id="premium-exams-banner" style="display:none;"></div>
+
+      <!-- SEARCH -->
+      <div class="search-bar-wrap" style="margin-bottom:14px;">
+        <span class="search-icon">🔍</span>
+        <input class="search-bar" id="exam-search" type="text" placeholder="Exam search చేయండి..." oninput="filterExams()">
+        <button class="search-clear" id="search-clear" onclick="clearSearch()">✕</button>
+      </div>
+
+      <!-- SUB FILTERS -->
+      <div class="filter-chips" id="main-filter-chips" style="margin-bottom:4px;">
+        <button class="filter-chip active" id="bm-tab-all" data-filter="" onclick="setFilter(this,'');document.getElementById('bm-tab-fav').classList.remove('active');document.getElementById('bm-tab-all').classList.add('active')">All</button>
+        <button class="filter-chip" id="bm-tab-fav" onclick="setBmFavFilter(this)">⭐ Favourites</button>
+      </div>
+      <div class="filter-chips" id="ssc-sub-filters" style="display:none;">
+        <button class="filter-chip" style="background:none;border:none;color:#E8640A;font-weight:800;padding:6px 4px;cursor:pointer;" onclick="goExams('')">← Back</button>
+        <button class="filter-chip ssc-sub active" onclick="setSSCSubFilter(this,'ALL')">📋 All SSC</button>
+        <button class="filter-chip ssc-sub" onclick="setSSCSubFilter(this,'CGL')">🎯 CGL</button>
+        <button class="filter-chip ssc-sub" onclick="setSSCSubFilter(this,'CHSL')">📝 CHSL</button>
+        <button class="filter-chip ssc-sub" onclick="setSSCSubFilter(this,'MTS')">📄 MTS</button>
+      </div>
+      <div class="filter-chips" id="rrb-sub-filters" style="display:none;">
+        <button class="filter-chip" style="background:none;border:none;color:#E8640A;font-weight:800;padding:6px 4px;cursor:pointer;" onclick="goExams('')">← Back</button>
+        <button class="filter-chip rrb-sub active" onclick="setRRBSubFilter(this,'ALL')">🚂 All RRB</button>
+        <button class="filter-chip rrb-sub" onclick="setRRBSubFilter(this,'NTPC')">🚆 NTPC</button>
+        <button class="filter-chip rrb-sub" onclick="setRRBSubFilter(this,'Group D')">👷 Group D</button>
+      </div>
+      <div class="filter-chips" id="banking-sub-filters" style="display:none;">
+        <button class="filter-chip" style="background:none;border:none;color:#E8640A;font-weight:800;padding:6px 4px;cursor:pointer;" onclick="goExams('')">← Back</button>
+        <button class="filter-chip bank-sub active" onclick="setBankingSubFilter(this,'ALL')">🏦 All Banking</button>
+        <button class="filter-chip bank-sub" onclick="setBankingSubFilter(this,'IBPS')">🏛️ IBPS</button>
+        <button class="filter-chip bank-sub" onclick="setBankingSubFilter(this,'SBI')">🏦 SBI</button>
+      </div>
+
+      <!-- EXAM LIST -->
+      <div class="section-title" id="exams-page-title" style="font-size:16px;font-weight:800;margin:12px 0 8px;"></div>
+      <div class="exams-grid" id="exams-list"></div>
+
+    </div><!-- /.tb-main -->
+  </div><!-- /.tb-layout -->
+
   <footer>
   <div class="footer-inner">
     <div class="footer-brand">Anil <span>EduTech</span></div>
@@ -13022,34 +13038,49 @@ function renderBookmarkedExams() {
   }
   el.innerHTML = list.map(e => _examCardHtml(e)).join('');
 }
+// Category colors for logo circle
+const _catColors = {
+  'TSPSC':'linear-gradient(135deg,#1A73E8,#0ea5e9)',
+  'SSC':'linear-gradient(135deg,#10b981,#059669)',
+  'RRB':'linear-gradient(135deg,#0ea5e9,#0284c7)',
+  'Banking':'linear-gradient(135deg,#f59e0b,#d97706)',
+  'GK':'linear-gradient(135deg,#ec4899,#db2777)',
+  'Mock Test':'linear-gradient(135deg,#f97316,#ea580c)',
+  'Current Affairs':'linear-gradient(135deg,#14b8a6,#0d9488)',
+  'Live Test':'linear-gradient(135deg,#ef4444,#dc2626)',
+  'Previous Papers':'linear-gradient(135deg,#8b5cf6,#7c3aed)',
+};
+const _catEmoji = {
+  'TSPSC':'🏛️','SSC':'📋','RRB':'🚂','Banking':'🏦','GK':'🌍',
+  'Mock Test':'📝','Current Affairs':'📰','Live Test':'🔴','Previous Papers':'📄',
+};
+
 function _examCardHtml(e, idx) {
   const qc = DB.questions.filter(q => q.examId === e.id).length;
-  const videoBtn = e.videoUrl ? `<a class="video-link-btn" href="${sanitizeUrl(e.videoUrl)}" target="_blank" rel="noopener noreferrer" title="Video చూడండి">▶ Video</a>` : '';
   const bmked = isBookmarked(e.id);
   const saved = _getSavedProgress(e.id);
   const hasResume = !!(saved && Object.keys(saved.answers||{}).length > 0);
   const isLocked=!!(e.isPremium||e.isLocked),u2=getCurrentUser(),userIsPremium=!!(u2&&u2.isPremium);
-  const numBadge = (idx !== undefined)
-    ? `<div style="min-width:28px;height:28px;border-radius:50%;background:linear-gradient(135deg,var(--primary),#00B4D8);color:#fff;font-size:11px;font-weight:900;display:flex;align-items:center;justify-content:center;flex-shrink:0;">${idx+1}</div>`
-    : '';
-  return `<div class="exam-card${isLocked?' is-locked':''}" style="position:relative;">
-    <button id="bm-btn-${e.id}" onclick="toggleBookmark(${e.id})" title="${bmked?'Bookmarked':'Bookmark చేయండి'}"
-      style="position:absolute;top:10px;right:10px;background:none;border:none;font-size:20px;cursor:pointer;line-height:1;padding:2px 4px;border-radius:6px;transition:transform .2s;"
-      onmouseover="this.style.transform='scale(1.25)'" onmouseout="this.style.transform=''">  ${bmked?'⭐':'🔖'}</button>
-    ${numBadge}
-    <div class="exam-info" style="padding-right:32px;">
-      <div class="exam-title">${e.name}</div>
-      <div class="exam-meta">
-        <span class="meta-pill ${catPill[e.cat]||'pill-blue'}">${e.cat||''}</span>
-        <span class="meta-pill pill-blue">⏱ ${e.time||'?'} min</span>
-        <span class="meta-pill ${diffPill[e.diff||'']||'pill-green'}">${e.diff||''}</span>
-        <span class="meta-pill pill-blue">📝 ${qc} Qs</span>
-      </div>
-      ${videoBtn}
+  const catColor = _catColors[e.cat] || 'linear-gradient(135deg,#6366f1,#8b5cf6)';
+  const catEmoji = _catEmoji[e.cat] || '📝';
+  const btnLabel = isLocked&&!userIsPremium ? '🔒 Unlock' : hasResume ? '▶ Resume' : qc===0 ? 'No Qs' : 'Start →';
+  const btnStyle = isLocked&&!userIsPremium
+    ? 'background:linear-gradient(135deg,#F5B731,#E8640A);color:#fff;'
+    : 'background:var(--primary);color:#fff;';
+  return `<div class="exam-card${isLocked?' is-locked':''}" onclick="startExam(${e.id})" style="cursor:pointer;">
+    <!-- Logo circle -->
+    <div style="width:42px;height:42px;border-radius:50%;background:${catColor};display:flex;align-items:center;justify-content:center;font-size:18px;flex-shrink:0;box-shadow:0 3px 10px rgba(0,0,0,.15);">${catEmoji}</div>
+    <!-- Info -->
+    <div style="flex:1;min-width:0;">
+      <div style="font-size:13px;font-weight:800;color:var(--text);line-height:1.3;margin-bottom:4px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;">${e.name}${isLocked&&!userIsPremium?' 🔒':''}</div>
+      <div style="font-size:11px;color:var(--text3);font-weight:600;">${qc} Questions · ${e.time||'?'} min · ${e.diff||''}</div>
     </div>
-    <button class="start-btn" onclick="startExam(${e.id})" ${qc===0?'disabled':''}>
-      ${isLocked&&!userIsPremium?'🔒 Unlock':hasResume?'▶ Resume →':qc===0?'No Questions':'Start →'}
-    </button>
+    <!-- Arrow + bookmark -->
+    <div style="display:flex;flex-direction:column;align-items:flex-end;gap:6px;flex-shrink:0;">
+      <button id="bm-btn-${e.id}" onclick="event.stopPropagation();toggleBookmark(${e.id})" title="Bookmark"
+        style="background:none;border:none;font-size:14px;cursor:pointer;padding:0;line-height:1;">${bmked?'⭐':'🔖'}</button>
+      <div style="width:26px;height:26px;border-radius:50%;background:var(--bg2);display:flex;align-items:center;justify-content:center;font-size:12px;color:var(--text3);">›</div>
+    </div>
   </div>`;
 }
 
@@ -13059,31 +13090,46 @@ function renderExamCards(list) {
     el.innerHTML = '<div class="empty-state">ఈ category లో exams లేవు. Admin లో add చేయండి.</div>';
     return;
   }
-  // ── AdSense: inject ad after every 4th exam card (enable after approval) ──
-  // const AD_BETWEEN_CARDS = `<div class="ae-ad-between" style="text-align:center;padding:10px 0;margin:4px 0;">
-  //   <ins class="adsbygoogle"
-  //        style="display:block"
-  //        data-ad-client="ca-pub-XXXXXXXXXXXXXXXX"
-  //        data-ad-slot="ADSENSE_SLOT_CARDS"
-  //        data-ad-format="auto"
-  //        data-full-width-responsive="true"></ins>
-  // </div>`;
-  const AD_BETWEEN_CARDS = ''; // disabled until AdSense approval
+
+  const total = list.length;
+  const totalPages = Math.ceil(total / _EXAMS_PER_PAGE);
+  if (_examPage >= totalPages) _examPage = totalPages - 1;
+  if (_examPage < 0) _examPage = 0;
+
+  const start = _examPage * _EXAMS_PER_PAGE;
+  const pageList = list.slice(start, start + _EXAMS_PER_PAGE);
+
+  const AD_BETWEEN_CARDS = '';
   let html = '';
-  list.forEach((e, i) => {
-    html += _examCardHtml(e, i);
-    if ((i + 1) % 4 === 0 && i !== list.length - 1) {
-      html += AD_BETWEEN_CARDS;
-    }
+  pageList.forEach((e, i) => {
+    html += _examCardHtml(e, start + i);
+    if ((i + 1) % 4 === 0 && i !== pageList.length - 1) html += AD_BETWEEN_CARDS;
   });
+
+  // Pagination controls
+  if (totalPages > 1) {
+    html += `<div style="grid-column:1/-1;display:flex;align-items:center;justify-content:center;gap:8px;padding:18px 0 8px;flex-wrap:wrap;">
+      <button onclick="window._examGoPage(${_examPage-1},window._lastExamList)" ${_examPage===0?'disabled':''} style="padding:8px 16px;border-radius:10px;border:1.5px solid var(--border2);background:${_examPage===0?'var(--bg2)':'var(--surface)'};color:${_examPage===0?'var(--text3)':'var(--text)'};font-size:13px;font-weight:700;cursor:${_examPage===0?'default':'pointer'};">← Prev</button>`;
+    // page number buttons (show max 5)
+    const startP = Math.max(0, _examPage - 2);
+    const endP = Math.min(totalPages - 1, startP + 4);
+    for (let p = startP; p <= endP; p++) {
+      html += `<button onclick="window._examGoPage(${p},window._lastExamList)" style="padding:8px 13px;border-radius:10px;border:1.5px solid ${p===_examPage?'#F5B731':'var(--border2)'};background:${p===_examPage?'linear-gradient(135deg,#F5B731,#E8640A)':'var(--surface)'};color:${p===_examPage?'#fff':'var(--text)'};font-size:13px;font-weight:${p===_examPage?'900':'600'};cursor:pointer;">${p+1}</button>`;
+    }
+    html += `<button onclick="window._examGoPage(${_examPage+1},window._lastExamList)" ${_examPage===totalPages-1?'disabled':''} style="padding:8px 16px;border-radius:10px;border:1.5px solid var(--border2);background:${_examPage===totalPages-1?'var(--bg2)':'var(--surface)'};color:${_examPage===totalPages-1?'var(--text3)':'var(--text)'};font-size:13px;font-weight:700;cursor:${_examPage===totalPages-1?'default':'pointer'};">Next →</button>`;
+    html += `<span style="font-size:11px;color:var(--text3);margin-left:4px;">Page ${_examPage+1}/${totalPages} · ${total} exams</span>`;
+    html += `</div>`;
+  }
+
   el.innerHTML = html;
-  // Push ads after DOM insert
-  setTimeout(() => {
-    el.querySelectorAll('.ae-ad-between ins').forEach(ins => {
-      try { (adsbygoogle = window.adsbygoogle || []).push({}); } catch(e) {}
-    });
-  }, 100);
+  window._lastExamList = list;
 }
+
+window._examGoPage = function(p, list) {
+  _examPage = p;
+  renderExamCards(list);
+  document.getElementById('page-exams')?.scrollTo({top:0, behavior:'smooth'});
+};
 
 /* ---- START EXAM ---- */
 // ── RESUME EXAM HELPERS ──
@@ -15717,6 +15763,9 @@ function toggleMockFolderLock(folderId) {
   toast(f.locked ? `🔒 "${f.name}" folder locked!` : `🔓 "${f.name}" folder unlocked!`, f.locked ? 'warn' : 'success');
 }
 
+let _examPage = 0;
+const _EXAMS_PER_PAGE = 12;
+
 function filterExams() {
   const q = (document.getElementById('exam-search')?.value || '').toLowerCase();
   _examSearch = q;
@@ -15749,6 +15798,8 @@ function filterExams() {
     return;
   }
 
+  // reset page when filter/search changes
+  _examPage = 0;
   document.getElementById('exams-page-sub').textContent = list.length + ' exam(s) found';
   renderExamCards(list);
 }
@@ -20177,20 +20228,30 @@ _beginFreshExam = function(e, qs) {
 
 /* ── EXAMS GRID ── */
 #page-exams .exams-grid {
+  display: grid !important;
+  grid-template-columns: repeat(3, 1fr) !important;
   gap: 14px !important;
+}
+@media (max-width: 1100px) {
+  #page-exams .exams-grid { grid-template-columns: repeat(2, 1fr) !important; }
+}
+@media (max-width: 700px) {
+  #page-exams .exams-grid { grid-template-columns: 1fr !important; }
 }
 
 /* ── EXAM CARD: complete redesign ── */
 #page-exams .exam-card {
-  background: rgba(255,255,255,.92) !important;
-  backdrop-filter: blur(12px) !important;
-  border: 1.5px solid rgba(255,255,255,.9) !important;
-  border-radius: 22px !important;
-  padding: 18px 18px 18px 20px !important;
-  box-shadow: 0 4px 20px rgba(26,115,232,.07), 0 1px 4px rgba(0,0,0,.04) !important;
-  transition: all .3s cubic-bezier(.2,.8,.2,1) !important;
+  background: var(--surface) !important;
+  border: 1px solid var(--border2) !important;
+  border-radius: 12px !important;
+  padding: 14px 14px 14px 16px !important;
+  box-shadow: 0 2px 8px rgba(0,0,0,.06) !important;
+  transition: all .2s ease !important;
   position: relative !important;
   overflow: hidden !important;
+  display: flex !important;
+  align-items: center !important;
+  gap: 12px !important;
 }
 #page-exams .exam-card::before {
   content: '' !important;
@@ -20862,55 +20923,94 @@ _beginFreshExam = function(e, qs) {
   transform: translateY(-3px) scale(1.04) !important;
 }
 /* ══ EXAMS PAGE SIDEBAR LAYOUT ══ */
-.ae-exams-layout {
+/* ══ TESTBOOK EXACT LAYOUT ══ */
+.tb-layout {
   display: flex;
   min-height: calc(100vh - 64px);
-  align-items: flex-start;
+  position: relative;
 }
-.ae-exams-sidebar {
-  width: 210px; min-width: 210px;
-  background: #111827;
-  min-height: calc(100vh - 64px);
-  padding: 32px 0 40px;
+/* Full-height sidebar: pseudo covers entire left column */
+.tb-layout::before {
+  content: '';
+  position: absolute;
+  left: 0; top: 0; bottom: 0;
+  width: 200px;
+  background: var(--surface);
+  border-right: 1px solid var(--border2);
+  z-index: 0;
+  pointer-events: none;
+}
+/* LEFT SIDEBAR */
+.tb-sidebar {
+  width: 200px; min-width: 200px;
+  background: transparent;
+  padding: 20px 0 40px;
   position: sticky; top: 64px;
+  align-self: flex-start;
+  height: calc(100vh - 64px);
   display: flex; flex-direction: column; gap: 2px;
-  z-index: 10;
+  overflow-y: auto; z-index: 2;
 }
-.ae-sidebar-logo {
-  font-size: 16px; font-weight: 900; color: #fff;
-  padding: 0 20px 20px;
-  border-bottom: 1px solid rgba(255,255,255,.08);
-  margin-bottom: 12px; letter-spacing: -.3px;
+.tb-sb-label {
+  font-size: 10px; font-weight: 800; letter-spacing: 1.2px;
+  color: var(--text3); padding: 0 16px 10px; text-transform: uppercase;
 }
-.ae-sidebar-section-label {
-  font-size: 10px; font-weight: 800;
-  color: rgba(255,255,255,.35);
-  letter-spacing: 1.2px; padding: 0 20px 8px; text-transform: uppercase;
-}
-.ae-sidebar-item {
-  display: flex; align-items: center; gap: 12px;
-  padding: 11px 20px;
-  background: none; border: none;
-  color: rgba(255,255,255,.65);
-  font-size: 13.5px; font-weight: 700;
+.tb-sb-item {
+  display: flex; align-items: center; gap: 10px;
+  padding: 10px 16px; background: none; border: none;
+  color: var(--text2); font-size: 13px; font-weight: 700;
   cursor: pointer; text-align: left; width: 100%;
-  font-family: inherit; border-radius: 0;
-  transition: all .2s ease; position: relative;
+  font-family: inherit; transition: all .18s; position: relative;
 }
-.ae-sidebar-item:hover { background: rgba(255,255,255,.07); color: #fff; }
-.ae-sidebar-item.active { background: rgba(26,115,232,.18); color: #60A5FA; }
-.ae-sidebar-item.active::before {
-  content: ''; position: absolute;
-  left: 0; top: 0; bottom: 0; width: 3px;
-  background: #1A73E8; border-radius: 0 3px 3px 0;
+.tb-sb-item:hover { background: var(--bg2); color: var(--text); }
+.tb-sb-item.active {
+  background: rgba(26,115,232,.1); color: var(--primary);
 }
-.ae-sb-icon { font-size: 16px; flex-shrink: 0; }
-.ae-exams-main { flex: 1; min-width: 0; }
-.ae-exams-main .section { padding: 32px 28px 40px; max-width: none; margin: 0; }
-@media (max-width: 640px) {
-  .ae-exams-layout { flex-direction: column; }
-  .ae-exams-sidebar { display: none; }
-  .ae-exams-main .section { padding: 16px 16px 32px; }
+.tb-sb-item.active::before {
+  content: ''; position: absolute; left: 0; top: 0; bottom: 0;
+  width: 3px; background: var(--primary); border-radius: 0 3px 3px 0;
+}
+.tb-sb-icon {
+  width: 28px; height: 28px; border-radius: 8px; flex-shrink: 0;
+  display: flex; align-items: center; justify-content: center; font-size: 14px;
+}
+
+/* RIGHT MAIN */
+.tb-main { flex: 1; min-width: 0; padding: 24px 24px 48px; }
+
+/* TOP ICON GRID */
+.tb-cat-header { margin-bottom: 16px; }
+.tb-cat-title { font-size: 18px; font-weight: 900; color: var(--text); margin-bottom: 3px; }
+.tb-cat-desc { font-size: 12px; color: var(--text3); }
+.tb-icon-grid {
+  display: grid;
+  grid-template-columns: repeat(10, 1fr);
+  gap: 10px; margin-bottom: 4px;
+}
+.tb-icon-item {
+  display: flex; flex-direction: column; align-items: center; gap: 6px;
+  background: none; border: 1.5px solid transparent;
+  border-radius: 12px; padding: 10px 4px 8px;
+  cursor: pointer; font-family: inherit;
+  transition: all .18s; color: var(--text2);
+  font-size: 11px; font-weight: 700;
+}
+.tb-icon-item:hover { background: var(--bg2); border-color: var(--border2); }
+.tb-icon-item.active { background: rgba(26,115,232,.08); border-color: var(--primary); color: var(--primary); }
+.tb-icon-circle {
+  width: 40px; height: 40px; border-radius: 50%;
+  display: flex; align-items: center; justify-content: center;
+  font-size: 18px; box-shadow: 0 3px 10px rgba(0,0,0,.2);
+}
+
+/* Mobile */
+@media (max-width: 768px) {
+  .tb-sidebar { display: none; }
+  .tb-main { padding: 14px 14px 40px; }
+  .tb-icon-grid { grid-template-columns: repeat(5, 1fr); gap: 8px; }
+  .tb-icon-circle { width: 34px; height: 34px; font-size: 16px; }
+  .tb-icon-item { font-size: 10px; padding: 8px 2px 6px; }
+  .tb-cat-title { font-size: 15px; }
 }
 
 
@@ -21070,9 +21170,16 @@ _beginFreshExam = function(e, qs) {
 </style>
 <script>
 function _setSbActive(id) {
-  document.querySelectorAll('.ae-sidebar-item').forEach(function(el){ el.classList.remove('active'); });
-  var el = document.getElementById(id);
-  if(el) el.classList.add('active');
+  document.querySelectorAll('.ae-sidebar-item,.tb-sb-item').forEach(function(el){ el.classList.remove('active'); });
+  var el = document.getElementById(id); if(el) el.classList.add('active');
+  // sync icon grid
+  var iconId = id.replace('sb-','ic-');
+  document.querySelectorAll('.tb-icon-item').forEach(function(el){ el.classList.remove('active'); });
+  var ic = document.getElementById(iconId); if(ic) ic.classList.add('active');
+}
+function _setIconActive(id) {
+  document.querySelectorAll('.tb-icon-item').forEach(function(el){ el.classList.remove('active'); });
+  var el = document.getElementById(id); if(el) el.classList.add('active');
 }
 </script>
 

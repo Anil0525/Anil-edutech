@@ -5,14 +5,29 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>Anil EduTech</title>
 <script>
-// GitHub Pages SPA routing trick
-// /exams → index.html?p=/exams → index.html reads it and shows correct page
+// Save target page in sessionStorage, then redirect cleanly to /
 var path = window.location.pathname;
-var search = window.location.search;
-var hash = window.location.hash;
-// Redirect to index.html with path as query param
-var redirectUrl = '/?p=' + encodeURIComponent(path) + (search ? '&' + search.slice(1) : '') + hash;
-window.location.replace(redirectUrl);
+var pageMap = {
+  '/exams':           'exams',
+  '/mock-tests':      'mock-folders',
+  '/current-affairs': 'current-affairs',
+  '/syllabus':        'syllabus',
+  '/videos':          'videos',
+  '/jobs':            'jobs',
+  '/daily-challenge': 'daily',
+  '/progress':        'progress',
+  '/support':         'support',
+  '/referral':        'referral',
+  '/badges':          'badges',
+  '/profile':         'profile',
+  '/contest':         'contest',
+};
+var targetPage = pageMap[path];
+if (targetPage) {
+  sessionStorage.setItem('ae_goto_page', targetPage);
+}
+// Redirect to homepage cleanly (no ?p= params)
+window.location.replace('/');
 </script>
 </head>
 <body>

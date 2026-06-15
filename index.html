@@ -17520,48 +17520,25 @@ function _appInit() {
     } catch(e) { console.error('Payment UI init error:', e); }
   }, 100);
 
-  // GitHub Pages SPA routing: 404.html redirects to /?p=/exams etc.
-  // Here we read that ?p= param and navigate to correct page
+  // GitHub Pages SPA routing: 404.html saves target page in sessionStorage
+  // then redirects to /. Here we read it and navigate.
   try {
-    const _ghRaw = new URLSearchParams(window.location.search).get('p');
-    const _ghPath = _ghRaw ? decodeURIComponent(_ghRaw) : null;
-    if (_ghPath) {
-      // Clean URL: remove ?p= from address bar
-      history.replaceState(null, '', _ghPath);
-      // Map URL path → page name
-      const _urlPageMap = {
-        '/exams':            'exams',
-        '/mock-tests':       'mock-folders',
-        '/current-affairs':  'current-affairs',
-        '/syllabus':         'syllabus',
-        '/videos':           'videos',
-        '/jobs':             'jobs',
-        '/daily-challenge':  'daily',
-        '/progress':         'progress',
-        '/support':          'support',
-        '/referral':         'referral',
-        '/badges':           'badges',
-        '/profile':          'profile',
-        '/contest':          'contest',
-      };
-      const _targetPage = _urlPageMap[_ghPath];
-      if (_targetPage) {
-        // Wait for loader to hide + DB to load, then navigate
-        // Use ae-page-changed event as signal that app is ready
-        let _routed = false;
-        function _doRoute() {
-          if (_routed) return;
-          _routed = true;
-          showPage(_targetPage);
-        }
-        // Fallback: max 3s wait
-        setTimeout(_doRoute, 3000);
-        // Best case: after first real page change (home loads), switch to target
-        document.addEventListener('ae-page-changed', function _onReady() {
-          document.removeEventListener('ae-page-changed', _onReady);
-          setTimeout(_doRoute, 100);
-        });
+    const _ghTarget = sessionStorage.getItem('ae_goto_page');
+    if (_ghTarget) {
+      sessionStorage.removeItem('ae_goto_page');
+      let _routed = false;
+      function _doRoute() {
+        if (_routed) return;
+        _routed = true;
+        showPage(_ghTarget);
       }
+      // Fallback: max 3s
+      setTimeout(_doRoute, 3000);
+      // Best case: right after first page render
+      document.addEventListener('ae-page-changed', function _onReady() {
+        document.removeEventListener('ae-page-changed', _onReady);
+        setTimeout(_doRoute, 100);
+      });
     }
   } catch(e) {}
 }

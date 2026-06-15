@@ -17523,18 +17523,19 @@ function _appInit() {
   // GitHub Pages SPA routing: 404.html saves target page in sessionStorage
   // then redirects to /. Here we read it and navigate.
   try {
-    const _ghTarget = sessionStorage.getItem('ae_goto_page');
+    // Support both sessionStorage (from 404.html) and ?goto= param (from static pages)
+    const _gotoParam = new URLSearchParams(window.location.search).get('goto');
+    const _ghTarget = _gotoParam || sessionStorage.getItem('ae_goto_page');
     if (_ghTarget) {
       sessionStorage.removeItem('ae_goto_page');
+      if (_gotoParam) history.replaceState(null, '', '/');
       let _routed = false;
       function _doRoute() {
         if (_routed) return;
         _routed = true;
         showPage(_ghTarget);
       }
-      // Fallback: max 3s
       setTimeout(_doRoute, 3000);
-      // Best case: right after first page render
       document.addEventListener('ae-page-changed', function _onReady() {
         document.removeEventListener('ae-page-changed', _onReady);
         setTimeout(_doRoute, 100);

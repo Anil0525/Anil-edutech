@@ -12548,6 +12548,33 @@ function showPage(name, _skipHistory) {
   const _navMap = {home:'home',exams:'exams',result:'exams',exam:'exams',progress:'progress',videos:'videos'};
   _mobNavActive(_navMap[name]||'home');
   setTimeout(()=>document.dispatchEvent(new Event('ae-page-changed')), 100);
+  // SEO: Update title + meta description dynamically for each page
+  const _seoMap = {
+    'home':               { title: 'Anil EduTech | TSPSC SSC Banking Free Mock Tests Telugu | తెలుగు మాక్ టెస్ట్', desc: 'Anil EduTech — TSPSC, SSC CGL/CHSL, Banking, APPSC, RRB పరీక్షలకు తెలుగులో Free Mock Tests. 500+ questions, leaderboard, certificates.' },
+    'exams':              { title: 'Exams | Anil EduTech — TSPSC SSC Banking పరీక్షలు', desc: 'TSPSC, SSC CGL, CHSL, Banking, RRB, APPSC అన్ని పరీక్షలకు practice tests. తెలుగులో online mock test.' },
+    'mock-folders':       { title: 'Mock Tests | Anil EduTech — Free Online Mock Test Telugu', desc: 'TSPSC Group 1/2/3/4, SSC, Banking mock test folders. Category-wise practice sets తెలుగులో.' },
+    'mock-subfolders':    { title: 'Mock Tests | Anil EduTech', desc: 'Topic-wise mock test practice sets for competitive exams in Telugu.' },
+    'mock-folder-detail': { title: 'Mock Tests | Anil EduTech', desc: 'Practice mock tests for TSPSC, SSC, Banking in Telugu medium.' },
+    'progress':           { title: 'My Progress | Anil EduTech — Exam Score Tracker', desc: 'మీ పరీక్ష scores, badges, performance analytics చూడండి. Track your competitive exam preparation.' },
+    'current-affairs':    { title: 'Current Affairs | Anil EduTech — Daily GK Telugu', desc: 'Daily current affairs, GK questions in Telugu for TSPSC, SSC, Banking exams preparation.' },
+    'videos':             { title: 'Video Lessons | Anil EduTech — Exam Preparation Videos Telugu', desc: 'TSPSC, SSC, Banking exam preparation video lessons in Telugu medium.' },
+    'syllabus':           { title: 'Syllabus | Anil EduTech — TSPSC SSC Banking Syllabus Telugu', desc: 'TSPSC Group 1/2/3/4, SSC CGL/CHSL, Banking exam latest syllabus in Telugu.' },
+    'jobs':               { title: 'Govt Jobs | Anil EduTech — Latest Government Jobs Telugu', desc: 'Latest Telangana, AP and central government job notifications in Telugu.' },
+    'daily':              { title: 'Daily Challenge | Anil EduTech — Daily Quiz Telugu', desc: 'రోజువారీ GK challenge quiz. Daily practice for competitive exam preparation in Telugu.' },
+    'support':            { title: 'Support | Anil EduTech', desc: 'Anil EduTech support, premium membership info, contact details.' },
+    'badges':             { title: 'My Badges | Anil EduTech — Achievement Badges', desc: 'మీ achievements, badges, certificates చూడండి. Competitive exam preparation milestones.' },
+    'profile':            { title: 'Profile | Anil EduTech', desc: 'మీ profile, exam history, premium status manage చేయండి.' },
+  };
+  const _seo = _seoMap[name];
+  if (_seo) {
+    document.title = _seo.title;
+    const _descEl = document.querySelector('meta[name="description"]');
+    if (_descEl) _descEl.setAttribute('content', _seo.desc);
+    const _ogTitle = document.querySelector('meta[property="og:title"]');
+    if (_ogTitle) _ogTitle.setAttribute('content', _seo.title);
+    const _ogDesc = document.querySelector('meta[property="og:description"]');
+    if (_ogDesc) _ogDesc.setAttribute('content', _seo.desc);
+  }
 
   // Show/hide global back button (only inside exam header)
   const backBtn = document.getElementById('global-back-btn');
@@ -12624,11 +12651,35 @@ function goHome() {
 
 
 // Safe history helper — srcdoc/iframe environments లో SecurityError రాకుండా
+// SEO: page name → friendly URL path mapping
+const _pageUrlMap = {
+  'home':                '/',
+  'exams':               '/exams',
+  'mock-folders':        '/mock-tests',
+  'mock-subfolders':     '/mock-tests',
+  'mock-folder-detail':  '/mock-tests',
+  'progress':            '/progress',
+  'current-affairs':     '/current-affairs',
+  'videos':              '/videos',
+  'syllabus':            '/syllabus',
+  'jobs':                '/jobs',
+  'daily':               '/daily-challenge',
+  'leaderboard':         '/leaderboard',
+  'profile':             '/profile',
+  'badges':              '/badges',
+  'support':             '/support',
+  'referral':            '/referral',
+  'contest':             '/contest',
+};
 function _safeHistoryPush(state) {
-  try { history.pushState(state, '', window.location.pathname); } catch(e) {}
+  const pageName = state && state.ae_page ? state.ae_page : null;
+  const urlPath = (pageName && _pageUrlMap[pageName]) ? _pageUrlMap[pageName] : window.location.pathname;
+  try { history.pushState(state, '', urlPath); } catch(e) {}
 }
 function _safeHistoryReplace(state) {
-  try { history.replaceState(state, '', window.location.pathname); } catch(e) {}
+  const rPageName = state && state.ae_page ? state.ae_page : null;
+  const rUrlPath = (rPageName && _pageUrlMap[rPageName]) ? _pageUrlMap[rPageName] : window.location.pathname;
+  try { history.replaceState(state, '', rUrlPath); } catch(e) {}
 }
 
 // Device back button / browser back button press అయినప్పుడు
@@ -17468,6 +17519,34 @@ function _appInit() {
       if (py && pcfg2.yearly)  py.value = pcfg2.yearly;
     } catch(e) { console.error('Payment UI init error:', e); }
   }, 100);
+
+  // GitHub Pages SPA routing: 404.html redirects to /?p=/exams etc.
+  // Here we read that ?p= param and navigate to correct page
+  try {
+    const _ghPath = new URLSearchParams(window.location.search).get('p');
+    if (_ghPath) {
+      // Clean URL: remove ?p= from address bar
+      history.replaceState(null, '', _ghPath);
+      // Map URL path → page name
+      const _urlPageMap = {
+        '/exams':            'exams',
+        '/mock-tests':       'mock-folders',
+        '/current-affairs':  'current-affairs',
+        '/syllabus':         'syllabus',
+        '/videos':           'videos',
+        '/jobs':             'jobs',
+        '/daily-challenge':  'daily',
+        '/progress':         'progress',
+        '/support':          'support',
+        '/referral':         'referral',
+        '/badges':           'badges',
+        '/profile':          'profile',
+        '/contest':          'contest',
+      };
+      const _targetPage = _urlPageMap[_ghPath];
+      if (_targetPage) setTimeout(() => showPage(_targetPage), 300);
+    }
+  } catch(e) {}
 }
 
 

@@ -1,0 +1,21 @@
+<!DOCTYPE html>
+<html lang="te">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Anil EduTech</title>
+<script>
+// GitHub Pages SPA routing trick
+// /exams → index.html?p=/exams → index.html reads it and shows correct page
+var path = window.location.pathname;
+var search = window.location.search;
+var hash = window.location.hash;
+// Redirect to index.html with path as query param
+var redirectUrl = '/?p=' + encodeURIComponent(path) + (search ? '&' + search.slice(1) : '') + hash;
+window.location.replace(redirectUrl);
+</script>
+</head>
+<body>
+<p style="font-family:sans-serif;text-align:center;margin-top:100px;color:#666;">Loading Anil EduTech...</p>
+</body>
+</html>

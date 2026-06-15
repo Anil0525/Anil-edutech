@@ -17544,7 +17544,23 @@ function _appInit() {
         '/contest':          'contest',
       };
       const _targetPage = _urlPageMap[_ghPath];
-      if (_targetPage) setTimeout(() => showPage(_targetPage), 300);
+      if (_targetPage) {
+        // Wait for loader to hide + DB to load, then navigate
+        // Use ae-page-changed event as signal that app is ready
+        let _routed = false;
+        function _doRoute() {
+          if (_routed) return;
+          _routed = true;
+          showPage(_targetPage);
+        }
+        // Fallback: max 3s wait
+        setTimeout(_doRoute, 3000);
+        // Best case: after first real page change (home loads), switch to target
+        document.addEventListener('ae-page-changed', function _onReady() {
+          document.removeEventListener('ae-page-changed', _onReady);
+          setTimeout(_doRoute, 100);
+        });
+      }
     }
   } catch(e) {}
 }

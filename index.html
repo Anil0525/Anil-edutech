@@ -6733,39 +6733,44 @@ html:not(:has(#_ae_loading)) body {
 
 <!-- EXAMS LIST -->
 <div id="page-exams" class="page">
+  <!-- Mobile drawer overlay -->
+  <div class="tb-drawer-overlay" id="tb-drawer-overlay" onclick="closeCatDrawer()"></div>
   <div class="tb-layout">
 
     <!-- LEFT SIDEBAR -->
-    <div class="tb-sidebar">
-      <div class="tb-sb-label">CATEGORIES</div>
-      <button class="tb-sb-item active" id="sb-all" onclick="goExams('');_setSbActive('sb-all')">
+    <div class="tb-sidebar" id="tb-sidebar">
+      <div style="display:flex;align-items:center;justify-content:space-between;padding:0 16px 10px;">
+        <div class="tb-sb-label" style="padding:0;">CATEGORIES</div>
+        <button onclick="closeCatDrawer()" style="background:none;border:none;font-size:18px;cursor:pointer;color:var(--text3);line-height:1;">✕</button>
+      </div>
+      <button class="tb-sb-item active" id="sb-all" onclick="goExams('');_setSbActive('sb-all');closeCatDrawer()">
         <span class="tb-sb-icon" style="background:linear-gradient(135deg,#6366f1,#8b5cf6)">🏠</span>All Exams
       </button>
-      <button class="tb-sb-item" id="sb-tspsc" onclick="goExams('TSPSC');_setSbActive('sb-tspsc')">
+      <button class="tb-sb-item" id="sb-tspsc" onclick="goExams('TSPSC');_setSbActive('sb-tspsc');closeCatDrawer()">
         <span class="tb-sb-icon" style="background:linear-gradient(135deg,#1A73E8,#0ea5e9)">🏛️</span>TSPSC
       </button>
-      <button class="tb-sb-item" id="sb-ssc" onclick="goExams('SSC');_setSbActive('sb-ssc')">
+      <button class="tb-sb-item" id="sb-ssc" onclick="goExams('SSC');_setSbActive('sb-ssc');closeCatDrawer()">
         <span class="tb-sb-icon" style="background:linear-gradient(135deg,#10b981,#059669)">📋</span>SSC
       </button>
-      <button class="tb-sb-item" id="sb-rrb" onclick="goExams('RRB');_setSbActive('sb-rrb')">
+      <button class="tb-sb-item" id="sb-rrb" onclick="goExams('RRB');_setSbActive('sb-rrb');closeCatDrawer()">
         <span class="tb-sb-icon" style="background:linear-gradient(135deg,#0ea5e9,#0284c7)">🚂</span>RRB
       </button>
-      <button class="tb-sb-item" id="sb-bank" onclick="goExams('Banking');_setSbActive('sb-bank')">
+      <button class="tb-sb-item" id="sb-bank" onclick="goExams('Banking');_setSbActive('sb-bank');closeCatDrawer()">
         <span class="tb-sb-icon" style="background:linear-gradient(135deg,#f59e0b,#d97706)">🏦</span>Banking
       </button>
-      <button class="tb-sb-item" id="sb-gk" onclick="goExams('GK');_setSbActive('sb-gk')">
+      <button class="tb-sb-item" id="sb-gk" onclick="goExams('GK');_setSbActive('sb-gk');closeCatDrawer()">
         <span class="tb-sb-icon" style="background:linear-gradient(135deg,#ec4899,#db2777)">🌍</span>GK
       </button>
-      <button class="tb-sb-item" id="sb-mock" onclick="goExams('Mock Test');_setSbActive('sb-mock')">
+      <button class="tb-sb-item" id="sb-mock" onclick="goExams('Mock Test');_setSbActive('sb-mock');closeCatDrawer()">
         <span class="tb-sb-icon" style="background:linear-gradient(135deg,#f97316,#ea580c)">📝</span>Mock Tests
       </button>
-      <button class="tb-sb-item" id="sb-ca" onclick="goExams('Current Affairs');_setSbActive('sb-ca')">
+      <button class="tb-sb-item" id="sb-ca" onclick="goExams('Current Affairs');_setSbActive('sb-ca');closeCatDrawer()">
         <span class="tb-sb-icon" style="background:linear-gradient(135deg,#14b8a6,#0d9488)">📰</span>Current Affairs
       </button>
-      <button class="tb-sb-item" id="sb-live" onclick="goExams('Live Test');_setSbActive('sb-live')">
+      <button class="tb-sb-item" id="sb-live" onclick="goExams('Live Test');_setSbActive('sb-live');closeCatDrawer()">
         <span class="tb-sb-icon" style="background:linear-gradient(135deg,#ef4444,#dc2626)">🔴</span>Live Tests
       </button>
-      <button class="tb-sb-item" id="sb-pp" onclick="goExams('Previous Papers');_setSbActive('sb-pp')">
+      <button class="tb-sb-item" id="sb-pp" onclick="goExams('Previous Papers');_setSbActive('sb-pp');closeCatDrawer()">
         <span class="tb-sb-icon" style="background:linear-gradient(135deg,#8b5cf6,#7c3aed)">📄</span>Previous Papers
       </button>
     </div>
@@ -6774,6 +6779,8 @@ html:not(:has(#_ae_loading)) body {
     <div class="tb-main">
 
       <!-- TOP CATEGORY ICON GRID -->
+      <!-- Mobile Categories Button -->
+      <button class="tb-mobile-cat-btn" onclick="openCatDrawer()">☰ Categories</button>
       <!-- TITLE + SEARCH inline -->
       <div style="display:flex;align-items:center;justify-content:space-between;gap:12px;margin-bottom:12px;flex-wrap:wrap;">
         <div>
@@ -17345,6 +17352,16 @@ function scheduleReminder() {
 // Add notification bell to home footer area (done in HTML)
 
 /* ---- HAMBURGER MENU ---- */
+function openCatDrawer() {
+  document.getElementById('tb-sidebar').classList.add('drawer-open');
+  document.getElementById('tb-drawer-overlay').classList.add('active');
+  document.body.style.overflow = 'hidden';
+}
+function closeCatDrawer() {
+  document.getElementById('tb-sidebar').classList.remove('drawer-open');
+  document.getElementById('tb-drawer-overlay').classList.remove('active');
+  document.body.style.overflow = '';
+}
 function toggleMenu() {
   const nav = document.getElementById('nav-links');
   const btn = document.getElementById('hamburger');
@@ -21034,13 +21051,61 @@ _beginFreshExam = function(e, qs) {
 .tb-cat-title { font-size: 18px; font-weight: 900; color: var(--text); margin-bottom: 3px; }
 .tb-cat-desc { font-size: 12px; color: var(--text3); }
 @media (max-width: 768px) {
-  .tb-sidebar { display: none; }
   .tb-layout::before { display: none; }
   .tb-main { padding: 10px 12px 60px; }
-  /* Exam cards 1 column on mobile */
   #page-exams .exams-grid { grid-template-columns: 1fr !important; }
-  /* Pagination compact */
   #page-exams .exams-grid [style*="grid-column:1/-1"] { padding: 12px 0 4px; gap: 6px; }
+
+  /* LEFT DRAWER */
+  .tb-sidebar {
+    display: flex !important;
+    position: fixed !important;
+    top: 0; left: 0; bottom: 0 !important;
+    width: 260px !important;
+    min-width: unset !important;
+    height: 100vh !important;
+    background: var(--surface) !important;
+    border-right: 1px solid var(--border2) !important;
+    z-index: 9999 !important;
+    padding: 56px 0 40px !important;
+    box-shadow: 4px 0 24px rgba(0,0,0,.18) !important;
+    transform: translateX(-100%) !important;
+    transition: transform .25s cubic-bezier(.4,0,.2,1) !important;
+    overflow-y: auto !important;
+    flex-direction: column !important;
+    gap: 2px !important;
+  }
+  .tb-sidebar.drawer-open {
+    transform: translateX(0) !important;
+  }
+  .tb-drawer-overlay {
+    display: none;
+    position: fixed;
+    inset: 0;
+    background: rgba(0,0,0,.45);
+    z-index: 9998;
+  }
+  .tb-drawer-overlay.active { display: block; }
+  .tb-mobile-cat-btn {
+    display: inline-flex !important;
+    align-items: center;
+    gap: 7px;
+    background: var(--primary);
+    color: #fff;
+    border: none;
+    border-radius: 20px;
+    padding: 7px 16px;
+    font-size: 12px;
+    font-weight: 800;
+    cursor: pointer;
+    font-family: inherit;
+    margin-bottom: 10px;
+    box-shadow: 0 3px 12px rgba(26,115,232,.3);
+  }
+}
+@media (min-width: 769px) {
+  .tb-mobile-cat-btn { display: none !important; }
+  .tb-drawer-overlay { display: none !important; }
 }
 
 /* Promo bar mobile */

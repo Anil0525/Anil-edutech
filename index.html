@@ -12699,11 +12699,16 @@ window.addEventListener('popstate', function(e) {
   _navigateBack();
 });
 
-// Page load అయినప్పుడు initial state push చేయాలి
+// Page load అయినప్పుడు always home కి reset చేయాలి
 (function() {
-  if (!history.state || !history.state.ae_page) {
-    _safeHistoryReplace({ ae_page: 'home' });
-  }
+  _safeHistoryReplace({ ae_page: 'home' });
+  document.querySelectorAll('.page').forEach(p => p.classList.remove('active'));
+  const homeEl = document.getElementById('page-home');
+  if (homeEl) homeEl.classList.add('active');
+  const navHome = document.getElementById('nav-home');
+  if (navHome) navHome.classList.add('active');
+  const navExams = document.getElementById('nav-exams');
+  if (navExams) navExams.classList.remove('active');
 })();
 
 

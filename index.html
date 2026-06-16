@@ -6763,68 +6763,23 @@ html:not(:has(#_ae_loading)) body {
     <div class="tb-main">
 
       <!-- TOP CATEGORY ICON GRID -->
-      <div class="tb-cat-header">
-        <div class="tb-cat-title">Upcoming and Popular Exams ⚡</div>
+      <!-- TITLE + SEARCH inline -->
+      <div style="display:flex;align-items:center;justify-content:space-between;gap:12px;margin-bottom:12px;flex-wrap:wrap;">
+        <div>
+          <div class="tb-cat-title">600+ Explore all Exams</div>
+          <div class="tb-cat-desc" id="exams-page-sub">Available exams చూపిస్తున్నాం</div>
+        </div>
+        <div style="position:relative;flex-shrink:0;">
+          <span style="position:absolute;left:10px;top:50%;transform:translateY(-50%);font-size:13px;color:var(--text3);">🔍</span>
+          <input id="exam-search" type="text" placeholder="Search exams..." oninput="filterExams()"
+            style="padding:8px 30px 8px 32px;border:1.5px solid var(--border2);border-radius:20px;font-size:12px;background:var(--bg);color:var(--text);outline:none;width:200px;font-family:inherit;">
+          <button id="search-clear" onclick="clearSearch()" style="position:absolute;right:8px;top:50%;transform:translateY(-50%);background:none;border:none;cursor:pointer;font-size:12px;color:var(--text3);display:none;">✕</button>
+        </div>
       </div>
-      <!-- Testbook-style square cards -->
-      <div class="tb-pop-grid">
-        <button class="tb-pop-card" id="ic-tspsc" onclick="goExams('TSPSC');_setSbActive('sb-tspsc');_setIconActive('ic-tspsc')">
-          <div class="tb-pop-logo" style="background:linear-gradient(135deg,#1A73E8,#0ea5e9)">🏛️</div>
-          <span class="tb-pop-name">TSPSC</span>
-        </button>
-        <button class="tb-pop-card" id="ic-ssc" onclick="goExams('SSC');_setSbActive('sb-ssc');_setIconActive('ic-ssc')">
-          <div class="tb-pop-logo" style="background:linear-gradient(135deg,#10b981,#059669)">📋</div>
-          <span class="tb-pop-name">SSC</span>
-        </button>
-        <button class="tb-pop-card" id="ic-rrb" onclick="goExams('RRB');_setSbActive('sb-rrb');_setIconActive('ic-rrb')">
-          <div class="tb-pop-logo" style="background:linear-gradient(135deg,#0ea5e9,#0284c7)">🚂</div>
-          <span class="tb-pop-name">RRB</span>
-        </button>
-        <button class="tb-pop-card" id="ic-bank" onclick="goExams('Banking');_setSbActive('sb-bank');_setIconActive('ic-bank')">
-          <div class="tb-pop-logo" style="background:linear-gradient(135deg,#f59e0b,#d97706)">🏦</div>
-          <span class="tb-pop-name">Banking</span>
-        </button>
-        <button class="tb-pop-card" id="ic-gk" onclick="goExams('GK');_setSbActive('sb-gk');_setIconActive('ic-gk')">
-          <div class="tb-pop-logo" style="background:linear-gradient(135deg,#ec4899,#db2777)">🌍</div>
-          <span class="tb-pop-name">GK</span>
-        </button>
-        <button class="tb-pop-card" id="ic-mock" onclick="goExams('Mock Test');_setSbActive('sb-mock');_setIconActive('ic-mock')">
-          <div class="tb-pop-logo" style="background:linear-gradient(135deg,#f97316,#ea580c)">📝</div>
-          <span class="tb-pop-name">Mock Tests</span>
-        </button>
-        <button class="tb-pop-card" id="ic-ca" onclick="goExams('Current Affairs');_setSbActive('sb-ca');_setIconActive('ic-ca')">
-          <div class="tb-pop-logo" style="background:linear-gradient(135deg,#14b8a6,#0d9488)">📰</div>
-          <span class="tb-pop-name">Current Affairs</span>
-        </button>
-        <button class="tb-pop-card" id="ic-live" onclick="goExams('Live Test');_setSbActive('sb-live');_setIconActive('ic-live')">
-          <div class="tb-pop-logo" style="background:linear-gradient(135deg,#ef4444,#dc2626)">🔴</div>
-          <span class="tb-pop-name">Live Tests</span>
-        </button>
-        <button class="tb-pop-card" id="ic-pp" onclick="goExams('Previous Papers');_setSbActive('sb-pp');_setIconActive('ic-pp')">
-          <div class="tb-pop-logo" style="background:linear-gradient(135deg,#8b5cf6,#7c3aed)">📄</div>
-          <span class="tb-pop-name">Previous Papers</span>
-        </button>
-        <button class="tb-pop-card" id="ic-all" onclick="goExams('');_setSbActive('sb-all');_setIconActive('ic-all')">
-          <div class="tb-pop-logo" style="background:linear-gradient(135deg,#6366f1,#8b5cf6)">🏠</div>
-          <span class="tb-pop-name">All Exams</span>
-        </button>
-      </div>
-      <div style="border-top:1px solid var(--border2);margin:20px 0;"></div>
-      <div class="tb-cat-title" style="font-size:16px;margin-bottom:4px;">600+ Explore all Exams</div>
-      <div class="tb-cat-desc" id="exams-page-sub" style="margin-bottom:16px;">Get exam-ready with concepts, questions and study notes as per the latest pattern</div>
-
-      <!-- DIVIDER -->
-      <div style="border-top:1px solid var(--border2);margin:20px 0;"></div>
+      <div style="border-top:1px solid var(--border2);margin-bottom:12px;"></div>
 
       <!-- PREMIUM BANNER -->
       <div id="premium-exams-banner" style="display:none;"></div>
-
-      <!-- SEARCH -->
-      <div class="search-bar-wrap" style="margin-bottom:14px;">
-        <span class="search-icon">🔍</span>
-        <input class="search-bar" id="exam-search" type="text" placeholder="Exam search చేయండి..." oninput="filterExams()">
-        <button class="search-clear" id="search-clear" onclick="clearSearch()">✕</button>
-      </div>
 
       <!-- SUB FILTERS -->
       <div class="filter-chips" id="main-filter-chips" style="margin-bottom:4px;">
@@ -12836,10 +12791,12 @@ function goExams(cat) {
   const favTab = document.getElementById('bm-tab-fav');
   if (favTab) favTab.classList.remove('active');
   const title = cat ? cat + ' Exams' : 'All Exams';
-  document.getElementById('exams-page-title').textContent = title;
+  const titleEl = document.getElementById('exams-page-title');
+  if (titleEl) titleEl.textContent = title;
   // refresh premium banner
   if(typeof _refreshPremiumBanner === 'function') _refreshPremiumBanner();
-  filterExams();
+  // Delay filterExams so DOM is ready
+  setTimeout(() => filterExams(), 50);
 }
 
 function setBmFavFilter(el) {
@@ -21081,15 +21038,15 @@ _beginFreshExam = function(e, qs) {
 }
   display: grid;
   grid-template-columns: repeat(5, 1fr);
-  gap: 12px;
+  gap: 14px;
   margin-bottom: 8px;
 }
 .tb-pop-card {
   display: flex; flex-direction: column; align-items: center;
-  gap: 10px; padding: 18px 10px 14px;
+  gap: 10px; padding: 20px 12px 14px;
   background: var(--surface);
   border: 1px solid var(--border2);
-  border-radius: 12px;
+  border-radius: 14px;
   cursor: pointer; font-family: inherit;
   transition: all .2s; color: var(--text);
   text-align: center;
@@ -21097,21 +21054,22 @@ _beginFreshExam = function(e, qs) {
 .tb-pop-card:hover { border-color: var(--primary); box-shadow: 0 4px 16px rgba(26,115,232,.12); transform: translateY(-2px); }
 .tb-pop-card.active { border-color: var(--primary); background: rgba(26,115,232,.06); }
 .tb-pop-logo {
-  width: 56px; height: 56px; border-radius: 50%;
+  width: 60px; height: 60px; border-radius: 50%;
   display: flex; align-items: center; justify-content: center;
-  font-size: 26px;
+  font-size: 28px;
   box-shadow: 0 4px 14px rgba(0,0,0,.18);
 }
 .tb-pop-name { font-size: 12px; font-weight: 700; color: var(--text2); line-height: 1.3; }
 
 @media (max-width: 900px) {
-  .tb-pop-grid { grid-template-columns: repeat(5, 1fr); gap: 8px; }
+  .tb-pop-grid { gap: 10px; }
+  .tb-pop-logo { width: 50px; height: 50px; font-size: 22px; }
 }
 @media (max-width: 560px) {
-  .tb-pop-grid { grid-template-columns: repeat(4, 1fr); gap: 8px; }
-  .tb-pop-logo { width: 44px; height: 44px; font-size: 20px; }
-  .tb-pop-card { padding: 12px 6px 10px; gap: 7px; }
-  .tb-pop-name { font-size: 11px; }
+  .tb-pop-grid { grid-template-columns: repeat(5, 1fr); gap: 6px; }
+  .tb-pop-logo { width: 38px; height: 38px; font-size: 17px; }
+  .tb-pop-card { padding: 8px 2px 7px; gap: 4px; border-radius: 10px; }
+  .tb-pop-name { font-size: 9px; }
 }
 
 

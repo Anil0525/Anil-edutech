@@ -18967,16 +18967,16 @@ let _activePricingTab = 'monthly';
 
 function switchPricingTab(plan) {
   _activePricingTab = plan;
-  const isTrial = plan === 'trial';
+  const isTrial  = plan === 'trial';
   const isYearly = plan === 'yearly';
-  const price = isTrial ? 1 : (isYearly ? PLAN_PRICES.yearly : PLAN_PRICES.monthly);
+  const price    = isTrial ? 1 : (isYearly ? PLAN_PRICES.yearly : PLAN_PRICES.monthly);
 
-  // Tab buttons
+  // ── Tab buttons ──
   document.querySelectorAll('.pay-plan-tab').forEach(b => b.classList.remove('active'));
   const activeTab = document.getElementById(isTrial ? 'ptab-trial' : isYearly ? 'ptab-yearly' : 'ptab-monthly');
   if (activeTab) activeTab.classList.add('active');
 
-  // Plan card price (left panel)
+  // ── Left panel: big price + period ──
   const pb = document.getElementById('plan-price-big');
   const pl = document.getElementById('plan-label');
   const pp = document.getElementById('plan-period-label');
@@ -18984,47 +18984,60 @@ function switchPricingTab(plan) {
   if (pl) pl.textContent = isTrial ? '1-Day Trial' : isYearly ? 'Yearly Plan' : 'Monthly Plan';
   if (pp) pp.textContent = isTrial ? '/1day' : isYearly ? '/yr' : '/mo';
 
-  // Billing summary
+  // ── Billing subtotal / total ──
   const bs = document.getElementById('billing-subtotal');
   const bt = document.getElementById('billing-total');
   if (bs) bs.textContent = price;
   if (bt) bt.textContent = price;
 
-  // Razorpay button price
+  // ── Razorpay button price ──
   const rp = document.getElementById('rzp-btn-price');
   if (rp) rp.textContent = price;
 
-  // UPI button prices — Trial కి ₹1, otherwise normal
+  // ── UPI prices: Trial → ₹1, Monthly → ₹99, Yearly → ₹499 ──
   document.querySelectorAll('.upi-price-m').forEach(e => e.textContent = isTrial ? 1 : PLAN_PRICES.monthly);
   document.querySelectorAll('.upi-price-y').forEach(e => e.textContent = PLAN_PRICES.yearly);
 
-  // QR label — Trial అయినప్పుడు "Trial — ₹1" చూపించు
+  // ── QR label update ──
   const mQrLabel = document.querySelector('#qr-wrap-monthly .pay-upi-qr-label');
-  if (mQrLabel) mQrLabel.innerHTML = isTrial ? '🎯 Trial — ₹1 (1 Day)' : `📅 Monthly — ₹<span class="upi-price-m">${PLAN_PRICES.monthly}</span>`;
+  if (mQrLabel) {
+    if (isTrial)        mQrLabel.innerHTML = '🎯 Trial — ₹<span class="upi-price-m">1</span>';
+    else if (!isYearly) mQrLabel.innerHTML = '📅 Monthly — ₹<span class="upi-price-m">' + PLAN_PRICES.monthly + '</span>';
+  }
 
-  // Update UPI link hrefs
+  // ── "Pay __ — Open App" button text ──
+  const upiOpenBtn = document.getElementById('upi-btn-monthly');
+  if (upiOpenBtn) {
+    const btnPrice = isTrial ? 1 : PLAN_PRICES.monthly;
+    upiOpenBtn.innerHTML = `💳 Pay ₹${btnPrice} — Open App`;
+  }
+
+  // ── UPI deep-link hrefs ──
   const upiM = document.getElementById('upi-btn-monthly');
   const upiY = document.getElementById('upi-btn-yearly');
   if (upiM) upiM.href = `upi://pay?pa=${UPI_ID}&pn=${encodeURIComponent(UPI_NAME)}&am=${isTrial?1:PLAN_PRICES.monthly}&cu=INR&tn=${encodeURIComponent(isTrial?'AE Trial 1 Day':'AE Monthly Premium')}`;
   if (upiY) upiY.href = `upi://pay?pa=${UPI_ID}&pn=${encodeURIComponent(UPI_NAME)}&am=${PLAN_PRICES.yearly}&cu=INR&tn=${encodeURIComponent('AE Yearly Premium')}`;
 
-  // Show only active plan's QR
+  // ── QR wrap visibility ──
   const mWrap = document.getElementById('qr-wrap-monthly');
   const yWrap = document.getElementById('qr-wrap-yearly');
-  if (mWrap) mWrap.style.display = (isYearly) ? 'none' : 'flex';
+  if (mWrap) mWrap.style.display = isYearly ? 'none' : 'flex';
   if (yWrap) yWrap.style.display = isYearly ? 'flex' : 'none';
 
-  // Trial notice
+  // ── Net Banking price ──
+  document.querySelectorAll('.nb-price').forEach(e => e.textContent = price);
+
+  // ── Trial notice (1-day info box) ──
   let trialNotice = document.getElementById('trial-notice');
   if (isTrial) {
     if (!trialNotice) {
       trialNotice = document.createElement('div');
       trialNotice.id = 'trial-notice';
       trialNotice.style.cssText = 'background:rgba(239,68,68,.08);border:1px solid rgba(239,68,68,.3);border-radius:10px;padding:10px 14px;font-size:12px;color:#ef4444;font-weight:700;text-align:center;margin-top:10px;';
-      trialNotice.innerHTML = '🎯 <b>₹1 Trial — 1 Day Full Access!</b><br><span style="font-size:11px;font-weight:500;color:var(--text3);">1 రోజు తర్వాత auto-lock అవుతుంది. నచ్చితే ₹99/month తీసుకోవచ్చు.</span>';
       const bt2 = document.getElementById('billing-total');
       bt2?.parentElement?.after(trialNotice);
     }
+    trialNotice.innerHTML = '🎯 <b>₹1 Trial — 1 Day Full Access!</b><br><span style="font-size:11px;font-weight:500;color:var(--text3);">24 గంటల తర్వాత auto-lock అవుతుంది. నచ్చితే ₹99/month తీసుకోవచ్చు.</span>';
     trialNotice.style.display = 'block';
   } else {
     if (trialNotice) trialNotice.style.display = 'none';
@@ -19165,7 +19178,7 @@ function _drawQR(canvas, text) {
 
 function openUpiApp(plan) {
   const amount = plan === 'trial' ? 1 : (plan === 'yearly' ? PLAN_PRICES.yearly : PLAN_PRICES.monthly);
-  const note = plan === 'trial' ? 'AE Trial 1 Day' : (plan === 'yearly' ? 'AE Yearly Premium' : 'AE Monthly Premium');
+  const note = plan === 'trial' ? 'AE Trial 7 Days' : (plan === 'yearly' ? 'AE Yearly Premium' : 'AE Monthly Premium');
   const upiLink = `upi://pay?pa=${UPI_ID}&pn=${encodeURIComponent(UPI_NAME)}&am=${amount}&cu=INR&tn=${encodeURIComponent(note)}`;
   // Regenerate QR for selected plan
   _generateUpiQR(plan);
@@ -19259,7 +19272,7 @@ function startPayment(plan) {
     return;
   }
   const amount = plan === 'trial' ? 1 : (plan === 'yearly' ? PLAN_PRICES.yearly : PLAN_PRICES.monthly);
-  const planLabel = plan === 'trial' ? '1-Day Trial' : (plan === 'yearly' ? 'Yearly Premium' : 'Monthly Premium');
+  const planLabel = plan === 'trial' ? '7-Day Trial' : (plan === 'yearly' ? 'Yearly Premium' : 'Monthly Premium');
 
   const options = {
     key: RZP_KEY,
@@ -19576,16 +19589,10 @@ async function submitUTR() {
   // Update current session user
   _ls.setItem('ae_current_user', JSON.stringify(user));
 
-  // 4️⃣ Supabase subscribers లో is_premium = true + trial_expiry
-  const sbPayload = {
-    name:          user.name,
-    gmail:         user.gmail,
-    is_premium:    true,
-    premium_since: premiumSince,
-    status:        plan === 'trial' ? 'trial' : 'approved'
-  };
-  if (trialExpiry) sbPayload.trial_expiry = trialExpiry;
-  sbSubUpsert(sbPayload).catch(e => console.warn('sbSubUpsert UTR premium:', e));
+  // 4️⃣ Supabase subscribers లో is_premium = true
+  const _sbPayload = { name: user.name, gmail: user.gmail, is_premium: true, premium_since: premiumSince, status: plan === 'trial' ? 'trial' : 'approved' };
+  if (trialExpiry) _sbPayload.trial_expiry = trialExpiry;
+  sbSubUpsert(_sbPayload).catch(e => console.warn('sbSubUpsert UTR premium:', e));
 
   // 5️⃣ WhatsApp alert to admin (FYI — already activated)
   const waMsg = `✅ *UTR Premium Auto-Activated!*%0A` +
@@ -21045,6 +21052,7 @@ _beginFreshExam = function(e, qs) {
   #page-exams .exam-card { padding: 10px 10px 10px 12px !important; border-radius: 10px !important; }
   #page-exams .exam-card > div:first-child { width: 36px !important; height: 36px !important; font-size: 16px !important; }
 }
+.tb-pop-grid {
   display: grid;
   grid-template-columns: repeat(5, 1fr);
   gap: 14px;

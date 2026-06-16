@@ -5599,7 +5599,26 @@ html:not(:has(#_ae_loading)) body {
 </script>
 </div>
 
+<script>
+// Hide promo banner for premium users
+(function(){
+  function _checkPromoBanner(){
+    var u = typeof getCurrentUser==='function' ? getCurrentUser() : null;
+    var b = document.getElementById('promo-banner');
+    if(b && u && u.isPremium) b.style.display='none';
+  }
+  document.addEventListener('DOMContentLoaded', function(){ setTimeout(_checkPromoBanner, 1000); });
+  document.addEventListener('ae-page-changed', _checkPromoBanner);
+})();
+</script>
 
+<!-- PROMO BANNER -->
+<div id="promo-banner" style="background:linear-gradient(90deg,#1a7a1a,#2ecc71,#1a7a1a);padding:7px 40px 7px 16px;display:flex;align-items:center;justify-content:center;gap:10px;position:relative;z-index:200;flex-wrap:wrap;">
+  <span style="background:#ff4444;color:#fff;font-size:9px;font-weight:900;padding:2px 6px;border-radius:3px;">🔴 LIVE</span>
+  <span style="color:#fff;font-size:12px;font-weight:600;">50+ Exams · Previous Papers · Daily CA — అన్నీ Access చేయండి!</span>
+  <button onclick="document.getElementById('promo-banner').style.display='none';openPricing();" style="background:#fff;color:#1a7a1a;border:none;border-radius:5px;padding:4px 12px;font-size:11px;font-weight:900;cursor:pointer;white-space:nowrap;">⚡ Start ₹1 Trial →</button>
+  <button onclick="document.getElementById('promo-banner').style.display='none'" style="position:absolute;right:10px;top:50%;transform:translateY(-50%);background:rgba(255,255,255,.2);border:none;color:#fff;width:20px;height:20px;border-radius:50%;cursor:pointer;font-size:13px;display:flex;align-items:center;justify-content:center;">×</button>
+</div>
 <nav>
   <div class="logo" onclick="goHome()">
     <div class="logo-icon" style="background:none;width:40px;height:40px;">
@@ -6745,51 +6764,54 @@ html:not(:has(#_ae_loading)) body {
 
       <!-- TOP CATEGORY ICON GRID -->
       <div class="tb-cat-header">
-        <div class="tb-cat-title">600+ Explore all Exams</div>
-        <div class="tb-cat-desc" id="exams-page-sub">Get exam-ready with concepts, questions and study notes as per the latest pattern</div>
+        <div class="tb-cat-title">Upcoming and Popular Exams ⚡</div>
       </div>
-      <div class="tb-icon-grid">
-        <button class="tb-icon-item" id="ic-all" onclick="goExams('');_setSbActive('sb-all');_setIconActive('ic-all')">
-          <div class="tb-icon-circle" style="background:linear-gradient(135deg,#6366f1,#8b5cf6)">🏠</div>
-          <span>All Exams</span>
+      <!-- Testbook-style square cards -->
+      <div class="tb-pop-grid">
+        <button class="tb-pop-card" id="ic-tspsc" onclick="goExams('TSPSC');_setSbActive('sb-tspsc');_setIconActive('ic-tspsc')">
+          <div class="tb-pop-logo" style="background:linear-gradient(135deg,#1A73E8,#0ea5e9)">🏛️</div>
+          <span class="tb-pop-name">TSPSC</span>
         </button>
-        <button class="tb-icon-item" id="ic-tspsc" onclick="goExams('TSPSC');_setSbActive('sb-tspsc');_setIconActive('ic-tspsc')">
-          <div class="tb-icon-circle" style="background:linear-gradient(135deg,#1A73E8,#0ea5e9)">🏛️</div>
-          <span>TSPSC</span>
+        <button class="tb-pop-card" id="ic-ssc" onclick="goExams('SSC');_setSbActive('sb-ssc');_setIconActive('ic-ssc')">
+          <div class="tb-pop-logo" style="background:linear-gradient(135deg,#10b981,#059669)">📋</div>
+          <span class="tb-pop-name">SSC</span>
         </button>
-        <button class="tb-icon-item" id="ic-ssc" onclick="goExams('SSC');_setSbActive('sb-ssc');_setIconActive('ic-ssc')">
-          <div class="tb-icon-circle" style="background:linear-gradient(135deg,#10b981,#059669)">📋</div>
-          <span>SSC</span>
+        <button class="tb-pop-card" id="ic-rrb" onclick="goExams('RRB');_setSbActive('sb-rrb');_setIconActive('ic-rrb')">
+          <div class="tb-pop-logo" style="background:linear-gradient(135deg,#0ea5e9,#0284c7)">🚂</div>
+          <span class="tb-pop-name">RRB</span>
         </button>
-        <button class="tb-icon-item" id="ic-rrb" onclick="goExams('RRB');_setSbActive('sb-rrb');_setIconActive('ic-rrb')">
-          <div class="tb-icon-circle" style="background:linear-gradient(135deg,#0ea5e9,#0284c7)">🚂</div>
-          <span>RRB</span>
+        <button class="tb-pop-card" id="ic-bank" onclick="goExams('Banking');_setSbActive('sb-bank');_setIconActive('ic-bank')">
+          <div class="tb-pop-logo" style="background:linear-gradient(135deg,#f59e0b,#d97706)">🏦</div>
+          <span class="tb-pop-name">Banking</span>
         </button>
-        <button class="tb-icon-item" id="ic-bank" onclick="goExams('Banking');_setSbActive('sb-bank');_setIconActive('ic-bank')">
-          <div class="tb-icon-circle" style="background:linear-gradient(135deg,#f59e0b,#d97706)">🏦</div>
-          <span>Banking</span>
+        <button class="tb-pop-card" id="ic-gk" onclick="goExams('GK');_setSbActive('sb-gk');_setIconActive('ic-gk')">
+          <div class="tb-pop-logo" style="background:linear-gradient(135deg,#ec4899,#db2777)">🌍</div>
+          <span class="tb-pop-name">GK</span>
         </button>
-        <button class="tb-icon-item" id="ic-gk" onclick="goExams('GK');_setSbActive('sb-gk');_setIconActive('ic-gk')">
-          <div class="tb-icon-circle" style="background:linear-gradient(135deg,#ec4899,#db2777)">🌍</div>
-          <span>GK</span>
+        <button class="tb-pop-card" id="ic-mock" onclick="goExams('Mock Test');_setSbActive('sb-mock');_setIconActive('ic-mock')">
+          <div class="tb-pop-logo" style="background:linear-gradient(135deg,#f97316,#ea580c)">📝</div>
+          <span class="tb-pop-name">Mock Tests</span>
         </button>
-        <button class="tb-icon-item" id="ic-mock" onclick="goExams('Mock Test');_setSbActive('sb-mock');_setIconActive('ic-mock')">
-          <div class="tb-icon-circle" style="background:linear-gradient(135deg,#f97316,#ea580c)">📝</div>
-          <span>Mock Tests</span>
+        <button class="tb-pop-card" id="ic-ca" onclick="goExams('Current Affairs');_setSbActive('sb-ca');_setIconActive('ic-ca')">
+          <div class="tb-pop-logo" style="background:linear-gradient(135deg,#14b8a6,#0d9488)">📰</div>
+          <span class="tb-pop-name">Current Affairs</span>
         </button>
-        <button class="tb-icon-item" id="ic-ca" onclick="goExams('Current Affairs');_setSbActive('sb-ca');_setIconActive('ic-ca')">
-          <div class="tb-icon-circle" style="background:linear-gradient(135deg,#14b8a6,#0d9488)">📰</div>
-          <span>Current Affairs</span>
+        <button class="tb-pop-card" id="ic-live" onclick="goExams('Live Test');_setSbActive('sb-live');_setIconActive('ic-live')">
+          <div class="tb-pop-logo" style="background:linear-gradient(135deg,#ef4444,#dc2626)">🔴</div>
+          <span class="tb-pop-name">Live Tests</span>
         </button>
-        <button class="tb-icon-item" id="ic-live" onclick="goExams('Live Test');_setSbActive('sb-live');_setIconActive('ic-live')">
-          <div class="tb-icon-circle" style="background:linear-gradient(135deg,#ef4444,#dc2626)">🔴</div>
-          <span>Live Tests</span>
+        <button class="tb-pop-card" id="ic-pp" onclick="goExams('Previous Papers');_setSbActive('sb-pp');_setIconActive('ic-pp')">
+          <div class="tb-pop-logo" style="background:linear-gradient(135deg,#8b5cf6,#7c3aed)">📄</div>
+          <span class="tb-pop-name">Previous Papers</span>
         </button>
-        <button class="tb-icon-item" id="ic-pp" onclick="goExams('Previous Papers');_setSbActive('sb-pp');_setIconActive('ic-pp')">
-          <div class="tb-icon-circle" style="background:linear-gradient(135deg,#8b5cf6,#7c3aed)">📄</div>
-          <span>Previous Papers</span>
+        <button class="tb-pop-card" id="ic-all" onclick="goExams('');_setSbActive('sb-all');_setIconActive('ic-all')">
+          <div class="tb-pop-logo" style="background:linear-gradient(135deg,#6366f1,#8b5cf6)">🏠</div>
+          <span class="tb-pop-name">All Exams</span>
         </button>
       </div>
+      <div style="border-top:1px solid var(--border2);margin:20px 0;"></div>
+      <div class="tb-cat-title" style="font-size:16px;margin-bottom:4px;">600+ Explore all Exams</div>
+      <div class="tb-cat-desc" id="exams-page-sub" style="margin-bottom:16px;">Get exam-ready with concepts, questions and study notes as per the latest pattern</div>
 
       <!-- DIVIDER -->
       <div style="border-top:1px solid var(--border2);margin:20px 0;"></div>
@@ -11577,6 +11599,26 @@ function getCurrentUser() {
       localStorage.removeItem(SUB_SESSION_KEY);
       return null; // auto-logout
     }
+    // Trial expiry check — auto-revoke premium after 1 day
+    if (u.isPremium && u.premiumPlan === 'trial' && u.trialExpiry) {
+      if (Date.now() > new Date(u.trialExpiry).getTime()) {
+        u.isPremium = false;
+        u.premiumPlan = null;
+        u.trialExpiry = null;
+        localStorage.setItem(SUB_SESSION_KEY, JSON.stringify(u));
+        // Also update ae_users
+        try {
+          const allUsers = JSON.parse(localStorage.getItem('ae_users') || '[]');
+          const idx = allUsers.findIndex(x => x.gmail === u.gmail);
+          if (idx > -1) { allUsers[idx].isPremium = false; allUsers[idx].premiumPlan = null; allUsers[idx].trialExpiry = null; localStorage.setItem('ae_users', JSON.stringify(allUsers)); }
+        } catch(e2) {}
+        // Supabase update
+        sbSubUpsert({ gmail: u.gmail, is_premium: false, status: 'trial_expired' }).catch(()=>{});
+        setTimeout(() => toast('⏰ మీ ₹1 Trial expire అయింది! Premium continue చేయాలంటే ₹99/month తీసుకోండి.', 'warn'), 1000);
+        if (typeof updateNavUser === 'function') setTimeout(updateNavUser, 500);
+        if (typeof filterExams === 'function') setTimeout(filterExams, 500);
+      }
+    }
     // Refresh session timestamp — throttled to once per 5 minutes to avoid excessive writes
     const REFRESH_THROTTLE = 5 * 60 * 1000;
     if (!u._loginTime || (Date.now() - u._loginTime) > REFRESH_THROTTLE) {
@@ -12548,32 +12590,10 @@ function showPage(name, _skipHistory) {
   const _navMap = {home:'home',exams:'exams',result:'exams',exam:'exams',progress:'progress',videos:'videos'};
   _mobNavActive(_navMap[name]||'home');
   setTimeout(()=>document.dispatchEvent(new Event('ae-page-changed')), 100);
-  // SEO: Update title + meta description dynamically for each page
-  const _seoMap = {
-    'home':               { title: 'Anil EduTech | TSPSC SSC Banking Free Mock Tests Telugu | తెలుగు మాక్ టెస్ట్', desc: 'Anil EduTech — TSPSC, SSC CGL/CHSL, Banking, APPSC, RRB పరీక్షలకు తెలుగులో Free Mock Tests. 500+ questions, leaderboard, certificates.' },
-    'exams':              { title: 'Exams | Anil EduTech — TSPSC SSC Banking పరీక్షలు', desc: 'TSPSC, SSC CGL, CHSL, Banking, RRB, APPSC అన్ని పరీక్షలకు practice tests. తెలుగులో online mock test.' },
-    'mock-folders':       { title: 'Mock Tests | Anil EduTech — Free Online Mock Test Telugu', desc: 'TSPSC Group 1/2/3/4, SSC, Banking mock test folders. Category-wise practice sets తెలుగులో.' },
-    'mock-subfolders':    { title: 'Mock Tests | Anil EduTech', desc: 'Topic-wise mock test practice sets for competitive exams in Telugu.' },
-    'mock-folder-detail': { title: 'Mock Tests | Anil EduTech', desc: 'Practice mock tests for TSPSC, SSC, Banking in Telugu medium.' },
-    'progress':           { title: 'My Progress | Anil EduTech — Exam Score Tracker', desc: 'మీ పరీక్ష scores, badges, performance analytics చూడండి. Track your competitive exam preparation.' },
-    'current-affairs':    { title: 'Current Affairs | Anil EduTech — Daily GK Telugu', desc: 'Daily current affairs, GK questions in Telugu for TSPSC, SSC, Banking exams preparation.' },
-    'videos':             { title: 'Video Lessons | Anil EduTech — Exam Preparation Videos Telugu', desc: 'TSPSC, SSC, Banking exam preparation video lessons in Telugu medium.' },
-    'syllabus':           { title: 'Syllabus | Anil EduTech — TSPSC SSC Banking Syllabus Telugu', desc: 'TSPSC Group 1/2/3/4, SSC CGL/CHSL, Banking exam latest syllabus in Telugu.' },
-    'jobs':               { title: 'Govt Jobs | Anil EduTech — Latest Government Jobs Telugu', desc: 'Latest Telangana, AP and central government job notifications in Telugu.' },
-    'daily':              { title: 'Daily Challenge | Anil EduTech — Daily Quiz Telugu', desc: 'రోజువారీ GK challenge quiz. Daily practice for competitive exam preparation in Telugu.' },
-    'support':            { title: 'Support | Anil EduTech', desc: 'Anil EduTech support, premium membership info, contact details.' },
-    'badges':             { title: 'My Badges | Anil EduTech — Achievement Badges', desc: 'మీ achievements, badges, certificates చూడండి. Competitive exam preparation milestones.' },
-    'profile':            { title: 'Profile | Anil EduTech', desc: 'మీ profile, exam history, premium status manage చేయండి.' },
-  };
-  const _seo = _seoMap[name];
-  if (_seo) {
-    document.title = _seo.title;
-    const _descEl = document.querySelector('meta[name="description"]');
-    if (_descEl) _descEl.setAttribute('content', _seo.desc);
-    const _ogTitle = document.querySelector('meta[property="og:title"]');
-    if (_ogTitle) _ogTitle.setAttribute('content', _seo.title);
-    const _ogDesc = document.querySelector('meta[property="og:description"]');
-    if (_ogDesc) _ogDesc.setAttribute('content', _seo.desc);
+
+  // Load exams when exams page shown
+  if (name === 'exams') {
+    setTimeout(() => { if(typeof filterExams==='function') filterExams(); }, 100);
   }
 
   // Show/hide global back button (only inside exam header)
@@ -12651,35 +12671,11 @@ function goHome() {
 
 
 // Safe history helper — srcdoc/iframe environments లో SecurityError రాకుండా
-// SEO: page name → friendly URL path mapping
-const _pageUrlMap = {
-  'home':                '/',
-  'exams':               '/exams',
-  'mock-folders':        '/mock-tests',
-  'mock-subfolders':     '/mock-tests',
-  'mock-folder-detail':  '/mock-tests',
-  'progress':            '/progress',
-  'current-affairs':     '/current-affairs',
-  'videos':              '/videos',
-  'syllabus':            '/syllabus',
-  'jobs':                '/jobs',
-  'daily':               '/daily-challenge',
-  'leaderboard':         '/leaderboard',
-  'profile':             '/profile',
-  'badges':              '/badges',
-  'support':             '/support',
-  'referral':            '/referral',
-  'contest':             '/contest',
-};
 function _safeHistoryPush(state) {
-  const pageName = state && state.ae_page ? state.ae_page : null;
-  const urlPath = (pageName && _pageUrlMap[pageName]) ? _pageUrlMap[pageName] : window.location.pathname;
-  try { history.pushState(state, '', urlPath); } catch(e) {}
+  try { history.pushState(state, '', window.location.pathname); } catch(e) {}
 }
 function _safeHistoryReplace(state) {
-  const rPageName = state && state.ae_page ? state.ae_page : null;
-  const rUrlPath = (rPageName && _pageUrlMap[rPageName]) ? _pageUrlMap[rPageName] : window.location.pathname;
-  try { history.replaceState(state, '', rUrlPath); } catch(e) {}
+  try { history.replaceState(state, '', window.location.pathname); } catch(e) {}
 }
 
 // Device back button / browser back button press అయినప్పుడు
@@ -17519,29 +17515,6 @@ function _appInit() {
       if (py && pcfg2.yearly)  py.value = pcfg2.yearly;
     } catch(e) { console.error('Payment UI init error:', e); }
   }, 100);
-
-  // GitHub Pages SPA routing: 404.html saves target page in sessionStorage
-  // then redirects to /. Here we read it and navigate.
-  try {
-    // Support both sessionStorage (from 404.html) and ?goto= param (from static pages)
-    const _gotoParam = new URLSearchParams(window.location.search).get('goto');
-    const _ghTarget = _gotoParam || sessionStorage.getItem('ae_goto_page');
-    if (_ghTarget) {
-      sessionStorage.removeItem('ae_goto_page');
-      if (_gotoParam) history.replaceState(null, '', '/');
-      let _routed = false;
-      function _doRoute() {
-        if (_routed) return;
-        _routed = true;
-        showPage(_ghTarget);
-      }
-      setTimeout(_doRoute, 3000);
-      document.addEventListener('ae-page-changed', function _onReady() {
-        document.removeEventListener('ae-page-changed', _onReady);
-        setTimeout(_doRoute, 100);
-      });
-    }
-  } catch(e) {}
 }
 
 
@@ -18889,6 +18862,11 @@ function exportBackupCSV() {
 
       <!-- Plan Tabs -->
       <div class="pay-plan-tabs">
+        <button id="ptab-trial" class="pay-plan-tab" onclick="switchPricingTab('trial')" style="border-color:#ef4444;color:#ef4444;">
+          🎯 Trial
+          <span class="tab-price" style="background:#ef4444;">₹1</span>
+          <span class="save-badge" style="background:#ef4444;">7 Days</span>
+        </button>
         <button id="ptab-monthly" class="pay-plan-tab active" onclick="switchPricingTab('monthly')">
           ⚡ Monthly
           <span class="tab-price">₹<span id="ptab-m-price">99</span></span>
@@ -19029,27 +19007,22 @@ let _activePricingTab = 'monthly';
 
 function switchPricingTab(plan) {
   _activePricingTab = plan;
+  const isTrial = plan === 'trial';
   const isYearly = plan === 'yearly';
-  const price = isYearly ? PLAN_PRICES.yearly : PLAN_PRICES.monthly;
+  const price = isTrial ? 1 : (isYearly ? PLAN_PRICES.yearly : PLAN_PRICES.monthly);
 
-  // Tab buttons (new style)
+  // Tab buttons
   document.querySelectorAll('.pay-plan-tab').forEach(b => b.classList.remove('active'));
-  const activeTab = document.getElementById(isYearly ? 'ptab-yearly' : 'ptab-monthly');
+  const activeTab = document.getElementById(isTrial ? 'ptab-trial' : isYearly ? 'ptab-yearly' : 'ptab-monthly');
   if (activeTab) activeTab.classList.add('active');
-
-  // Legacy tab buttons fallback
-  const mBtn = document.getElementById('ptab-monthly');
-  const yBtn = document.getElementById('ptab-yearly');
-  if (mBtn) { mBtn.classList.toggle('active', !isYearly); }
-  if (yBtn) { yBtn.classList.toggle('active', isYearly); }
 
   // Plan card price (left panel)
   const pb = document.getElementById('plan-price-big');
   const pl = document.getElementById('plan-label');
   const pp = document.getElementById('plan-period-label');
   if (pb) pb.textContent = price;
-  if (pl) pl.textContent = isYearly ? 'Yearly Plan' : 'Monthly Plan';
-  if (pp) pp.textContent = isYearly ? '/yr' : '/mo';
+  if (pl) pl.textContent = isTrial ? '7-Day Trial' : isYearly ? 'Yearly Plan' : 'Monthly Plan';
+  if (pp) pp.textContent = isTrial ? '/7days' : isYearly ? '/yr' : '/mo';
 
   // Billing summary
   const bs = document.getElementById('billing-subtotal');
@@ -19068,14 +19041,30 @@ function switchPricingTab(plan) {
   // Update UPI link hrefs
   const upiM = document.getElementById('upi-btn-monthly');
   const upiY = document.getElementById('upi-btn-yearly');
-  if (upiM) upiM.href = `upi://pay?pa=${UPI_ID}&pn=${encodeURIComponent(UPI_NAME)}&am=${PLAN_PRICES.monthly}&cu=INR&tn=${encodeURIComponent('AE Monthly Premium')}`;
+  if (upiM) upiM.href = `upi://pay?pa=${UPI_ID}&pn=${encodeURIComponent(UPI_NAME)}&am=${isTrial?1:PLAN_PRICES.monthly}&cu=INR&tn=${encodeURIComponent(isTrial?'AE Trial 7 Days':'AE Monthly Premium')}`;
   if (upiY) upiY.href = `upi://pay?pa=${UPI_ID}&pn=${encodeURIComponent(UPI_NAME)}&am=${PLAN_PRICES.yearly}&cu=INR&tn=${encodeURIComponent('AE Yearly Premium')}`;
 
   // Show only active plan's QR
   const mWrap = document.getElementById('qr-wrap-monthly');
   const yWrap = document.getElementById('qr-wrap-yearly');
-  if (mWrap) mWrap.style.display = isYearly ? 'none' : 'flex';
+  if (mWrap) mWrap.style.display = (isYearly) ? 'none' : 'flex';
   if (yWrap) yWrap.style.display = isYearly ? 'flex' : 'none';
+
+  // Trial notice
+  let trialNotice = document.getElementById('trial-notice');
+  if (isTrial) {
+    if (!trialNotice) {
+      trialNotice = document.createElement('div');
+      trialNotice.id = 'trial-notice';
+      trialNotice.style.cssText = 'background:rgba(239,68,68,.08);border:1px solid rgba(239,68,68,.3);border-radius:10px;padding:10px 14px;font-size:12px;color:#ef4444;font-weight:700;text-align:center;margin-top:10px;';
+      trialNotice.innerHTML = '🎯 <b>₹1 Trial — 7 Days Full Access!</b><br><span style="font-size:11px;font-weight:500;color:var(--text3);">7 రోజుల తర్వాత auto-renew కాదు. మీరు నచ్చితే ₹99/month తీసుకోవచ్చు.</span>';
+      const bt2 = document.getElementById('billing-total');
+      bt2?.parentElement?.after(trialNotice);
+    }
+    trialNotice.style.display = 'block';
+  } else {
+    if (trialNotice) trialNotice.style.display = 'none';
+  }
 }
 
 // ── PAY METHOD TOGGLE ──
@@ -19211,8 +19200,8 @@ function _drawQR(canvas, text) {
 }
 
 function openUpiApp(plan) {
-  const amount = plan === 'yearly' ? PLAN_PRICES.yearly : PLAN_PRICES.monthly;
-  const note = plan === 'yearly' ? 'AE Yearly Premium' : 'AE Monthly Premium';
+  const amount = plan === 'trial' ? 1 : (plan === 'yearly' ? PLAN_PRICES.yearly : PLAN_PRICES.monthly);
+  const note = plan === 'trial' ? 'AE Trial 7 Days' : (plan === 'yearly' ? 'AE Yearly Premium' : 'AE Monthly Premium');
   const upiLink = `upi://pay?pa=${UPI_ID}&pn=${encodeURIComponent(UPI_NAME)}&am=${amount}&cu=INR&tn=${encodeURIComponent(note)}`;
   // Regenerate QR for selected plan
   _generateUpiQR(plan);
@@ -19305,8 +19294,8 @@ function startPayment(plan) {
     closePricing();
     return;
   }
-  const amount = plan === 'yearly' ? PLAN_PRICES.yearly : PLAN_PRICES.monthly;
-  const planLabel = plan === 'yearly' ? 'Yearly Premium' : 'Monthly Premium';
+  const amount = plan === 'trial' ? 1 : (plan === 'yearly' ? PLAN_PRICES.yearly : PLAN_PRICES.monthly);
+  const planLabel = plan === 'trial' ? '7-Day Trial' : (plan === 'yearly' ? 'Yearly Premium' : 'Monthly Premium');
 
   const options = {
     key: RZP_KEY,
@@ -19577,7 +19566,7 @@ async function submitUTR() {
   // ── Both checks passed → ACTIVATE PREMIUM ──
   if (unlockBtn) { unlockBtn.textContent = '✅ Activating...'; }
 
-  const amount      = plan === 'yearly' ? PLAN_PRICES.yearly : PLAN_PRICES.monthly;
+  const amount      = plan === 'trial' ? 1 : (plan === 'yearly' ? PLAN_PRICES.yearly : PLAN_PRICES.monthly);
   const now         = new Date();
   const dateStr     = now.toLocaleString('te-IN');
   const premiumSince = now.toISOString();
@@ -19606,15 +19595,18 @@ async function submitUTR() {
   }).catch(e => console.warn('ae_payments UTR insert:', e));
 
   // 3️⃣ Premium activate — local user object
+  const trialExpiry = plan === 'trial' ? new Date(Date.now() + 24*60*60*1000).toISOString() : null;
   user.isPremium    = true;
   user.premiumSince = premiumSince;
   user.premiumPlan  = plan;
+  if (trialExpiry) user.trialExpiry = trialExpiry;
   const allUsers = JSON.parse(_ls.getItem('ae_users') || '[]');
   const uidx = allUsers.findIndex(u => u.gmail === user.gmail);
   if (uidx > -1) {
     allUsers[uidx].isPremium    = true;
     allUsers[uidx].premiumSince = premiumSince;
     allUsers[uidx].premiumPlan  = plan;
+    if (trialExpiry) allUsers[uidx].trialExpiry = trialExpiry;
     _ls.setItem('ae_users', JSON.stringify(allUsers));
   }
   // Update current session user
@@ -21019,9 +21011,9 @@ _beginFreshExam = function(e, qs) {
   width: 200px; min-width: 200px;
   background: transparent;
   padding: 20px 0 40px;
-  position: sticky; top: 64px;
+  position: sticky; top: 52px;
   align-self: flex-start;
-  height: calc(100vh - 64px);
+  height: calc(100vh - 52px);
   display: flex; flex-direction: column; gap: 2px;
   overflow-y: auto; z-index: 2;
 }
@@ -21049,43 +21041,77 @@ _beginFreshExam = function(e, qs) {
   display: flex; align-items: center; justify-content: center; font-size: 14px;
 }
 
-/* RIGHT MAIN */
+/* Testbook Popular Exams - square cards */
 .tb-main { flex: 1; min-width: 0; padding: 24px 24px 48px; }
-
-/* TOP ICON GRID */
-.tb-cat-header { margin-bottom: 16px; }
+.tb-cat-header { margin-bottom: 14px; }
 .tb-cat-title { font-size: 18px; font-weight: 900; color: var(--text); margin-bottom: 3px; }
 .tb-cat-desc { font-size: 12px; color: var(--text3); }
-.tb-icon-grid {
-  display: grid;
-  grid-template-columns: repeat(10, 1fr);
-  gap: 10px; margin-bottom: 4px;
-}
-.tb-icon-item {
-  display: flex; flex-direction: column; align-items: center; gap: 6px;
-  background: none; border: 1.5px solid transparent;
-  border-radius: 12px; padding: 10px 4px 8px;
-  cursor: pointer; font-family: inherit;
-  transition: all .18s; color: var(--text2);
-  font-size: 11px; font-weight: 700;
-}
-.tb-icon-item:hover { background: var(--bg2); border-color: var(--border2); }
-.tb-icon-item.active { background: rgba(26,115,232,.08); border-color: var(--primary); color: var(--primary); }
-.tb-icon-circle {
-  width: 40px; height: 40px; border-radius: 50%;
-  display: flex; align-items: center; justify-content: center;
-  font-size: 18px; box-shadow: 0 3px 10px rgba(0,0,0,.2);
-}
-
-/* Mobile */
 @media (max-width: 768px) {
   .tb-sidebar { display: none; }
-  .tb-layout::before { display: none; }
-  .tb-main { padding: 14px 14px 40px; }
-  .tb-icon-grid { grid-template-columns: repeat(5, 1fr); gap: 8px; }
-  .tb-icon-circle { width: 34px; height: 34px; font-size: 16px; }
-  .tb-icon-item { font-size: 10px; padding: 8px 2px 6px; }
-  .tb-cat-title { font-size: 15px; }
+  .tb-main { padding: 10px 12px 60px; }
+  /* Exam cards 1 column on mobile */
+  #page-exams .exams-grid { grid-template-columns: 1fr !important; }
+  /* Pagination compact */
+  #page-exams .exams-grid [style*="grid-column:1/-1"] { padding: 12px 0 4px; gap: 6px; }
+}
+
+/* Promo bar mobile */
+@media (max-width: 600px) {
+  #promo-banner { padding: 6px 36px 6px 10px !important; gap: 6px !important; }
+  #promo-banner span:nth-child(2) { font-size: 10px !important; }
+  #promo-banner button:first-of-type { font-size: 10px !important; padding: 3px 8px !important; }
+}
+
+/* Pop grid mobile */
+@media (max-width: 560px) {
+  .tb-pop-grid { grid-template-columns: repeat(4, 1fr); gap: 8px; }
+  .tb-pop-logo { width: 40px; height: 40px; font-size: 18px; }
+  .tb-pop-card { padding: 10px 4px 8px; gap: 5px; border-radius: 10px; }
+  .tb-pop-name { font-size: 10px; }
+  .tb-cat-title { font-size: 14px !important; }
+  .tb-main { padding: 10px 10px 60px; }
+  /* Filter chips scrollable */
+  .filter-chips { flex-wrap: nowrap !important; overflow-x: auto !important; padding-bottom: 4px; -webkit-overflow-scrolling: touch; scrollbar-width: none; }
+  .filter-chips::-webkit-scrollbar { display: none; }
+  /* Search bar */
+  .search-bar-wrap { margin-bottom: 10px !important; }
+  /* Exam card compact on mobile */
+  #page-exams .exam-card { padding: 10px 10px 10px 12px !important; border-radius: 10px !important; }
+  #page-exams .exam-card > div:first-child { width: 36px !important; height: 36px !important; font-size: 16px !important; }
+}
+  display: grid;
+  grid-template-columns: repeat(5, 1fr);
+  gap: 12px;
+  margin-bottom: 8px;
+}
+.tb-pop-card {
+  display: flex; flex-direction: column; align-items: center;
+  gap: 10px; padding: 18px 10px 14px;
+  background: var(--surface);
+  border: 1px solid var(--border2);
+  border-radius: 12px;
+  cursor: pointer; font-family: inherit;
+  transition: all .2s; color: var(--text);
+  text-align: center;
+}
+.tb-pop-card:hover { border-color: var(--primary); box-shadow: 0 4px 16px rgba(26,115,232,.12); transform: translateY(-2px); }
+.tb-pop-card.active { border-color: var(--primary); background: rgba(26,115,232,.06); }
+.tb-pop-logo {
+  width: 56px; height: 56px; border-radius: 50%;
+  display: flex; align-items: center; justify-content: center;
+  font-size: 26px;
+  box-shadow: 0 4px 14px rgba(0,0,0,.18);
+}
+.tb-pop-name { font-size: 12px; font-weight: 700; color: var(--text2); line-height: 1.3; }
+
+@media (max-width: 900px) {
+  .tb-pop-grid { grid-template-columns: repeat(5, 1fr); gap: 8px; }
+}
+@media (max-width: 560px) {
+  .tb-pop-grid { grid-template-columns: repeat(4, 1fr); gap: 8px; }
+  .tb-pop-logo { width: 44px; height: 44px; font-size: 20px; }
+  .tb-pop-card { padding: 12px 6px 10px; gap: 7px; }
+  .tb-pop-name { font-size: 11px; }
 }
 
 

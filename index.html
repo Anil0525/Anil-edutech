@@ -3929,12 +3929,14 @@
   }
 
   @media (max-width: 540px) {
-    .ae-carousel-wrap { padding: 0 14px; }
-    .ae-slide { padding: 26px 22px 30px; min-height: 190px; }
+    .ae-carousel-wrap { padding: 0; margin-bottom: 20px; }
+    .ae-carousel-track { border-radius: 0; }
+    .ae-slide { padding: 24px 18px 28px; min-height: 170px; }
     .ae-slide-phone { display: none; }
     .ae-app-badges { gap: 8px; }
-    .ae-slide-title { font-size: 24px; }
-    .ae-slide-desc { font-size: 12px; margin-bottom: 16px; }
+    .ae-slide-title { font-size: 22px; letter-spacing: -.5px; }
+    .ae-slide-desc { font-size: 12px; margin-bottom: 14px; }
+    .ae-car-arrow { display: none; }
   }
 
   .lb-clear-btn { display: none; }
@@ -4059,7 +4061,7 @@
     .nav-btn span { display: inline !important; }
 
     /* HERO */
-    .hero { padding: 60px 18px 48px !important; }
+    .hero { padding: 36px 18px 32px !important; }
     .hero h1 { font-size: 30px !important; letter-spacing: -1px !important; }
     .hero p { font-size: 14px !important; }
     .hero-actions { flex-direction: column; align-items: stretch; }
@@ -4206,7 +4208,7 @@
   @media (max-width: 640px) {
 
     /* ── HERO ── */
-    .hero { padding: 44px 16px 36px !important; }
+    .hero { padding: 28px 16px 28px !important; }
     .hero-badge { font-size: 11px !important; padding: 6px 16px !important; margin-bottom: 16px !important; }
     .hero h1 { font-size: 28px !important; letter-spacing: -.8px !important; margin-bottom: 10px !important; }
     .hero p { font-size: 13px !important; margin-bottom: 18px !important; }
@@ -11528,6 +11530,7 @@ async function sbSubUpsert(sub) {
         sb_user_id:    sub.sbUserId || sub.sb_user_id || '',
         is_premium:    sub.isPremium || sub.is_premium || false,
         premium_since: sub.premiumSince || sub.premium_since || null,
+        trial_expiry:  sub.trial_expiry || sub.trialExpiry || null,
         status:        sub.status || 'approved',
         updated_at:    new Date().toISOString()
       })
@@ -11569,7 +11572,7 @@ function getCurrentUser() {
         } catch(e2) {}
         // Supabase update
         sbSubUpsert({ gmail: u.gmail, is_premium: false, status: 'trial_expired' }).catch(()=>{});
-        setTimeout(() => toast('⏰ మీ ₹1 Trial expire అయింది! Premium continue చేయాలంటే ₹99/month తీసుకోండి.', 'warn'), 1000);
+        setTimeout(() => toast('⏰ మీ ₹1 Trial (1 Day) expire అయింది! Premium continue చేయాలంటే ₹99/month తీసుకోండి.', 'warn'), 1000);
         if (typeof updateNavUser === 'function') setTimeout(updateNavUser, 500);
         if (typeof filterExams === 'function') setTimeout(filterExams, 500);
       }
@@ -18822,7 +18825,7 @@ function exportBackupCSV() {
         <button id="ptab-trial" class="pay-plan-tab" onclick="switchPricingTab('trial')" style="border-color:#ef4444;color:#ef4444;">
           🎯 Trial
           <span class="tab-price" style="background:#ef4444;">₹1</span>
-          <span class="save-badge" style="background:#ef4444;">7 Days</span>
+          <span class="save-badge" style="background:#ef4444;">1 Day</span>
         </button>
         <button id="ptab-monthly" class="pay-plan-tab active" onclick="switchPricingTab('monthly')">
           ⚡ Monthly
@@ -18978,8 +18981,8 @@ function switchPricingTab(plan) {
   const pl = document.getElementById('plan-label');
   const pp = document.getElementById('plan-period-label');
   if (pb) pb.textContent = price;
-  if (pl) pl.textContent = isTrial ? '7-Day Trial' : isYearly ? 'Yearly Plan' : 'Monthly Plan';
-  if (pp) pp.textContent = isTrial ? '/7days' : isYearly ? '/yr' : '/mo';
+  if (pl) pl.textContent = isTrial ? '1-Day Trial' : isYearly ? 'Yearly Plan' : 'Monthly Plan';
+  if (pp) pp.textContent = isTrial ? '/1day' : isYearly ? '/yr' : '/mo';
 
   // Billing summary
   const bs = document.getElementById('billing-subtotal');
@@ -18991,14 +18994,18 @@ function switchPricingTab(plan) {
   const rp = document.getElementById('rzp-btn-price');
   if (rp) rp.textContent = price;
 
-  // UPI button prices
-  document.querySelectorAll('.upi-price-m').forEach(e => e.textContent = PLAN_PRICES.monthly);
+  // UPI button prices — Trial కి ₹1, otherwise normal
+  document.querySelectorAll('.upi-price-m').forEach(e => e.textContent = isTrial ? 1 : PLAN_PRICES.monthly);
   document.querySelectorAll('.upi-price-y').forEach(e => e.textContent = PLAN_PRICES.yearly);
+
+  // QR label — Trial అయినప్పుడు "Trial — ₹1" చూపించు
+  const mQrLabel = document.querySelector('#qr-wrap-monthly .pay-upi-qr-label');
+  if (mQrLabel) mQrLabel.innerHTML = isTrial ? '🎯 Trial — ₹1 (1 Day)' : `📅 Monthly — ₹<span class="upi-price-m">${PLAN_PRICES.monthly}</span>`;
 
   // Update UPI link hrefs
   const upiM = document.getElementById('upi-btn-monthly');
   const upiY = document.getElementById('upi-btn-yearly');
-  if (upiM) upiM.href = `upi://pay?pa=${UPI_ID}&pn=${encodeURIComponent(UPI_NAME)}&am=${isTrial?1:PLAN_PRICES.monthly}&cu=INR&tn=${encodeURIComponent(isTrial?'AE Trial 7 Days':'AE Monthly Premium')}`;
+  if (upiM) upiM.href = `upi://pay?pa=${UPI_ID}&pn=${encodeURIComponent(UPI_NAME)}&am=${isTrial?1:PLAN_PRICES.monthly}&cu=INR&tn=${encodeURIComponent(isTrial?'AE Trial 1 Day':'AE Monthly Premium')}`;
   if (upiY) upiY.href = `upi://pay?pa=${UPI_ID}&pn=${encodeURIComponent(UPI_NAME)}&am=${PLAN_PRICES.yearly}&cu=INR&tn=${encodeURIComponent('AE Yearly Premium')}`;
 
   // Show only active plan's QR
@@ -19014,7 +19021,7 @@ function switchPricingTab(plan) {
       trialNotice = document.createElement('div');
       trialNotice.id = 'trial-notice';
       trialNotice.style.cssText = 'background:rgba(239,68,68,.08);border:1px solid rgba(239,68,68,.3);border-radius:10px;padding:10px 14px;font-size:12px;color:#ef4444;font-weight:700;text-align:center;margin-top:10px;';
-      trialNotice.innerHTML = '🎯 <b>₹1 Trial — 7 Days Full Access!</b><br><span style="font-size:11px;font-weight:500;color:var(--text3);">7 రోజుల తర్వాత auto-renew కాదు. మీరు నచ్చితే ₹99/month తీసుకోవచ్చు.</span>';
+      trialNotice.innerHTML = '🎯 <b>₹1 Trial — 1 Day Full Access!</b><br><span style="font-size:11px;font-weight:500;color:var(--text3);">1 రోజు తర్వాత auto-lock అవుతుంది. నచ్చితే ₹99/month తీసుకోవచ్చు.</span>';
       const bt2 = document.getElementById('billing-total');
       bt2?.parentElement?.after(trialNotice);
     }
@@ -19158,7 +19165,7 @@ function _drawQR(canvas, text) {
 
 function openUpiApp(plan) {
   const amount = plan === 'trial' ? 1 : (plan === 'yearly' ? PLAN_PRICES.yearly : PLAN_PRICES.monthly);
-  const note = plan === 'trial' ? 'AE Trial 7 Days' : (plan === 'yearly' ? 'AE Yearly Premium' : 'AE Monthly Premium');
+  const note = plan === 'trial' ? 'AE Trial 1 Day' : (plan === 'yearly' ? 'AE Yearly Premium' : 'AE Monthly Premium');
   const upiLink = `upi://pay?pa=${UPI_ID}&pn=${encodeURIComponent(UPI_NAME)}&am=${amount}&cu=INR&tn=${encodeURIComponent(note)}`;
   // Regenerate QR for selected plan
   _generateUpiQR(plan);
@@ -19252,7 +19259,7 @@ function startPayment(plan) {
     return;
   }
   const amount = plan === 'trial' ? 1 : (plan === 'yearly' ? PLAN_PRICES.yearly : PLAN_PRICES.monthly);
-  const planLabel = plan === 'trial' ? '7-Day Trial' : (plan === 'yearly' ? 'Yearly Premium' : 'Monthly Premium');
+  const planLabel = plan === 'trial' ? '1-Day Trial' : (plan === 'yearly' ? 'Yearly Premium' : 'Monthly Premium');
 
   const options = {
     key: RZP_KEY,
@@ -19569,14 +19576,16 @@ async function submitUTR() {
   // Update current session user
   _ls.setItem('ae_current_user', JSON.stringify(user));
 
-  // 4️⃣ Supabase subscribers లో is_premium = true
-  sbSubUpsert({
+  // 4️⃣ Supabase subscribers లో is_premium = true + trial_expiry
+  const sbPayload = {
     name:          user.name,
     gmail:         user.gmail,
     is_premium:    true,
     premium_since: premiumSince,
-    status:        'approved'
-  }).catch(e => console.warn('sbSubUpsert UTR premium:', e));
+    status:        plan === 'trial' ? 'trial' : 'approved'
+  };
+  if (trialExpiry) sbPayload.trial_expiry = trialExpiry;
+  sbSubUpsert(sbPayload).catch(e => console.warn('sbSubUpsert UTR premium:', e));
 
   // 5️⃣ WhatsApp alert to admin (FYI — already activated)
   const waMsg = `✅ *UTR Premium Auto-Activated!*%0A` +

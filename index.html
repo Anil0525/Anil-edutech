@@ -19064,7 +19064,7 @@ function switchPricingTab(plan) {
   const mTn  = encodeURIComponent(isTrial ? 'AE Trial 1 Day' : 'AE Monthly Premium');
   const yTn  = encodeURIComponent('AE Yearly Premium');
   function makeUpiUrl(am, tn) {
-    return `upi://pay?pa=${UPI_ID}&pn=${encodeURIComponent(UPI_NAME)}&cu=INR&tn=${tn}`;
+    return `upi://pay?pa=${UPI_ID}&pn=${encodeURIComponent(UPI_NAME)}&am=${am}&cu=INR&tn=${tn}`;
   }
   const appPkgs = {
     phonepe: 'com.phonepe.app',
@@ -19178,8 +19178,8 @@ function _generateUpiQR(plan) {
   // Generate both QR codes with amount embedded
   const mAmount = PLAN_PRICES.monthly;
   const yAmount = PLAN_PRICES.yearly;
-  const mLink = `upi://pay?pa=${UPI_ID}&pn=${encodeURIComponent(UPI_NAME)}&cu=INR&tn=${encodeURIComponent('AE Monthly Premium')}`;
-  const yLink = `upi://pay?pa=${UPI_ID}&pn=${encodeURIComponent(UPI_NAME)}&cu=INR&tn=${encodeURIComponent('AE Yearly Premium')}`;
+  const mLink = `upi://pay?pa=${UPI_ID}&pn=${encodeURIComponent(UPI_NAME)}&am=${mAmount}&cu=INR&tn=${encodeURIComponent('AE Monthly Premium')}`;
+  const yLink = `upi://pay?pa=${UPI_ID}&pn=${encodeURIComponent(UPI_NAME)}&am=${yAmount}&cu=INR&tn=${encodeURIComponent('AE Yearly Premium')}`;
   const mc = document.getElementById('upi-qr-monthly');
   const yc = document.getElementById('upi-qr-yearly');
   if (mc) _drawQR(mc, mLink);
@@ -19242,7 +19242,7 @@ function _drawQR(canvas, text) {
 function openUpiApp(plan) {
   const amount = plan === 'trial' ? 1 : (plan === 'yearly' ? PLAN_PRICES.yearly : PLAN_PRICES.monthly);
   const note = plan === 'trial' ? 'AE Trial 7 Days' : (plan === 'yearly' ? 'AE Yearly Premium' : 'AE Monthly Premium');
-  const upiLink = `upi://pay?pa=${UPI_ID}&pn=${encodeURIComponent(UPI_NAME)}&cu=INR&tn=${encodeURIComponent(note)}`;
+  const upiLink = `upi://pay?pa=${UPI_ID}&pn=${encodeURIComponent(UPI_NAME)}&am=${amount}&cu=INR&tn=${encodeURIComponent(note)}`;
   // Regenerate QR for selected plan
   _generateUpiQR(plan);
   // Try to open UPI app
@@ -24208,7 +24208,7 @@ function openContestEntry(c) {
   // QR code (use UPI QR)
   const upiId = 'sekhar70932@ybl';
   const upiAmt = c.entry_fee;
-  const upiStr = `upi://pay?pa=${upiId}&pn=AnilEduTech&cu=INR&tn=Contest:${encodeURIComponent(c.title)}`;
+  const upiStr = `upi://pay?pa=${upiId}&pn=AnilEduTech&am=${upiAmt}&cu=INR&tn=Contest:${encodeURIComponent(c.title)}`;
   document.getElementById('cem-upi').textContent = upiId;
   document.getElementById('cem-qr').src = `https://api.qrserver.com/v1/create-qr-code/?size=140x140&data=${encodeURIComponent(upiStr)}`;
 

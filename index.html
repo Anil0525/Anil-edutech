@@ -19256,6 +19256,19 @@ More exams: https://aniledutech.in
         } catch (e2) { }
       }
 
+      // Fetch premiumPlan + trialExpiry from ae_subscribers (needed for trial expiry check)
+      try {
+        const subRec = await sbGet('ae_subscribers', `gmail=eq.${encodeURIComponent(gmail)}&limit=1`);
+        if (subRec && subRec.length > 0) {
+          const sr = subRec[0];
+          if (sr.is_premium) user.isPremium = true;
+          if (sr.premium_plan || sr.premiumPlan) user.premiumPlan = sr.premium_plan || sr.premiumPlan;
+          if (sr.trial_expiry || sr.trialExpiry) user.trialExpiry = sr.trial_expiry || sr.trialExpiry;
+          if (sr.premium_since || sr.premiumSince) user.premiumSince = sr.premium_since || sr.premiumSince;
+          if (sr.status) user.subStatus = sr.status;
+        }
+      } catch (e3) { }
+
       setCurrentUser(user);
       updateNavUser();
       closeSubModal();
@@ -19367,18 +19380,30 @@ More exams: https://aniledutech.in
         sbGet('ae_settings', `key=eq.${encodeURIComponent(gmailKey)}`).then(premRes => {
           if (premRes && premRes.length > 0) {
             user.isPremium = true;
-            setCurrentUser({ ...user, isPremium: true });
-            updateNavUser(); filterExams();
           } else {
             // Fallback: check local approved list
             const localUser = getSubApproved().find(s => s.gmail === gmail);
             if (localUser && localUser.isPremium) {
               user.isPremium = true;
-              setCurrentUser({ ...user, isPremium: true });
-              updateNavUser(); filterExams();
             }
           }
-          if (!user.isPremium) _startPremiumPolling();
+          // Also fetch premiumPlan + trialExpiry from ae_subscribers
+          sbGet('ae_subscribers', `gmail=eq.${encodeURIComponent(gmail)}&limit=1`).then(subRec => {
+            if (subRec && subRec.length > 0) {
+              const sr = subRec[0];
+              if (sr.is_premium) user.isPremium = true;
+              if (sr.premium_plan || sr.premiumPlan) user.premiumPlan = sr.premium_plan || sr.premiumPlan;
+              if (sr.trial_expiry || sr.trialExpiry) user.trialExpiry = sr.trial_expiry || sr.trialExpiry;
+              if (sr.premium_since || sr.premiumSince) user.premiumSince = sr.premium_since || sr.premiumSince;
+            }
+            setCurrentUser({ ...user });
+            updateNavUser(); filterExams();
+            if (!user.isPremium) _startPremiumPolling();
+          }).catch(() => {
+            setCurrentUser({ ...user });
+            updateNavUser(); filterExams();
+            if (!user.isPremium) _startPremiumPolling();
+          });
         }).catch(() => {
           if (!user.isPremium) _startPremiumPolling();
         });
@@ -26809,14 +26834,31 @@ Rules:
         const approved = getSubApproved();
         const u = approved.find(a => a.gmail === user.gmail);
         const premiumSince = new Date().toISOString();
+        // Trial plan: set 24-hour expiry
+        const trialExpiry = plan === 'trial' ? new Date(Date.now() + 24 * 60 * 60 * 1000).toISOString() : null;
         if (u) {
           u.isPremium = true;
           u.premiumPlan = plan;
           u.premiumSince = premiumSince;
+          if (trialExpiry) u.trialExpiry = trialExpiry;
           saveSubApproved(approved);
         }
+        // Also update ae_users localStorage
+        try {
+          const allUsers = JSON.parse(_ls.getItem('ae_users') || '[]');
+          const uidx = allUsers.findIndex(x => x.gmail === user.gmail);
+          if (uidx > -1) {
+            allUsers[uidx].isPremium = true;
+            allUsers[uidx].premiumPlan = plan;
+            allUsers[uidx].premiumSince = premiumSince;
+            if (trialExpiry) allUsers[uidx].trialExpiry = trialExpiry;
+            _ls.setItem('ae_users', JSON.stringify(allUsers));
+          }
+        } catch (e2) { }
         // Supabase ae_subscribers premium update
-        sbSubUpsert({ name: user.name, gmail: user.gmail, is_premium: true, premium_since: premiumSince, status: 'approved' }).catch(e => console.warn('sbSubUpsert payment:', e));
+        const _sbPay = { name: user.name, gmail: user.gmail, is_premium: true, premium_since: premiumSince, status: plan === 'trial' ? 'trial' : 'approved' };
+        if (trialExpiry) _sbPay.trial_expiry = trialExpiry;
+        sbSubUpsert(_sbPay).catch(e => console.warn('sbSubUpsert payment:', e));
         // Supabase ae_settings — persist premium so login check works after logout
         sbUpsert('ae_settings', {
           key: 'premium_gmail_' + user.gmail.replace(/[@.]/g, '_'),
@@ -26827,6 +26869,7 @@ Rules:
         sbInsert('ae_payments', { gmail: user.gmail, name: user.name, plan, amount, payment_id: response.razorpay_payment_id, status: 'paid' }).catch(e => console.warn('ae_payments:', e));
         // Update session
         const sess = { ...user, isPremium: true, premiumPlan: plan };
+        if (trialExpiry) sess.trialExpiry = trialExpiry;
         setCurrentUser(sess);
       }
       closePricing(); renderPaymentsTable(); renderPaymentStats(); updateNavUser(); filterExams();

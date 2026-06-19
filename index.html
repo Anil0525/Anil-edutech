@@ -1012,279 +1012,293 @@
 
 
 
+    /* ═══════════════════════════════════════════════
+       PRICING OVERLAY — Dribbble 3-Card Style
+    ═══════════════════════════════════════════════ */
     .pricing-overlay {
       display: none;
       position: fixed;
       inset: 0;
       z-index: 600;
-      background: rgba(5, 10, 30, .8);
-      backdrop-filter: blur(20px);
+      background: rgba(5, 8, 20, .88);
+      backdrop-filter: blur(24px);
       align-items: center;
       justify-content: center;
       padding: 16px;
+      overflow-y: auto;
     }
-
-    .pricing-overlay.show {
-      display: flex;
-    }
+    .pricing-overlay.show { display: flex; }
 
     @keyframes pmSlideUp {
-      from {
-        opacity: 0;
-        transform: translateY(28px) scale(.96);
-      }
-
-      to {
-        opacity: 1;
-        transform: translateY(0) scale(1);
-      }
+      from { opacity: 0; transform: translateY(32px) scale(.95); }
+      to   { opacity: 1; transform: translateY(0) scale(1); }
     }
 
+    /* ── Wrapper box ── */
     .pricing-box {
       background: var(--surface);
-      border-radius: 20px;
-      width: 660px;
+      border-radius: 24px;
+      width: 860px;
       max-width: calc(100vw - 32px);
-      max-height: calc(100vh - 40px);
-      box-shadow: 0 24px 80px rgba(0, 0, 0, .5), 0 0 0 1px rgba(255, 255, 255, .06);
+      box-shadow: 0 32px 100px rgba(0,0,0,.6), 0 0 0 1px rgba(255,255,255,.07);
       overflow: hidden;
       position: relative;
-      animation: pmSlideUp .38s cubic-bezier(.16, .85, .32, 1.1);
-      display: flex;
-      align-items: stretch;
-    }
-
-    /* ── Left Panel (Billing Summary) ── */
-    .pricing-left {
-      flex: 0 0 38%;
-      background: var(--card2);
-      padding: 18px 16px 14px;
+      animation: pmSlideUp .4s cubic-bezier(.16,.85,.32,1.1);
       display: flex;
       flex-direction: column;
-      gap: 0;
-      border-right: 1px solid var(--border);
-      overflow: visible;
-      position: relative;
     }
 
-    .pricing-left::before {
-      content: '';
-      position: absolute;
-      top: 0;
-      left: 0;
-      right: 0;
-      height: 3px;
-      background: linear-gradient(90deg, #1A73E8, #6C47FF, #06B6D4);
-      border-radius: 24px 0 0 0;
+    /* ── Header ── */
+    .pm-cards-header {
+      padding: 28px 32px 0;
+      text-align: center;
     }
-
-    .pricing-back {
-      background: none;
-      border: none;
-      cursor: pointer;
-      color: var(--text3);
-      font-size: 18px;
-      padding: 0;
-      margin-bottom: 8px;
-      text-align: left;
-      line-height: 1;
-      font-family: inherit;
-      width: fit-content;
-      display: flex;
-      align-items: center;
-      gap: 6px;
-      font-size: 13px;
-      font-weight: 700;
-      letter-spacing: .01em;
-      transition: color .15s;
-    }
-
-    .pricing-back::before {
-      content: '←';
-      font-size: 16px;
-    }
-
-    .pricing-back:hover {
-      color: var(--text);
-    }
-
-    .billing-title {
-      font-size: 14px;
-      font-weight: 800;
-      color: var(--text);
-      margin-bottom: 10px;
-      letter-spacing: -.01em;
-    }
-
-    /* Premium badge above plan name */
-    .billing-premium-badge {
-      display: inline-flex;
-      align-items: center;
-      gap: 5px;
-      background: linear-gradient(135deg, rgba(245, 183, 49, .15), rgba(232, 100, 10, .1));
-      border: 1px solid rgba(245, 183, 49, .35);
-      border-radius: 20px;
-      padding: 3px 10px;
-      font-size: 11px;
-      font-weight: 800;
-      color: #F5B731;
-      margin-bottom: 5px;
-      letter-spacing: .04em;
-    }
-
-    .billing-plan-name {
-      font-size: 12px;
-      color: var(--text3);
-      font-weight: 600;
-      margin-bottom: 4px;
-    }
-
-    .billing-price-row {
-      display: flex;
-      align-items: baseline;
-      gap: 4px;
-      margin-bottom: 6px;
-    }
-
-    .billing-price-amt {
-      font-size: 28px;
+    .pm-cards-title {
+      font-size: 22px;
       font-weight: 900;
       color: var(--text);
       letter-spacing: -.03em;
-      line-height: 1;
+      margin-bottom: 4px;
     }
-
-    .billing-price-per {
-      font-size: 11px;
+    .pm-cards-sub {
+      font-size: 13px;
       color: var(--text3);
-      font-weight: 700;
-      line-height: 1.5;
-      margin-top: 6px;
+      font-weight: 600;
     }
 
-    /* Feature checklist */
-    .billing-features {
+    /* ── 3-card grid ── */
+    .pm-cards-grid {
+      display: grid;
+      grid-template-columns: 1fr 1fr 1fr;
+      gap: 16px;
+      padding: 20px 28px 28px;
+    }
+
+    /* ── Individual plan card ── */
+    .pm-card {
+      border-radius: 20px;
+      padding: 24px 20px 20px;
       display: flex;
       flex-direction: column;
-      gap: 4px;
-      margin: 8px 0 10px;
-      padding: 10px;
-      background: var(--bg);
-      border-radius: 14px;
-      border: 1px solid var(--border);
+      gap: 0;
+      position: relative;
+      transition: transform .2s, box-shadow .2s;
+      border: 2px solid transparent;
+    }
+    .pm-card:hover { transform: translateY(-3px); }
+
+    /* Trial card — light */
+    .pm-card.trial {
+      background: var(--card2);
+      border-color: rgba(239,68,68,.3);
+    }
+    /* Monthly card — dark hero */
+    .pm-card.monthly {
+      background: linear-gradient(160deg, #0f0f1a 0%, #1a1040 60%, #0d1f5c 100%);
+      border-color: rgba(108,71,255,.5);
+      box-shadow: 0 12px 48px rgba(108,71,255,.25);
+      color: #fff;
+    }
+    /* Yearly card — soft gold */
+    .pm-card.yearly {
+      background: linear-gradient(160deg, #fffbf0 0%, #fff8e1 100%);
+      border-color: rgba(245,183,49,.4);
+    }
+    [data-theme="dark"] .pm-card.yearly {
+      background: linear-gradient(160deg, #1a1500 0%, #241c00 100%);
+    }
+    [data-theme="dark"] .pm-card.trial {
+      background: #111827;
     }
 
-    .billing-feature-item {
+    /* ── Badge (Active / Popular / Save) ── */
+    .pm-card-badge {
+      position: absolute;
+      top: -12px;
+      left: 50%;
+      transform: translateX(-50%);
+      border-radius: 20px;
+      padding: 4px 14px;
+      font-size: 11px;
+      font-weight: 900;
+      letter-spacing: .04em;
+      white-space: nowrap;
+    }
+    .pm-card.trial .pm-card-badge {
+      background: #ef4444; color: #fff;
+      box-shadow: 0 4px 12px rgba(239,68,68,.4);
+    }
+    .pm-card.monthly .pm-card-badge {
+      background: linear-gradient(135deg,#7c3aed,#4f46e5);
+      color: #fff;
+      box-shadow: 0 4px 14px rgba(124,58,237,.5);
+    }
+    .pm-card.yearly .pm-card-badge {
+      background: linear-gradient(135deg,#F5B731,#E8640A);
+      color: #fff;
+      box-shadow: 0 4px 12px rgba(245,183,49,.45);
+    }
+
+    /* ── Plan name ── */
+    .pm-card-name {
+      font-size: 15px;
+      font-weight: 900;
+      margin-top: 12px;
+      margin-bottom: 6px;
+      letter-spacing: -.01em;
+    }
+    .pm-card.trial .pm-card-name { color: var(--text); }
+    .pm-card.monthly .pm-card-name { color: #fff; }
+    .pm-card.yearly .pm-card-name { color: #92400e; }
+    [data-theme="dark"] .pm-card.yearly .pm-card-name { color: #F5B731; }
+
+    /* ── Price row ── */
+    .pm-card-price-row {
+      display: flex;
+      align-items: baseline;
+      gap: 3px;
+      margin-bottom: 4px;
+    }
+    .pm-card-currency { font-size: 18px; font-weight: 800; }
+    .pm-card-amount   { font-size: 38px; font-weight: 900; letter-spacing: -.04em; line-height: 1; }
+    .pm-card-period   { font-size: 12px; font-weight: 700; opacity: .65; margin-top: 8px; }
+    .pm-card.trial .pm-card-currency,
+    .pm-card.trial .pm-card-amount { color: #ef4444; }
+    .pm-card.monthly .pm-card-currency,
+    .pm-card.monthly .pm-card-amount { color: #fff; }
+    .pm-card.monthly .pm-card-period { color: rgba(255,255,255,.6); }
+    .pm-card.yearly .pm-card-currency,
+    .pm-card.yearly .pm-card-amount { color: #d97706; }
+    [data-theme="dark"] .pm-card.yearly .pm-card-currency,
+    [data-theme="dark"] .pm-card.yearly .pm-card-amount { color: #F5B731; }
+
+    /* Strikethrough for yearly */
+    .pm-card-orig {
+      font-size: 13px;
+      font-weight: 700;
+      text-decoration: line-through;
+      opacity: .45;
+      margin-bottom: 2px;
+    }
+
+    /* ── Description ── */
+    .pm-card-desc {
+      font-size: 11.5px;
+      line-height: 1.55;
+      margin-bottom: 16px;
+      margin-top: 6px;
+    }
+    .pm-card.trial .pm-card-desc { color: var(--text3); }
+    .pm-card.monthly .pm-card-desc { color: rgba(255,255,255,.55); }
+    .pm-card.yearly .pm-card-desc { color: #92400e; opacity: .75; }
+    [data-theme="dark"] .pm-card.yearly .pm-card-desc { color: rgba(245,183,49,.6); }
+
+    /* ── Feature list ── */
+    .pm-card-features {
+      display: flex;
+      flex-direction: column;
+      gap: 7px;
+      margin-bottom: 20px;
+      flex: 1;
+    }
+    .pm-feat {
       display: flex;
       align-items: center;
       gap: 8px;
-      font-size: 11px;
+      font-size: 12px;
       font-weight: 600;
-      color: var(--text2);
     }
-
-    .billing-feature-item .bf-check {
-      width: 15px;
-      height: 15px;
+    .pm-feat-icon {
+      width: 17px; height: 17px;
       border-radius: 50%;
-      background: linear-gradient(135deg, #10b981, #059669);
+      display: flex; align-items: center; justify-content: center;
+      flex-shrink: 0;
+      font-size: 10px;
+      font-weight: 900;
+    }
+    .pm-card.trial .pm-feat { color: var(--text2); }
+    .pm-card.trial .pm-feat-icon { background: #10b981; color: #fff; }
+    .pm-card.trial .pm-feat.no { color: var(--text3); text-decoration: line-through; opacity: .55; }
+    .pm-card.trial .pm-feat.no .pm-feat-icon { background: var(--border); color: var(--text3); }
+
+    .pm-card.monthly .pm-feat { color: rgba(255,255,255,.85); }
+    .pm-card.monthly .pm-feat-icon { background: #10b981; color: #fff; }
+
+    .pm-card.yearly .pm-feat { color: #78350f; }
+    [data-theme="dark"] .pm-card.yearly .pm-feat { color: rgba(245,183,49,.85); }
+    .pm-card.yearly .pm-feat-icon { background: #F5B731; color: #fff; }
+
+    /* ── CTA Button ── */
+    .pm-card-btn {
+      width: 100%;
+      padding: 12px;
+      border: none;
+      border-radius: 14px;
+      font-size: 14px;
+      font-weight: 900;
+      font-family: inherit;
+      cursor: pointer;
+      transition: all .2s;
+      letter-spacing: .01em;
+      position: relative;
+      overflow: hidden;
+    }
+    .pm-card-btn::after {
+      content: '';
+      position: absolute;
+      inset: 0;
+      background: linear-gradient(to bottom, rgba(255,255,255,.13), transparent);
+      border-radius: inherit;
+    }
+    .pm-card-btn:hover { transform: translateY(-1px); }
+    .pm-card-btn:active { transform: translateY(0); }
+
+    .pm-card.trial .pm-card-btn {
+      background: var(--surface);
+      border: 2px solid #ef4444;
+      color: #ef4444;
+    }
+    .pm-card.trial .pm-card-btn:hover { background: rgba(239,68,68,.08); }
+
+    .pm-card.monthly .pm-card-btn {
+      background: linear-gradient(135deg, #a78bfa, #7c3aed);
+      color: #fff;
+      box-shadow: 0 6px 24px rgba(124,58,237,.45);
+    }
+    .pm-card.monthly .pm-card-btn:hover { box-shadow: 0 8px 32px rgba(124,58,237,.6); }
+
+    .pm-card.yearly .pm-card-btn {
+      background: linear-gradient(135deg, #F5B731, #E8640A);
+      color: #fff;
+      box-shadow: 0 6px 24px rgba(245,183,49,.4);
+    }
+    .pm-card.yearly .pm-card-btn:hover { box-shadow: 0 8px 32px rgba(245,183,49,.55); }
+
+    /* ── Footer ── */
+    .pm-cards-footer {
       display: flex;
       align-items: center;
       justify-content: center;
-      flex-shrink: 0;
-      font-size: 10px;
-      color: #fff;
-      font-weight: 900;
-    }
-
-    .billing-divider {
-      border: none;
-      border-top: 1px solid var(--border);
-      margin: 6px 0;
-    }
-
-    .billing-row {
-      display: flex;
-      justify-content: space-between;
-      align-items: center;
-      font-size: 12px;
-      padding: 3px 0;
-    }
-
-    .billing-row-label {
+      gap: 6px;
+      font-size: 11px;
       color: var(--text3);
-      font-weight: 600;
-    }
-
-    .billing-row-val {
-      color: var(--text);
       font-weight: 700;
+      padding: 0 28px 20px;
+      border-top: 1px solid var(--border);
+      padding-top: 14px;
     }
 
-    .billing-promo {
-      font-size: 12px;
-      color: var(--primary);
-      font-weight: 700;
-      cursor: pointer;
-      background: none;
-      border: none;
-      font-family: inherit;
-      padding: 4px 0;
-      display: flex;
-      align-items: center;
-      gap: 4px;
-    }
-
-    .billing-promo::before {
-      content: '+';
-      font-size: 14px;
-      font-weight: 900;
-    }
-
-    .billing-total {
-      display: flex;
-      justify-content: space-between;
-      align-items: center;
-      font-size: 12px;
-      margin-top: 3px;
-      padding: 7px 12px;
-      background: var(--primary-soft);
-      border-radius: 10px;
-      border: 1px solid rgba(26, 115, 232, .2);
-    }
-
-    .billing-total-label {
-      color: var(--text2);
-      font-weight: 700;
-    }
-
-    .billing-total-val {
-      font-size: 14px;
-      font-weight: 900;
-      color: var(--primary);
-      letter-spacing: -.02em;
-    }
-
-    /* ── Right Panel (Payment Details) ── */
-    .pricing-right {
-      flex: 1;
-      min-width: 0;
-      padding: 18px 18px 14px;
-      display: flex;
-      flex-direction: column;
-      overflow: visible;
-    }
-
+    /* ── Close button ── */
     .pricing-close {
       position: absolute;
-      top: 14px;
-      right: 14px;
+      top: 16px;
+      right: 16px;
       z-index: 2;
       background: var(--card2);
       border: 1px solid var(--border);
       border-radius: 50%;
-      width: 30px;
-      height: 30px;
+      width: 32px;
+      height: 32px;
       display: flex;
       align-items: center;
       justify-content: center;
@@ -1293,82 +1307,53 @@
       color: var(--text3);
       transition: all .15s;
     }
+    .pricing-close:hover { color: var(--text); background: var(--border); }
 
-    .pricing-close:hover {
-      color: var(--text);
-      background: var(--border);
+    /* ── Payment detail panel (slides in after card click) ── */
+    .pm-pay-panel {
+      display: none;
+      flex-direction: column;
+      padding: 0 28px 28px;
     }
+    .pm-pay-panel.show { display: flex; }
 
-    .pay-section-title {
-      font-size: 14px;
-      font-weight: 800;
-      color: var(--text);
-      margin-bottom: 10px;
-      letter-spacing: -.02em;
-    }
-
-    .pay-method-label {
-      font-size: 11px;
-      font-weight: 700;
-      color: var(--text3);
-      margin-bottom: 8px;
-      letter-spacing: .06em;
-      text-transform: uppercase;
-    }
-
-    .pay-method-btns {
-      display: flex;
-      gap: 8px;
-      margin-bottom: 10px;
-    }
-
-    .pay-method-btn {
-      flex: 1;
-      padding: 8px 6px;
-      border: 1.5px solid var(--border);
-      border-radius: 10px;
-      background: var(--surface);
+    .pm-pay-back {
+      background: none;
+      border: none;
       cursor: pointer;
-      font-size: 12px;
-      font-weight: 700;
-      color: var(--text2);
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      gap: 5px;
       font-family: inherit;
-      transition: all .15s;
-    }
-
-    .pay-method-btn.active {
-      border-color: var(--primary);
-      color: var(--primary);
-      background: var(--primary-soft);
-      box-shadow: 0 0 0 3px rgba(26, 115, 232, .12);
-    }
-
-    .pay-method-btn:hover:not(.active) {
-      border-color: var(--text3);
-      background: var(--card2);
-    }
-
-    .pay-field-group {
-      margin-bottom: 8px;
-    }
-
-    .pay-field-label {
-      font-size: 12px;
+      font-size: 13px;
       font-weight: 700;
-      color: var(--text2);
-      margin-bottom: 6px;
-      display: block;
+      color: var(--text3);
+      display: flex;
+      align-items: center;
+      gap: 6px;
+      padding: 0 0 14px;
+      transition: color .15s;
     }
+    .pm-pay-back:hover { color: var(--text); }
 
-    .pay-input {
-      width: 100%;
-      padding: 8px 11px;
+    .pm-pay-summary {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      background: var(--card2);
+      border: 1px solid var(--border);
+      border-radius: 14px;
+      padding: 14px 16px;
+      margin-bottom: 16px;
+    }
+    .pm-pay-plan-name { font-size: 13px; font-weight: 800; color: var(--text); }
+    .pm-pay-plan-sub  { font-size: 11px; color: var(--text3); font-weight: 600; margin-top: 2px; }
+    .pm-pay-total     { font-size: 22px; font-weight: 900; color: var(--primary); letter-spacing: -.03em; }
+
+    .pm-pay-utr-label { font-size: 12px; font-weight: 800; color: var(--text2); margin-bottom: 6px; }
+    .pm-pay-utr-row   { display: flex; gap: 8px; }
+    .pm-pay-utr-input {
+      flex: 1;
+      padding: 10px 13px;
       border: 1.5px solid var(--border2);
-      border-radius: 10px;
+      border-radius: 12px;
       font-family: inherit;
       font-size: 13px;
       font-weight: 600;
@@ -1376,415 +1361,86 @@
       color: var(--text);
       outline: none;
       transition: border-color .15s, box-shadow .15s;
-      box-sizing: border-box;
     }
+    .pm-pay-utr-input:focus { border-color: var(--primary); box-shadow: 0 0 0 3px rgba(26,115,232,.1); }
 
-    .pay-input:focus {
-      border-color: var(--primary);
-      box-shadow: 0 0 0 3px rgba(26, 115, 232, .1);
-    }
-
-    .pay-input-row {
-      display: flex;
-      gap: 10px;
-    }
-
-    .pay-input-row .pay-field-group {
-      flex: 1;
-      margin-bottom: 0;
-    }
-
-    /* Card number field with icon */
-    .pay-card-wrap {
-      position: relative;
-    }
-
-    .pay-card-wrap .pay-input {
-      padding-right: 42px;
-    }
-
-    .pay-card-icon {
-      position: absolute;
-      right: 12px;
-      top: 50%;
-      transform: translateY(-50%);
-      font-size: 16px;
-      opacity: .5;
-    }
-
-    .pay-fine-print {
-      font-size: 11px;
-      color: var(--text3);
-      line-height: 1.6;
-      margin-bottom: 8px;
-      margin-top: 2px;
-    }
-
-    .pay-fine-print a {
-      color: var(--primary);
-      text-decoration: none;
-      font-weight: 700;
-    }
-
-    .pay-fine-print a:hover {
-      text-decoration: underline;
-    }
-
-    .pay-subscribe-btn {
+    .pm-open-upi-btn {
       width: 100%;
-      padding: 11px;
-      background: linear-gradient(135deg, #1A73E8 0%, #4F46E5 100%);
-      color: #fff;
+      padding: 13px;
       border: none;
       border-radius: 14px;
       font-size: 14px;
-      font-weight: 800;
+      font-weight: 900;
       font-family: inherit;
       cursor: pointer;
+      margin-bottom: 10px;
       transition: all .2s;
-      margin-bottom: 12px;
-      box-shadow: 0 4px 20px rgba(26, 115, 232, .35);
-      letter-spacing: .01em;
       position: relative;
       overflow: hidden;
     }
-
-    .pay-subscribe-btn::after {
+    .pm-open-upi-btn::after {
       content: '';
       position: absolute;
       inset: 0;
-      background: linear-gradient(to bottom, rgba(255, 255, 255, .12), transparent);
-      border-radius: inherit;
+      background: linear-gradient(to bottom, rgba(255,255,255,.13), transparent);
     }
+    .pm-open-upi-btn:hover { transform: translateY(-1px); }
+    .pm-open-upi-btn.trial-upi   { background: #ef4444; color: #fff; box-shadow: 0 6px 20px rgba(239,68,68,.4); }
+    .pm-open-upi-btn.monthly-upi { background: linear-gradient(135deg,#7c3aed,#4f46e5); color: #fff; box-shadow: 0 6px 20px rgba(124,58,237,.4); }
+    .pm-open-upi-btn.yearly-upi  { background: linear-gradient(135deg,#F5B731,#E8640A); color: #fff; box-shadow: 0 6px 20px rgba(245,183,49,.4); }
 
-    .pay-subscribe-btn:hover {
-      transform: translateY(-1px);
-      box-shadow: 0 6px 28px rgba(26, 115, 232, .45);
-    }
+    .pm-pay-fine { font-size: 11px; color: var(--text3); line-height: 1.6; margin: 8px 0; }
+    .pm-pay-fine a { color: var(--primary); font-weight: 700; text-decoration: none; }
 
-    .pay-subscribe-btn:active {
-      transform: translateY(0);
-    }
-
-    .pay-subscribe-btn.yearly-btn {
-      background: linear-gradient(135deg, #F5B731 0%, #E8640A 100%);
-      box-shadow: 0 4px 20px rgba(245, 183, 49, .35);
-    }
-
-    .pay-subscribe-btn.yearly-btn:hover {
-      box-shadow: 0 6px 28px rgba(245, 183, 49, .45);
-    }
-
-    /* UPI Section */
-    .pay-upi-section {
-      display: none;
-      flex-direction: column;
-      gap: 8px;
-    }
-
-    .pay-upi-section.show-upi {
-      display: flex;
-    }
-
-    .pay-upi-qr-wrap {
-      display: flex;
-      flex-direction: column;
-      align-items: center;
-      gap: 6px;
-      background: var(--card2);
-      border: 1.5px solid var(--border);
-      border-radius: 12px;
-      padding: 10px;
-    }
-
-    .pay-upi-qr-label {
-      font-size: 12px;
-      font-weight: 800;
-      color: var(--text2);
-    }
-
-    .pay-upi-qr-img {
-      background: #fff;
-      border-radius: 12px;
-      padding: 8px;
-      border: 1.5px solid var(--border2);
-      box-shadow: 0 4px 16px rgba(0, 0, 0, .1);
-    }
-
-    .pay-upi-qr-img canvas,
-    .pay-upi-qr-img img {
-      display: block;
-      border-radius: 6px;
-      width: 110px;
-      height: 110px;
-    }
-
-    .pay-upi-open-btn {
-      width: 100%;
-      padding: 9px;
-      background: linear-gradient(135deg, #1A73E8, #4F46E5);
-      color: #fff;
-      border: none;
-      border-radius: 12px;
-      font-size: 13px;
-      font-weight: 800;
-      font-family: inherit;
-      cursor: pointer;
-      text-align: center;
-      text-decoration: none;
-      display: block;
-      box-shadow: 0 3px 14px rgba(26, 115, 232, .3);
-      transition: all .2s;
-    }
-
-    .pay-upi-open-btn:hover {
-      transform: translateY(-1px);
-      box-shadow: 0 5px 20px rgba(26, 115, 232, .4);
-    }
-
-    .pay-upi-open-btn.yearly {
-      background: linear-gradient(135deg, #F5B731, #E8640A);
-      box-shadow: 0 3px 14px rgba(245, 183, 49, .3);
-    }
-
-    .upi-app-btns {
-      display: flex;
-      gap: 8px;
-      width: 100%;
-    }
-
-    .upi-app-btn {
-      flex: 1;
-      padding: 9px 4px;
-      border: none;
-      border-radius: 12px;
-      font-size: 12px;
-      font-weight: 800;
-      font-family: inherit;
-      cursor: pointer;
-      text-align: center;
-      text-decoration: none;
-      display: flex;
-      flex-direction: column;
-      align-items: center;
-      gap: 3px;
-      transition: all .2s;
-    }
-
-    .upi-app-btn:hover {
-      transform: translateY(-1px);
-      filter: brightness(1.08);
-    }
-
-    .upi-app-btn.phonepe {
-      background: #5f259f;
-      color: #fff;
-    }
-
-    .upi-app-btn.gpay {
-      background: #1a73e8;
-      color: #fff;
-    }
-
-    .upi-app-btn.paytm {
-      background: #002970;
-      color: #fff;
-    }
-
-    .upi-app-btn span {
-      font-size: 18px;
-    }
-
-    .pay-upi-id-row {
+    /* ── Divider with text ── */
+    .pm-or-divider {
       display: flex;
       align-items: center;
-      justify-content: space-between;
-      background: var(--card2);
-      border: 1px solid var(--border);
-      border-radius: 12px;
-      padding: 10px 14px;
-    }
-
-    .pay-upi-id-txt {
-      font-size: 13px;
-      font-weight: 800;
-      color: var(--primary);
-      font-family: 'DM Mono', monospace;
-    }
-
-    .pay-utr-section {
-      margin-top: 2px;
-    }
-
-    .pay-utr-label {
-      font-size: 12px;
-      font-weight: 800;
-      color: var(--text2);
-      text-align: center;
-      margin-bottom: 5px;
-    }
-
-    .pay-utr-row {
-      display: flex;
-      gap: 8px;
-    }
-
-    /* Plan Tabs — redesigned */
-    .pay-plan-tabs {
-      display: flex;
-      gap: 8px;
-      margin-bottom: 10px;
-    }
-
-    .pay-plan-tab {
-      flex: 1;
-      padding: 8px 6px;
-      border: 1.5px solid var(--border);
-      border-radius: 12px;
-      background: var(--surface);
-      cursor: pointer;
-      font-size: 12px;
-      font-weight: 800;
-      color: var(--text3);
-      font-family: inherit;
-      transition: all .2s;
-      position: relative;
-      display: flex;
-      flex-direction: column;
-      align-items: center;
-      gap: 2px;
-    }
-
-    .pay-plan-tab .tab-price {
-      font-size: 14px;
-      font-weight: 900;
-      color: var(--text);
-      letter-spacing: -.02em;
-    }
-
-    .pay-plan-tab.active {
-      border-color: var(--primary);
-      color: var(--primary);
-      background: var(--primary-soft);
-      box-shadow: 0 0 0 3px rgba(26, 115, 232, .12);
-    }
-
-    .pay-plan-tab.active .tab-price {
-      color: var(--primary);
-    }
-
-    .pay-plan-tab .save-badge {
-      position: absolute;
-      top: -8px;
-      right: 6px;
-      background: linear-gradient(135deg, #22c55e, #16a34a);
-      color: #fff;
-      font-size: 9px;
-      font-weight: 900;
-      padding: 2px 7px;
-      border-radius: 20px;
-      box-shadow: 0 2px 8px rgba(34, 197, 94, .4);
-    }
-
-    /* Security footer */
-    .pay-security-footer {
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      gap: 6px;
+      gap: 10px;
+      margin: 8px 0;
       font-size: 11px;
-      color: var(--text3);
       font-weight: 700;
-      padding-top: 8px;
-      border-top: 1px solid var(--border);
-      margin-top: 8px;
+      color: var(--text3);
+    }
+    .pm-or-divider::before,
+    .pm-or-divider::after { content: ''; flex: 1; height: 1px; background: var(--border); }
+
+    /* ── Mobile ── */
+    @media (max-width: 640px) {
+      .pricing-overlay { padding: 10px; align-items: flex-start; }
+      .pricing-box { width: 100%; border-radius: 20px; }
+      .pm-cards-grid { grid-template-columns: 1fr; gap: 20px; padding: 16px; }
+      .pm-cards-header { padding: 20px 16px 0; }
+      .pm-cards-footer { padding: 12px 16px 16px; }
+      .pm-pay-panel { padding: 0 16px 20px; }
+      .pm-card.monthly { order: -1; }
     }
 
-    /* mobile: compact square box */
-    @media (max-width: 600px) {
-      .pricing-overlay {
-        padding: 12px;
-        align-items: center;
-        justify-content: center;
-        overflow-y: auto;
-      }
-
-      .pricing-box {
-        flex-direction: column;
-        width: calc(100vw - 24px);
-        max-width: 380px;
-        max-height: calc(100vh - 40px);
-        overflow-y: auto;
-        overflow-x: hidden;
-        -webkit-overflow-scrolling: touch;
-        border-radius: 20px;
-      }
-
-      /* Hide left billing panel on mobile — save space */
-      .pricing-left {
-        display: none !important;
-      }
-
-      /* Right panel takes full width */
-      .pricing-right {
-        padding: 18px 16px 16px !important;
-        flex: none;
-      }
-
-      /* Plan tabs — full width, compact */
-      .pay-plan-tabs {
-        gap: 6px;
-        margin-bottom: 10px;
-      }
-
-      .pay-plan-tab {
-        padding: 8px 4px;
-        font-size: 11.5px;
-      }
-
-      .pay-plan-tab .tab-price {
-        font-size: 13px;
-      }
-
-      /* Method buttons compact */
-      .pay-method-btns {
-        gap: 6px;
-      }
-
-      .pay-method-btn {
-        font-size: 11.5px;
-        padding: 8px 4px;
-      }
-
-      /* UPI QR smaller */
-      .pay-upi-qr-img canvas,
-      .pay-upi-qr-img img {
-        width: 90px !important;
-        height: 90px !important;
-      }
-
-      /* Subscribe button */
-      .pay-subscribe-btn {
-        font-size: 13px;
-        padding: 10px;
-      }
-
-      /* Close button visible */
-      .pricing-close {
-        top: 10px;
-        right: 10px;
-      }
-
-      /* Section title smaller */
-      .pay-section-title {
-        font-size: 13px;
-        margin-bottom: 8px;
-      }
-
-      .pay-method-label {
-        font-size: 10px;
-        margin-bottom: 6px;
-      }
+    /* ── Keep old classes used elsewhere (UTR input etc.) ── */
+    .pay-utr-section { margin-top: 2px; }
+    .pay-utr-label { font-size: 12px; font-weight: 800; color: var(--text2); text-align: center; margin-bottom: 5px; }
+    .pay-utr-row { display: flex; gap: 8px; }
+    .pay-input {
+      width: 100%; padding: 8px 11px;
+      border: 1.5px solid var(--border2); border-radius: 10px;
+      font-family: inherit; font-size: 13px; font-weight: 600;
+      background: var(--surface); color: var(--text); outline: none;
+      transition: border-color .15s, box-shadow .15s; box-sizing: border-box;
+    }
+    .pay-input:focus { border-color: var(--primary); box-shadow: 0 0 0 3px rgba(26,115,232,.1); }
+    .pay-subscribe-btn {
+      width: 100%; padding: 11px;
+      background: linear-gradient(135deg, #1A73E8 0%, #4F46E5 100%);
+      color: #fff; border: none; border-radius: 14px;
+      font-size: 14px; font-weight: 800; font-family: inherit;
+      cursor: pointer; transition: all .2s; margin-bottom: 12px;
+      box-shadow: 0 4px 20px rgba(26,115,232,.35);
+    }
+    .pay-subscribe-btn:hover { transform: translateY(-1px); }
+    .pay-security-footer {
+      display: flex; align-items: center; justify-content: center;
+      gap: 6px; font-size: 11px; color: var(--text3); font-weight: 700;
+      padding-top: 8px; border-top: 1px solid var(--border); margin-top: 8px;
     }
 
     .pm-header {
@@ -1890,22 +1546,6 @@
       flex-direction: column;
       gap: 5px;
       flex: 1;
-    }
-
-    .pm-feat {
-      font-size: 13px;
-      font-weight: 700;
-      color: var(--text2);
-      display: flex;
-      align-items: center;
-      gap: 6px;
-    }
-
-    .pm-feat::before {
-      content: "✓";
-      color: #10b981;
-      font-weight: 900;
-      font-size: 14px;
     }
 
     .pm-divider {
@@ -2068,21 +1708,6 @@
       font-weight: 700;
       padding: 10px 22px 16px;
       border-top: 1px solid var(--border);
-    }
-
-    .pm-card-btn {
-      display: block;
-      width: 100%;
-      padding: 11px;
-      margin-top: 10px;
-      background: var(--bg);
-      border: 1.5px solid var(--border2);
-      border-radius: 12px;
-      font-family: inherit;
-      font-size: 13px;
-      font-weight: 800;
-      color: var(--text2);
-      cursor: pointer;
     }
 
     [data-theme="dark"] .pm-header {
@@ -26272,77 +25897,137 @@ Rules:
     <div class="pricing-box">
       <button class="pricing-close" onclick="closePricing()">✕</button>
 
-      <!-- COMING SOON BANNER — shown when PAYMENT_ENABLED=false -->
+      <!-- COMING SOON BANNER -->
       <div id="pricing-coming-soon"
-        style="display:none;position:absolute;top:0;left:0;right:0;z-index:10;background:linear-gradient(90deg,#F5B731,#E8640A);color:#fff;padding:9px 16px;font-size:12px;font-weight:800;text-align:center;letter-spacing:.3px;gap:8px;align-items:center;justify-content:center;border-radius:20px 20px 0 0;">
+        style="display:none;position:relative;top:0;left:0;right:0;z-index:10;background:linear-gradient(90deg,#F5B731,#E8640A);color:#fff;padding:9px 16px;font-size:12px;font-weight:800;text-align:center;letter-spacing:.3px;display:none;align-items:center;justify-content:center;gap:8px;border-radius:20px 20px 0 0;">
         ⏳ Payment Coming Soon — ఇప్పుడు free గా referral వాడి premium పొందండి! &nbsp;
         <button onclick="closePricing();goReferral()"
-          style="background:rgba(255,255,255,.25);border:1px solid rgba(255,255,255,.5);color:#fff;border-radius:20px;padding:3px 12px;font-size:11px;font-weight:800;cursor:pointer;font-family:inherit;">Refer
-          & Earn →</button>
-      </div>
-      <div class="pricing-left">
-        <button class="pricing-back" onclick="closePricing()"></button>
-        <div class="billing-title">Billing summary</div>
-        <div class="billing-premium-badge">⭐ PREMIUM</div>
-        <div class="billing-plan-name">Anil EduTech Premium</div>
-        <div class="billing-price-row">
-          <span class="billing-price-amt">₹<span id="plan-price-big">99</span></span>
-          <span class="billing-price-per">Per<br><span id="plan-period-label">/mo</span></span>
-        </div>
-        <!-- Features -->
-        <div class="billing-features">
-          <div class="billing-feature-item"><span class="bf-check">✓</span> అన్ని Premium Exams Unlock (50+)</div>
-          <div class="billing-feature-item"><span class="bf-check">✓</span> TSPSC · SSC · Banking · RRB Full Tests</div>
-          <div class="billing-feature-item"><span class="bf-check">✓</span> Previous Year Papers Access</div>
-          <div class="billing-feature-item"><span class="bf-check">✓</span> Live Competitive Tests + Leaderboard</div>
-          <div class="billing-feature-item"><span class="bf-check">✓</span> Detailed Score Analytics & Weak Areas</div>
-          <div class="billing-feature-item"><span class="bf-check">✓</span> Official Certificates Download</div>
-          <div class="billing-feature-item"><span class="bf-check">✓</span> Daily Current Affairs (Auto)</div>
-        </div>
-        <div
-          style="background:linear-gradient(135deg,rgba(245,183,49,.12),rgba(232,100,10,.08));border:1px solid rgba(245,183,49,.3);border-radius:10px;padding:9px 12px;margin:10px 0;font-size:11px;font-weight:800;color:#E8640A;text-align:center;">
-          ⚡ ₹99/month = రోజుకు ₹3.30 మాత్రమే!
-        </div>
-        <hr class="billing-divider">
-        <div class="billing-row"><span class="billing-row-label">Subtotal</span><span class="billing-row-val">₹<span
-              id="billing-subtotal">99</span></span></div>
-        <div style="padding:4px 0"><button class="billing-promo">Add promotion code</button></div>
-        <hr class="billing-divider">
-        <div class="billing-total"><span class="billing-total-label">Total due today</span><span
-            class="billing-total-val">₹<span id="billing-total">99</span></span></div>
+          style="background:rgba(255,255,255,.25);border:1px solid rgba(255,255,255,.5);color:#fff;border-radius:20px;padding:3px 12px;font-size:11px;font-weight:800;cursor:pointer;font-family:inherit;">Refer & Earn →</button>
       </div>
 
-      <!-- RIGHT: Payment Details -->
-      <div class="pricing-right">
-        <div class="pay-section-title">Payment details</div>
-
-        <!-- Plan Tabs -->
-        <div class="pay-plan-tabs">
-          <button id="ptab-trial" class="pay-plan-tab" onclick="switchPricingTab('trial')"
-            style="border-color:#ef4444;color:#ef4444;">
-            🎯 Trial
-            <span class="tab-price" style="background:#ef4444;">₹1</span>
-            <span class="save-badge" style="background:#ef4444;">1 Day</span>
-          </button>
-          <button id="ptab-monthly" class="pay-plan-tab active" onclick="switchPricingTab('monthly')">
-            ⚡ Monthly
-            <span class="tab-price">₹<span id="ptab-m-price">99</span></span>
-          </button>
-          <button id="ptab-yearly" class="pay-plan-tab" onclick="switchPricingTab('yearly')">
-            🏆 Yearly
-            <span class="tab-price">₹<span id="ptab-y-price">499</span></span>
-            <span class="save-badge">-33%</span>
-          </button>
+      <!-- ── CARD SELECTION VIEW ── -->
+      <div id="pm-cards-view">
+        <div class="pm-cards-header">
+          <div class="pm-cards-title">👑 Anil EduTech Premium</div>
+          <div class="pm-cards-sub">మీ లక్ష్యానికి సరిపడే plan ఎంచుకోండి</div>
         </div>
 
-        <!-- Razorpay Only Payment -->
-        <div class="pay-fine-print">By clicking subscribe, you agree to Anil EduTech's <a href="#">Terms of Use</a>
-            and <a href="#">Privacy policy</a>.</div>
-          <button id="rzp-pay-btn" class="pay-subscribe-btn" onclick="startPayment(_activePricingTab)">🔒 Subscribe Now —
-            ₹<span id="rzp-btn-price">99</span></button>
+        <div class="pm-cards-grid">
+
+          <!-- Trial Card -->
+          <div class="pm-card trial">
+            <div class="pm-card-badge">🎯 Try చేయండి</div>
+            <div class="pm-card-name">Trial Plan</div>
+            <div class="pm-card-price-row">
+              <span class="pm-card-currency">₹</span>
+              <span class="pm-card-amount">1</span>
+              <span class="pm-card-period">/ 1 day</span>
+            </div>
+            <div class="pm-card-desc">పరీక్ష చేసి చూడండి — ₹1 కే 24 గంటల Full Premium Access!</div>
+            <div class="pm-card-features">
+              <div class="pm-feat"><div class="pm-feat-icon">✓</div> అన్ని Premium Exams Access</div>
+              <div class="pm-feat"><div class="pm-feat-icon">✓</div> TSPSC · SSC · Banking Tests</div>
+              <div class="pm-feat"><div class="pm-feat-icon">✓</div> Score Analytics</div>
+              <div class="pm-feat no"><div class="pm-feat-icon">✕</div> Previous Year Papers</div>
+              <div class="pm-feat no"><div class="pm-feat-icon">✕</div> Certificates Download</div>
+              <div class="pm-feat no"><div class="pm-feat-icon">✕</div> Daily Current Affairs</div>
+            </div>
+            <button class="pm-card-btn" onclick="openPayPanel('trial')">🎯 ₹1 లో Try చేయండి</button>
+          </div>
+
+          <!-- Monthly Card (Hero) -->
+          <div class="pm-card monthly">
+            <div class="pm-card-badge">⚡ Most Popular</div>
+            <div class="pm-card-name">Monthly Plan</div>
+            <div class="pm-card-price-row">
+              <span class="pm-card-currency">₹</span>
+              <span class="pm-card-amount" id="pm-monthly-amount">99</span>
+              <span class="pm-card-period">/ month</span>
+            </div>
+            <div class="pm-card-desc">రోజుకు ₹3.30 మాత్రమే! Serious aspirants కోసం.</div>
+            <div class="pm-card-features">
+              <div class="pm-feat"><div class="pm-feat-icon">✓</div> అన్ని Premium Exams Unlock (50+)</div>
+              <div class="pm-feat"><div class="pm-feat-icon">✓</div> TSPSC · SSC · Banking · RRB Tests</div>
+              <div class="pm-feat"><div class="pm-feat-icon">✓</div> Previous Year Papers Access</div>
+              <div class="pm-feat"><div class="pm-feat-icon">✓</div> Live Leaderboard + Score Analytics</div>
+              <div class="pm-feat"><div class="pm-feat-icon">✓</div> Certificates Download</div>
+              <div class="pm-feat"><div class="pm-feat-icon">✓</div> Daily Current Affairs (Auto)</div>
+            </div>
+            <button class="pm-card-btn" onclick="openPayPanel('monthly')">⚡ Subscribe Now — ₹<span id="pm-monthly-btn-price">99</span></button>
+          </div>
+
+          <!-- Yearly Card -->
+          <div class="pm-card yearly">
+            <div class="pm-card-badge">🏆 Best Value — Save 33%</div>
+            <div class="pm-card-name">Yearly Plan</div>
+            <div class="pm-card-orig">₹<span id="pm-yearly-orig">1188</span></div>
+            <div class="pm-card-price-row">
+              <span class="pm-card-currency">₹</span>
+              <span class="pm-card-amount" id="pm-yearly-amount">499</span>
+              <span class="pm-card-period">/ year</span>
+            </div>
+            <div class="pm-card-desc">Best deal! 12 months, ₹799 savings. Exam prep కి best investment.</div>
+            <div class="pm-card-features">
+              <div class="pm-feat"><div class="pm-feat-icon">✓</div> అన్ని Premium Exams Unlock (50+)</div>
+              <div class="pm-feat"><div class="pm-feat-icon">✓</div> TSPSC · SSC · Banking · RRB Tests</div>
+              <div class="pm-feat"><div class="pm-feat-icon">✓</div> Previous Year Papers Access</div>
+              <div class="pm-feat"><div class="pm-feat-icon">✓</div> Live Leaderboard + Score Analytics</div>
+              <div class="pm-feat"><div class="pm-feat-icon">✓</div> Certificates Download</div>
+              <div class="pm-feat"><div class="pm-feat-icon">✓</div> Daily Current Affairs (Auto)</div>
+            </div>
+            <button class="pm-card-btn" onclick="openPayPanel('yearly')">🏆 Get Yearly — ₹<span id="pm-yearly-btn-price">499</span></button>
+          </div>
+
+        </div><!-- /pm-cards-grid -->
+
+        <div class="pm-cards-footer">
+          🔒 Secure Payments via Razorpay &nbsp;·&nbsp; UPI &nbsp;·&nbsp; Cards &nbsp;·&nbsp; NetBanking
+        </div>
+      </div><!-- /pm-cards-view -->
+
+      <!-- ── PAYMENT DETAIL PANEL (slides in after card select) ── -->
+      <div class="pm-pay-panel" id="pm-pay-panel">
+
+        <button class="pm-pay-back" onclick="closePayPanel()">← వెనక్కి వెళ్ళండి</button>
+
+        <!-- Summary row -->
+        <div class="pm-pay-summary">
+          <div>
+            <div class="pm-pay-plan-name" id="pp-plan-name">Monthly Plan</div>
+            <div class="pm-pay-plan-sub" id="pp-plan-sub">Anil EduTech Premium</div>
+          </div>
+          <div class="pm-pay-total">₹<span id="pp-plan-price">99</span></div>
+        </div>
+
+        <!-- UPI Open App button -->
+        <button class="pm-open-upi-btn monthly-upi" id="pp-upi-btn" onclick="openUpiApp()">
+          📱 UPI App తో Pay చేయండి — ₹<span id="pp-upi-price">99</span>
+        </button>
+
+        <div class="pm-or-divider">లేదా Razorpay తో</div>
+
+        <!-- Razorpay button -->
+        <button id="rzp-pay-btn" class="pay-subscribe-btn" onclick="startPayment(_activePricingTab)" style="margin-bottom:10px;">
+          🔒 Pay via Razorpay — ₹<span id="rzp-btn-price">99</span>
+        </button>
+
+        <div class="pm-or-divider">Payment చేసిన తర్వాత</div>
+
+        <!-- UTR entry -->
+        <div class="pm-pay-utr-label">✅ UTR Number enter చేసి confirm చేయండి</div>
+        <div class="pm-pay-utr-row" style="margin-bottom:10px;">
+          <input id="pm-utr-input" class="pm-pay-utr-input" placeholder="UTR Number (12+ digits, e.g. 123456789012)" maxlength="22" />
+          <button onclick="submitUtrPayment()"
+            style="padding:10px 16px;background:linear-gradient(135deg,#10b981,#059669);color:#fff;border:none;border-radius:12px;font-family:inherit;font-size:13px;font-weight:800;cursor:pointer;white-space:nowrap;">✅ Confirm</button>
+        </div>
+
+        <div class="pm-pay-fine">
+          By clicking subscribe, you agree to Anil EduTech's <a href="#">Terms of Use</a> and <a href="#">Privacy policy</a>.
+        </div>
 
         <div class="pay-security-footer">🔒 Secure Payments via Razorpay &nbsp;·&nbsp; UPI &nbsp;·&nbsp; Cards &nbsp;·&nbsp; NetBanking</div>
-      </div><!-- /pricing-right -->
+      </div><!-- /pm-pay-panel -->
+
     </div><!-- /pricing-box -->
   </div><!-- /pricing-overlay -->
   <script>
@@ -26421,113 +26106,8 @@ Rules:
 
     let _activePricingTab = 'monthly';
 
-    function switchPricingTab(plan) {
-      _activePricingTab = plan;
-      const isTrial = plan === 'trial';
-      const isYearly = plan === 'yearly';
-      const price = isTrial ? 1 : (isYearly ? PLAN_PRICES.yearly : PLAN_PRICES.monthly);
-
-      // ── Tab buttons ──
-      document.querySelectorAll('.pay-plan-tab').forEach(b => b.classList.remove('active'));
-      const activeTab = document.getElementById(isTrial ? 'ptab-trial' : isYearly ? 'ptab-yearly' : 'ptab-monthly');
-      if (activeTab) activeTab.classList.add('active');
-
-      // ── Left panel: big price + period ──
-      const pb = document.getElementById('plan-price-big');
-      const pl = document.getElementById('plan-label');
-      const pp = document.getElementById('plan-period-label');
-      if (pb) pb.textContent = price;
-      if (pl) pl.textContent = isTrial ? '1-Day Trial' : isYearly ? 'Yearly Plan' : 'Monthly Plan';
-      if (pp) pp.textContent = isTrial ? '/1day' : isYearly ? '/yr' : '/mo';
-
-      // ── Billing subtotal / total ──
-      const bs = document.getElementById('billing-subtotal');
-      const bt = document.getElementById('billing-total');
-      if (bs) bs.textContent = price;
-      if (bt) bt.textContent = price;
-
-      // ── Razorpay button price ──
-      const rp = document.getElementById('rzp-btn-price');
-      if (rp) rp.textContent = price;
-
-      // ── UPI prices: Trial → ₹1, Monthly → ₹99, Yearly → ₹499 ──
-      document.querySelectorAll('.upi-price-m').forEach(e => e.textContent = isTrial ? 1 : PLAN_PRICES.monthly);
-      document.querySelectorAll('.upi-price-y').forEach(e => e.textContent = PLAN_PRICES.yearly);
-
-      // ── QR label update ──
-      const mQrLabel = document.querySelector('#qr-wrap-monthly .pay-upi-qr-label');
-      if (mQrLabel) {
-        if (isTrial) mQrLabel.innerHTML = '🎯 Trial — ₹<span class="upi-price-m">1</span>';
-        else if (!isYearly) mQrLabel.innerHTML = '📅 Monthly — ₹<span class="upi-price-m">' + PLAN_PRICES.monthly + '</span>';
-      }
-
-      // ── UPI app buttons: app-specific intent URLs ──
-      const mAmt = isTrial ? 1 : PLAN_PRICES.monthly;
-      const mTn = encodeURIComponent(isTrial ? 'AE Trial 1 Day' : 'AE Monthly Premium');
-      const yTn = encodeURIComponent('AE Yearly Premium');
-      function makeUpiUrl(am, tn) {
-        return `upi://pay?pa=${UPI_ID}&pn=${encodeURIComponent(UPI_NAME)}&am=${am}&cu=INR&tn=${tn}`;
-      }
-      const appPkgs = {
-        phonepe: 'com.phonepe.app',
-        gpay: 'com.google.android.apps.nbu.paisa.user',
-        paytm: 'net.one97.paytm'
-      };
-      Object.entries(appPkgs).forEach(([app, pkg]) => {
-        const bM = document.getElementById(`upi-${app}-monthly`);
-        const bY = document.getElementById(`upi-${app}-yearly`);
-        if (bM) { bM.removeAttribute('href'); bM.onclick = (e) => { e.preventDefault(); window.location.href = makeUpiUrl(mAmt, mTn); }; }
-        if (bY) { bY.removeAttribute('href'); bY.onclick = (e) => { e.preventDefault(); window.location.href = makeUpiUrl(PLAN_PRICES.yearly, yTn); }; }
-      });
-
-      // ── QR wrap visibility ──
-      const mWrap = document.getElementById('qr-wrap-monthly');
-      const yWrap = document.getElementById('qr-wrap-yearly');
-      if (mWrap) mWrap.style.display = isYearly ? 'none' : 'flex';
-      if (yWrap) yWrap.style.display = isYearly ? 'flex' : 'none';
-
-      // ── Net Banking price ──
-      document.querySelectorAll('.nb-price').forEach(e => e.textContent = price);
-
-      // ── Trial notice (1-day info box) ──
-      let trialNotice = document.getElementById('trial-notice');
-      if (isTrial) {
-        if (!trialNotice) {
-          trialNotice = document.createElement('div');
-          trialNotice.id = 'trial-notice';
-          trialNotice.style.cssText = 'background:rgba(239,68,68,.08);border:1px solid rgba(239,68,68,.3);border-radius:10px;padding:10px 14px;font-size:12px;color:#ef4444;font-weight:700;text-align:center;margin-top:10px;';
-          const bt2 = document.getElementById('billing-total');
-          bt2?.parentElement?.after(trialNotice);
-        }
-        trialNotice.innerHTML = '🎯 <b>₹1 Trial — 1 Day Full Access!</b><br><span style="font-size:11px;font-weight:500;color:var(--text3);">24 గంటల తర్వాత auto-lock అవుతుంది. నచ్చితే ₹99/month తీసుకోవచ్చు.</span>';
-        trialNotice.style.display = 'block';
-      } else {
-        if (trialNotice) trialNotice.style.display = 'none';
-      }
-    }
-
-    // ── PAY METHOD TOGGLE ──
-    function switchPayMethod(method, btn) {
-      document.querySelectorAll('.pay-method-btn').forEach(b => b.classList.remove('active'));
-      btn.classList.add('active');
-      const upiSection = document.getElementById('upi-section');
-      const cardSection = document.getElementById('card-section');
-      const netSection = document.getElementById('net-section');
-      if (upiSection) upiSection.classList.remove('show-upi');
-      if (cardSection) cardSection.style.display = 'none';
-      if (netSection) netSection.style.display = 'none';
-      if (method === 'upi') {
-        if (upiSection) upiSection.classList.add('show-upi');
-      } else if (method === 'card') {
-        if (cardSection) cardSection.style.display = 'block';
-      } else {
-        if (netSection) netSection.style.display = 'block';
-      }
-    }
-
-    // ── PRICING MODAL ──
+    // ── NEW: open card-selection view ──
     function openPricing() {
-      // Guard: must be logged in to open pricing
       const _pricingUser = getCurrentUser ? getCurrentUser() : null;
       if (!_pricingUser) {
         toast('⚠️ ముందు Login చేయండి — then Premium తీసుకోవచ్చు!', 'warn');
@@ -26535,42 +26115,103 @@ Rules:
         else if (typeof showPage === 'function') showPage('login');
         return;
       }
-      // Guard: already premium
       if (_pricingUser.isPremium) {
         toast('👑 మీరు ఇప్పటికే Premium Member! అన్ని exams access చేయవచ్చు.', 'success');
         return;
       }
-      document.getElementById('pricing-overlay').classList.add('show');
-      // Push history state so device back button closes payment overlay instead of leaving site
-      _safeHistoryPush({ ae_page: 'pricing' });
-      // Update ALL price displays with current PLAN_PRICES
-      document.querySelectorAll('.upi-price-m').forEach(e => e.textContent = PLAN_PRICES.monthly);
-      document.querySelectorAll('.upi-price-y').forEach(e => e.textContent = PLAN_PRICES.yearly);
-      const pm = document.getElementById('ptab-m-price');
-      const py = document.getElementById('ptab-y-price');
+      // Update prices
+      const pm = document.getElementById('pm-monthly-amount');
+      const pb = document.getElementById('pm-monthly-btn-price');
+      const py = document.getElementById('pm-yearly-amount');
+      const pyb = document.getElementById('pm-yearly-btn-price');
+      const pyo = document.getElementById('pm-yearly-orig');
       if (pm) pm.textContent = PLAN_PRICES.monthly;
+      if (pb) pb.textContent = PLAN_PRICES.monthly;
       if (py) py.textContent = PLAN_PRICES.yearly;
-      // Update UPI button hrefs with current amounts
-      const appPkgs2 = { phonepe: 'com.phonepe.app', gpay: 'com.google.android.apps.nbu.paisa.user', paytm: 'net.one97.paytm' };
-      Object.entries(appPkgs2).forEach(([app]) => {
-        const bM = document.getElementById(`upi-${app}-monthly`);
-        const bY = document.getElementById(`upi-${app}-yearly`);
-        if (bM) { bM.removeAttribute('href'); bM.onclick = (e) => { e.preventDefault(); window.location.href = `upi://pay?pa=${UPI_ID}&pn=${encodeURIComponent(UPI_NAME)}&am=${PLAN_PRICES.monthly}&cu=INR&tn=${encodeURIComponent('AE Monthly Premium')}`; }; }
-        if (bY) { bY.removeAttribute('href'); bY.onclick = (e) => { e.preventDefault(); window.location.href = `upi://pay?pa=${UPI_ID}&pn=${encodeURIComponent(UPI_NAME)}&am=${PLAN_PRICES.yearly}&cu=INR&tn=${encodeURIComponent('AE Yearly Premium')}`; }; }
-      });
-      // Show/hide coming-soon banner based on payment status
+      if (pyb) pyb.textContent = PLAN_PRICES.yearly;
+      if (pyo) pyo.textContent = PLAN_PRICES.monthly * 12;
+      // Show cards view, hide pay panel
+      const cardsView = document.getElementById('pm-cards-view');
+      const payPanel = document.getElementById('pm-pay-panel');
+      if (cardsView) cardsView.style.display = 'block';
+      if (payPanel) payPanel.classList.remove('show');
+      // Show/hide coming-soon banner
       const csBanner = document.getElementById('pricing-coming-soon');
       if (csBanner) csBanner.style.display = PAYMENT_ENABLED ? 'none' : 'flex';
-      // Disable pay buttons if payment not enabled
-      document.querySelectorAll('.upi-app-btn').forEach(btn => {
-        btn.style.opacity = PAYMENT_ENABLED ? '1' : '0.5';
-        btn.style.pointerEvents = PAYMENT_ENABLED ? 'auto' : 'none';
-      });
-      // Init tab
-      switchPricingTab('monthly');
+      document.getElementById('pricing-overlay').classList.add('show');
+      _safeHistoryPush({ ae_page: 'pricing' });
     }
+
     function closePricing() {
       document.getElementById('pricing-overlay').classList.remove('show');
+    }
+
+    function openPayPanel(plan) {
+      _activePricingTab = plan;
+      const isTrial = plan === 'trial';
+      const isYearly = plan === 'yearly';
+      const price = isTrial ? 1 : (isYearly ? PLAN_PRICES.yearly : PLAN_PRICES.monthly);
+      const planName = isTrial ? '🎯 Trial Plan — 1 Day' : isYearly ? '🏆 Yearly Plan' : '⚡ Monthly Plan';
+      const planSub = isTrial ? '24 గంటల Full Premium Access' : isYearly ? 'Anil EduTech Premium — 12 Months' : 'Anil EduTech Premium';
+
+      document.getElementById('pp-plan-name').textContent = planName;
+      document.getElementById('pp-plan-sub').textContent = planSub;
+      document.getElementById('pp-plan-price').textContent = price;
+      document.getElementById('pp-upi-price').textContent = price;
+      document.getElementById('rzp-btn-price').textContent = price;
+
+      // Style UPI button per plan
+      const upiBtn = document.getElementById('pp-upi-btn');
+      if (upiBtn) {
+        upiBtn.className = 'pm-open-upi-btn ' + (isTrial ? 'trial-upi' : isYearly ? 'yearly-upi' : 'monthly-upi');
+      }
+
+      // Disable if payment not enabled
+      const rzpBtn = document.getElementById('rzp-pay-btn');
+      if (rzpBtn) {
+        rzpBtn.style.opacity = PAYMENT_ENABLED ? '1' : '0.5';
+        rzpBtn.style.pointerEvents = PAYMENT_ENABLED ? 'auto' : 'none';
+      }
+      if (upiBtn) {
+        upiBtn.style.opacity = PAYMENT_ENABLED ? '1' : '0.5';
+        upiBtn.style.pointerEvents = PAYMENT_ENABLED ? 'auto' : 'none';
+      }
+
+      // Switch views
+      const cardsView = document.getElementById('pm-cards-view');
+      const payPanel = document.getElementById('pm-pay-panel');
+      if (cardsView) cardsView.style.display = 'none';
+      if (payPanel) payPanel.classList.add('show');
+    }
+
+    function closePayPanel() {
+      const cardsView = document.getElementById('pm-cards-view');
+      const payPanel = document.getElementById('pm-pay-panel');
+      if (cardsView) cardsView.style.display = 'block';
+      if (payPanel) payPanel.classList.remove('show');
+    }
+
+    function openUpiApp() {
+      if (!PAYMENT_ENABLED) { toast('⏳ Payment coming soon!', 'warn'); return; }
+      const isTrial = _activePricingTab === 'trial';
+      const isYearly = _activePricingTab === 'yearly';
+      const amt = isTrial ? 1 : (isYearly ? PLAN_PRICES.yearly : PLAN_PRICES.monthly);
+      const tn = encodeURIComponent(isTrial ? 'AE Trial 1 Day' : isYearly ? 'AE Yearly Premium' : 'AE Monthly Premium');
+      window.location.href = `upi://pay?pa=${UPI_ID}&pn=${encodeURIComponent(UPI_NAME)}&am=${amt}&cu=INR&tn=${tn}`;
+    }
+
+    function submitUtrPayment() {
+      // Copy value from new pricing panel UTR input to the input submitUTR() reads
+      const pmUtr = document.getElementById('pm-utr-input');
+      let utrInput = document.getElementById('utr-input');
+      if (!utrInput) {
+        utrInput = document.createElement('input');
+        utrInput.id = 'utr-input';
+        utrInput.style.display = 'none';
+        document.body.appendChild(utrInput);
+      }
+      if (pmUtr) utrInput.value = pmUtr.value;
+      submitUTR();
     }
 
     const UPI_ID = 'sekhar70932@ybl';
@@ -26639,20 +26280,6 @@ Rules:
       ctx.font = '9px sans-serif';
       ctx.fillStyle = '#555';
       ctx.fillText('GPay / PhonePe', size / 2, size - 4);
-    }
-
-    function openUpiApp(plan) {
-      const amount = plan === 'trial' ? 1 : (plan === 'yearly' ? PLAN_PRICES.yearly : PLAN_PRICES.monthly);
-      const note = plan === 'trial' ? 'AE Trial 7 Days' : (plan === 'yearly' ? 'AE Yearly Premium' : 'AE Monthly Premium');
-      const upiLink = `upi://pay?pa=${UPI_ID}&pn=${encodeURIComponent(UPI_NAME)}&am=${amount}&cu=INR&tn=${encodeURIComponent(note)}`;
-      // Regenerate QR for selected plan
-      _generateUpiQR(plan);
-      // Try to open UPI app
-      window.location.href = upiLink;
-      // After 1.5s if not opened, show instructions
-      setTimeout(() => {
-        toast('📱 PhonePe / GPay app లో "Scan QR" చేసి pay చేయండి', 'info');
-      }, 1500);
     }
 
     function copyUpiId() {

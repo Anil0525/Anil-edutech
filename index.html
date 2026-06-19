@@ -26722,7 +26722,7 @@ Rules:
       s.onerror = function () { toast('Payment gateway load failed. Try again.', 'error'); };
       document.head.appendChild(s);
     }
-    function startPayment(plan) {
+    async function startPayment(plan) {
       const currentUser = _getCurrentUser ? _getCurrentUser() : null;
       if (!currentUser) {
         toast('⚠️ ముందు Login చేయండి', 'warn');
@@ -26737,12 +26737,42 @@ Rules:
         return;
       }
       const amount = plan === 'trial' ? 1 : (plan === 'yearly' ? PLAN_PRICES.yearly : PLAN_PRICES.monthly);
-      const planLabel = plan === 'trial' ? '7-Day Trial' : (plan === 'yearly' ? 'Yearly Premium' : 'Monthly Premium');
+      const planLabel = plan === 'trial' ? '1-Day Trial' : (plan === 'yearly' ? 'Yearly Premium' : 'Monthly Premium');
 
+      // ── Step 1: Edge Function నుండి order_id తీసుకో ──
+      let order_id = null;
+      try {
+        toast('⏳ Payment initializing...', 'info');
+        const res = await fetch(`${SB_URL}/functions/v1/create-razorpay-order`, {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+            'Authorization': 'Bearer ' + SB_KEY,
+          },
+          body: JSON.stringify({
+            amount,
+            plan,
+            gmail: currentUser.gmail,
+            name: currentUser.name,
+          }),
+        });
+        const data = await res.json();
+        if (!res.ok || !data.order_id) {
+          toast('❌ Order create failed: ' + (data.error || 'Try again'), 'error');
+          return;
+        }
+        order_id = data.order_id;
+      } catch (e) {
+        toast('❌ Network error. Internet check చేయండి.', 'error');
+        return;
+      }
+
+      // ── Step 2: Razorpay Checkout open చేయి ──
       const options = {
         key: RZP_KEY,
         amount: amount * 100, // paise
         currency: 'INR',
+        order_id: order_id,   // ✅ FIX — live mode కి mandatory
         name: 'Anil EduTech',
         description: planLabel + ' Plan',
         image: '',

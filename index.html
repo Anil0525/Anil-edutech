@@ -21906,12 +21906,16 @@ More exams: https://aniledutech.in
 
     function updateStats() {
       // Subscribers — fetch from Supabase ae_subscribers table
-      sbSubGet('approved').then(rows => {
-        const subCount = rows.length || JSON.parse(_ls.getItem('ae_sub_approved') || '[]').length;
+      sbSubGet('approved').then(sbRows => {
+        const localApproved = getSubApproved();
+        const mergedMap = {};
+        localApproved.forEach(u => { if (u.gmail) mergedMap[u.gmail] = true; });
+        sbRows.forEach(u => { if (u.gmail) mergedMap[u.gmail] = true; });
+        const subCount = Object.keys(mergedMap).length;
         const subEl = document.getElementById('stat-subscribers');
         if (subEl) subEl.textContent = subCount > 999 ? (subCount / 1000).toFixed(1) + 'K' : subCount;
       }).catch(() => {
-        const subCount = JSON.parse(_ls.getItem('ae_sub_approved') || '[]').length;
+        const subCount = getSubApproved().length;
         const subEl = document.getElementById('stat-subscribers');
         if (subEl) subEl.textContent = subCount > 999 ? (subCount / 1000).toFixed(1) + 'K' : subCount;
       });

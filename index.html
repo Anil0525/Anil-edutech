@@ -18907,20 +18907,25 @@ More exams: https://aniledutech.in
 
     async function sbSubUpsert(sub) {
       try {
+        const payload = {
+          gmail: sub.gmail,
+          name: sub.name,
+          pw_hash: sub.pwHash || sub.pw_hash || '',
+          sb_user_id: sub.sbUserId || sub.sb_user_id || '',
+          is_premium: sub.isPremium || sub.is_premium || false,
+          premium_since: sub.premiumSince || sub.premium_since || null,
+          trial_expiry: sub.trial_expiry || sub.trialExpiry || null,
+          status: sub.status || 'approved',
+          updated_at: new Date().toISOString()
+        };
+        // Save premium_plan if provided (needed for trial expiry detection)
+        if (sub.premiumPlan || sub.premium_plan) {
+          payload.premium_plan = sub.premiumPlan || sub.premium_plan;
+        }
         await fetch(`${SB_URL}/rest/v1/ae_subscribers`, {
           method: 'POST',
           headers: { ...SB_HEADERS, 'Prefer': 'resolution=merge-duplicates,return=minimal' },
-          body: JSON.stringify({
-            gmail: sub.gmail,
-            name: sub.name,
-            pw_hash: sub.pwHash || sub.pw_hash || '',
-            sb_user_id: sub.sbUserId || sub.sb_user_id || '',
-            is_premium: sub.isPremium || sub.is_premium || false,
-            premium_since: sub.premiumSince || sub.premium_since || null,
-            trial_expiry: sub.trial_expiry || sub.trialExpiry || null,
-            status: sub.status || 'approved',
-            updated_at: new Date().toISOString()
-          })
+          body: JSON.stringify(payload)
         });
       } catch (e) { console.warn('sbSubUpsert failed:', e); }
     }
@@ -18945,8 +18950,16 @@ More exams: https://aniledutech.in
           return null; // auto-logout
         }
         // Trial expiry check — auto-revoke premium after 1 day
-        if (u.isPremium && u.premiumPlan === 'trial' && u.trialExpiry) {
-          if (Date.now() > new Date(u.trialExpiry).getTime()) {
+        if (u.isPremium && u.premiumPlan === 'trial') {
+          // Determine effective expiry: use trialExpiry if set, else fallback to premiumSince + 24h
+          let effectiveExpiry = null;
+          if (u.trialExpiry) {
+            effectiveExpiry = new Date(u.trialExpiry).getTime();
+          } else if (u.premiumSince) {
+            // Fallback for old trial users who didn't get trialExpiry set
+            effectiveExpiry = new Date(u.premiumSince).getTime() + 24 * 60 * 60 * 1000;
+          }
+          if (effectiveExpiry && Date.now() > effectiveExpiry) {
             u.isPremium = false;
             u.premiumPlan = null;
             u.trialExpiry = null;
@@ -19262,7 +19275,12 @@ More exams: https://aniledutech.in
         if (subRec && subRec.length > 0) {
           const sr = subRec[0];
           if (sr.is_premium) user.isPremium = true;
-          if (sr.premium_plan || sr.premiumPlan) user.premiumPlan = sr.premium_plan || sr.premiumPlan;
+          // premium_plan column may not exist yet — fallback: status='trial' means trial plan
+          if (sr.premium_plan || sr.premiumPlan) {
+            user.premiumPlan = sr.premium_plan || sr.premiumPlan;
+          } else if (sr.status === 'trial') {
+            user.premiumPlan = 'trial';
+          }
           if (sr.trial_expiry || sr.trialExpiry) user.trialExpiry = sr.trial_expiry || sr.trialExpiry;
           if (sr.premium_since || sr.premiumSince) user.premiumSince = sr.premium_since || sr.premiumSince;
           if (sr.status) user.subStatus = sr.status;
@@ -26856,7 +26874,7 @@ Rules:
           }
         } catch (e2) { }
         // Supabase ae_subscribers premium update
-        const _sbPay = { name: user.name, gmail: user.gmail, is_premium: true, premium_since: premiumSince, status: plan === 'trial' ? 'trial' : 'approved' };
+        const _sbPay = { name: user.name, gmail: user.gmail, is_premium: true, premium_since: premiumSince, premiumPlan: plan, status: plan === 'trial' ? 'trial' : 'approved' };
         if (trialExpiry) _sbPay.trial_expiry = trialExpiry;
         sbSubUpsert(_sbPay).catch(e => console.warn('sbSubUpsert payment:', e));
         // Supabase ae_settings — persist premium so login check works after logout

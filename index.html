@@ -18950,7 +18950,9 @@ More exams: https://aniledutech.in
           return null; // auto-logout
         }
         // Trial expiry check — auto-revoke premium after 1 day
-        if (u.isPremium && u.premiumPlan === 'trial') {
+        // BUG FIX: also trigger when trialExpiry is present even if premiumPlan got out of
+        // sync (defense in depth) — previously only ran when premiumPlan === 'trial' exactly.
+        if (u.isPremium && (u.premiumPlan === 'trial' || u.trialExpiry)) {
           // Determine effective expiry: use trialExpiry if set, else fallback to premiumSince + 24h
           let effectiveExpiry = null;
           if (u.trialExpiry) {
@@ -26878,11 +26880,16 @@ Rules:
         if (trialExpiry) _sbPay.trial_expiry = trialExpiry;
         sbSubUpsert(_sbPay).catch(e => console.warn('sbSubUpsert payment:', e));
         // Supabase ae_settings — persist premium so login check works after logout
-        sbUpsert('ae_settings', {
-          key: 'premium_gmail_' + user.gmail.replace(/[@.]/g, '_'),
-          value: JSON.stringify({ gmail: user.gmail, since: premiumSince, plan }),
-          updated_at: new Date().toISOString()
-        }).catch(e => console.warn('ae_settings premium write:', e));
+        // BUG FIX: skip this for trial plans — this key never expires, and the login check
+        // (doLogin) treats its mere presence as "always premium", which would re-grant
+        // premium on every future login even after the 1-day trial has expired.
+        if (plan !== 'trial') {
+          sbUpsert('ae_settings', {
+            key: 'premium_gmail_' + user.gmail.replace(/[@.]/g, '_'),
+            value: JSON.stringify({ gmail: user.gmail, since: premiumSince, plan }),
+            updated_at: new Date().toISOString()
+          }).catch(e => console.warn('ae_settings premium write:', e));
+        }
         // Supabase ae_payments save
         sbInsert('ae_payments', { gmail: user.gmail, name: user.name, plan, amount, payment_id: response.razorpay_payment_id, status: 'paid' }).catch(e => console.warn('ae_payments:', e));
         // Update session
@@ -27122,10 +27129,15 @@ Rules:
         _ls.setItem('ae_users', JSON.stringify(allUsers));
       }
       // Update current session user
-      _ls.setItem('ae_current_user', JSON.stringify(user));
+      // BUG FIX: this used to write to a dead key ('ae_current_user') instead of the
+      // real session key, so the active session never got isPremium/premiumPlan/trialExpiry
+      // saved properly — which meant the 1-day auto-expiry check in getCurrentUser() never
+      // had the data it needed, and premium silently never switched off. setCurrentUser()
+      // writes to the correct session key (ae_logged_user) that getCurrentUser() reads.
+      setCurrentUser({ ...user });
 
       // 4️⃣ Supabase subscribers లో is_premium = true
-      const _sbPayload = { name: user.name, gmail: user.gmail, is_premium: true, premium_since: premiumSince, status: plan === 'trial' ? 'trial' : 'approved' };
+      const _sbPayload = { name: user.name, gmail: user.gmail, is_premium: true, premium_since: premiumSince, premiumPlan: plan, status: plan === 'trial' ? 'trial' : 'approved' };
       if (trialExpiry) _sbPayload.trial_expiry = trialExpiry;
       sbSubUpsert(_sbPayload).catch(e => console.warn('sbSubUpsert UTR premium:', e));
 

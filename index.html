@@ -25987,16 +25987,16 @@ Rules:
         <div class="pm-section-label second">Payment Method</div>
         <div class="pm-method-note">* Subscribe నొక్కితే secure Razorpay checkout open అవుతుంది</div>
         <div class="pm-method-row">
-          <div class="pm-method-card is-active">
+          <div class="pm-method-card is-active" id="pmc-upi" onclick="selectPayMethod('upi')">
+            <span class="pm-method-icon">📱</span>
+            UPI
+          </div>
+          <div class="pm-method-card" id="pmc-card" onclick="selectPayMethod('card')">
             <span class="pm-method-icon">💳</span>
             Card
             <div class="pm-method-brands"><span>VISA</span><span>RuPay</span><span>MC</span></div>
           </div>
-          <div class="pm-method-card">
-            <span class="pm-method-icon">📱</span>
-            UPI
-          </div>
-          <div class="pm-method-card">
+          <div class="pm-method-card" id="pmc-netbanking" onclick="selectPayMethod('netbanking')">
             <span class="pm-method-icon">🏦</span>
             Net Banking
           </div>
@@ -26246,6 +26246,7 @@ Rules:
         return;
       }
       document.getElementById('pricing-overlay').classList.add('show');
+      selectPayMethod('upi');
       // Push history state so device back button closes payment overlay instead of leaving site
       _safeHistoryPush({ ae_page: 'pricing' });
       // Update ALL price displays with current PLAN_PRICES
@@ -26427,6 +26428,14 @@ Rules:
       s.onerror = function () { toast('Payment gateway load failed. Try again.', 'error'); };
       document.head.appendChild(s);
     }
+    let _selectedPayMethod = 'upi';
+    function selectPayMethod(method) {
+      _selectedPayMethod = method;
+      document.querySelectorAll('.pm-method-card').forEach(c => c.classList.remove('is-active'));
+      const el = document.getElementById('pmc-' + method);
+      if (el) el.classList.add('is-active');
+    }
+
     async function startPayment(plan) {
       const currentUser = _getCurrentUser ? _getCurrentUser() : null;
       if (!currentUser) {
@@ -26484,6 +26493,7 @@ Rules:
         prefill: {
           name: currentUser ? currentUser.name : '',
           email: currentUser ? currentUser.gmail : '',
+          method: _selectedPayMethod || 'upi',
         },
         theme: { color: '#1A73E8' },
         handler: function (response) {
@@ -26631,8 +26641,7 @@ Rules:
       ${isPending
             ? `<button onclick="adminApproveUTR('${escHtml(r.gmail)}','${escHtml(r.utr || '')}','${escHtml(r.plan || '')}',${r.amount || 0})" style="background:linear-gradient(135deg,#10b981,#059669);color:#fff;border:none;border-radius:6px;padding:3px 9px;font-size:10px;font-weight:800;cursor:pointer">✅ Approve</button>
            <button onclick="adminRevokePremium('${escHtml(r.gmail)}')" style="margin-left:4px;background:#ef4444;color:#fff;border:none;border-radius:6px;padding:3px 7px;font-size:10px;cursor:pointer">❌ Reject</button>`
-            : `<span style="background:var(--teal-soft);color:var(--teal);padding:2px 8px;border-radius:8px;font-size:11px;font-weight:800">✅ ${r.status || ''}</span>
-           <button onclick="adminRevokePremium('${escHtml(r.gmail)}')" style="margin-left:4px;background:rgba(239,68,68,.12);color:#ef4444;border:1px solid rgba(239,68,68,.3);border-radius:6px;padding:3px 8px;font-size:10px;font-weight:800;cursor:pointer">🗑️ Remove Premium</button>`
+            : `<span style="background:var(--teal-soft);color:var(--teal);padding:2px 8px;border-radius:8px;font-size:11px;font-weight:800">✅ ${r.status || ''}</span>`
           }
     </td>
   </tr>`;

@@ -18697,7 +18697,9 @@ More exams: https://aniledutech.in
               if (idx > -1) { allUsers[idx].isPremium = false; allUsers[idx].premiumPlan = null; allUsers[idx].trialExpiry = null; localStorage.setItem('ae_users', JSON.stringify(allUsers)); }
             } catch (e2) { }
             // Supabase update
-            sbSubUpsert({ gmail: u.gmail, is_premium: false, status: expiredPlan === 'trial' ? 'trial_expired' : 'premium_expired' }).catch(() => { });
+            // FIX: don't overwrite subscriber-approval status with plan-expiry state —
+            // is_premium/premium_plan/trial_expiry already track premium lifecycle separately.
+            sbSubUpsert({ gmail: u.gmail, is_premium: false, status: 'approved' }).catch(() => { });
             const expMsg = expiredPlan === 'trial' ? '⏰ మీ ₹1 Trial (1 Day) expire అయింది! Premium continue చేయాలంటే subscribe చేయండి.'
               : expiredPlan === 'yearly' ? '⏰ మీ Yearly Premium plan expire అయింది! Renew చేయండి.'
               : '⏰ మీ Monthly Premium plan expire అయింది! Renew చేయండి.';
@@ -19022,7 +19024,9 @@ More exams: https://aniledutech.in
         user.premiumPlan = null;
         user.trialExpiry = null;
         sbDelete('ae_settings', 'key=eq.premium_gmail_' + gmail.replace(/[@.]/g, '_')).catch(() => { });
-        sbSubUpsert({ gmail, is_premium: false, status: 'premium_expired' }).catch(() => { });
+        // FIX: keep subscriber-approval status intact on plan expiry — premium lifecycle
+        // is already tracked separately via is_premium/premium_plan/trial_expiry.
+        sbSubUpsert({ gmail, is_premium: false, status: 'approved' }).catch(() => { });
       }
 
 
@@ -19159,7 +19163,8 @@ More exams: https://aniledutech.in
               user.premiumPlan = null;
               user.trialExpiry = null;
               sbDelete('ae_settings', 'key=eq.premium_gmail_' + gmail.replace(/[@.]/g, '_')).catch(() => { });
-              sbSubUpsert({ gmail, is_premium: false, status: 'premium_expired' }).catch(() => { });
+              // FIX: keep subscriber-approval status intact on plan expiry.
+              sbSubUpsert({ gmail, is_premium: false, status: 'approved' }).catch(() => { });
             }
             setCurrentUser({ ...user });
             updateNavUser(); filterExams();
@@ -19232,8 +19237,15 @@ More exams: https://aniledutech.in
     let _asApproved = [];
 
     async function renderSubscriberTables() {
-      let approved = await sbSubGet('approved');
-      if (!approved.length) approved = getSubApproved();
+      // FIX: merge local + Supabase (Supabase wins on conflict) instead of using
+      // Supabase-only-when-non-empty — keeps this count consistent with Home page
+      // stats and User Backup tab, which already merge both sources.
+      const sbRows = await sbSubGet('approved');
+      const localRows = getSubApproved();
+      const mergedMap = {};
+      localRows.forEach(u => { if (u.gmail) mergedMap[u.gmail] = u; });
+      sbRows.forEach(u => { if (u.gmail) mergedMap[u.gmail] = u; });
+      let approved = Object.values(mergedMap);
       approved = approved.map(s => ({
         ...s,
         isPremium: s.isPremium ?? s.is_premium ?? false,
@@ -24332,7 +24344,13 @@ Rules:
       if (!el) return;
       const allScores = JSON.parse(_ls.getItem('ae_scores') || '[]');
       sbSubGet('approved').then(sbUsers => {
-        const allUsers = sbUsers.length ? sbUsers : JSON.parse(_ls.getItem('ae_subscribers') || '[]');
+        // FIX: merge local + Supabase by gmail (consistent with Home page/User Backup),
+        // and use the correct localStorage key (ae_sub_approved, not the unused ae_subscribers).
+        const localUsers = getSubApproved();
+        const mergedMap = {};
+        localUsers.forEach(u => { if (u.gmail) mergedMap[u.gmail] = u; });
+        sbUsers.forEach(u => { if (u.gmail) mergedMap[u.gmail] = u; });
+        const allUsers = Object.values(mergedMap);
         if (!allScores.length && !allUsers.length) {
           el.innerHTML = '<div style="text-align:center;padding:40px;color:var(--text3);">ఇంకా data లేదు.</div>'; return;
         }
@@ -26642,7 +26660,9 @@ Rules:
           }
         } catch (e2) { }
         // Supabase ae_subscribers premium update
-        const _sbPay = { name: user.name, gmail: user.gmail, is_premium: true, premium_since: premiumSince, premiumPlan: plan, status: plan === 'trial' ? 'trial' : 'approved' };
+        // FIX: status stays 'approved' regardless of plan — trial vs paid is tracked
+        // via premiumPlan, not by overwriting the subscriber-approval status.
+        const _sbPay = { name: user.name, gmail: user.gmail, is_premium: true, premium_since: premiumSince, premiumPlan: plan, status: 'approved' };
         if (trialExpiry) _sbPay.trial_expiry = trialExpiry;
         sbSubUpsert(_sbPay).catch(e => console.warn('sbSubUpsert payment:', e));
         // Supabase ae_settings — persist premium so login check works after logout
@@ -26903,7 +26923,9 @@ Rules:
       setCurrentUser({ ...user });
 
       // 4️⃣ Supabase subscribers లో is_premium = true
-      const _sbPayload = { name: user.name, gmail: user.gmail, is_premium: true, premium_since: premiumSince, premiumPlan: plan, status: plan === 'trial' ? 'trial' : 'approved' };
+      // FIX: status stays 'approved' regardless of plan — trial vs paid is tracked
+      // via premiumPlan, not by overwriting the subscriber-approval status.
+      const _sbPayload = { name: user.name, gmail: user.gmail, is_premium: true, premium_since: premiumSince, premiumPlan: plan, status: 'approved' };
       if (trialExpiry) _sbPayload.trial_expiry = trialExpiry;
       sbSubUpsert(_sbPayload).catch(e => console.warn('sbSubUpsert UTR premium:', e));
 

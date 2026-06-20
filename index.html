@@ -15528,24 +15528,23 @@
 
             <div class="admin-card">
               <h3>📊 Payment Statistics</h3>
-              <div class="payment-stat-grid" id="payment-stats-grid">
-                <div class="payment-stat">
-                  <div class="payment-stat-num" id="stat-total-paid">0</div>
-                  <div class="payment-stat-label">Total Paid Users</div>
+              <div id="payment-stats-grid"
+                style="display:grid;grid-template-columns:repeat(auto-fit,minmax(118px,1fr));gap:10px;margin-bottom:18px;">
+              </div>
+
+              <div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(260px,1fr));gap:14px;margin-bottom:18px;">
+                <div style="background:var(--bg);border:2px solid var(--border);border-radius:12px;padding:14px;">
+                  <div style="font-size:13px;font-weight:900;color:var(--text);margin-bottom:10px;">📈 Revenue Trend
+                    — Last 14 Days</div>
+                  <div style="height:190px;"><canvas id="payment-revenue-chart"></canvas></div>
                 </div>
-                <div class="payment-stat">
-                  <div class="payment-stat-num" id="stat-revenue">₹0</div>
-                  <div class="payment-stat-label">Total Revenue</div>
-                </div>
-                <div class="payment-stat">
-                  <div class="payment-stat-num" id="stat-monthly-users">0</div>
-                  <div class="payment-stat-label">Monthly Plan</div>
-                </div>
-                <div class="payment-stat">
-                  <div class="payment-stat-num" id="stat-yearly-users">0</div>
-                  <div class="payment-stat-label">Yearly Plan</div>
+                <div style="background:var(--bg);border:2px solid var(--border);border-radius:12px;padding:14px;">
+                  <div style="font-size:13px;font-weight:900;color:var(--text);margin-bottom:10px;">🥧 Plan
+                    Distribution</div>
+                  <div style="height:190px;"><canvas id="payment-plan-donut"></canvas></div>
                 </div>
               </div>
+
               <div style="overflow-x:auto">
                 <table class="exams-manage-table">
                   <thead>
@@ -15562,7 +15561,7 @@
                   </thead>
                   <tbody id="payments-table">
                     <tr>
-                      <td colspan="7" style="text-align:center;color:var(--text3);padding:16px">Payment records లేవు
+                      <td colspan="8" style="text-align:center;color:var(--text3);padding:16px">Payment records లేవు
                       </td>
                     </tr>
                   </tbody>
@@ -26626,6 +26625,7 @@ Rules:
         plan: plan,
         amount: amount,
         date: new Date().toLocaleString('en-IN'),
+        ts: Date.now(),
         status: 'paid'
       };
       // Save payment record
@@ -26710,7 +26710,7 @@ Rules:
       if (!el) return;
       const records = JSON.parse(_ls.getItem('ae_payment_records') || '[]');
       if (!records.length) {
-        el.innerHTML = '<tr><td colspan="7" style="text-align:center;color:var(--text3);padding:16px">Payment records లేవు</td></tr>';
+        el.innerHTML = '<tr><td colspan="8" style="text-align:center;color:var(--text3);padding:16px">Payment records లేవు</td></tr>';
         _renderAPPagination(0);
         return;
       }
@@ -26721,22 +26721,41 @@ Rules:
       const start = _apPage * _AP_PER;
       const pageItems = records.slice(start, start + _AP_PER);
 
+      const _planColors = { trial: '#8B5CF6', monthly: '#FF6B35', yearly: '#F59E0B' };
+      const _planBadge = (plan) => {
+        const c = _planColors[plan] || 'var(--primary)';
+        return `<span style="background:${c}22;color:${c};padding:3px 9px;border-radius:8px;font-size:11px;font-weight:800;text-transform:capitalize;">${escHtml(plan || '—')}</span>`;
+      };
+      const _statusBadge = (status) => {
+        const isNegative = /revok|reject|fail/i.test(status || '');
+        const c = isNegative ? 'var(--red)' : 'var(--teal)';
+        const bg = isNegative ? 'var(--red-soft)' : 'var(--teal-soft)';
+        return `<span style="background:${bg};color:${c};padding:3px 9px;border-radius:8px;font-size:11px;font-weight:800;">${isNegative ? '❌' : '✅'} ${escHtml(status || '')}</span>`;
+      };
+
       el.innerHTML = pageItems.map((r, i) => {
         const globalIdx = start + i;
         const isPending = r.status === 'UTR Submitted';
+        const initial = (r.name || '?').trim().charAt(0).toUpperCase() || '?';
         return `<tr>
     <td>${globalIdx + 1}</td>
-    <td style="font-weight:700">${escHtml(r.name || '')}</td>
+    <td>
+      <div style="display:flex;align-items:center;gap:8px;">
+        <div style="width:26px;height:26px;border-radius:50%;background:var(--primary-soft);color:var(--primary);display:flex;align-items:center;justify-content:center;font-size:12px;font-weight:900;flex-shrink:0;">${escHtml(initial)}</div>
+        <span style="font-weight:700;">${escHtml(r.name || '')}</span>
+      </div>
+    </td>
     <td style="font-size:11px">${escHtml(r.gmail || '')}</td>
-    <td><span style="background:var(--primary-soft);color:var(--primary);padding:2px 8px;border-radius:8px;font-size:11px;font-weight:800">${r.plan || ''}</span></td>
+    <td>${_planBadge(r.plan)}</td>
     <td style="font-weight:800;color:var(--teal)">₹${r.amount || 0}</td>
     <td style="font-size:11px;color:var(--text3);font-weight:700">${escHtml(r.utr || r.pid || '—')}</td>
     <td style="font-size:11px;color:var(--text3)">${r.date || ''}</td>
     <td>
       ${isPending
-            ? `<button onclick="adminApproveUTR('${escHtml(r.gmail)}','${escHtml(r.utr || '')}','${escHtml(r.plan || '')}',${r.amount || 0})" style="background:linear-gradient(135deg,#10b981,#059669);color:#fff;border:none;border-radius:6px;padding:3px 9px;font-size:10px;font-weight:800;cursor:pointer">✅ Approve</button>
+            ? `<span style="background:var(--amber-soft);color:var(--amber);padding:3px 9px;border-radius:8px;font-size:11px;font-weight:800;display:inline-block;margin-bottom:4px;">⏳ Pending</span><br>
+           <button onclick="adminApproveUTR('${escHtml(r.gmail)}','${escHtml(r.utr || '')}','${escHtml(r.plan || '')}',${r.amount || 0})" style="background:linear-gradient(135deg,#10b981,#059669);color:#fff;border:none;border-radius:6px;padding:3px 9px;font-size:10px;font-weight:800;cursor:pointer">✅ Approve</button>
            <button onclick="adminRevokePremium('${escHtml(r.gmail)}')" style="margin-left:4px;background:#ef4444;color:#fff;border:none;border-radius:6px;padding:3px 7px;font-size:10px;cursor:pointer">❌ Reject</button>`
-            : `<span style="background:var(--teal-soft);color:var(--teal);padding:2px 8px;border-radius:8px;font-size:11px;font-weight:800">✅ ${r.status || ''}</span>`
+            : _statusBadge(r.status)
           }
     </td>
   </tr>`;
@@ -26762,20 +26781,130 @@ Rules:
   </div>`;
     }
 
+    let _payRevenueChart = null, _payPlanChart = null;
+    function _destroyPaymentCharts() {
+      if (_payRevenueChart) { _payRevenueChart.destroy(); _payRevenueChart = null; }
+      if (_payPlanChart) { _payPlanChart.destroy(); _payPlanChart = null; }
+    }
+    function _payRecordDate(r) {
+      if (r.ts) return new Date(r.ts);
+      const d = new Date(r.date);
+      return isNaN(d.getTime()) ? null : d;
+    }
+
     function renderPaymentStats() {
       const records = JSON.parse(_ls.getItem('ae_payment_records') || '[]');
-      const total = records.length;
-      const revenue = records.reduce((s, r) => s + (r.amount || 0), 0);
-      const monthly = records.filter(r => r.plan === 'monthly').length;
-      const yearly = records.filter(r => r.plan === 'yearly').length;
-      const tp = document.getElementById('stat-total-paid');
-      const tr = document.getElementById('stat-revenue');
-      const tm = document.getElementById('stat-monthly-users');
-      const ty = document.getElementById('stat-yearly-users');
-      if (tp) tp.textContent = total;
-      if (tr) tr.textContent = '₹' + revenue;
-      if (tm) tm.textContent = monthly;
-      if (ty) ty.textContent = yearly;
+      const grid = document.getElementById('payment-stats-grid');
+      if (grid) {
+        const revenue = records.reduce((s, r) => s + (r.amount || 0), 0);
+        const uniqueUsers = new Set(records.map(r => r.gmail).filter(Boolean)).size;
+        const trialCount = records.filter(r => r.plan === 'trial').length;
+        const monthlyCount = records.filter(r => r.plan === 'monthly').length;
+        const yearlyCount = records.filter(r => r.plan === 'yearly').length;
+        const pendingCount = records.filter(r => r.status === 'UTR Submitted').length;
+        const revokedCount = records.filter(r => /revok|reject|fail/i.test(r.status || '')).length;
+
+        const stats = [
+          ['💰', '₹' + revenue, 'Total Revenue', 'var(--teal)'],
+          ['👥', uniqueUsers, 'Paying Users', 'var(--primary)'],
+          ['🧾', records.length, 'Transactions', 'var(--text2)'],
+          ['🎟️', trialCount, 'Trial', '#8B5CF6'],
+          ['📅', monthlyCount, 'Monthly', 'var(--amber)'],
+          ['🏆', yearlyCount, 'Yearly', '#F59E0B'],
+          ['⏳', pendingCount, 'Pending', '#D97706'],
+          ['❌', revokedCount, 'Revoked', 'var(--red)']
+        ];
+
+        grid.innerHTML = stats.map(([icon, val, label, color]) => `
+      <div style="background:var(--bg);border:2px solid var(--border);border-radius:12px;padding:12px;text-align:center;">
+        <div style="font-size:19px;">${icon}</div>
+        <div style="font-size:19px;font-weight:900;color:${color};">${val}</div>
+        <div style="font-size:10px;color:var(--text3);font-weight:700;">${label}</div>
+      </div>`).join('');
+      }
+
+      _drawPaymentRevenueChart(records);
+      _drawPaymentPlanDonut(records);
+    }
+
+    function _drawPaymentRevenueChart(records) {
+      const canvas = document.getElementById('payment-revenue-chart');
+      if (!canvas || typeof Chart === 'undefined') return;
+      if (_payRevenueChart) { _payRevenueChart.destroy(); _payRevenueChart = null; }
+
+      const days = Array.from({ length: 14 }, (_, i) => {
+        const d = new Date(); d.setDate(d.getDate() - 13 + i); d.setHours(0, 0, 0, 0);
+        return d;
+      });
+      const dayTotals = days.map(d => {
+        const key = d.toDateString();
+        return records
+          .filter(r => { const rd = _payRecordDate(r); return rd && rd.toDateString() === key; })
+          .reduce((s, r) => s + (r.amount || 0), 0);
+      });
+      const labels = days.map(d => d.toLocaleDateString('en-IN', { day: '2-digit', month: 'short' }));
+
+      const textColor = _isDark() ? '#94a3b8' : '#64748b';
+      const gridColor = _isDark() ? 'rgba(255,255,255,.07)' : 'rgba(0,0,0,.07)';
+
+      _payRevenueChart = new Chart(canvas, {
+        type: 'bar',
+        data: {
+          labels,
+          datasets: [{
+            label: 'Revenue ₹',
+            data: dayTotals,
+            backgroundColor: 'rgba(26,115,232,.75)',
+            borderRadius: 5, borderSkipped: false
+          }]
+        },
+        options: {
+          responsive: true, maintainAspectRatio: false,
+          plugins: {
+            legend: { display: false },
+            tooltip: { callbacks: { label: ctx => '₹' + ctx.parsed.y } }
+          },
+          scales: {
+            y: { beginAtZero: true, ticks: { color: textColor, callback: v => '₹' + v }, grid: { color: gridColor } },
+            x: { ticks: { color: textColor, maxRotation: 0, autoSkip: true, maxTicksLimit: 7 }, grid: { display: false } }
+          }
+        }
+      });
+    }
+
+    function _drawPaymentPlanDonut(records) {
+      const canvas = document.getElementById('payment-plan-donut');
+      if (!canvas || typeof Chart === 'undefined') return;
+      if (_payPlanChart) { _payPlanChart.destroy(); _payPlanChart = null; }
+
+      const planCounts = { trial: 0, monthly: 0, yearly: 0 };
+      records.forEach(r => { if (planCounts[r.plan] !== undefined) planCounts[r.plan]++; });
+      const data = [planCounts.trial, planCounts.monthly, planCounts.yearly];
+      const ctx2d = canvas.getContext('2d');
+
+      if (!data.some(v => v > 0)) {
+        if (ctx2d) ctx2d.clearRect(0, 0, canvas.width, canvas.height);
+        return;
+      }
+
+      _payPlanChart = new Chart(canvas, {
+        type: 'doughnut',
+        data: {
+          labels: ['Trial', 'Monthly', 'Yearly'],
+          datasets: [{
+            data,
+            backgroundColor: ['#8B5CF6', '#FF6B35', '#F59E0B'],
+            borderWidth: 2, borderColor: _isDark() ? '#1e293b' : '#fff'
+          }]
+        },
+        options: {
+          responsive: true, maintainAspectRatio: false,
+          plugins: {
+            legend: { position: 'bottom', labels: { color: _isDark() ? '#cbd5e1' : '#475569', font: { size: 12, weight: '700' } } },
+            tooltip: { callbacks: { label: ctx => `${ctx.label}: ${ctx.parsed} users` } }
+          }
+        }
+      });
     }
 
     // switchAdminTab payments tab is handled in the main switchAdminTab function above
@@ -26884,6 +27013,7 @@ Rules:
         amount,
         utr: utrRaw,
         date: dateStr,
+        ts: now.getTime(),
         status: 'Premium Activated',
         method: 'UPI'
       });

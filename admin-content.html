@@ -1,0 +1,1954 @@
+  <!-- ADMIN -->
+  <div id="page-admin" class="page">
+    <div class="admin-layout">
+
+      <!-- TOP HEADER -->
+      <div class="admin-page-header">
+        <div style="display:flex;align-items:center;gap:12px;">
+          <div
+            style="width:34px;height:34px;border-radius:10px;background:linear-gradient(135deg,#4f46e5,#7c3aed);display:flex;align-items:center;justify-content:center;font-size:16px;flex-shrink:0;">
+            ⚙️</div>
+          <div>
+            <h2>Anil EduTech Admin</h2>
+            <p id="admin-logged-label">Dashboard</p>
+          </div>
+        </div>
+        <div class="admin-header-right">
+          <div class="admin-badge">
+            <div class="admin-avatar">A</div>
+            <span class="admin-badge-name">Admin</span>
+          </div>
+          <button onclick="adminSignOut()">🚪 Sign Out</button>
+        </div>
+      </div>
+
+      <!-- TOP NAVBAR TABS -->
+      <div class="admin-tabs" id="admin-tabs-bar">
+        <button class="admin-tab active" onclick="switchAdminTab('exams',this)">📂 Exams</button>
+        <button class="admin-tab" onclick="switchAdminTab('questions',this)">📝 Questions</button>
+        <button class="admin-tab" onclick="switchAdminTab('pdfitems',this)">📁 PDFs/Images</button>
+        <button class="admin-tab" onclick="switchAdminTab('subscribers',this)">👥 Subscribers</button>
+        <button class="admin-tab" onclick="switchAdminTab('videos',this)">🎥 Videos</button>
+        <button class="admin-tab" onclick="switchAdminTab('ai',this)">✨ AI Tools</button>
+        <button class="admin-tab" onclick="switchAdminTab('payments',this)">💳 Payments</button>
+        <button class="admin-tab" onclick="switchAdminTab('bulkimport',this)">📥 Bulk Import</button>
+        <button class="admin-tab" onclick="switchAdminTab('analytics',this)">📊 Analytics</button>
+        <button class="admin-tab" onclick="switchAdminTab('dailymock',this)">📅 Daily Mock</button>
+        <button class="admin-tab" onclick="switchAdminTab('scheduled',this)">🗓 Scheduled</button>
+        <button class="admin-tab" onclick="switchAdminTab('settings',this)">🔧 Settings</button>
+        <button class="admin-tab" onclick="switchAdminTab('userbackup',this)">📋 User Backup</button>
+        <button class="admin-tab" onclick="switchAdminTab('notifications',this)">🔔 Notifications</button>
+        <button class="admin-tab" onclick="switchAdminTab('carousel',this);loadCarouselAdmin()">🎠 Carousel</button>
+        <button class="admin-tab"
+          onclick="switchAdminTab('categories',this);loadCategoryOrderAdmin()">🗂️ Category Order</button>
+        <button class="admin-tab"
+          onclick="switchAdminTab('contests',this);_populateContestExamSelect();loadAdminContests()">🏆
+          Contests</button>
+        <button class="admin-tab" onclick="switchAdminTab('jobs',this);loadAdminJobArticles()">💼 Govt Jobs</button>
+      </div>
+
+      <!-- MAIN AREA -->
+      <div class="admin-main-area">
+
+        <!-- Content -->
+        <div class="admin-content-wrap">
+
+          <!-- ── TAB: EXAMS ── -->
+          <div id="atab-exams" class="admin-panel active">
+
+            <!-- Mock Folder Lock Management -->
+            <div class="admin-card">
+              <h3>📁 Mock Test Folders — Lock / Unlock</h3>
+              <p style="font-size:12px;color:var(--text3);margin-bottom:10px;">Folder lock చేస్తే students ఆ folder లో
+                exams చూడగలరు కానీ admin మాత్రమే tests add చేయగలరు.</p>
+              <div style="overflow-x:auto">
+                <table class="exams-manage-table">
+                  <thead>
+                    <tr>
+                      <th>Folder</th>
+                      <th>Count</th>
+                      <th>Premium</th>
+                      <th>Lock</th>
+                      <th>Order / Edit / Delete</th>
+                    </tr>
+                  </thead>
+                  <tbody id="mock-folders-admin-tbody"></tbody>
+                </table>
+              </div>
+            </div>
+
+            <!-- Manage existing exams -->
+            <div class="admin-card">
+              <div
+                style="display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:10px;margin-bottom:12px;">
+                <h3 style="margin:0">📂 All Exams</h3>
+                <div style="display:flex;gap:8px;align-items:center;flex-wrap:wrap;">
+                  <span style="font-size:12px;color:var(--text3);font-weight:600;">First N free:</span>
+                  <input type="number" id="bulk-free-count" value="10" min="0"
+                    style="width:60px;padding:6px 8px;border:1.5px solid var(--border2);border-radius:8px;font-size:13px;font-weight:700;background:var(--bg);color:var(--text);outline:none;text-align:center;">
+                  <button onclick="bulkSetFreeLimit(parseInt(document.getElementById('bulk-free-count').value)||0)"
+                    style="padding:7px 16px;border-radius:8px;border:none;cursor:pointer;font-size:12px;font-weight:800;background:linear-gradient(135deg,#F5B731,#E8640A);color:#fff;">🔓
+                    Apply</button>
+                </div>
+              </div>
+              <div style="overflow-x:auto">
+                <table class="exams-manage-table">
+                  <thead>
+                    <tr>
+                      <th>#</th>
+                      <th>Exam Name</th>
+                      <th>Category</th>
+                      <th>Time</th>
+                      <th>Difficulty</th>
+                      <th>Questions</th>
+                      <th>📁 Folder</th>
+                      <th>Lock</th>
+                      <th>Actions</th>
+                    </tr>
+                  </thead>
+                  <tbody id="exams-manage-table"></tbody>
+                </table>
+              </div>
+            </div>
+
+            <!-- Create new exam -->
+            <div class="admin-card">
+              <h3>➕ New Exam Create చేయండి</h3>
+              <div class="form-row">
+                <div class="form-group">
+                  <label>Exam Name</label>
+                  <input type="text" id="exam-name" placeholder="e.g. TSPSC Group-2 Mock Test 1">
+                </div>
+                <div class="form-group">
+                  <label>Category</label>
+                  <select id="exam-cat">
+                    <optgroup label="── Exam Types ──">
+                      <option>Daily CA</option>
+                      <option>Monthly CA</option>
+                      <option>Live Test</option>
+                      <option>Free Test</option>
+                      <option>Mock Test</option>
+                      <option>Quiz</option>
+                      <option>Previous Papers</option>
+                      <option>eBook</option>
+                      <option>Free Videos</option>
+                      <option>Book Store</option>
+                    </optgroup>
+                    <optgroup id="exam-cat-subjects-group" label="── Subjects ──">
+                      <option>TSPSC</option>
+                      <option>SSC</option>
+                      <option>RRB</option>
+                      <option>Banking</option>
+                      <option>GK</option>
+                      <option>Math</option>
+                    </optgroup>
+                  </select>
+                </div>
+                <div class="form-group">
+                  <label>📁 Mock Test Folder (optional)</label>
+                  <select id="exam-mock-folder">
+                    <option value="">-- Folder లేదు --</option>
+                  </select>
+                </div>
+              </div>
+              <div class="form-row">
+                <div class="form-group">
+                  <label>Time (minutes)</label>
+                  <input type="number" id="exam-time" value="30" min="5" max="180">
+                </div>
+                <div class="form-group">
+                  <label>Difficulty</label>
+                  <select id="exam-diff">
+                    <option>Easy</option>
+                    <option selected>Medium</option>
+                    <option>Hard</option>
+                  </select>
+                </div>
+              </div>
+              <!-- Section Question Counts -->
+              <div
+                style="background:var(--primary-soft);border:2px solid var(--border2);border-radius:12px;padding:14px 16px;margin-bottom:14px;">
+                <div
+                  style="font-size:12px;font-weight:800;color:var(--primary);margin-bottom:10px;text-transform:uppercase;letter-spacing:.5px;">
+                  📚 Section-wise Question Count</div>
+                <div class="form-row">
+                  <div class="form-group">
+                    <label>🧠 Reasoning (questions)</label>
+                    <input type="number" id="exam-sec-reasoning" value="0" min="0" max="200" placeholder="0">
+                  </div>
+                  <div class="form-group">
+                    <label>🔢 Arithmetic (questions)</label>
+                    <input type="number" id="exam-sec-arithmetic" value="0" min="0" max="200" placeholder="0">
+                  </div>
+                  <div class="form-group">
+                    <label>🌍 General Awareness (questions)</label>
+                    <input type="number" id="exam-sec-ga" value="0" min="0" max="200" placeholder="0">
+                  </div>
+                  <div class="form-group">
+                    <label>📖 English (questions)</label>
+                    <input type="number" id="exam-sec-english" value="0" min="0" max="200" placeholder="0">
+                  </div>
+                </div>
+                <div style="font-size:11px;color:var(--text3);font-weight:600;margin-top:4px;">💡 0 పెడితే ఆ section
+                  hide అవుతుంది. Questions add చేసేటప్పుడు section select చేయాలి.</div>
+              </div>
+              <!-- Custom Part Labels -->
+              <div
+                style="background:var(--primary-soft);border:2px solid var(--border2);border-radius:12px;padding:14px 16px;margin-bottom:14px;">
+                <div
+                  style="font-size:12px;font-weight:800;color:var(--primary);margin-bottom:4px;text-transform:uppercase;letter-spacing:.5px;">
+                  🏷️ Part Labels (Custom Subject Names)</div>
+                <div style="font-size:11px;color:var(--text3);font-weight:600;margin-bottom:10px;">💡 SSC కి
+                  Reasoning/GA/Arithmetic/English default గా ఉంటాయి. TSPSC లేదా వేరే exam కి ఇక్కడ మార్చుకోండి.</div>
+                <div class="form-row">
+                  <div class="form-group">
+                    <label>Part-A Subject Name</label>
+                    <input type="text" id="exam-part-a" placeholder="e.g. Reasoning / Telugu History">
+                  </div>
+                  <div class="form-group">
+                    <label>Part-B Subject Name</label>
+                    <input type="text" id="exam-part-b" placeholder="e.g. General Awareness / Polity">
+                  </div>
+                </div>
+                <div class="form-row">
+                  <div class="form-group">
+                    <label>Part-C Subject Name</label>
+                    <input type="text" id="exam-part-c" placeholder="e.g. Quantitative Aptitude / Arithmetic">
+                  </div>
+                  <div class="form-group">
+                    <label>Part-D Subject Name</label>
+                    <input type="text" id="exam-part-d" placeholder="e.g. English / Telugu Language">
+                  </div>
+                </div>
+              </div>
+              <button class="add-btn" onclick="createExam()">+ Exam Create చేయండి</button>
+            </div>
+          </div>
+
+          <!-- ── TAB: QUESTIONS ── -->
+          <div id="atab-questions" class="admin-panel">
+
+            <!-- All questions table -->
+            <div class="admin-card">
+              <h3>📋 All Questions</h3>
+              <div style="display:flex;gap:12px;flex-wrap:wrap;margin-bottom:16px;align-items:flex-end">
+                <div class="form-group" style="margin-bottom:0;min-width:200px">
+                  <label>Exam Filter</label>
+                  <select id="admin-filter" onchange="renderAdminTable()">
+                    <option value="">All Exams</option>
+                  </select>
+                </div>
+                <div class="form-group" style="margin-bottom:0;min-width:180px">
+                  <label>Section Filter</label>
+                  <select id="admin-sec-filter" onchange="renderAdminTable()">
+                    <option value="">All Sections</option>
+                    <option value="reasoning">🧠 Reasoning</option>
+                    <option value="arithmetic">🔢 Arithmetic</option>
+                    <option value="ga">🌍 General Awareness</option>
+                    <option value="english">📖 English Comprehension</option>
+                  </select>
+                </div>
+                <div style="display:flex;gap:8px;margin-left:auto;align-items:flex-end">
+                  <button onclick="deleteFilteredQuestions()"
+                    style="padding:8px 14px;background:rgba(239,68,68,.12);color:#ef4444;border:1.5px solid rgba(239,68,68,.3);border-radius:9px;font-family:inherit;font-size:12px;font-weight:800;cursor:pointer">🗑
+                    Filter Delete</button>
+                  <button onclick="removeDuplicateQuestions()"
+                    style="padding:8px 14px;background:rgba(245,183,49,.15);color:#d97706;border:1.5px solid rgba(245,183,49,.4);border-radius:9px;font-family:inherit;font-size:12px;font-weight:800;cursor:pointer">🔁
+                    Duplicates తీసివేయి</button>
+                  <button onclick="deleteAllQuestions()"
+                    style="padding:8px 14px;background:rgba(239,68,68,.9);color:#fff;border:none;border-radius:9px;font-family:inherit;font-size:12px;font-weight:800;cursor:pointer;box-shadow:0 3px 10px rgba(239,68,68,.3)">🗑
+                    All Delete</button>
+                </div>
+              </div>
+              <div style="overflow-x:auto">
+                <table class="questions-table">
+                  <thead>
+                    <tr>
+                      <th>#</th>
+                      <th>Question</th>
+                      <th>Section</th>
+                      <th>Answer</th>
+                      <th>Exam</th>
+                      <th>Actions</th>
+                    </tr>
+                  </thead>
+                  <tbody id="admin-table"></tbody>
+                </table>
+              </div>
+            </div>
+
+            <!-- Add question manually -->
+            <div class="admin-card">
+              <h3>📝 Question Manually Add చేయండి</h3>
+              <div class="form-group">
+                <label>Exam Select చేయండి</label>
+                <select id="q-exam-select"></select>
+              </div>
+              <div class="form-group">
+                <label>Section Select చేయండి</label>
+                <select id="q-section-select" style="font-weight:700">
+                  <option value="reasoning">🧠 Reasoning</option>
+                  <option value="arithmetic">🔢 Arithmetic</option>
+                  <option value="ga">🌍 General Awareness</option>
+                  <option value="english">📖 English Comprehension</option>
+                </select>
+              </div>
+              <div class="form-group">
+                <label>⭐ Marks (ఈ question కి ఎంత marks) <span style="font-size:10px;color:var(--text3)">— empty వదిలితే
+                    exam default వస్తుంది</span></label>
+                <input type="number" id="q-marks" min="0.5" max="20" step="0.5" placeholder="e.g. 1, 2, 4"
+                  style="max-width:160px;">
+              </div>
+              <div class="form-group">
+                <label>🖼️ Question Image (optional)</label>
+                <div style="display:flex;gap:10px;align-items:flex-start;flex-wrap:wrap;">
+                  <input type="file" id="q-image-file" accept="image/*" style="display:none"
+                    onchange="_previewQImage(this,'q-image-preview')">
+                  <button type="button" onclick="document.getElementById('q-image-file').click()"
+                    style="padding:7px 14px;background:var(--primary);color:#fff;border:none;border-radius:8px;font-weight:700;cursor:pointer;font-size:13px;">📁
+                    Image Select</button>
+                  <button type="button" onclick="_clearQImage('q-image-file','q-image-preview')"
+                    style="padding:7px 12px;background:var(--red,#e53e3e);color:#fff;border:none;border-radius:8px;font-weight:700;cursor:pointer;font-size:13px;">✕
+                    Clear</button>
+                </div>
+                <div id="q-image-preview" style="margin-top:8px;display:none;"><img loading="lazy"
+                    style="max-width:100%;max-height:180px;border-radius:8px;border:2px solid var(--border);"
+                    alt="preview"></div>
+              </div>
+              <div class="form-group">
+                <label>Question Text</label>
+                <textarea id="q-text-input" rows="3"
+                  placeholder="Question type చేయండి... (Telugu లేదా English)"></textarea>
+              </div>
+              <div class="form-group">
+                <label>Options — సరైన answer దగ్గర ✓ select చేయండి</label>
+                <div class="opt-inputs">
+                  <div class="opt-row">
+                    <div class="opt-label-tag">A</div>
+                    <input type="text" id="opt-a" placeholder="Option A">
+                    <label class="radio-wrap"><input type="radio" name="correct-ans" value="A"> Correct</label>
+                  </div>
+                  <div class="opt-row">
+                    <div class="opt-label-tag">B</div>
+                    <input type="text" id="opt-b" placeholder="Option B">
+                    <label class="radio-wrap"><input type="radio" name="correct-ans" value="B"> Correct</label>
+                  </div>
+                  <div class="opt-row">
+                    <div class="opt-label-tag">C</div>
+                    <input type="text" id="opt-c" placeholder="Option C">
+                    <label class="radio-wrap"><input type="radio" name="correct-ans" value="C"> Correct</label>
+                  </div>
+                  <div class="opt-row">
+                    <div class="opt-label-tag">D</div>
+                    <input type="text" id="opt-d" placeholder="Option D">
+                    <label class="radio-wrap"><input type="radio" name="correct-ans" value="D"> Correct</label>
+                  </div>
+                </div>
+              </div>
+              <button class="add-btn" onclick="addQuestion()">+ Question Add చేయండి</button>
+            </div>
+          </div>
+
+          <!-- ── TAB: PDF / IMAGES ── -->
+          <div id="atab-pdfitems" class="admin-panel">
+            <div class="admin-card" style="border-color:rgba(245,183,49,.3)">
+              <h3 style="color:var(--amber)">📁 PDFs / Images Add చేయండి</h3>
+              <p style="font-size:12.5px;color:var(--text3);margin-bottom:16px;font-weight:600;">Previous Papers, Book
+                Store, eBook కి PDF links / Image URLs add చేయండి. Google Drive, Direct link — అన్నీ work అవుతాయి.</p>
+
+              <div class="form-row">
+                <div class="form-group">
+                  <label>Category</label>
+                  <select id="pdf-cat"
+                    style="width:100%;padding:10px;border-radius:8px;border:1.5px solid var(--border);background:var(--bg);color:var(--text);font-family:inherit;font-size:13px;">
+                    <option value="Previous Papers">📁 Previous Papers</option>
+                    <option value="Book Store">🛒 Book Store</option>
+                    <option value="eBook">📖 eBook</option>
+                    <option value="Syllabus">📚 Syllabus</option>
+                  </select>
+                </div>
+                <div class="form-group">
+                  <label>Type</label>
+                  <select id="pdf-type"
+                    style="width:100%;padding:10px;border-radius:8px;border:1.5px solid var(--border);background:var(--bg);color:var(--text);font-family:inherit;font-size:13px;">
+                    <option value="pdf">📄 PDF</option>
+                    <option value="image">🖼️ Image</option>
+                  </select>
+                </div>
+              </div>
+
+              <div class="form-row">
+                <div class="form-group">
+                  <label>Title</label>
+                  <input type="text" id="pdf-title" placeholder="e.g. TSPSC 2023 Previous Paper">
+                </div>
+                <div class="form-group">
+                  <label>Sub-label <span style="font-size:10px;color:var(--text3)">(year / subject / price
+                      etc.)</span></label>
+                  <input type="text" id="pdf-sub" placeholder="e.g. 2023 / Telugu Medium / ₹199">
+                </div>
+              </div>
+
+              <!-- URL vs Direct Upload toggle -->
+              <div class="form-group">
+                <label>PDF / Image Source</label>
+                <div
+                  style="display:flex;gap:0;margin-bottom:10px;border-radius:8px;overflow:hidden;border:1.5px solid var(--border);width:fit-content;">
+                  <button id="pdf-src-url-btn" onclick="_switchPdfSrc('url')"
+                    style="padding:7px 18px;font-size:12.5px;font-weight:700;border:none;cursor:pointer;background:var(--primary);color:#fff;transition:all .2s;">🔗
+                    URL</button>
+                  <button id="pdf-src-upload-btn" onclick="_switchPdfSrc('upload')"
+                    style="padding:7px 18px;font-size:12.5px;font-weight:700;border:none;cursor:pointer;background:var(--bg);color:var(--text3);transition:all .2s;">📤
+                    Direct Upload</button>
+                </div>
+
+                <!-- URL input panel -->
+                <div id="pdf-src-url-panel">
+                  <span style="font-size:10px;color:var(--text3);display:block;margin-bottom:6px;">(Google Drive share
+                    link / direct PDF / image URL)</span>
+                  <input type="url" id="pdf-url" placeholder="https://drive.google.com/file/d/... or https://...">
+                </div>
+
+                <!-- File upload panel -->
+                <div id="pdf-src-upload-panel" style="display:none;">
+                  <input type="file" id="pdf-file-input" accept=".pdf,image/*" style="display:none"
+                    onchange="_onPdfFileSelect(this.files[0])">
+                  <div id="pdf-drop-zone" onclick="document.getElementById('pdf-file-input').click()"
+                    ondragover="event.preventDefault();this.style.borderColor='var(--primary)'"
+                    ondragleave="this.style.borderColor='var(--border)'" ondrop="_onPdfFileDrop(event)"
+                    style="border:2px dashed var(--border);border-radius:10px;padding:22px 16px;text-align:center;cursor:pointer;transition:border-color .2s;">
+                    <div style="font-size:28px;margin-bottom:6px;">📄</div>
+                    <div style="font-size:13px;font-weight:700;color:var(--text);">PDF / Image file drag చేయండి లేదా
+                      click చేయండి</div>
+                    <div style="font-size:11px;color:var(--text3);margin-top:4px;">Max 50 MB · PDF, JPG, PNG, WEBP</div>
+                  </div>
+                  <div id="pdf-upload-preview"
+                    style="display:none;margin-top:8px;padding:10px 12px;background:var(--bg2,rgba(255,255,255,.04));border-radius:8px;border:1.5px solid var(--border);font-size:12.5px;font-weight:600;color:var(--text);display:flex;align-items:center;gap:8px;">
+                    <span id="pdf-upload-filename"
+                      style="flex:1;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;"></span>
+                    <span id="pdf-upload-size" style="color:var(--text3);white-space:nowrap;"></span>
+                    <button onclick="_clearPdfFile()"
+                      style="background:none;border:none;cursor:pointer;color:var(--red);font-size:16px;padding:0;line-height:1;">✕</button>
+                  </div>
+                  <div id="pdf-upload-progress" style="display:none;margin-top:8px;">
+                    <div style="background:var(--border);border-radius:100px;height:6px;overflow:hidden;">
+                      <div id="pdf-upload-bar"
+                        style="height:100%;width:0%;background:linear-gradient(90deg,var(--primary),#a855f7);transition:width .3s;border-radius:100px;">
+                      </div>
+                    </div>
+                    <div id="pdf-upload-pct"
+                      style="font-size:11px;color:var(--text3);margin-top:4px;text-align:center;">Uploading...</div>
+                  </div>
+                </div>
+              </div>
+
+              <div class="form-group">
+                <label>Description <span style="font-size:10px;color:var(--text3)">(optional)</span></label>
+                <input type="text" id="pdf-desc" placeholder="e.g. 100 questions, Telugu medium">
+              </div>
+
+              <div style="display:flex;gap:10px;align-items:center;flex-wrap:wrap;">
+                <button class="add-btn" style="margin:0" onclick="addPdfItem()">➕ Add చేయండి</button>
+                <span id="pdf-add-status" style="font-size:12.5px;font-weight:700;display:none;"></span>
+              </div>
+            </div>
+
+            <!-- List -->
+            <div class="admin-card">
+              <h3>📋 Added Items</h3>
+              <div style="display:flex;gap:8px;flex-wrap:wrap;margin-bottom:14px;">
+                <button onclick="filterPdfAdmin('all')" id="pf-all" class="add-btn"
+                  style="margin:0;font-size:12px;padding:6px 14px;background:var(--primary)">All</button>
+                <button onclick="filterPdfAdmin('Previous Papers')" id="pf-pp" class="add-btn"
+                  style="margin:0;font-size:12px;padding:6px 14px;background:var(--bg);color:var(--text);border:1.5px solid var(--border);box-shadow:none;">📁
+                  Previous Papers</button>
+                <button onclick="filterPdfAdmin('Book Store')" id="pf-bs" class="add-btn"
+                  style="margin:0;font-size:12px;padding:6px 14px;background:var(--bg);color:var(--text);border:1.5px solid var(--border);box-shadow:none;">🛒
+                  Book Store</button>
+                <button onclick="filterPdfAdmin('eBook')" id="pf-eb" class="add-btn"
+                  style="margin:0;font-size:12px;padding:6px 14px;background:var(--bg);color:var(--text);border:1.5px solid var(--border);box-shadow:none;">📖
+                  eBook</button>
+                <button onclick="filterPdfAdmin('Syllabus')" id="pf-sy" class="add-btn"
+                  style="margin:0;font-size:12px;padding:6px 14px;background:var(--bg);color:var(--text);border:1.5px solid var(--border);box-shadow:none;">📚
+                  Syllabus</button>
+              </div>
+              <div id="pdf-admin-list">
+                <div style="text-align:center;padding:30px;color:var(--text3);font-size:13px;font-weight:600;">ఇంకా
+                  items add చేయలేదు.</div>
+              </div>
+            </div>
+          </div>
+
+          <!-- ── TAB: SUBSCRIBERS ── -->
+          <div id="atab-subscribers" class="admin-panel">
+
+            <!-- Approved subscribers -->
+            <div class="admin-card" style="border-color:rgba(10,140,92,.3)">
+              <h3 style="color:var(--teal)">✅ Approved Subscribers</h3>
+              <div style="overflow-x:auto">
+                <table class="questions-table">
+                  <thead>
+                    <tr>
+                      <th>#</th>
+                      <th>పేరు</th>
+                      <th>Gmail</th>
+                      <th>Date</th>
+                      <th>Premium</th>
+                      <th>Action</th>
+                    </tr>
+                  </thead>
+                  <tbody id="approved-table"></tbody>
+                </table>
+              </div>
+            </div>
+
+            <!-- Manually add subscriber -->
+            <div class="admin-card">
+              <h3>➕ Subscriber Manually Add చేయండి</h3>
+              <div class="form-row">
+                <div class="form-group">
+                  <label>పేరు</label>
+                  <input type="text" id="manual-sub-name" placeholder="Subscriber పేరు">
+                </div>
+                <div class="form-group">
+                  <label>Gmail ID</label>
+                  <input type="email" id="manual-sub-gmail" placeholder="yourname@gmail.com">
+                </div>
+              </div>
+              <button class="add-btn" onclick="manualAddSubscriber()">+ Add Subscriber</button>
+            </div>
+          </div>
+
+          <!-- ── TAB: AI TOOLS ── -->
+          <div id="atab-ai" class="admin-panel">
+
+            <!-- API Key -->
+            <div class="admin-card key-card">
+              <h3>🔑 Groq API Key</h3>
+              <p style="font-size:12.5px;color:var(--text3);margin-bottom:14px;line-height:1.7">
+                Free key కోసం: <a href="https://console.groq.com/keys" target="_blank"
+                  style="color:var(--teal);font-weight:700">console.groq.com/keys</a> → Sign up → "Create API Key" →
+                Paste చేయండి. <strong style="color:var(--teal)">రోజుకు 14,400 requests Free!</strong>
+              </p>
+              <div class="api-row">
+                <input type="password" id="gemini-api-key" placeholder="gsk_... అని start అయ్యే key paste చేయండి">
+                <button onclick="saveGeminiKey()" class="add-btn" style="white-space:nowrap">Save Key</button>
+              </div>
+              <div id="key-status"
+                style="font-size:12px;margin-top:8px;color:var(--text3);display:none;font-weight:600"></div>
+            </div>
+
+            <!-- AI tools tabs -->
+            <div class="admin-card">
+              <div class="ai-gen-tabs">
+                <button class="ai-gen-tab active" onclick="switchGenTab('topic',this)">✨ Topic → Questions</button>
+                <button class="ai-gen-tab" onclick="switchGenTab('pdf',this)">📄 PDF → Questions</button>
+              </div>
+
+              <!-- Topic generator -->
+              <div id="ai-gen-panel-topic" class="ai-gen-panel active">
+                <div class="form-group">
+                  <label>Exam Select చేయండి</label>
+                  <select id="gen-exam-select"></select>
+                </div>
+                <div class="gen-options-row">
+                  <div class="form-group" style="margin-bottom:0">
+                    <label>Number of Questions</label>
+                    <input type="number" id="gen-count" value="10" min="1" max="200"
+                      placeholder="Enter any number (1–200)"
+                      style="width:100%;padding:10px 14px;border:1.5px solid var(--border2);border-radius:10px;font-size:14px;font-weight:700;background:var(--bg);color:var(--text);outline:none;">
+                    <div style="display:flex;flex-wrap:wrap;gap:6px;margin-top:8px;">
+                      <button type="button" onclick="document.getElementById('gen-count').value=10"
+                        style="padding:4px 10px;border-radius:7px;border:1.5px solid var(--border2);background:var(--bg);color:var(--text2);font-size:12px;font-weight:700;cursor:pointer;">10</button>
+                      <button type="button" onclick="document.getElementById('gen-count').value=20"
+                        style="padding:4px 10px;border-radius:7px;border:1.5px solid var(--border2);background:var(--bg);color:var(--text2);font-size:12px;font-weight:700;cursor:pointer;">20</button>
+                      <button type="button" onclick="document.getElementById('gen-count').value=30"
+                        style="padding:4px 10px;border-radius:7px;border:1.5px solid var(--border2);background:var(--bg);color:var(--text2);font-size:12px;font-weight:700;cursor:pointer;">30</button>
+                      <button type="button" onclick="document.getElementById('gen-count').value=50"
+                        style="padding:4px 10px;border-radius:7px;border:1.5px solid var(--border2);background:var(--bg);color:var(--text2);font-size:12px;font-weight:700;cursor:pointer;">50</button>
+                      <button type="button" onclick="document.getElementById('gen-count').value=100"
+                        style="padding:4px 10px;border-radius:7px;border:1.5px solid var(--border2);background:var(--bg);color:var(--text2);font-size:12px;font-weight:700;cursor:pointer;">100</button>
+                    </div>
+                  </div>
+                  <div class="form-group" style="margin-bottom:0">
+                    <label>Difficulty</label>
+                    <select id="gen-diff">
+                      <option value="easy">Easy</option>
+                      <option value="medium" selected>Medium</option>
+                      <option value="hard">Hard</option>
+                    </select>
+                  </div>
+                </div>
+                <div class="form-group">
+                  <label>Language</label>
+                  <select id="gen-lang">
+                    <option value="Telugu">Telugu (తెలుగు)</option>
+                    <option value="English" selected>English</option>
+                    <option value="Telugu and English mixed">Telugu + English Mixed</option>
+                  </select>
+                </div>
+                <div class="form-group">
+                  <label>Topic / Subject</label>
+                  <div class="topic-input-wrap">
+                    <textarea id="gen-topic" rows="2"
+                      placeholder="e.g. Telangana History, Indian Constitution, RBI and Banking..."></textarea>
+                  </div>
+                </div>
+                <button class="gen-btn" id="gen-btn" onclick="generateAIQuestions()">
+                  <span id="gen-btn-icon">✨</span> AI తో Questions Generate చేయండి
+                </button>
+                <div id="gen-status" style="display:none"></div>
+                <div id="gen-preview" class="gen-preview">
+                  <div style="font-size:13px;font-weight:700;margin:14px 0 8px;color:var(--text)">Generated Questions —
+                    Preview:</div>
+                  <div id="gen-q-list"></div>
+                  <div class="gen-import-bar">
+                    <span class="gen-badge">Total: <strong id="gen-total">0</strong> questions ready</span>
+                    <div style="display:flex;gap:8px">
+                      <button class="add-btn"
+                        style="background:var(--bg);color:var(--text2);border:2px solid var(--border);box-shadow:none"
+                        onclick="clearGenPreview()">Cancel</button>
+                      <button class="import-btn" onclick="importGenQuestions()">✓ Exam లో Add చేయండి</button>
+                    </div>
+                  </div>
+                </div>
+              </div>
+
+              <!-- PDF import -->
+              <div id="ai-gen-panel-pdf" class="ai-gen-panel">
+                <div class="form-group">
+                  <label>Exam Select చేయండి</label>
+                  <select id="ai-exam-select"></select>
+                </div>
+                <input type="file" id="ai-file-input" accept=".pdf" style="display:none"
+                  onchange="handleAIPdf(this.files[0])">
+                <div class="ai-drop-zone" id="ai-drop-zone" onclick="document.getElementById('ai-file-input').click()"
+                  ondragover="aiDragOver(event)" ondragleave="aiDragLeave(event)" ondrop="aiDrop(event)">
+                  <div class="ai-drop-icon">📄</div>
+                  <div class="ai-drop-title">Question Paper PDF drop చేయండి</div>
+                  <div class="ai-drop-sub">AI automatically MCQ questions extract చేసి preview చూపిస్తుంది</div>
+                </div>
+                <div id="ai-status" style="display:none"></div>
+                <div id="ai-preview" style="display:none">
+                  <div style="font-size:13px;font-weight:700;margin:14px 0 8px;color:var(--text)">Extracted Questions —
+                    Preview:</div>
+                  <div class="ai-preview-list" id="ai-q-list"></div>
+                  <div class="ai-import-bar">
+                    <span class="ai-count-badge">Total: <strong id="ai-total">0</strong> questions ready</span>
+                    <div style="display:flex;gap:8px">
+                      <button class="add-btn"
+                        style="background:var(--bg);color:var(--text2);border:2px solid var(--border);box-shadow:none"
+                        onclick="clearAIPreview()">Cancel</button>
+                      <button class="import-btn" id="ai-import-btn" onclick="importAIQuestions()">✓ Exam లో Add
+                        చేయండి</button>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <!-- ── TAB: VIDEOS ── -->
+          <div id="atab-videos" class="admin-panel">
+            <div class="admin-card">
+              <h3>🎥 Videos Manage చేయండి</h3>
+              <div style="overflow-x:auto">
+                <table class="exams-manage-table">
+                  <thead>
+                    <tr>
+                      <th>#</th>
+                      <th>Title</th>
+                      <th>Category</th>
+                      <th>YouTube URL</th>
+                      <th>Actions</th>
+                    </tr>
+                  </thead>
+                  <tbody id="videos-manage-table"></tbody>
+                </table>
+              </div>
+            </div>
+            <div class="admin-card">
+              <h3>➕ New Video Add చేయండి</h3>
+              <div class="form-row">
+                <div class="form-group">
+                  <label>Video Title</label>
+                  <input type="text" id="vid-title" placeholder="e.g. Telangana History Part 1">
+                </div>
+                <div class="form-group">
+                  <label>Category</label>
+                  <select id="vid-cat">
+                    <option>TSPSC</option>
+                    <option>SSC</option>
+                    <option>Banking</option>
+                    <option>GK</option>
+                    <option>Math</option>
+                    <option>Daily CA</option>
+                    <option>General</option>
+                  </select>
+                </div>
+              </div>
+              <div class="form-group">
+                <label>YouTube URL</label>
+                <input type="url" id="vid-url" placeholder="https://www.youtube.com/watch?v=...">
+              </div>
+              <div class="form-group">
+                <label>Description (optional)</label>
+                <textarea id="vid-desc" rows="2" placeholder="Video గురించి చిన్న description..."
+                  style="width:100%;background:var(--bg);border:2px solid var(--border);border-radius:var(--radius2);padding:10px 14px;font-family:inherit;font-size:14px;color:var(--text);resize:vertical"></textarea>
+              </div>
+              <button class="add-btn" onclick="addVideo()">+ Video Add చేయండి</button>
+            </div>
+          </div>
+
+          <!-- ── TAB: PAYMENTS ── -->
+          <div id="atab-payments" class="admin-panel">
+            <div class="admin-card" style="border-color:rgba(26,115,232,.25)">
+              <h3 style="color:var(--primary)">💳 Payment System Control</h3>
+              <div style="font-size:13px;color:var(--text2);margin-bottom:16px;font-weight:600;line-height:1.7">
+                ఇప్పుడు payment system <strong style="color:var(--amber)">Hidden Mode</strong> లో ఉంది.<br>
+                తర్వాత enable చేయాలంటే కింద toggle చేయండి.
+              </div>
+              <div
+                style="display:flex;align-items:center;gap:16px;padding:16px;background:var(--bg);border-radius:14px;margin-bottom:16px">
+                <div style="flex:1">
+                  <div style="font-size:14px;font-weight:800;color:var(--text)">Payment Feature Enable/Disable</div>
+                  <div style="font-size:12px;color:var(--text3);margin-top:3px">Enable చేస్తే users కి pricing page
+                    కనిపిస్తుంది</div>
+                </div>
+                <label style="position:relative;display:inline-block;width:52px;height:28px;cursor:pointer">
+                  <input type="checkbox" id="payment-toggle-switch" onchange="togglePaymentFeature(this.checked)"
+                    style="opacity:0;width:0;height:0">
+                  <span id="payment-toggle-track"
+                    style="position:absolute;inset:0;background:var(--border2);border-radius:14px;transition:.3s"></span>
+                  <span id="payment-toggle-thumb"
+                    style="position:absolute;width:22px;height:22px;left:3px;top:3px;background:#fff;border-radius:50%;transition:.3s;box-shadow:0 2px 6px rgba(0,0,0,.2)"></span>
+                </label>
+              </div>
+              <div id="payment-status-msg"
+                style="font-size:12.5px;font-weight:700;padding:10px 14px;border-radius:10px;background:var(--amber-soft);color:var(--amber);margin-bottom:16px">
+                ⏸ Payment: Disabled — Users కి pricing కనిపించదు
+              </div>
+            </div>
+
+            <div class="admin-card">
+              <h3>💰 Razorpay Configuration</h3>
+              <div style="font-size:12.5px;color:var(--text3);margin-bottom:14px;font-weight:600">
+                Test mode లో integrate అయి ఉంది. Live key కి మార్చండి.
+              </div>
+              <div class="form-row">
+                <div class="form-group">
+                  <label>Razorpay Key ID</label>
+                  <input type="text" id="rzp-key-input" placeholder="rzp_live_xxxxxxxxxx" value="">
+                  <div style="font-size:11px;color:var(--amber);font-weight:700;margin-top:4px;">⚠️ Production కి వెళ్ళే
+                    ముందు rzp_live_ key set చేయండి</div>
+                </div>
+                <div class="form-group">
+                  <label>Plan Prices (INR)</label>
+                  <div style="display:flex;gap:8px">
+                    <input type="number" id="price-monthly" placeholder="Monthly ₹" value="99" style="flex:1">
+                    <input type="number" id="price-yearly" placeholder="Yearly ₹" value="499" style="flex:1">
+                  </div>
+                  <div style="display:flex;gap:8px;margin-top:6px;font-size:12px;font-weight:700;color:var(--text2)">
+                    <span style="flex:1">Monthly: ₹<span id="price-monthly-display">99</span></span>
+                    <span style="flex:1">Yearly: ₹<span id="price-yearly-display">499</span></span>
+                  </div>
+                </div>
+              </div>
+              <button class="add-btn" onclick="savePaymentConfig()">💾 Config Save చేయండి</button>
+              <div id="rzp-save-status" style="font-size:12.5px;margin-top:8px;font-weight:600;display:none"></div>
+            </div>
+
+            <div class="admin-card">
+              <h3>📊 Payment Statistics</h3>
+              <div id="payment-stats-grid"
+                style="display:grid;grid-template-columns:repeat(auto-fit,minmax(118px,1fr));gap:10px;margin-bottom:18px;">
+              </div>
+
+              <div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(260px,1fr));gap:14px;margin-bottom:18px;">
+                <div style="background:var(--bg);border:2px solid var(--border);border-radius:12px;padding:14px;">
+                  <div style="font-size:13px;font-weight:900;color:var(--text);margin-bottom:10px;">📈 Revenue Trend
+                    — Last 14 Days</div>
+                  <div style="height:190px;"><canvas id="payment-revenue-chart"></canvas></div>
+                </div>
+                <div style="background:var(--bg);border:2px solid var(--border);border-radius:12px;padding:14px;">
+                  <div style="font-size:13px;font-weight:900;color:var(--text);margin-bottom:10px;">🥧 Plan
+                    Distribution</div>
+                  <div style="height:190px;"><canvas id="payment-plan-donut"></canvas></div>
+                </div>
+              </div>
+
+              <div style="overflow-x:auto">
+                <table class="exams-manage-table">
+                  <thead>
+                    <tr>
+                      <th>#</th>
+                      <th>Name</th>
+                      <th>Gmail</th>
+                      <th>Plan</th>
+                      <th>Amount</th>
+                      <th>UTR/ID</th>
+                      <th>Date</th>
+                      <th>Status</th>
+                    </tr>
+                  </thead>
+                  <tbody id="payments-table">
+                    <tr>
+                      <td colspan="8" style="text-align:center;color:var(--text3);padding:16px">Payment records లేవు
+                      </td>
+                    </tr>
+                  </tbody>
+                </table>
+              </div>
+            </div>
+          </div>
+
+
+          <!-- ── TAB: CONTESTS ── -->
+          <div id="atab-contests" class="admin-panel">
+
+            <!-- Create Contest -->
+            <div class="admin-card" style="border-color:rgba(245,124,0,.3)">
+              <h3 style="color:#f57c00">🏆 New Contest Create చేయండి</h3>
+              <div style="display:grid;grid-template-columns:1fr 1fr;gap:14px;margin-top:14px">
+                <div>
+                  <label
+                    style="font-size:12px;font-weight:700;color:var(--text2);display:block;margin-bottom:6px">Contest
+                    Title</label>
+                  <input id="ctest-title" class="edit-box" placeholder="e.g. GK Quiz Contest #1"
+                    style="width:100%;box-sizing:border-box">
+                </div>
+                <div>
+                  <label style="font-size:12px;font-weight:700;color:var(--text2);display:block;margin-bottom:6px">Exam
+                    Select చేయండి</label>
+                  <select id="ctest-exam" class="edit-box" style="width:100%;box-sizing:border-box">
+                    <option value="">-- Exam Select --</option>
+                  </select>
+                </div>
+                <div>
+                  <label style="font-size:12px;font-weight:700;color:var(--text2);display:block;margin-bottom:6px">Entry
+                    Fee (₹)</label>
+                  <input id="ctest-fee" type="number" class="edit-box" placeholder="e.g. 10" min="1"
+                    style="width:100%;box-sizing:border-box">
+                </div>
+                <div>
+                  <label style="font-size:12px;font-weight:700;color:var(--text2);display:block;margin-bottom:6px">Prize
+                    Pool (₹) — Auto లేదా Manual</label>
+                  <input id="ctest-prize" type="number" class="edit-box"
+                    placeholder="e.g. 500 (0 = entry fees నుండి auto)" min="0" style="width:100%;box-sizing:border-box">
+                </div>
+                <div>
+                  <label style="font-size:12px;font-weight:700;color:var(--text2);display:block;margin-bottom:6px">Start
+                    Date & Time</label>
+                  <input id="ctest-start" type="datetime-local" class="edit-box"
+                    style="width:100%;box-sizing:border-box">
+                </div>
+                <div>
+                  <label style="font-size:12px;font-weight:700;color:var(--text2);display:block;margin-bottom:6px">End
+                    Date & Time</label>
+                  <input id="ctest-end" type="datetime-local" class="edit-box" style="width:100%;box-sizing:border-box">
+                </div>
+                <div>
+                  <label style="font-size:12px;font-weight:700;color:var(--text2);display:block;margin-bottom:6px">1st
+                    Prize (%)</label>
+                  <input id="ctest-p1" type="number" class="edit-box" placeholder="50" value="50" min="1" max="100"
+                    style="width:100%;box-sizing:border-box">
+                </div>
+                <div>
+                  <label style="font-size:12px;font-weight:700;color:var(--text2);display:block;margin-bottom:6px">2nd
+                    Prize (%)</label>
+                  <input id="ctest-p2" type="number" class="edit-box" placeholder="30" value="30" min="0" max="100"
+                    style="width:100%;box-sizing:border-box">
+                </div>
+                <div>
+                  <label style="font-size:12px;font-weight:700;color:var(--text2);display:block;margin-bottom:6px">3rd
+                    Prize (%)</label>
+                  <input id="ctest-p3" type="number" class="edit-box" placeholder="20" value="20" min="0" max="100"
+                    style="width:100%;box-sizing:border-box">
+                </div>
+                <div>
+                  <label style="font-size:12px;font-weight:700;color:var(--text2);display:block;margin-bottom:6px">Max
+                    Participants (0 = unlimited)</label>
+                  <input id="ctest-maxp" type="number" class="edit-box" placeholder="0" value="0" min="0"
+                    style="width:100%;box-sizing:border-box">
+                </div>
+              </div>
+              <div style="margin-top:14px">
+                <label
+                  style="font-size:12px;font-weight:700;color:var(--text2);display:block;margin-bottom:6px">Description
+                  (optional)</label>
+                <textarea id="ctest-desc" class="edit-box" rows="2" placeholder="Contest గురించి చిన్న description..."
+                  style="width:100%;box-sizing:border-box;resize:vertical"></textarea>
+              </div>
+              <button onclick="this.disabled=true;adminCreateContest().finally(()=>this.disabled=false)"
+                style="margin-top:16px;background:linear-gradient(135deg,#f57c00,#ff9800);color:#fff;border:none;border-radius:12px;padding:12px 28px;font-family:inherit;font-size:14px;font-weight:800;cursor:pointer;box-shadow:0 4px 16px rgba(245,124,0,.35)">
+                🏆 Contest Create చేయండి
+              </button>
+            </div>
+
+            <!-- Active Contests List -->
+            <div class="admin-card" style="margin-top:16px">
+              <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:14px">
+                <h3>📋 All Contests</h3>
+                <button onclick="loadAdminContests()"
+                  style="background:var(--primary-soft);color:var(--primary);border:none;border-radius:10px;padding:8px 16px;font-family:inherit;font-size:12px;font-weight:700;cursor:pointer">🔄
+                  Refresh</button>
+              </div>
+              <div id="admin-contests-list">
+                <div style="color:var(--text3);text-align:center;padding:30px">Refresh click చేయండి...</div>
+              </div>
+            </div>
+
+            <!-- Winner Declaration -->
+            <div class="admin-card" style="margin-top:16px;border-color:rgba(255,215,0,.3)">
+              <h3 style="color:#FFD700">🥇 Winner Declare చేయండి</h3>
+              <div style="font-size:13px;color:var(--text2);margin-bottom:14px">Contest end అయిన తర్వాత leaderboard చూసి
+                winner select చేయండి. Winner కి UPI ద్వారా manually prize పంపండి.</div>
+              <div style="display:flex;gap:12px;align-items:flex-end;flex-wrap:wrap">
+                <div style="flex:1;min-width:200px">
+                  <label
+                    style="font-size:12px;font-weight:700;color:var(--text2);display:block;margin-bottom:6px">Contest
+                    Select</label>
+                  <select id="winner-contest-sel" class="edit-box" style="width:100%;box-sizing:border-box">
+                    <option value="">-- Contest Select --</option>
+                  </select>
+                </div>
+                <button onclick="loadContestLeaderboard()"
+                  style="background:linear-gradient(135deg,#1A73E8,#4F7CFF);color:#fff;border:none;border-radius:12px;padding:10px 20px;font-family:inherit;font-size:13px;font-weight:800;cursor:pointer">
+                  📊 Leaderboard చూడండి
+                </button>
+              </div>
+              <div id="contest-leaderboard-admin" style="margin-top:16px"></div>
+            </div>
+
+          </div>
+
+          <!-- ══════════════════════════════════
+         💼 TAB: GOVT JOBS & RESULTS
+    ══════════════════════════════════ -->
+          <div id="atab-jobs" class="admin-panel">
+
+            <!-- Create / Edit Job Article -->
+            <div class="admin-card" style="border-color:rgba(15,118,110,.3)">
+              <h3 style="color:#0F766E" id="job-form-title">💼 కొత్త Article Add చేయండి</h3>
+              <input type="hidden" id="job-edit-id" value="">
+              <div style="display:grid;grid-template-columns:1fr 1fr;gap:14px;margin-top:14px">
+                <div style="grid-column:1/-1">
+                  <label style="font-size:12px;font-weight:700;color:var(--text2);display:block;margin-bottom:6px">Title
+                    / Post Name</label>
+                  <input id="job-title" class="edit-box" placeholder="e.g. TSPSC Group-2 Recruitment 2026"
+                    style="width:100%;box-sizing:border-box">
+                </div>
+                <div>
+                  <label
+                    style="font-size:12px;font-weight:700;color:var(--text2);display:block;margin-bottom:6px">Organization</label>
+                  <input id="job-org" class="edit-box" placeholder="e.g. TSPSC"
+                    style="width:100%;box-sizing:border-box">
+                </div>
+                <div>
+                  <label
+                    style="font-size:12px;font-weight:700;color:var(--text2);display:block;margin-bottom:6px">Category</label>
+                  <select id="job-category" class="edit-box" style="width:100%;box-sizing:border-box">
+                    <option value="notification">📢 Notification</option>
+                    <option value="result">✅ Result</option>
+                    <option value="admit_card">🎫 Admit Card</option>
+                    <option value="answer_key">🔑 Answer Key</option>
+                  </select>
+                </div>
+                <div>
+                  <label style="font-size:12px;font-weight:700;color:var(--text2);display:block;margin-bottom:6px">Total
+                    Posts</label>
+                  <input id="job-posts" class="edit-box" placeholder="e.g. 503"
+                    style="width:100%;box-sizing:border-box">
+                </div>
+                <div>
+                  <label
+                    style="font-size:12px;font-weight:700;color:var(--text2);display:block;margin-bottom:6px">Qualification</label>
+                  <input id="job-qual" class="edit-box" placeholder="e.g. Degree"
+                    style="width:100%;box-sizing:border-box">
+                </div>
+                <div>
+                  <label style="font-size:12px;font-weight:700;color:var(--text2);display:block;margin-bottom:6px">Age
+                    Limit</label>
+                  <input id="job-age" class="edit-box" placeholder="e.g. 18-44 years"
+                    style="width:100%;box-sizing:border-box">
+                </div>
+                <div>
+                  <label
+                    style="font-size:12px;font-weight:700;color:var(--text2);display:block;margin-bottom:6px">Application
+                    Fee</label>
+                  <input id="job-fee" class="edit-box" placeholder="e.g. ₹200 (Gen) / Free (SC/ST)"
+                    style="width:100%;box-sizing:border-box">
+                </div>
+                <div>
+                  <label
+                    style="font-size:12px;font-weight:700;color:var(--text2);display:block;margin-bottom:6px">Notification
+                    Date</label>
+                  <input id="job-notif-date" class="edit-box" placeholder="e.g. 01-06-2026"
+                    style="width:100%;box-sizing:border-box">
+                </div>
+                <div>
+                  <label style="font-size:12px;font-weight:700;color:var(--text2);display:block;margin-bottom:6px">Last
+                    Date to Apply</label>
+                  <input id="job-last-date" class="edit-box" placeholder="e.g. 30-06-2026"
+                    style="width:100%;box-sizing:border-box">
+                </div>
+                <div>
+                  <label style="font-size:12px;font-weight:700;color:var(--text2);display:block;margin-bottom:6px">Exam
+                    Date</label>
+                  <input id="job-exam-date" class="edit-box" placeholder="e.g. 15-08-2026"
+                    style="width:100%;box-sizing:border-box">
+                </div>
+                <div>
+                  <label style="font-size:12px;font-weight:700;color:var(--text2);display:block;margin-bottom:6px">Apply
+                    Link</label>
+                  <input id="job-apply-link" class="edit-box" placeholder="https://..."
+                    style="width:100%;box-sizing:border-box">
+                </div>
+                <div style="grid-column:1/-1">
+                  <label
+                    style="font-size:12px;font-weight:700;color:var(--text2);display:block;margin-bottom:6px">Official
+                    Notification Link (PDF)</label>
+                  <input id="job-notif-link" class="edit-box" placeholder="https://..."
+                    style="width:100%;box-sizing:border-box">
+                </div>
+                <div style="grid-column:1/-1">
+                  <label
+                    style="font-size:12px;font-weight:700;color:var(--text2);display:block;margin-bottom:6px">Description
+                    / Application Process (optional)</label>
+                  <textarea id="job-desc" class="edit-box" rows="3"
+                    placeholder="Eligibility details, application process steps, ఇతర సమాచారం..."
+                    style="width:100%;box-sizing:border-box;resize:vertical"></textarea>
+                </div>
+              </div>
+              <div style="margin-top:16px;display:flex;gap:10px;flex-wrap:wrap">
+                <button onclick="adminSaveJobArticle()" id="job-save-btn"
+                  style="background:linear-gradient(135deg,#0F766E,#10B981);color:#fff;border:none;border-radius:12px;padding:12px 28px;font-family:inherit;font-size:14px;font-weight:800;cursor:pointer;box-shadow:0 4px 16px rgba(15,118,110,.35)">
+                  💾 Article Save చేయండి
+                </button>
+                <button onclick="_resetJobForm()" id="job-cancel-btn"
+                  style="display:none;background:var(--bg);color:var(--text2);border:1.5px solid var(--border2);border-radius:12px;padding:12px 24px;font-family:inherit;font-size:14px;font-weight:700;cursor:pointer">
+                  ✕ Cancel Edit
+                </button>
+              </div>
+            </div>
+
+            <!-- All Job Articles List -->
+            <div class="admin-card" style="margin-top:16px">
+              <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:14px">
+                <h3>📋 All Articles</h3>
+                <button onclick="loadAdminJobArticles()"
+                  style="background:var(--primary-soft);color:var(--primary);border:none;border-radius:10px;padding:8px 16px;font-family:inherit;font-size:12px;font-weight:700;cursor:pointer">🔄
+                  Refresh</button>
+              </div>
+              <div id="admin-jobs-list">
+                <div style="color:var(--text3);text-align:center;padding:30px">Loading...</div>
+              </div>
+              <div id="admin-jobs-pagination"></div>
+            </div>
+
+          </div>
+
+
+          <!-- ── TAB: SETTINGS ── -->
+          <!-- ══════════════════════════════════
+         📥 TAB: BULK IMPORT
+    ══════════════════════════════════ -->
+          <div id="atab-bulkimport" class="admin-panel">
+
+            <div class="admin-card">
+              <h3>📥 Bulk Question Import (CSV)</h3>
+
+              <!-- ⚠️ EXAM SELECTOR — KEY FIX -->
+              <div
+                style="background:linear-gradient(135deg,rgba(79,70,229,.07),rgba(16,185,129,.05));border:2px solid rgba(79,70,229,.2);border-radius:14px;padding:16px 18px;margin-bottom:18px;">
+                <div
+                  style="font-size:12px;font-weight:800;color:#4f46e5;margin-bottom:10px;text-transform:uppercase;letter-spacing:.8px;">
+                  🎯 Step 1 — Exam Select చేయండి (Important!)
+                </div>
+                <div style="font-size:12.5px;color:var(--text2);font-weight:600;margin-bottom:12px;line-height:1.6;">
+                  ఇక్కడ exam select చేస్తే CSV లో examId column అవసరం లేదు — అన్ని questions automatically ఈ exam కి
+                  వెళ్తాయి.<br>
+                  <span style="color:#ef4444;font-weight:700;">⚠️ Exam id ని CSV లో hardcode చేస్తే తర్వాత id shift
+                    అయినప్పుడు wrong exam కి వెళ్తాయి — ఈ dropdown use చేయడం safe!</span>
+                </div>
+                <div style="display:flex;gap:12px;align-items:center;flex-wrap:wrap;">
+                  <div style="flex:1;min-width:200px;">
+                    <label
+                      style="font-size:10.5px;font-weight:800;color:#64748b;text-transform:uppercase;letter-spacing:.8px;display:block;margin-bottom:6px;">Target
+                      Exam</label>
+                    <select id="bulk-exam-override"
+                      style="width:100%;padding:10px 14px;border:1.5px solid #e2e8f0;border-radius:10px;font-family:inherit;font-size:13.5px;font-weight:700;color:var(--text);background:var(--bg);"
+                      onchange="_onBulkExamChange()">
+                      <option value="">-- CSV లో examId use చేయి (పాత method) --</option>
+                    </select>
+                  </div>
+                  <div id="bulk-exam-badge"
+                    style="display:none;background:#dcfce7;border:1.5px solid #16a34a;border-radius:10px;padding:10px 14px;font-size:12px;font-weight:800;color:#15803d;white-space:nowrap;margin-top:18px;">
+                    ✅ Exam Selected
+                  </div>
+                </div>
+              </div>
+
+              <!-- Column format info -->
+              <div
+                style="font-size:12.5px;color:var(--text2);font-weight:600;margin-bottom:16px;line-height:1.7;background:var(--bg);border-radius:10px;padding:12px 14px;border:1.5px solid var(--border);">
+                <strong style="color:var(--primary)">CSV Columns (Exam select చేస్తే examId optional):</strong><br>
+                <code
+                  style="font-size:11px;color:#7c3aed;">question, optionA, optionB, optionC, optionD, answer (A/B/C/D), explanation (optional), section (optional), marks (optional), imageUrl (optional)</code>
+              </div>
+
+              <!-- Template download -->
+              <div style="display:flex;gap:10px;flex-wrap:wrap;margin-bottom:18px;">
+                <button class="add-btn" style="margin:0;background:linear-gradient(135deg,#00B894,#077042)"
+                  onclick="_downloadCSVTemplate()">⬇️ CSV Template Download</button>
+                <button class="add-btn" style="margin:0;background:linear-gradient(135deg,#1A73E8,#0d47a1)"
+                  onclick="_downloadExamIds()">📋 Exam IDs List Download</button>
+              </div>
+
+              <!-- Upload area -->
+              <div id="bulk-drop-zone"
+                style="border:2.5px dashed var(--border);border-radius:14px;padding:32px;text-align:center;cursor:pointer;transition:all .2s;margin-bottom:16px;"
+                onclick="document.getElementById('bulk-file-input').click()"
+                ondragover="event.preventDefault();this.style.borderColor='var(--primary)';this.style.background='rgba(26,115,232,.05)'"
+                ondragleave="this.style.borderColor='var(--border)';this.style.background=''"
+                ondrop="_handleBulkDrop(event)">
+                <div style="font-size:40px;margin-bottom:10px;">📂</div>
+                <div style="font-size:15px;font-weight:800;color:var(--text);margin-bottom:6px;">CSV file ఇక్కడ drop
+                  చేయండి</div>
+                <div style="font-size:12px;color:var(--text3);font-weight:600;">లేదా click చేసి browse చేయండి (.csv)
+                </div>
+                <input id="bulk-file-input" type="file" accept=".csv" style="display:none"
+                  onchange="_handleBulkFile(this.files[0])">
+              </div>
+
+              <!-- Preview table -->
+              <div id="bulk-preview" style="display:none;">
+                <div
+                  style="display:flex;justify-content:space-between;align-items:center;margin-bottom:12px;flex-wrap:wrap;gap:8px;">
+                  <div id="bulk-preview-label" style="font-size:14px;font-weight:800;color:var(--text);">Preview</div>
+                  <div style="display:flex;gap:8px;">
+                    <button class="add-btn" style="margin:0;background:linear-gradient(135deg,var(--teal),#077042)"
+                      onclick="_confirmBulkImport()">✅ Import చేయండి</button>
+                    <button class="add-btn" style="margin:0;background:linear-gradient(135deg,var(--red),#c0172a)"
+                      onclick="_cancelBulkImport()">❌ Cancel</button>
+                  </div>
+                </div>
+                <div style="overflow-x:auto;border-radius:10px;border:1.5px solid var(--border);">
+                  <table class="exams-manage-table" id="bulk-preview-table">
+                    <thead>
+                      <tr>
+                        <th>#</th>
+                        <th>Exam</th>
+                        <th>Question</th>
+                        <th>A</th>
+                        <th>B</th>
+                        <th>C</th>
+                        <th>D</th>
+                        <th>Ans</th>
+                        <th>Section</th>
+                        <th>Marks</th>
+                        <th>Image</th>
+                        <th>Status</th>
+                      </tr>
+                    </thead>
+                    <tbody id="bulk-preview-body"></tbody>
+                  </table>
+                </div>
+              </div>
+
+              <!-- Import log -->
+              <div id="bulk-log"
+                style="display:none;margin-top:14px;padding:14px;background:var(--bg);border-radius:10px;font-size:12.5px;font-weight:600;max-height:200px;overflow-y:auto;line-height:1.8;">
+              </div>
+            </div>
+
+            <!-- Paste CSV text -->
+            <div class="admin-card">
+              <h3>📋 CSV Text Paste చేయండి</h3>
+              <div style="font-size:12.5px;color:var(--text2);margin-bottom:10px;font-weight:600;">File లేకుండా directly
+                CSV text paste చేయవచ్చు — పైన exam select చేసి ఉంటే examId column అవసరం లేదు</div>
+              <textarea id="bulk-csv-text" rows="8"
+                placeholder="question,optionA,optionB,optionC,optionD,answer,explanation,section,marks,imageUrl&#10;What is 2+2?,1,2,3,4,D,Basic math,arithmetic,1,&#10;Capital of Telangana?,Mumbai,Hyderabad,Delhi,Chennai,B,TS capital,ga,2,https://i.imgur.com/example.jpg"
+                style="width:100%;padding:12px;border:2px solid var(--border);border-radius:10px;font-family:monospace;font-size:12px;background:var(--bg);color:var(--text);resize:vertical;outline:none;box-sizing:border-box;"
+                onfocus="this.style.borderColor='var(--primary)'"
+                onblur="this.style.borderColor='var(--border)'"></textarea>
+              <button class="add-btn" style="margin-top:10px;" onclick="_parsePastedCSV()">🔍 Preview & Import</button>
+            </div>
+          </div>
+
+          <!-- ══════════════════════════════════
+         📊 TAB: USER ANALYTICS
+    ══════════════════════════════════ -->
+          <div id="atab-analytics" class="admin-panel">
+            <div class="admin-card">
+              <h3>📊 User Analytics Dashboard</h3>
+              <div style="display:flex;gap:10px;flex-wrap:wrap;margin-bottom:16px;">
+                <button class="add-btn" style="margin:0;" onclick="_renderAnalytics()">🔄 Refresh</button>
+                <button class="add-btn" style="margin:0;background:linear-gradient(135deg,#00B894,#077042)"
+                  onclick="_exportAnalyticsCSV()">⬇️ Export CSV</button>
+              </div>
+              <div id="analytics-content">
+                <div style="text-align:center;padding:40px;color:var(--text3);">⏳ Loading analytics...</div>
+              </div>
+            </div>
+          </div>
+
+          <!-- ══════════════════════════════════
+         🗓 TAB: SCHEDULED EXAMS
+    ══════════════════════════════════ -->
+          <!-- ══════════════════════════════════
+         📅 TAB: DAILY MOCK TEST
+    ══════════════════════════════════ -->
+          <div id="atab-dailymock" class="admin-panel">
+
+            <!-- Stats row -->
+            <div
+              style="display:grid;grid-template-columns:repeat(auto-fit,minmax(160px,1fr));gap:12px;margin-bottom:20px;">
+              <div class="admin-card" style="padding:16px;text-align:center;margin:0;">
+                <div style="font-size:26px;font-weight:900;color:var(--primary)" id="dm-stat-total">-</div>
+                <div style="font-size:12px;color:var(--text3);font-weight:700;margin-top:4px;">Total Scheduled</div>
+              </div>
+              <div class="admin-card" style="padding:16px;text-align:center;margin:0;">
+                <div style="font-size:26px;font-weight:900;color:#16a34a" id="dm-stat-today">-</div>
+                <div style="font-size:12px;color:var(--text3);font-weight:700;margin-top:4px;">Today Active</div>
+              </div>
+              <div class="admin-card" style="padding:16px;text-align:center;margin:0;">
+                <div style="font-size:26px;font-weight:900;color:#f59e0b" id="dm-stat-upcoming">-</div>
+                <div style="font-size:12px;color:var(--text3);font-weight:700;margin-top:4px;">Upcoming</div>
+              </div>
+              <div class="admin-card" style="padding:16px;text-align:center;margin:0;">
+                <div style="font-size:26px;font-weight:900;color:#8b5cf6" id="dm-stat-qbank">-</div>
+                <div style="font-size:12px;color:var(--text3);font-weight:700;margin-top:4px;">Question Bank</div>
+              </div>
+            </div>
+
+            <!-- Auto Pick -->
+            <div class="admin-card" style="border-left:4px solid #8b5cf6;">
+              <h3>🎲 Auto Pick — Question Bank నుండి</h3>
+              <div style="font-size:13px;color:var(--text2);margin-bottom:16px;">మీ existing questions నుండి randomly
+                pick చేసి daily test create అవుతుంది. Super easy!</div>
+              <div class="form-row">
+                <div class="form-group">
+                  <label>Date</label>
+                  <input type="date" id="dm-auto-date"
+                    style="padding:10px;border:2px solid var(--border);border-radius:10px;font-family:inherit;font-size:13px;background:var(--bg);color:var(--text);width:100%;outline:none;box-sizing:border-box;">
+                </div>
+                <div class="form-group">
+                  <label>Test Title</label>
+                  <input type="text" id="dm-auto-title" placeholder="e.g. Daily Mock Test - May 23"
+                    style="padding:10px;border:2px solid var(--border);border-radius:10px;font-family:inherit;font-size:13px;background:var(--bg);color:var(--text);width:100%;outline:none;box-sizing:border-box;">
+                </div>
+              </div>
+              <div class="form-row">
+                <div class="form-group">
+                  <label>Category Filter</label>
+                  <select id="dm-auto-cat"
+                    style="padding:10px;border:2px solid var(--border);border-radius:10px;font-family:inherit;font-size:13px;background:var(--bg);color:var(--text);width:100%;outline:none;">
+                    <option value="">All Categories</option>
+                    <option value="GK">GK</option>
+                    <option value="TSPSC">TSPSC</option>
+                    <option value="SSC">SSC</option>
+                    <option value="Banking">Banking</option>
+                    <option value="Math">Math</option>
+                    <option value="Current Affairs">Current Affairs</option>
+                  </select>
+                </div>
+                <div class="form-group">
+                  <label>Questions Count</label>
+                  <input type="number" id="dm-auto-count" value="10" min="5" max="50"
+                    style="padding:10px;border:2px solid var(--border);border-radius:10px;font-family:inherit;font-size:13px;background:var(--bg);color:var(--text);width:100%;outline:none;box-sizing:border-box;">
+                </div>
+              </div>
+              <div style="display:flex;gap:10px;flex-wrap:wrap;">
+                <button class="add-btn" style="background:linear-gradient(135deg,#8b5cf6,#6d28d9);"
+                  onclick="dmAutoPickCreate()">🎲 Auto Pick &amp; Schedule</button>
+                <button class="add-btn" style="background:linear-gradient(135deg,#06b6d4,#0891b2);margin:0;"
+                  onclick="dmAutoPickWeek()">📅 ఈ Week Auto Fill</button>
+              </div>
+            </div>
+
+            <!-- Manual Form -->
+            <div class="admin-card" style="border-left:4px solid var(--primary);">
+              <h3>✏️ Manually Questions Type చేయండి</h3>
+              <div style="font-size:13px;color:var(--text2);margin-bottom:16px;">మీరే questions రాయండి — simple form లో
+                fill చేయండి.</div>
+              <div class="form-row">
+                <div class="form-group">
+                  <label>Date</label>
+                  <input type="date" id="dm-man-date"
+                    style="padding:10px;border:2px solid var(--border);border-radius:10px;font-family:inherit;font-size:13px;background:var(--bg);color:var(--text);width:100%;outline:none;box-sizing:border-box;">
+                </div>
+                <div class="form-group">
+                  <label>Test Title</label>
+                  <input type="text" id="dm-man-title" placeholder="e.g. Daily Mock Test - May 23"
+                    style="padding:10px;border:2px solid var(--border);border-radius:10px;font-family:inherit;font-size:13px;background:var(--bg);color:var(--text);width:100%;outline:none;box-sizing:border-box;">
+                </div>
+              </div>
+              <div id="dm-questions-list" style="display:flex;flex-direction:column;gap:14px;margin-bottom:16px;"></div>
+              <div style="display:flex;gap:10px;flex-wrap:wrap;">
+                <button class="add-btn" style="background:linear-gradient(135deg,#f59e0b,#d97706);margin:0;"
+                  onclick="dmAddQuestion()">➕ Question Add చేయండి</button>
+                <button class="add-btn" style="margin:0;" onclick="dmManualSave()">💾 Save &amp; Schedule</button>
+              </div>
+            </div>
+
+            <!-- Scheduled List -->
+            <div class="admin-card">
+              <div
+                style="display:flex;align-items:center;justify-content:space-between;margin-bottom:14px;flex-wrap:wrap;gap:8px;">
+                <h3 style="margin:0;">📋 Scheduled Daily Tests</h3>
+                <button onclick="dmLoadList()"
+                  style="background:var(--bg);border:2px solid var(--border);border-radius:10px;padding:7px 14px;font-family:inherit;font-size:12px;font-weight:700;cursor:pointer;color:var(--text2);">🔄
+                  Refresh</button>
+              </div>
+              <div id="dm-list-wrap">
+                <div style="text-align:center;padding:32px;color:var(--text3);font-size:13px;">Tab open అయినప్పుడు load
+                  అవుతుంది...</div>
+              </div>
+            </div>
+
+          </div><!-- end atab-dailymock -->
+
+          <div id="atab-scheduled" class="admin-panel">
+
+            <!-- Create scheduled exam -->
+            <div class="admin-card">
+              <h3>🗓 New Scheduled Exam</h3>
+              <div style="font-size:12.5px;color:var(--text2);font-weight:600;margin-bottom:14px;">Specific date & time
+                కి exam schedule చేయండి — ముందే access ఉండదు</div>
+              <div class="form-row">
+                <div class="form-group">
+                  <label>Exam Select చేయండి</label>
+                  <select id="sched-exam-select"
+                    style="padding:10px;border:2px solid var(--border);border-radius:10px;font-family:inherit;font-size:13px;background:var(--bg);color:var(--text);width:100%;outline:none;">
+                    <option value="">-- Exam select చేయండి --</option>
+                  </select>
+                </div>
+                <div class="form-group">
+                  <label>Start Date & Time</label>
+                  <input type="datetime-local" id="sched-start"
+                    style="padding:10px;border:2px solid var(--border);border-radius:10px;font-family:inherit;font-size:13px;background:var(--bg);color:var(--text);width:100%;outline:none;box-sizing:border-box;">
+                </div>
+              </div>
+              <div class="form-row">
+                <div class="form-group">
+                  <label>End Date & Time (optional)</label>
+                  <input type="datetime-local" id="sched-end"
+                    style="padding:10px;border:2px solid var(--border);border-radius:10px;font-family:inherit;font-size:13px;background:var(--bg);color:var(--text);width:100%;outline:none;box-sizing:border-box;">
+                </div>
+                <div class="form-group">
+                  <label>Note / Label</label>
+                  <input type="text" id="sched-note" placeholder="e.g. TSPSC Mock Test Round 1"
+                    style="padding:10px;border:2px solid var(--border);border-radius:10px;font-family:inherit;font-size:13px;background:var(--bg);color:var(--text);width:100%;outline:none;box-sizing:border-box;">
+                </div>
+              </div>
+              <button class="add-btn" onclick="_addScheduledExam()">📅 Schedule చేయండి</button>
+            </div>
+
+            <!-- Scheduled list -->
+            <div class="admin-card">
+              <h3>📋 Scheduled Exams List</h3>
+              <div id="sched-list-wrap" style="overflow-x:auto;"></div>
+            </div>
+          </div>
+
+          <div id="atab-settings" class="admin-panel">
+            <div class="admin-card" style="border-color:rgba(26,115,232,.25)">
+              <h3 style="color:var(--primary)">📧 Email Notifications (EmailJS)</h3>
+              <div style="font-size:12.5px;color:var(--text3);margin-bottom:14px;font-weight:600">
+                Free email notifications కోసం <a href="https://www.emailjs.com" target="_blank"
+                  style="color:var(--primary)">emailjs.com</a> లో account create చేసి keys paste చేయండి.
+              </div>
+              <div class="form-row">
+                <div class="form-group">
+                  <label>Service ID</label>
+                  <input type="text" id="ejs-service" placeholder="service_xxxxxxx">
+                </div>
+                <div class="form-group">
+                  <label>Template ID</label>
+                  <input type="text" id="ejs-template" placeholder="template_xxxxxxx">
+                </div>
+              </div>
+              <div class="form-group" style="max-width:340px">
+                <label>Public Key</label>
+                <input type="text" id="ejs-pubkey" placeholder="your_public_key">
+              </div>
+              <div style="display:flex;gap:10px;flex-wrap:wrap;align-items:center;margin-top:6px">
+                <button class="add-btn" style="margin:0" onclick="saveEmailJSConfig()">💾 Save Config</button>
+                <button class="add-btn" style="margin:0;background:linear-gradient(135deg,var(--teal),#077042)"
+                  onclick="testEmailJS()">📨 Test Email పంపు</button>
+              </div>
+              <div id="ejs-status" style="font-size:12.5px;margin-top:10px;font-weight:600;display:none"></div>
+              <div
+                style="margin-top:14px;padding:12px;background:var(--bg);border-radius:10px;font-size:12px;color:var(--text3);line-height:1.8">
+                <strong style="color:var(--text)">📋 Notifications trigger అవుతాయి:</strong><br>
+                ✅ New user register అయినప్పుడు (admin కి)<br>
+                ✅ User approve అయినప్పుడు (user కి)<br>
+                ✅ Exam complete చేసినప్పుడు (user కి result)
+              </div>
+            </div>
+
+
+            <div class="admin-card" style="border-color:rgba(245,183,49,.25)">
+              <h3 style="color:var(--amber)">🔑 Password Reset Requests</h3>
+              <div style="overflow-x:auto">
+                <table class="exams-manage-table">
+                  <thead>
+                    <tr>
+                      <th>#</th>
+                      <th>Name</th>
+                      <th>Gmail</th>
+                      <th>Date</th>
+                      <th>Action</th>
+                    </tr>
+                  </thead>
+                  <tbody id="pw-reset-table">
+                    <tr>
+                      <td colspan="5" style="text-align:center;color:var(--text3);padding:16px">Reset requests లేవు</td>
+                    </tr>
+                  </tbody>
+                </table>
+              </div>
+            </div>
+
+            <div class="admin-card" style="border-color:rgba(245,183,49,.3)">
+              <h3 style="color:var(--amber)">👤 Admin Credentials</h3>
+              <div class="form-row">
+                <div class="form-group">
+                  <label>Admin Username</label>
+                  <input type="text" id="admin-uname-setting" placeholder="e.g. anil_admin" autocomplete="off">
+                </div>
+                <div class="form-group">
+                  <label>Recovery Key <span style="font-size:11px;color:var(--text3)">(Password మర్చిపోతే ఇది
+                      కావాలి)</span></label>
+                  <input type="text" id="admin-recovery-key" placeholder="e.g. ANIL2025RESET" autocomplete="off">
+                </div>
+              </div>
+              <button class="add-btn" style="margin:0;background:linear-gradient(135deg,var(--amber),#e65100)"
+                onclick="saveAdminCredentials()">💾 Save Credentials</button>
+              <div id="admin-cred-status" style="font-size:12.5px;margin-top:10px;font-weight:600;display:none"></div>
+            </div>
+
+
+            <div class="admin-card" style="border-color:rgba(229,62,62,.3)">
+              <h3 style="color:var(--red)">🔐 Admin Password మార్చండి</h3>
+              <div class="form-row">
+                <div class="form-group">
+                  <label>Current Password</label>
+                  <input type="password" id="pw-current" placeholder="Current password">
+                </div>
+                <div class="form-group">
+                  <label>New Password</label>
+                  <input type="password" id="pw-new" placeholder="New password (min 6 chars)">
+                </div>
+              </div>
+              <div class="form-group" style="max-width:340px">
+                <label>Confirm New Password</label>
+                <input type="password" id="pw-confirm" placeholder="Retype new password">
+              </div>
+              <button class="add-btn"
+                style="background:linear-gradient(135deg,var(--red),#c0172a);box-shadow:0 4px 14px rgba(239,35,60,.25)"
+                onclick="changeAdminPassword()">🔐 Password మార్చండి</button>
+              <div id="pw-change-status" style="font-size:12.5px;margin-top:10px;font-weight:600;display:none"></div>
+            </div>
+          </div>
+
+          <!-- toast moved to global ae-toast-wrap below, no duplicate needed -->
+
+          <!-- ── TAB: USER BACKUP ── -->
+          <div id="atab-userbackup" class="admin-panel">
+
+            <!-- Stats Row -->
+            <div
+              style="display:grid;grid-template-columns:repeat(auto-fit,minmax(160px,1fr));gap:14px;margin-bottom:20px"
+              id="backup-stats-row">
+              <div class="admin-card" style="padding:18px;text-align:center;border-color:rgba(16,185,129,.3)">
+                <div style="font-size:28px;font-weight:900;color:var(--teal)" id="bk-total-users">0</div>
+                <div style="font-size:12px;color:var(--text3);margin-top:4px">👥 Total Users</div>
+              </div>
+              <div class="admin-card" style="padding:18px;text-align:center;border-color:rgba(79,142,255,.3)">
+                <div style="font-size:28px;font-weight:900;color:#4F8EFF" id="bk-active-today">0</div>
+                <div style="font-size:12px;color:var(--text3);margin-top:4px">🟢 Active Today</div>
+              </div>
+              <div class="admin-card" style="padding:18px;text-align:center;border-color:rgba(168,85,247,.3)">
+                <div style="font-size:28px;font-weight:900;color:#A855F7" id="bk-premium-count">0</div>
+                <div style="font-size:12px;color:var(--text3);margin-top:4px">💎 Premium Users</div>
+              </div>
+              <div class="admin-card" style="padding:18px;text-align:center;border-color:rgba(245,183,49,.3)">
+                <div style="font-size:28px;font-weight:900;color:#F5B731" id="bk-total-exams">0</div>
+                <div style="font-size:12px;color:var(--text3);margin-top:4px">📝 Exam Attempts</div>
+              </div>
+            </div>
+
+            <!-- Filter & Refresh -->
+            <div class="admin-card" style="margin-bottom:16px">
+              <h3>🔍 Filter & Refresh</h3>
+              <div class="form-row" style="padding:18px 22px">
+                <div class="form-group" style="flex:1;margin:0">
+                  <label>Search (Name / Gmail)</label>
+                  <input type="text" id="bk-search" placeholder="Search users..." oninput="renderBackupTable()"
+                    style="width:100%;padding:10px 14px;border:1.5px solid var(--border2);border-radius:10px;font-size:14px;background:var(--bg);color:var(--text);outline:none">
+                </div>
+                <div class="form-group" style="margin:0;min-width:160px">
+                  <label>Subscription Filter</label>
+                  <select id="bk-sub-filter" onchange="renderBackupTable()"
+                    style="width:100%;padding:10px 14px;border:1.5px solid var(--border2);border-radius:10px;font-size:14px;background:var(--bg);color:var(--text);outline:none">
+                    <option value="all">All Users</option>
+                    <option value="premium">💎 Premium Only</option>
+                    <option value="free">🆓 Free Only</option>
+                  </select>
+                </div>
+                <div class="form-group" style="margin:0;align-self:flex-end">
+                  <button class="add-btn" onclick="loadBackupData()" style="white-space:nowrap">🔄 Refresh</button>
+                </div>
+              </div>
+            </div>
+
+            <!-- User Backup Table -->
+            <div class="admin-card" style="border-color:rgba(16,185,129,.3)">
+              <h3 style="color:var(--teal)">📋 User Backup — Complete Details</h3>
+              <div style="overflow-x:auto">
+                <table class="questions-table" id="backup-main-table">
+                  <thead>
+                    <tr>
+                      <th>#</th>
+                      <th>👤 పేరు</th>
+                      <th>📧 Gmail</th>
+                      <th>💎 Subscription</th>
+                      <th>🕐 Last Login</th>
+                      <th>🚪 Last Logout</th>
+                      <th>📝 Exams</th>
+                      <th>🏆 Best Score</th>
+                      <th>📊 Avg Score</th>
+                    </tr>
+                  </thead>
+                  <tbody id="backup-table-body">
+                    <tr>
+                      <td colspan="9" style="text-align:center;color:var(--text3);padding:30px">⏳ Loading... "Refresh"
+                        click చేయండి</td>
+                    </tr>
+                  </tbody>
+                </table>
+              </div>
+            </div>
+
+            <!-- Login/Logout Activity Log -->
+            <div class="admin-card" style="border-color:rgba(79,142,255,.3);margin-top:16px">
+              <h3 style="color:#4F8EFF">🕐 Login / Logout Activity Log</h3>
+              <div style="display:flex;gap:10px;padding:0 22px 16px;flex-wrap:wrap">
+                <select id="bk-log-filter" onchange="renderActivityLog()"
+                  style="padding:8px 12px;border:1.5px solid var(--border2);border-radius:8px;font-size:13px;background:var(--bg);color:var(--text);outline:none">
+                  <option value="all">All Activity</option>
+                  <option value="login">Login Only</option>
+                  <option value="logout">Logout Only</option>
+                </select>
+                <button class="del-btn" onclick="clearActivityLogs()"
+                  style="background:rgba(239,68,68,.1);color:var(--red);border-color:rgba(239,68,68,.3)">🗑 Logs Clear
+                  చేయండి</button>
+              </div>
+              <div style="overflow-x:auto">
+                <table class="questions-table">
+                  <thead>
+                    <tr>
+                      <th>#</th>
+                      <th>👤 పేరు</th>
+                      <th>📧 Gmail</th>
+                      <th>📌 Action</th>
+                      <th>🕐 Date & Time</th>
+                    </tr>
+                  </thead>
+                  <tbody id="activity-log-body">
+                    <tr>
+                      <td colspan="5" style="text-align:center;color:var(--text3);padding:20px">Activity లేదు</td>
+                    </tr>
+                  </tbody>
+                </table>
+              </div>
+            </div>
+
+            <!-- Exam Results Backup -->
+            <div class="admin-card" style="border-color:rgba(168,85,247,.3);margin-top:16px">
+              <h3 style="color:#A855F7">📝 Exam Results Backup</h3>
+              <div style="padding:0 22px 16px">
+                <select id="bk-exam-user-filter" onchange="renderExamResultsBackup()"
+                  style="padding:8px 12px;border:1.5px solid var(--border2);border-radius:8px;font-size:13px;background:var(--bg);color:var(--text);outline:none;min-width:200px">
+                  <option value="all">All Users</option>
+                </select>
+              </div>
+              <div style="overflow-x:auto">
+                <table class="questions-table">
+                  <thead>
+                    <tr>
+                      <th>#</th>
+                      <th>👤 పేరు</th>
+                      <th>📧 Gmail</th>
+                      <th>📋 Exam</th>
+                      <th>✅ Correct</th>
+                      <th>❌ Wrong</th>
+                      <th>⏭ Skip</th>
+                      <th>📊 Score %</th>
+                      <th>📅 Date</th>
+                    </tr>
+                  </thead>
+                  <tbody id="exam-results-backup-body">
+                    <tr>
+                      <td colspan="9" style="text-align:center;color:var(--text3);padding:20px">Results లేవు</td>
+                    </tr>
+                  </tbody>
+                </table>
+              </div>
+            </div>
+
+            <!-- Export Button -->
+            <div style="padding:16px 0;text-align:right">
+              <button class="add-btn" onclick="exportBackupCSV()"
+                style="background:linear-gradient(135deg,#10b981,#059669)">⬇️ CSV Export చేయండి</button>
+            </div>
+
+          </div>
+          <!-- end atab-userbackup -->
+
+          <!-- ══════════════════════════════════════════════════════════
+         NOTIFICATIONS TAB
+    ══════════════════════════════════════════════════════════ -->
+          <div id="atab-notifications" class="admin-panel">
+
+            <!-- Header Stats -->
+            <div
+              style="display:grid;grid-template-columns:repeat(auto-fit,minmax(160px,1fr));gap:14px;margin-bottom:20px">
+              <div class="admin-card" style="padding:18px;text-align:center;border-color:rgba(124,58,237,.3)">
+                <div style="font-size:28px;font-weight:900;color:#7c3aed" id="notif-total-count">0</div>
+                <div style="font-size:12px;color:var(--text3);margin-top:4px">👥 Total Recipients</div>
+              </div>
+              <div class="admin-card" style="padding:18px;text-align:center;border-color:rgba(16,185,129,.3)">
+                <div style="font-size:28px;font-weight:900;color:var(--teal)" id="notif-sent-count">0</div>
+                <div style="font-size:12px;color:var(--text3);margin-top:4px">✅ Sent</div>
+              </div>
+              <div class="admin-card" style="padding:18px;text-align:center;border-color:rgba(239,68,68,.3)">
+                <div style="font-size:28px;font-weight:900;color:var(--red)" id="notif-fail-count">0</div>
+                <div style="font-size:12px;color:var(--text3);margin-top:4px">❌ Failed</div>
+              </div>
+              <div class="admin-card" style="padding:18px;text-align:center;border-color:rgba(245,158,11,.3)">
+                <div style="font-size:28px;font-weight:900;color:#f59e0b" id="notif-pending-count">—</div>
+                <div style="font-size:12px;color:var(--text3);margin-top:4px">⏳ Pending</div>
+              </div>
+            </div>
+
+            <!-- Compose Notification -->
+            <div class="admin-card" style="border-color:rgba(124,58,237,.3);margin-bottom:16px">
+              <h3 style="color:#7c3aed">🔔 Broadcast Notification పంపండి</h3>
+              <div style="padding:18px 22px;display:flex;flex-direction:column;gap:14px">
+
+                <!-- Target Audience -->
+                <div>
+                  <label style="font-size:13px;font-weight:600;color:var(--text2);display:block;margin-bottom:6px">📢
+                    Recipients ఎంచుకోండి</label>
+                  <div style="display:flex;gap:10px;flex-wrap:wrap">
+                    <label
+                      style="display:flex;align-items:center;gap:6px;cursor:pointer;font-size:13px;padding:8px 14px;border:1.5px solid var(--border2);border-radius:8px;background:var(--bg);color:var(--text)">
+                      <input type="radio" name="notif-audience" value="all" checked style="accent-color:#7c3aed"> 👥 All
+                      Users
+                    </label>
+                    <label
+                      style="display:flex;align-items:center;gap:6px;cursor:pointer;font-size:13px;padding:8px 14px;border:1.5px solid var(--border2);border-radius:8px;background:var(--bg);color:var(--text)">
+                      <input type="radio" name="notif-audience" value="premium" style="accent-color:#7c3aed"> 💎 Premium
+                      Only
+                    </label>
+                    <label
+                      style="display:flex;align-items:center;gap:6px;cursor:pointer;font-size:13px;padding:8px 14px;border:1.5px solid var(--border2);border-radius:8px;background:var(--bg);color:var(--text)">
+                      <input type="radio" name="notif-audience" value="free" style="accent-color:#7c3aed"> 🆓 Free Only
+                    </label>
+                  </div>
+                </div>
+
+                <!-- Subject -->
+                <div>
+                  <label style="font-size:13px;font-weight:600;color:var(--text2);display:block;margin-bottom:6px">📧
+                    Email Subject</label>
+                  <input type="text" id="notif-subject" placeholder="eg: కొత్త Exams వచ్చాయి! చూడండి 🚀"
+                    style="width:100%;padding:10px 14px;border:1.5px solid var(--border2);border-radius:10px;font-size:14px;background:var(--bg);color:var(--text);outline:none;font-family:inherit">
+                </div>
+
+                <!-- Heading -->
+                <div>
+                  <label style="font-size:13px;font-weight:600;color:var(--text2);display:block;margin-bottom:6px">🏷
+                    Email Heading (bold title)</label>
+                  <input type="text" id="notif-heading" placeholder="eg: నమస్కారం! మీకు ముఖ్యమైన వార్త ఉంది"
+                    style="width:100%;padding:10px 14px;border:1.5px solid var(--border2);border-radius:10px;font-size:14px;background:var(--bg);color:var(--text);outline:none;font-family:inherit">
+                </div>
+
+                <!-- Message Body -->
+                <div>
+                  <label style="font-size:13px;font-weight:600;color:var(--text2);display:block;margin-bottom:6px">✍
+                    Message (Telugu / English)</label>
+                  <textarea id="notif-body" rows="5" placeholder="మీ notification message ఇక్కడ type చేయండి..."
+                    style="width:100%;padding:10px 14px;border:1.5px solid var(--border2);border-radius:10px;font-size:14px;background:var(--bg);color:var(--text);outline:none;resize:vertical;font-family:inherit;line-height:1.6"></textarea>
+                </div>
+
+                <!-- CTA Button (optional) -->
+                <div style="display:grid;grid-template-columns:1fr 1fr;gap:12px">
+                  <div>
+                    <label style="font-size:13px;font-weight:600;color:var(--text2);display:block;margin-bottom:6px">🔗
+                      Button Text (optional)</label>
+                    <input type="text" id="notif-btn-text" placeholder="eg: Exams చూడండి"
+                      style="width:100%;padding:10px 14px;border:1.5px solid var(--border2);border-radius:10px;font-size:14px;background:var(--bg);color:var(--text);outline:none;font-family:inherit">
+                  </div>
+                  <div>
+                    <label style="font-size:13px;font-weight:600;color:var(--text2);display:block;margin-bottom:6px">🌐
+                      Button URL (optional)</label>
+                    <input type="text" id="notif-btn-url" placeholder="https://aniledutech.in"
+                      style="width:100%;padding:10px 14px;border:1.5px solid var(--border2);border-radius:10px;font-size:14px;background:var(--bg);color:var(--text);outline:none;font-family:inherit">
+                  </div>
+                </div>
+
+                <!-- Auto Notify Info -->
+                <div
+                  style="background:linear-gradient(135deg,rgba(16,185,129,.08),rgba(26,115,232,.08));border:1.5px solid rgba(16,185,129,.25);border-radius:12px;padding:12px 16px;margin-bottom:12px">
+                  <div style="font-size:13px;font-weight:800;color:#10B981;margin-bottom:4px">⚡ Auto Notifications
+                    Active!</div>
+                  <div style="font-size:12px;color:var(--text2);line-height:1.6">
+                    కొత్త Exam add చేసినప్పుడు <strong>automatic గా</strong> push notification + email అన్ని users కి
+                    వెళ్తుంది.<br>
+                    Manual గా పంపాలంటే కింద form fill చేసి Send చేయండి.
+                  </div>
+                </div>
+
+                <!-- Action Buttons -->
+                <div style="display:flex;gap:10px;flex-wrap:wrap;margin-top:4px">
+                  <button class="add-btn" onclick="previewBroadcastNotification()"
+                    style="background:linear-gradient(135deg,#6366f1,#8b5cf6)">👁 Preview</button>
+                  <button class="add-btn" onclick="sendBroadcastNotification()"
+                    style="background:linear-gradient(135deg,#7c3aed,#6d28d9)" id="notif-send-btn">📨 Send to All
+                    (Email+Bell)</button>
+                  <button class="add-btn" onclick="sendWhatsAppBroadcast()"
+                    style="background:linear-gradient(135deg,#25D366,#128C7E)">💬 WhatsApp Alert</button>
+                  <button class="del-btn" onclick="resetNotificationForm()"
+                    style="background:rgba(239,68,68,.1);color:var(--red);border-color:rgba(239,68,68,.3)">🗑
+                    Clear</button>
+                </div>
+
+                <!-- Progress Bar -->
+                <div id="notif-progress-wrap" style="display:none;margin-top:8px">
+                  <div style="font-size:13px;color:var(--text2);margin-bottom:6px" id="notif-progress-label">📨
+                    Sending...</div>
+                  <div style="background:var(--border2);border-radius:20px;height:10px;overflow:hidden">
+                    <div id="notif-progress-bar"
+                      style="height:100%;background:linear-gradient(90deg,#7c3aed,#6366f1);width:0%;transition:width .3s ease;border-radius:20px">
+                    </div>
+                  </div>
+                </div>
+
+                <!-- Status message -->
+                <div id="notif-status"
+                  style="display:none;font-size:14px;font-weight:600;padding:12px 16px;border-radius:10px;margin-top:4px">
+                </div>
+              </div>
+            </div>
+
+            <!-- Preview Modal area -->
+            <div id="notif-preview-box" style="display:none" class="admin-card">
+              <h3 style="color:#6366f1">👁 Email Preview</h3>
+              <div style="padding:18px 22px">
+                <div id="notif-preview-frame"
+                  style="border:1.5px solid var(--border2);border-radius:12px;overflow:hidden;max-height:500px;overflow-y:auto">
+                </div>
+              </div>
+            </div>
+
+            <!-- Send Log -->
+            <div class="admin-card" style="border-color:rgba(16,185,129,.3);margin-top:0">
+              <h3 style="color:var(--teal)">📜 Recent Send Log</h3>
+              <div style="padding:0 22px 18px">
+                <div id="notif-log"
+                  style="font-size:13px;max-height:250px;overflow-y:auto;display:flex;flex-direction:column;gap:6px;margin-top:10px">
+                  <div style="color:var(--text3);text-align:center;padding:20px">Send Log ఇక్కడ కనిపిస్తుంది</div>
+                </div>
+              </div>
+            </div>
+
+
+          </div><!-- end atab-notifications -->
+
+          <!-- ══════════════════ CAROUSEL MANAGER TAB ══════════════════ -->
+          <div id="atab-carousel" class="admin-panel">
+
+            <div
+              style="display:flex;align-items:center;justify-content:space-between;margin-bottom:20px;flex-wrap:wrap;gap:12px">
+              <div>
+                <h2 style="font-size:20px;font-weight:900;color:var(--text);margin:0">🎠 Carousel Manager</h2>
+                <p style="font-size:13px;color:var(--text3);margin:4px 0 0">Homepage carousel slides manage చేయండి</p>
+              </div>
+              <button class="add-btn" onclick="openCarouselForm()"
+                style="background:linear-gradient(135deg,#6366f1,#8b5cf6)">➕ కొత్త Slide Add</button>
+            </div>
+
+            <!-- Stats row -->
+            <div
+              style="display:grid;grid-template-columns:repeat(auto-fit,minmax(140px,1fr));gap:12px;margin-bottom:20px">
+              <div class="admin-card" style="padding:16px;text-align:center;border-color:rgba(99,102,241,.3)">
+                <div style="font-size:26px;font-weight:900;color:#6366f1" id="cs-total">0</div>
+                <div style="font-size:12px;color:var(--text3);margin-top:3px">🎠 Total Slides</div>
+              </div>
+              <div class="admin-card" style="padding:16px;text-align:center;border-color:rgba(16,185,129,.3)">
+                <div style="font-size:26px;font-weight:900;color:var(--teal)" id="cs-active">0</div>
+                <div style="font-size:12px;color:var(--text3);margin-top:3px">✅ Active</div>
+              </div>
+              <div class="admin-card" style="padding:16px;text-align:center;border-color:rgba(245,158,11,.3)">
+                <div style="font-size:26px;font-weight:900;color:#f59e0b" id="cs-inactive">0</div>
+                <div style="font-size:12px;color:var(--text3);margin-top:3px">⏸ Hidden</div>
+              </div>
+            </div>
+
+            <!-- Slides List -->
+            <div class="admin-card" style="border-color:rgba(99,102,241,.2);margin-bottom:20px">
+              <h3 style="color:#6366f1;margin-bottom:16px">📋 Existing Slides</h3>
+              <div id="cs-list">
+                <div style="text-align:center;padding:40px;color:var(--text3)">Loading slides...</div>
+              </div>
+            </div>
+
+            <!-- Add / Edit Form -->
+            <div class="admin-card" id="cs-form-card" style="border-color:rgba(99,102,241,.3);display:none">
+              <h3 style="color:#6366f1;margin-bottom:16px" id="cs-form-title">➕ కొత్త Slide</h3>
+              <input type="hidden" id="cs-edit-id">
+
+              <div style="display:grid;grid-template-columns:1fr 1fr;gap:14px;margin-bottom:14px">
+                <div>
+                  <label style="font-size:13px;font-weight:600;color:var(--text2);display:block;margin-bottom:5px">🏷
+                    Tag Text</label>
+                  <input type="text" id="cs-tag" placeholder="eg: 🏛️ Government Jobs"
+                    style="width:100%;padding:9px 12px;border:1.5px solid var(--border2);border-radius:8px;font-size:13px;background:var(--bg);color:var(--text);outline:none;font-family:inherit">
+                </div>
+                <div>
+                  <label style="font-size:13px;font-weight:600;color:var(--text2);display:block;margin-bottom:5px">🎨
+                    Tag Color (gradient)</label>
+                  <input type="text" id="cs-tag-color" placeholder="eg: #1E90FF,#00BFFF"
+                    style="width:100%;padding:9px 12px;border:1.5px solid var(--border2);border-radius:8px;font-size:13px;background:var(--bg);color:var(--text);outline:none;font-family:inherit">
+                </div>
+              </div>
+
+              <div style="display:grid;grid-template-columns:1fr 1fr;gap:14px;margin-bottom:14px">
+                <div>
+                  <label style="font-size:13px;font-weight:600;color:var(--text2);display:block;margin-bottom:5px">📝
+                    Title (line 1)</label>
+                  <input type="text" id="cs-title1" placeholder="eg: Govt Exams"
+                    style="width:100%;padding:9px 12px;border:1.5px solid var(--border2);border-radius:8px;font-size:13px;background:var(--bg);color:var(--text);outline:none;font-family:inherit">
+                </div>
+                <div>
+                  <label style="font-size:13px;font-weight:600;color:var(--text2);display:block;margin-bottom:5px">✨
+                    Title Span (line 2, colored)</label>
+                  <input type="text" id="cs-title2" placeholder="eg: Prepare చేయండి!"
+                    style="width:100%;padding:9px 12px;border:1.5px solid var(--border2);border-radius:8px;font-size:13px;background:var(--bg);color:var(--text);outline:none;font-family:inherit">
+                </div>
+              </div>
+
+              <div style="margin-bottom:14px">
+                <label style="font-size:13px;font-weight:600;color:var(--text2);display:block;margin-bottom:5px">📄
+                  Description</label>
+                <textarea id="cs-desc" rows="2"
+                  placeholder="eg: TSPSC · SSC · Banking · RRB అన్నిటికి complete preparation!"
+                  style="width:100%;padding:9px 12px;border:1.5px solid var(--border2);border-radius:8px;font-size:13px;background:var(--bg);color:var(--text);outline:none;font-family:inherit;resize:vertical"></textarea>
+              </div>
+
+              <div style="display:grid;grid-template-columns:1fr 1fr;gap:14px;margin-bottom:14px">
+                <div>
+                  <label style="font-size:13px;font-weight:600;color:var(--text2);display:block;margin-bottom:5px">🔘
+                    Button Text</label>
+                  <input type="text" id="cs-btn-text" placeholder="eg: 📚 Exams చూడండి →"
+                    style="width:100%;padding:9px 12px;border:1.5px solid var(--border2);border-radius:8px;font-size:13px;background:var(--bg);color:var(--text);outline:none;font-family:inherit">
+                </div>
+                <div>
+                  <label style="font-size:13px;font-weight:600;color:var(--text2);display:block;margin-bottom:5px">🔗
+                    Button Action (JS function)</label>
+                  <input type="text" id="cs-btn-action" placeholder="eg: goExams() or openPricing()"
+                    style="width:100%;padding:9px 12px;border:1.5px solid var(--border2);border-radius:8px;font-size:13px;background:var(--bg);color:var(--text);outline:none;font-family:inherit">
+                </div>
+              </div>
+
+              <div style="display:grid;grid-template-columns:1fr 1fr;gap:14px;margin-bottom:14px">
+                <div>
+                  <label style="font-size:13px;font-weight:600;color:var(--text2);display:block;margin-bottom:5px">🎨
+                    Background (CSS gradient)</label>
+                  <input type="text" id="cs-bg" placeholder="eg: linear-gradient(135deg,#0a1f3c,#1a5276)"
+                    style="width:100%;padding:9px 12px;border:1.5px solid var(--border2);border-radius:8px;font-size:13px;background:var(--bg);color:var(--text);outline:none;font-family:inherit">
+                </div>
+                <div>
+                  <label style="font-size:13px;font-weight:600;color:var(--text2);display:block;margin-bottom:5px">🌈
+                    Span Gradient (title line 2)</label>
+                  <input type="text" id="cs-span-color" placeholder="eg: #00BFFF,#1E90FF"
+                    style="width:100%;padding:9px 12px;border:1.5px solid var(--border2);border-radius:8px;font-size:13px;background:var(--bg);color:var(--text);outline:none;font-family:inherit">
+                </div>
+              </div>
+
+              <div style="margin-bottom:14px">
+                <label style="font-size:13px;font-weight:600;color:var(--text2);display:block;margin-bottom:5px">📦
+                  Right Side Cards (one per line, eg: 🏛️ TSPSC Group-1)</label>
+                <textarea id="cs-cards" rows="3"
+                  placeholder="🏛️ TSPSC Group-1&#10;📋 SSC CGL / CHSL&#10;🚂 RRB NTPC / ALP"
+                  style="width:100%;padding:9px 12px;border:1.5px solid var(--border2);border-radius:8px;font-size:13px;background:var(--bg);color:var(--text);outline:none;font-family:inherit;resize:vertical"></textarea>
+              </div>
+
+              <div style="display:grid;grid-template-columns:1fr 1fr;gap:14px;margin-bottom:14px">
+                <div>
+                  <label style="font-size:13px;font-weight:600;color:var(--text2);display:block;margin-bottom:5px">🃏
+                    Card Text Color</label>
+                  <input type="text" id="cs-card-color" placeholder="eg: #00BFFF"
+                    style="width:100%;padding:9px 12px;border:1.5px solid var(--border2);border-radius:8px;font-size:13px;background:var(--bg);color:var(--text);outline:none;font-family:inherit">
+                </div>
+                <div>
+                  <label style="font-size:13px;font-weight:600;color:var(--text2);display:block;margin-bottom:5px">🔢
+                    Sort Order</label>
+                  <input type="number" id="cs-order" placeholder="eg: 1, 2, 3..." min="1"
+                    style="width:100%;padding:9px 12px;border:1.5px solid var(--border2);border-radius:8px;font-size:13px;background:var(--bg);color:var(--text);outline:none;font-family:inherit">
+                </div>
+              </div>
+
+              <div style="margin-bottom:18px">
+                <label
+                  style="display:flex;align-items:center;gap:8px;cursor:pointer;font-size:13px;font-weight:600;color:var(--text2)">
+                  <input type="checkbox" id="cs-active-chk" checked style="accent-color:#6366f1;width:16px;height:16px">
+                  ✅ Slide Active (carousel లో show అవుతుంది)
+                </label>
+              </div>
+
+              <div style="display:flex;gap:10px;flex-wrap:wrap">
+                <button class="add-btn" onclick="saveCarouselSlide()"
+                  style="background:linear-gradient(135deg,#6366f1,#8b5cf6)" id="cs-save-btn">💾 Save Slide</button>
+                <button class="del-btn" onclick="closeCarouselForm()"
+                  style="background:rgba(107,114,128,.1);color:var(--text2);border-color:var(--border2)">✖
+                  Cancel</button>
+              </div>
+            </div>
+
+          </div><!-- /atab-carousel -->
+
+          <!-- ══════════════════ CATEGORY ORDER TAB ══════════════════ -->
+          <div id="atab-categories" class="admin-panel">
+
+            <div
+              style="display:flex;align-items:center;justify-content:space-between;margin-bottom:20px;flex-wrap:wrap;gap:12px">
+              <div>
+                <h2 style="font-size:20px;font-weight:900;color:var(--text);margin:0">🗂️ Category Order</h2>
+                <p style="font-size:13px;color:var(--text3);margin:4px 0 0">Homepage "Exam Categories" cards order
+                  మార్చండి — ముఖ్యమైనది పైన (start లో) పెట్టండి</p>
+              </div>
+              <button class="add-btn" onclick="saveCategoryOrder()"
+                style="background:linear-gradient(135deg,#0F766E,#10B981)" id="co-save-btn">💾 Order Save
+                చేయండి</button>
+            </div>
+
+            <div class="admin-card" style="border-color:rgba(15,118,110,.2);margin-bottom:20px">
+              <h3 style="color:#0F766E;margin-bottom:6px">📋 Cards Order</h3>
+              <p style="font-size:12px;color:var(--text3);margin:0 0 16px">⬆️⬇️ buttons తో order మార్చి, తర్వాత "Order
+                Save చేయండి" నొక్కండి. మార్పు homepage లో అన్ని users కి కనిపిస్తుంది.</p>
+              <div id="co-list">
+                <div style="text-align:center;padding:30px;color:var(--text3)">⏳ Loading...</div>
+              </div>
+            </div>
+
+          </div><!-- /atab-categories -->
+
+        </div><!-- /admin-content-wrap -->
+      </div><!-- /admin-main-area -->
+    </div><!-- /admin-layout -->
+  </div><!-- /page-admin -->

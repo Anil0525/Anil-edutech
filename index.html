@@ -1016,13 +1016,17 @@
        PREMIUM PASS — Admit Card / OMR Bubble theme
        ════════════════════════════════════════════════════ */
 
+    /* ════════════════════════════════════════════════════
+       CHECKOUT STYLE — Plan/Payment + Order Summary sidebar
+       ════════════════════════════════════════════════════ */
+
     .pricing-overlay {
       display: none;
       position: fixed;
       inset: 0;
       z-index: 600;
-      background: rgba(6, 10, 26, .82);
-      backdrop-filter: blur(14px);
+      background: rgba(20, 22, 30, .72);
+      backdrop-filter: blur(8px);
       align-items: center;
       justify-content: center;
       padding: 16px;
@@ -1035,7 +1039,7 @@
     @keyframes pmSlideUp {
       from {
         opacity: 0;
-        transform: translateY(26px) scale(.97);
+        transform: translateY(22px) scale(.98);
       }
       to {
         opacity: 1;
@@ -1045,16 +1049,16 @@
 
     .pricing-box {
       background: var(--surface);
-      border-radius: 22px;
-      width: 400px;
+      border-radius: 14px;
+      width: 800px;
       max-width: calc(100vw - 32px);
       max-height: calc(100vh - 40px);
-      box-shadow: 0 30px 90px rgba(0, 0, 0, .55);
+      box-shadow: 0 30px 90px rgba(0, 0, 0, .5);
       overflow: hidden;
       position: relative;
-      animation: pmSlideUp .4s cubic-bezier(.16, .85, .32, 1.1);
+      animation: pmSlideUp .32s cubic-bezier(.16, .85, .32, 1.1);
       display: flex;
-      flex-direction: column;
+      align-items: stretch;
     }
 
     .pricing-close {
@@ -1062,8 +1066,8 @@
       top: 14px;
       right: 14px;
       z-index: 5;
-      background: rgba(255, 255, 255, .16);
-      border: 1px solid rgba(255, 255, 255, .28);
+      background: var(--card2);
+      border: 1px solid var(--border);
       border-radius: 50%;
       width: 28px;
       height: 28px;
@@ -1072,311 +1076,194 @@
       justify-content: center;
       cursor: pointer;
       font-size: 13px;
-      color: #fff;
+      color: var(--text3);
       transition: all .15s;
     }
 
     .pricing-close:hover {
-      background: rgba(255, 255, 255, .3);
-    }
-
-    /* ── Header: Hall-ticket stub ── */
-    .pricing-left {
-      background: linear-gradient(135deg, #0B1A4D 0%, #1A3FC4 55%, #0D2BA8 100%);
-      padding: 26px 24px 22px;
-      position: relative;
-      flex: none;
-      overflow: visible;
+      color: var(--text);
+      background: var(--border);
     }
 
     .pricing-back {
       display: none;
     }
 
-    .pm-eyebrow {
-      font-size: 10.5px;
-      font-weight: 800;
-      letter-spacing: .14em;
-      text-transform: uppercase;
-      color: rgba(255, 255, 255, .55);
-      margin-bottom: 8px;
-    }
-
-    .billing-title {
-      display: none;
-    }
-
-    .billing-premium-badge {
-      display: inline-flex;
-      align-items: center;
-      gap: 5px;
-      background: rgba(245, 183, 49, .16);
-      border: 1px solid rgba(245, 183, 49, .45);
-      border-radius: 20px;
-      padding: 4px 11px;
-      font-size: 11px;
-      font-weight: 800;
-      color: #FFCB66;
-      margin-bottom: 10px;
-      letter-spacing: .03em;
-    }
-
-    .billing-plan-name {
-      font-size: 21px;
-      font-weight: 900;
-      color: #fff;
-      letter-spacing: -.02em;
-      line-height: 1.25;
-      margin-bottom: 14px;
-      max-width: 280px;
-    }
-
-    .billing-price-row {
-      display: none;
-    }
-
-    /* Feature checklist — 2-col grid on the dark header */
-    .billing-features {
-      display: grid;
-      grid-template-columns: 1fr 1fr;
-      gap: 7px 10px;
-      margin: 0;
-      padding: 0;
-      background: none;
-      border: none;
-    }
-
-    .billing-feature-item {
-      display: flex;
-      align-items: flex-start;
-      gap: 6px;
-      font-size: 11px;
-      font-weight: 700;
-      color: rgba(255, 255, 255, .82);
-      line-height: 1.35;
-    }
-
-    .billing-feature-item .bf-check {
-      width: 14px;
-      height: 14px;
-      border-radius: 50%;
-      background: rgba(76, 217, 153, .22);
-      border: 1px solid #4CD999;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      flex-shrink: 0;
-      font-size: 8.5px;
-      color: #4CD999;
-      font-weight: 900;
-      margin-top: 1px;
-    }
-
-    .billing-divider,
-    .billing-row,
-    .billing-promo,
-    .billing-total {
-      display: none;
-    }
-
-    /* Perforated ticket-stub edge between header & body */
-    .pricing-left::after {
-      content: '';
-      position: absolute;
-      left: 0;
-      right: 0;
-      bottom: -1px;
-      height: 14px;
-      background-image: radial-gradient(circle 7px, var(--surface) 7px, transparent 7.5px);
-      background-size: 24px 14px;
-      background-repeat: repeat-x;
-      background-position: -4px 0;
-    }
-
-    /* ── Body: OMR-bubble plan selector ── */
-    .pricing-right {
+    /* ── LEFT: Plan + Payment Method ── */
+    .pricing-left {
       flex: 1;
       min-width: 0;
-      padding: 22px 22px 18px;
-      display: flex;
-      flex-direction: column;
+      padding: 26px 28px 22px;
       overflow-y: auto;
-      gap: 0;
+      background: var(--surface);
     }
 
-    .pay-section-title {
-      font-size: 12.5px;
+    .pm-section-label {
+      font-size: 14px;
       font-weight: 800;
-      color: var(--text3);
-      letter-spacing: .08em;
-      text-transform: uppercase;
-      margin-bottom: 10px;
+      color: var(--primary);
+      margin: 0 0 12px;
+      letter-spacing: -.01em;
     }
 
-    /* Plan rows — full-width OMR bubble cards */
-    .pay-plan-tabs {
-      display: flex;
-      flex-direction: column;
-      gap: 9px;
-      margin-bottom: 16px;
+    .pm-section-label.second {
+      margin-top: 22px;
+    }
+
+    /* Plan picker — address-card style */
+    .pm-plan-grid {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 14px;
     }
 
     .pay-plan-tab {
-      width: 100%;
-      display: flex;
-      align-items: center;
-      gap: 12px;
-      padding: 12px 14px;
+      position: relative;
       border: 1.5px solid var(--border);
-      border-radius: 14px;
+      border-radius: 8px;
       background: var(--card2);
+      padding: 12px 14px 12px 34px;
       cursor: pointer;
       font-family: inherit;
       text-align: left;
-      transition: all .18s;
-      position: relative;
+      transition: all .15s;
     }
 
-    .pay-plan-tab .omr-bubble {
-      width: 19px;
-      height: 19px;
-      border-radius: 50%;
-      border: 2px solid var(--border2);
-      flex-shrink: 0;
+    .pay-plan-tab .omr-check {
+      position: absolute;
+      top: 12px;
+      left: 12px;
+      width: 16px;
+      height: 16px;
+      border-radius: 4px;
+      border: 1.5px solid var(--border2);
+      background: var(--surface);
       display: flex;
       align-items: center;
       justify-content: center;
-      transition: all .18s;
+      font-size: 10px;
+      color: transparent;
+      transition: all .15s;
     }
 
-    .pay-plan-tab .omr-bubble::after {
-      content: '';
-      width: 9px;
-      height: 9px;
-      border-radius: 50%;
+    .pay-plan-tab.active .omr-check {
       background: var(--primary);
-      transform: scale(0);
-      transition: transform .15s;
+      border-color: var(--primary);
+      color: #fff;
     }
 
-    .pay-plan-tab .plan-tab-mid {
-      flex: 1;
-      min-width: 0;
+    #ptab-trial.active .omr-check { background: #ef4444; border-color: #ef4444; }
+    #ptab-yearly.active .omr-check { background: #E8640A; border-color: #E8640A; }
+
+    .pay-plan-tab.active {
+      border-color: var(--primary);
+      background: var(--primary-soft);
     }
 
-    .pay-plan-tab .plan-tab-name {
-      font-size: 13.5px;
+    #ptab-trial.active { border-color: #ef4444; background: rgba(239,68,68,.06); }
+    #ptab-yearly.active { border-color: #E8640A; background: rgba(232,100,10,.06); }
+
+    .pay-plan-tab:hover:not(.active) {
+      border-color: var(--border2);
+    }
+
+    .plan-tab-name {
+      font-size: 13px;
       font-weight: 800;
       color: var(--text);
       display: flex;
       align-items: center;
       gap: 6px;
+      margin-bottom: 3px;
     }
 
-    .pay-plan-tab .plan-tab-sub {
-      font-size: 11px;
-      font-weight: 600;
+    .plan-tab-sub {
+      font-size: 11.5px;
       color: var(--text3);
-      margin-top: 1px;
+      font-weight: 600;
     }
 
-    .pay-plan-tab .tab-price {
+    .tab-price {
+      display: block;
+      margin-top: 6px;
       font-size: 16px;
       font-weight: 900;
       color: var(--text);
       letter-spacing: -.02em;
-      white-space: nowrap;
     }
 
-    .pay-plan-tab .save-badge {
-      position: static;
+    .save-badge {
       background: linear-gradient(135deg, #22c55e, #16a34a);
       color: #fff;
       font-size: 9px;
       font-weight: 900;
       padding: 2px 7px;
       border-radius: 20px;
-      margin-left: 6px;
-      box-shadow: none;
     }
 
-    .pay-plan-tab.active {
+    /* Payment method row */
+    .pm-method-note {
+      font-size: 11px;
+      color: var(--text3);
+      font-weight: 600;
+      margin-bottom: 12px;
+    }
+
+    .pm-method-row {
+      display: flex;
+      gap: 12px;
+      flex-wrap: wrap;
+    }
+
+    .pm-method-card {
+      flex: 1;
+      min-width: 130px;
+      border: 1.5px solid var(--border);
+      border-radius: 8px;
+      background: var(--card2);
+      padding: 14px 12px;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      gap: 6px;
+      font-size: 11.5px;
+      font-weight: 800;
+      color: var(--text2);
+      text-align: center;
+    }
+
+    .pm-method-card.is-active {
       border-color: var(--primary);
       background: var(--primary-soft);
-      box-shadow: 0 0 0 3px rgba(26, 115, 232, .1);
     }
 
-    .pay-plan-tab.active .omr-bubble {
-      border-color: var(--primary);
+    .pm-method-card .pm-method-icon {
+      font-size: 22px;
     }
 
-    .pay-plan-tab.active .omr-bubble::after {
-      transform: scale(1);
-    }
-
-    .pay-plan-tab:hover:not(.active) {
-      border-color: var(--border2);
-    }
-
-    /* Trial row gets its own accent */
-    #ptab-trial .omr-bubble::after {
-      background: #ef4444;
-    }
-
-    #ptab-trial.active {
-      border-color: #ef4444;
-      background: rgba(239, 68, 68, .07);
-    }
-
-    #ptab-trial.active .omr-bubble {
-      border-color: #ef4444;
-    }
-
-    /* Yearly row gets gold accent */
-    #ptab-yearly .omr-bubble::after {
-      background: #E8640A;
-    }
-
-    #ptab-yearly.active {
-      border-color: #E8640A;
-      background: rgba(232, 100, 10, .07);
-    }
-
-    #ptab-yearly.active .omr-bubble {
-      border-color: #E8640A;
-    }
-
-    /* ── Total strip ── */
-    .pm-total-strip {
+    .pm-method-brands {
       display: flex;
+      gap: 5px;
       align-items: center;
-      justify-content: space-between;
-      background: var(--bg);
-      border: 1px solid var(--border);
-      border-radius: 12px;
-      padding: 10px 14px;
-      margin-bottom: 14px;
+      margin-top: 2px;
     }
 
-    .pm-total-strip .pm-total-label {
-      font-size: 11.5px;
-      font-weight: 700;
+    .pm-method-brands span {
+      font-size: 9px;
+      font-weight: 800;
       color: var(--text3);
-    }
-
-    .pm-total-strip .pm-total-val {
-      font-size: 17px;
-      font-weight: 900;
-      color: var(--text);
-      letter-spacing: -.02em;
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: 4px;
+      padding: 1px 5px;
     }
 
     .pay-fine-print {
-      font-size: 10.5px;
+      font-size: 11px;
       color: var(--text3);
       line-height: 1.6;
-      margin-bottom: 10px;
-      text-align: center;
+      margin-top: 18px;
     }
 
     .pay-fine-print a {
@@ -1389,39 +1276,141 @@
       text-decoration: underline;
     }
 
-    .pay-subscribe-btn {
-      width: 100%;
-      padding: 13px;
-      background: linear-gradient(135deg, #1A73E8 0%, #4F46E5 100%);
+    .pm-confirm-row {
+      display: flex;
+      justify-content: flex-end;
+      margin-top: 16px;
+    }
+
+    .pm-confirm-btn {
+      padding: 11px 28px;
+      background: #E8640A;
       color: #fff;
       border: none;
-      border-radius: 14px;
-      font-size: 14.5px;
+      border-radius: 8px;
+      font-size: 12.5px;
       font-weight: 800;
+      letter-spacing: .04em;
+      text-transform: uppercase;
       font-family: inherit;
       cursor: pointer;
-      transition: all .2s;
-      margin-bottom: 12px;
-      box-shadow: 0 6px 22px rgba(26, 115, 232, .35);
-      letter-spacing: .01em;
+      transition: all .15s;
+    }
+
+    .pm-confirm-btn:hover {
+      background: #d2580a;
+    }
+
+    /* ── RIGHT: Order Summary sidebar ── */
+    .pricing-right {
+      flex: 0 0 270px;
+      background: var(--card2);
+      border-left: 1px solid var(--border);
+      padding: 26px 24px 22px;
+      display: flex;
+      flex-direction: column;
+      overflow-y: auto;
+    }
+
+    .pay-section-title {
+      font-size: 14px;
+      font-weight: 800;
+      color: var(--text);
+      margin-bottom: 16px;
+    }
+
+    .billing-row {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      font-size: 12.5px;
+      padding: 5px 0;
+      color: var(--text2);
+      font-weight: 600;
+    }
+
+    .billing-row.discount-row {
+      color: #16a34a;
+      font-weight: 700;
+    }
+
+    .billing-divider {
+      border: none;
+      border-top: 1px solid var(--border);
+      margin: 10px 0;
+    }
+
+    .billing-total {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      font-size: 13px;
+      font-weight: 800;
+      color: var(--text);
+      margin-bottom: 18px;
+    }
+
+    .billing-total .pm-total-val {
+      font-size: 17px;
+      font-weight: 900;
+      letter-spacing: -.02em;
+    }
+
+    .pm-qr-wrap {
+      text-align: center;
+      margin-top: auto;
+      padding-top: 14px;
+    }
+
+    .pm-qr-img-box {
+      background: #fff;
+      border: 1.5px solid var(--border2);
+      border-radius: 10px;
+      padding: 8px;
+      display: inline-block;
+    }
+
+    .pm-qr-img-box img {
+      display: block;
+      width: 120px;
+      height: 120px;
+      border-radius: 4px;
+    }
+
+    .pm-qr-caption {
+      font-size: 10.5px;
+      color: var(--text3);
+      font-weight: 600;
+      margin-top: 8px;
+      line-height: 1.5;
+    }
+
+    .pm-qr-caption a {
+      color: var(--primary);
+      font-weight: 800;
+      text-decoration: none;
+      cursor: pointer;
+    }
+
+    .pay-subscribe-btn {
+      width: 100%;
+      padding: 11px;
+      background: #E8640A;
+      color: #fff;
+      border: none;
+      border-radius: 8px;
+      font-size: 12.5px;
+      font-weight: 800;
+      letter-spacing: .04em;
+      text-transform: uppercase;
+      font-family: inherit;
+      cursor: pointer;
+      transition: all .15s;
+      margin-top: 14px;
     }
 
     .pay-subscribe-btn:hover {
-      transform: translateY(-1px);
-      box-shadow: 0 8px 28px rgba(26, 115, 232, .45);
-    }
-
-    .pay-subscribe-btn:active {
-      transform: translateY(0);
-    }
-
-    .pay-subscribe-btn.yearly-btn {
-      background: linear-gradient(135deg, #F5B731 0%, #E8640A 100%);
-      box-shadow: 0 6px 22px rgba(245, 183, 49, .35);
-    }
-
-    .pay-subscribe-btn.yearly-btn:hover {
-      box-shadow: 0 8px 28px rgba(245, 183, 49, .45);
+      background: #d2580a;
     }
 
     .pay-security-footer {
@@ -1429,47 +1418,49 @@
       align-items: center;
       justify-content: center;
       gap: 6px;
-      font-size: 10.5px;
+      font-size: 10px;
       color: var(--text3);
       font-weight: 700;
-      padding-top: 4px;
+      margin-top: 12px;
     }
 
     /* mobile tweaks */
-    @media (max-width: 600px) {
-      .pricing-overlay {
-        padding: 12px;
-        align-items: center;
-        justify-content: center;
+    @media (max-width: 700px) {
+      .pricing-box {
+        flex-direction: column;
+        width: calc(100vw - 24px);
+        max-width: 440px;
+        max-height: calc(100vh - 32px);
         overflow-y: auto;
       }
 
-      .pricing-box {
-        width: calc(100vw - 24px);
-        max-width: 380px;
-        max-height: calc(100vh - 32px);
-        border-radius: 20px;
-      }
-
       .pricing-left {
-        padding: 22px 18px 20px;
-      }
-
-      .billing-plan-name {
-        font-size: 18px;
-      }
-
-      .billing-features {
-        grid-template-columns: 1fr 1fr;
-        gap: 6px 8px;
-      }
-
-      .billing-feature-item {
-        font-size: 10.5px;
+        padding: 22px 18px 18px;
+        order: 2;
       }
 
       .pricing-right {
-        padding: 18px 16px 16px;
+        border-left: none;
+        border-bottom: 1px solid var(--border);
+        flex: none;
+        padding: 22px 18px 18px;
+        order: 1;
+      }
+
+      .pm-plan-grid {
+        grid-template-columns: 1fr;
+      }
+
+      .pm-method-row {
+        flex-direction: column;
+      }
+
+      .pm-confirm-row {
+        justify-content: stretch;
+      }
+
+      .pm-confirm-btn {
+        width: 100%;
       }
     }
 
@@ -25966,67 +25957,80 @@ Rules:
           style="background:rgba(255,255,255,.25);border:1px solid rgba(255,255,255,.5);color:#fff;border-radius:20px;padding:3px 12px;font-size:11px;font-weight:800;cursor:pointer;font-family:inherit;">Refer
           & Earn →</button>
       </div>
-      <!-- HEADER: Admit-card stub -->
+      <!-- LEFT: Plan + Payment Method -->
       <div class="pricing-left">
-        <div class="pm-eyebrow">AE · PREMIUM ACCESS PASS</div>
-        <div class="billing-premium-badge">⭐ PREMIUM</div>
-        <div class="billing-plan-name">అన్ని Exams<br>Unlock చేసుకోండి</div>
         <!-- hidden price holders kept for JS compatibility -->
-        <span style="display:none"><span id="plan-price-big">99</span><span id="plan-period-label">/mo</span><span id="billing-subtotal">99</span><span id="billing-total">99</span></span>
-        <!-- Features -->
-        <div class="billing-features">
-          <div class="billing-feature-item"><span class="bf-check">✓</span> Premium Exams (50+)</div>
-          <div class="billing-feature-item"><span class="bf-check">✓</span> TSPSC · SSC · Banking · RRB</div>
-          <div class="billing-feature-item"><span class="bf-check">✓</span> Previous Papers</div>
-          <div class="billing-feature-item"><span class="bf-check">✓</span> Live Tests + Leaderboard</div>
-          <div class="billing-feature-item"><span class="bf-check">✓</span> Score Analytics</div>
-          <div class="billing-feature-item"><span class="bf-check">✓</span> Certificates Download</div>
-        </div>
-      </div>
+        <span style="display:none"><span id="plan-price-big">99</span><span id="plan-period-label">/mo</span><span id="billing-subtotal">99</span></span>
 
-      <!-- BODY: OMR-style plan picker -->
-      <div class="pricing-right">
-        <div class="pay-section-title">Plan ఎంచుకోండి</div>
-
-        <div class="pay-plan-tabs">
+        <div class="pm-section-label">Choose Your Plan</div>
+        <div class="pm-plan-grid">
           <button id="ptab-trial" class="pay-plan-tab" onclick="switchPricingTab('trial')">
-            <span class="omr-bubble"></span>
-            <span class="plan-tab-mid">
-              <span class="plan-tab-name">🎯 Trial <span class="save-badge" style="background:#ef4444;">1 Day</span></span>
-              <span class="plan-tab-sub">పూర్తి access ఒక రోజు</span>
-            </span>
+            <span class="omr-check">✓</span>
+            <span class="plan-tab-name">🎯 Trial <span class="save-badge" style="background:#ef4444;">1 Day</span></span>
+            <span class="plan-tab-sub">పూర్తి access ఒక రోజు</span>
             <span class="tab-price">₹1</span>
           </button>
           <button id="ptab-monthly" class="pay-plan-tab active" onclick="switchPricingTab('monthly')">
-            <span class="omr-bubble"></span>
-            <span class="plan-tab-mid">
-              <span class="plan-tab-name">⚡ Monthly</span>
-              <span class="plan-tab-sub">నెలవారీ billing</span>
-            </span>
+            <span class="omr-check">✓</span>
+            <span class="plan-tab-name">⚡ Monthly</span>
+            <span class="plan-tab-sub">నెలవారీ billing</span>
             <span class="tab-price">₹<span id="ptab-m-price">99</span></span>
           </button>
           <button id="ptab-yearly" class="pay-plan-tab" onclick="switchPricingTab('yearly')">
-            <span class="omr-bubble"></span>
-            <span class="plan-tab-mid">
-              <span class="plan-tab-name">🏆 Yearly <span class="save-badge">-33%</span></span>
-              <span class="plan-tab-sub">బెస్ట్ value</span>
-            </span>
+            <span class="omr-check">✓</span>
+            <span class="plan-tab-name">🏆 Yearly <span class="save-badge">-33%</span></span>
+            <span class="plan-tab-sub">బెస్ట్ value</span>
             <span class="tab-price">₹<span id="ptab-y-price">499</span></span>
           </button>
         </div>
 
-        <div class="pm-total-strip">
-          <span class="pm-total-label">Total due today</span>
-          <span class="pm-total-val">₹<span id="rzp-strip-price">99</span></span>
+        <div class="pm-section-label second">Payment Method</div>
+        <div class="pm-method-note">* Subscribe నొక్కితే secure Razorpay checkout open అవుతుంది</div>
+        <div class="pm-method-row">
+          <div class="pm-method-card is-active">
+            <span class="pm-method-icon">💳</span>
+            Card
+            <div class="pm-method-brands"><span>VISA</span><span>RuPay</span><span>MC</span></div>
+          </div>
+          <div class="pm-method-card">
+            <span class="pm-method-icon">📱</span>
+            UPI
+          </div>
+          <div class="pm-method-card">
+            <span class="pm-method-icon">🏦</span>
+            Net Banking
+          </div>
         </div>
 
-        <button id="rzp-pay-btn" class="pay-subscribe-btn" onclick="startPayment(_activePricingTab)">🔒 Subscribe Now —
-          ₹<span id="rzp-btn-price">99</span></button>
-
-        <div class="pay-fine-print">By subscribing, you agree to Anil EduTech's <a href="#">Terms of Use</a>
+        <div class="pay-fine-print">By clicking confirm, you agree to Anil EduTech's <a href="#">Terms of Use</a>
           and <a href="#">Privacy policy</a>.</div>
 
-        <div class="pay-security-footer">🔒 Secure Payments via Razorpay &nbsp;·&nbsp; UPI &nbsp;·&nbsp; Cards &nbsp;·&nbsp; NetBanking</div>
+        <div class="pm-confirm-row">
+          <button id="rzp-pay-btn" class="pm-confirm-btn" onclick="startPayment(_activePricingTab)">Confirm</button>
+        </div>
+      </div><!-- /pricing-left -->
+
+      <!-- RIGHT: Order Summary -->
+      <div class="pricing-right">
+        <div class="pay-section-title">Order Summary</div>
+
+        <div class="billing-row"><span>Plan</span><span id="billing-plan-name-row">Monthly</span></div>
+        <div class="billing-row"><span>Price</span><span>₹<span id="billing-subtotal-row">99</span></span></div>
+        <div class="billing-row discount-row"><span>GST/Tax</span><span>Included</span></div>
+        <hr class="billing-divider">
+        <div class="billing-total"><span>Total</span><span class="pm-total-val">₹<span id="billing-total">99</span></span></div>
+
+        <button class="pay-subscribe-btn" onclick="startPayment(_activePricingTab)">🔒 Subscribe Now —
+          ₹<span id="rzp-btn-price">99</span></button>
+
+        <div class="pm-qr-wrap">
+          <div class="pm-qr-img-box">
+            <img id="pm-qr-img" src="" alt="UPI QR">
+          </div>
+          <div class="pm-qr-caption">Pay &amp; Confirm via UPI QR<br>using <a onclick="openUpiApp(_activePricingTab)">Mobile Application</a></div>
+        </div>
+
+        <div class="pay-security-footer">🔒 Secure Payments via Razorpay</div>
       </div><!-- /pricing-right -->
     </div><!-- /pricing-box -->
   </div><!-- /pricing-overlay -->
@@ -26136,6 +26140,20 @@ Rules:
       if (rp) rp.textContent = price;
       const rsp = document.getElementById('rzp-strip-price');
       if (rsp) rsp.textContent = price;
+
+      // ── Order summary sidebar sync ──
+      const bpn = document.getElementById('billing-plan-name-row');
+      if (bpn) bpn.textContent = isTrial ? '1-Day Trial' : isYearly ? 'Yearly' : 'Monthly';
+      const bsr = document.getElementById('billing-subtotal-row');
+      if (bsr) bsr.textContent = price;
+
+      // ── Real UPI QR code (via QR image API) ──
+      const qrImg = document.getElementById('pm-qr-img');
+      if (qrImg) {
+        const note = isTrial ? 'AE Trial 1 Day' : isYearly ? 'AE Yearly Premium' : 'AE Monthly Premium';
+        const upiLink = `upi://pay?pa=${UPI_ID}&pn=${encodeURIComponent(UPI_NAME)}&am=${price}&cu=INR&tn=${encodeURIComponent(note)}`;
+        qrImg.src = `https://api.qrserver.com/v1/create-qr-code/?size=140x140&data=${encodeURIComponent(upiLink)}`;
+      }
 
       // ── UPI prices: Trial → ₹1, Monthly → ₹99, Yearly → ₹499 ──
       document.querySelectorAll('.upi-price-m').forEach(e => e.textContent = isTrial ? 1 : PLAN_PRICES.monthly);

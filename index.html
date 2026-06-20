@@ -25409,7 +25409,7 @@ Rules:
 
 
     let _carIdx = 0;
-    const _carTotal = 7;
+    let _carTotal = 7;
     let _carTimer = null;
     let _carProgress = 0;
     let _carProgressTimer = null;
@@ -32657,7 +32657,7 @@ Rules:
         carousel.appendChild(div);
       });
       var total = carousel.querySelectorAll('.ae-slide').length;
-      if (typeof _carTotal !== 'undefined') window._carTotal = total;
+      _carTotal = total;
       var ctr = document.getElementById('ae-counter');
       if (ctr) ctr.textContent = '1 / ' + total;
       var dotsEl = document.getElementById('ae-dots');

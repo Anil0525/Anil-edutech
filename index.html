@@ -26055,16 +26055,16 @@ Rules:
         <div class="pm-section-label second">Payment Method</div>
         <div class="pm-method-note">* Subscribe నొక్కితే secure Razorpay checkout open అవుతుంది</div>
         <div class="pm-method-row">
-          <div class="pm-method-card is-active">
+          <div class="pm-method-card is-active" id="pmc-upi" onclick="selectPayMethod('upi')">
+            <span class="pm-method-icon">📱</span>
+            UPI
+          </div>
+          <div class="pm-method-card" id="pmc-card" onclick="selectPayMethod('card')">
             <span class="pm-method-icon">💳</span>
             Card
             <div class="pm-method-brands"><span>VISA</span><span>RuPay</span><span>MC</span></div>
           </div>
-          <div class="pm-method-card">
-            <span class="pm-method-icon">📱</span>
-            UPI
-          </div>
-          <div class="pm-method-card">
+          <div class="pm-method-card" id="pmc-netbanking" onclick="selectPayMethod('netbanking')">
             <span class="pm-method-icon">🏦</span>
             Net Banking
           </div>
@@ -26314,6 +26314,7 @@ Rules:
         return;
       }
       document.getElementById('pricing-overlay').classList.add('show');
+      selectPayMethod('upi');
       // Push history state so device back button closes payment overlay instead of leaving site
       _safeHistoryPush({ ae_page: 'pricing' });
       // Update ALL price displays with current PLAN_PRICES
@@ -26495,6 +26496,14 @@ Rules:
       s.onerror = function () { toast('Payment gateway load failed. Try again.', 'error'); };
       document.head.appendChild(s);
     }
+    let _selectedPayMethod = 'upi';
+    function selectPayMethod(method) {
+      _selectedPayMethod = method;
+      document.querySelectorAll('.pm-method-card').forEach(c => c.classList.remove('is-active'));
+      const el = document.getElementById('pmc-' + method);
+      if (el) el.classList.add('is-active');
+    }
+
     async function startPayment(plan) {
       const currentUser = _getCurrentUser ? _getCurrentUser() : null;
       if (!currentUser) {
@@ -26552,6 +26561,7 @@ Rules:
         prefill: {
           name: currentUser ? currentUser.name : '',
           email: currentUser ? currentUser.gmail : '',
+          method: _selectedPayMethod || 'upi',
         },
         theme: { color: '#1A73E8' },
         handler: function (response) {

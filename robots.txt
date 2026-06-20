@@ -4,5 +4,6 @@ Allow: /
 # Block admin and private pages from Google
 Disallow: /admin
 Disallow: /page-admin
+Disallow: /admin-content.html
 
 Sitemap: https://aniledutech.in/sitemap.xml

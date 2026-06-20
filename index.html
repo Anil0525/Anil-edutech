@@ -14810,6 +14810,8 @@
         <button class="admin-tab" onclick="switchAdminTab('notifications',this)">🔔 Notifications</button>
         <button class="admin-tab" onclick="switchAdminTab('carousel',this);loadCarouselAdmin()">🎠 Carousel</button>
         <button class="admin-tab"
+          onclick="switchAdminTab('categories',this);loadCategoryOrderAdmin()">🗂️ Category Order</button>
+        <button class="admin-tab"
           onclick="switchAdminTab('contests',this);_populateContestExamSelect();loadAdminContests()">🏆
           Contests</button>
         <button class="admin-tab" onclick="switchAdminTab('jobs',this);loadAdminJobArticles()">💼 Govt Jobs</button>
@@ -16689,6 +16691,32 @@
             </div>
 
           </div><!-- /atab-carousel -->
+
+          <!-- ══════════════════ CATEGORY ORDER TAB ══════════════════ -->
+          <div id="atab-categories" class="admin-panel">
+
+            <div
+              style="display:flex;align-items:center;justify-content:space-between;margin-bottom:20px;flex-wrap:wrap;gap:12px">
+              <div>
+                <h2 style="font-size:20px;font-weight:900;color:var(--text);margin:0">🗂️ Category Order</h2>
+                <p style="font-size:13px;color:var(--text3);margin:4px 0 0">Homepage "Exam Categories" cards order
+                  మార్చండి — ముఖ్యమైనది పైన (start లో) పెట్టండి</p>
+              </div>
+              <button class="add-btn" onclick="saveCategoryOrder()"
+                style="background:linear-gradient(135deg,#0F766E,#10B981)" id="co-save-btn">💾 Order Save
+                చేయండి</button>
+            </div>
+
+            <div class="admin-card" style="border-color:rgba(15,118,110,.2);margin-bottom:20px">
+              <h3 style="color:#0F766E;margin-bottom:6px">📋 Cards Order</h3>
+              <p style="font-size:12px;color:var(--text3);margin:0 0 16px">⬆️⬇️ buttons తో order మార్చి, తర్వాత "Order
+                Save చేయండి" నొక్కండి. మార్పు homepage లో అన్ని users కి కనిపిస్తుంది.</p>
+              <div id="co-list">
+                <div style="text-align:center;padding:30px;color:var(--text3)">⏳ Loading...</div>
+              </div>
+            </div>
+
+          </div><!-- /atab-categories -->
 
         </div><!-- /admin-content-wrap -->
       </div><!-- /admin-main-area -->
@@ -21354,7 +21382,7 @@ More exams: https://aniledutech.in
       if (btnEl) {
         btnEl.classList.add('active');
         const lbl = document.getElementById('admin-logged-label');
-        const labels = { exams: 'Dashboard / Exams', questions: 'Dashboard / Questions', pdfitems: 'Dashboard / PDFs & Images', subscribers: 'Dashboard / Subscribers', videos: 'Dashboard / Videos', ai: 'Dashboard / AI Tools', payments: 'Dashboard / Payments', bulkimport: 'Dashboard / Bulk Import', analytics: 'Dashboard / Analytics', dailymock: 'Dashboard / Daily Mock', scheduled: 'Dashboard / Scheduled', settings: 'Dashboard / Settings', userbackup: 'Dashboard / User Backup', contests: 'Dashboard / Contests', jobs: 'Dashboard / Govt Jobs' };
+        const labels = { exams: 'Dashboard / Exams', questions: 'Dashboard / Questions', pdfitems: 'Dashboard / PDFs & Images', subscribers: 'Dashboard / Subscribers', videos: 'Dashboard / Videos', ai: 'Dashboard / AI Tools', payments: 'Dashboard / Payments', bulkimport: 'Dashboard / Bulk Import', analytics: 'Dashboard / Analytics', dailymock: 'Dashboard / Daily Mock', scheduled: 'Dashboard / Scheduled', settings: 'Dashboard / Settings', userbackup: 'Dashboard / User Backup', contests: 'Dashboard / Contests', jobs: 'Dashboard / Govt Jobs', categories: 'Dashboard / Category Order' };
         if (lbl && labels[tab]) lbl.textContent = labels[tab];
         const tabsBar = document.getElementById('admin-tabs-bar');
         if (tabsBar) tabsBar.scrollTo({ top: btnEl.offsetTop - 60, behavior: 'smooth' });
@@ -32562,7 +32590,7 @@ Rules:
       const res = await fetch(SB_URL + '/rest/v1/' + CS_TABLE + '?id=eq.' + id + '&select=*', { headers: csHeaders() });
       const rows = await res.json();
       if (rows && rows[0]) openCarouselForm(rows[0]);
-    } catch (e) { showToast('Error loading slide: ' + e.message, 'error'); }
+    } catch (e) { toast('Error loading slide: ' + e.message, 'error'); }
   }
 
   async function saveCarouselSlide() {
@@ -32582,7 +32610,7 @@ Rules:
       sort_order: parseInt(document.getElementById('cs-order').value) || 99,
       is_active: document.getElementById('cs-active-chk').checked
     };
-    if (!payload.title1) { showToast('Title అవసరం!', 'error'); return; }
+    if (!payload.title1) { toast('Title అవసరం!', 'error'); return; }
     const btn = document.getElementById('cs-save-btn');
     btn.textContent = '⏳ Saving...'; btn.disabled = true;
     try {
@@ -32597,14 +32625,14 @@ Rules:
         });
       }
       if (res.ok) {
-        showToast(editId ? '✅ Slide updated!' : '✅ Slide added!', 'success');
+        toast(editId ? '✅ Slide updated!' : '✅ Slide added!', 'success');
         closeCarouselForm();
         await loadCarouselAdmin();
       } else {
         const err = await res.json();
-        showToast('Error: ' + (err.message || err.hint || JSON.stringify(err)), 'error');
+        toast('Error: ' + (err.message || err.hint || JSON.stringify(err)), 'error');
       }
-    } catch (e) { showToast('Error: ' + e.message, 'error'); }
+    } catch (e) { toast('Error: ' + e.message, 'error'); }
     finally { btn.textContent = '💾 Save Slide'; btn.disabled = false; }
   }
 
@@ -32615,12 +32643,12 @@ Rules:
         method: 'DELETE', headers: csHeaders()
       });
       if (res.ok) {
-        showToast('🗑 Slide deleted!', 'success');
+        toast('🗑 Slide deleted!', 'success');
         await loadCarouselAdmin();
       } else {
-        showToast('Delete failed', 'error');
+        toast('Delete failed', 'error');
       }
-    } catch (e) { showToast('Error: ' + e.message, 'error'); }
+    } catch (e) { toast('Error: ' + e.message, 'error'); }
   }
 
   // Load dynamic slides from Supabase and inject into carousel
@@ -32677,6 +32705,125 @@ Rules:
 
   // Auto-load on page ready
   document.addEventListener('DOMContentLoaded', () => { loadDynamicCarousel(); });
+
+  // ══════════════════════════════════════════════════════════════════
+  // 🗂️ CATEGORY ORDER MANAGER — Admin Panel
+  // ══════════════════════════════════════════════════════════════════
+
+  const CO_TABLE = 'ae_category_order';
+  const CO_DEFAULTS = [
+    { id: 'jobs', icon: '💼', name: 'Latest Govt Jobs' },
+    { id: 'daily-ca', icon: '📰', name: 'Daily Current Affairs' },
+    { id: 'monthly-ca', icon: '📅', name: 'CA Monthly Magazine' },
+    { id: 'live-test', icon: '🔴', name: 'Live Test' },
+    { id: 'free-test', icon: '✅', name: 'Free Test' },
+    { id: 'mock-test', icon: '📝', name: 'Mock Test' },
+    { id: 'quiz', icon: '🏆', name: 'Quiz Contest' },
+    { id: 'pyq', icon: '📂', name: 'Previous Papers' },
+    { id: 'ebook', icon: '📖', name: 'eBook' },
+    { id: 'videos', icon: '▶️', name: 'Free Videos' },
+    { id: 'bookstore', icon: '🛒', name: 'Book Store' },
+    { id: 'ssc', icon: '📋', name: 'SSC' },
+    { id: 'rrb', icon: '🚂', name: 'RRB' },
+    { id: 'bank', icon: '🏦', name: 'Banking' },
+    { id: 'syllabus', icon: '📚', name: 'Syllabus' }
+  ];
+  let _coOrder = []; // in-memory working order (array of cat ids)
+
+  async function loadCategoryOrderAdmin() {
+    const listEl = document.getElementById('co-list');
+    if (!listEl) return;
+    listEl.innerHTML = '<div style="text-align:center;padding:30px;color:var(--text3)">⏳ Loading...</div>';
+    try {
+      const res = await fetch(SB_URL + '/rest/v1/' + CO_TABLE + '?select=*&order=sort_order.asc', { headers: SB_HEADERS });
+      const rows = res.ok ? await res.json() : [];
+      const savedIds = Array.isArray(rows) ? rows.map(function (r) { return r.cat_id; }) : [];
+      // Start with saved order, then append any categories missing from saved order (new cards)
+      _coOrder = savedIds.filter(function (id) { return CO_DEFAULTS.some(function (c) { return c.id === id; }); });
+      CO_DEFAULTS.forEach(function (c) { if (_coOrder.indexOf(c.id) === -1) _coOrder.push(c.id); });
+      renderCategoryOrderList();
+    } catch (e) {
+      _coOrder = CO_DEFAULTS.map(function (c) { return c.id; });
+      renderCategoryOrderList();
+    }
+  }
+
+  function renderCategoryOrderList() {
+    const listEl = document.getElementById('co-list');
+    if (!listEl) return;
+    listEl.innerHTML = _coOrder.map(function (id, i) {
+      const c = CO_DEFAULTS.find(function (x) { return x.id === id; });
+      if (!c) return '';
+      const borderStyle = i === _coOrder.length - 1 ? 'border-bottom:none' : '';
+      const upDisabled = i === 0;
+      const downDisabled = i === _coOrder.length - 1;
+      return '<div style="display:flex;align-items:center;gap:12px;padding:12px 14px;border-bottom:1px solid var(--border2);' + borderStyle + '">' +
+        '<div style="font-size:13px;font-weight:800;color:var(--text3);width:22px;flex-shrink:0">' + (i + 1) + '</div>' +
+        '<div style="width:38px;height:38px;border-radius:9px;background:rgba(15,118,110,.1);display:flex;align-items:center;justify-content:center;font-size:18px;flex-shrink:0">' + c.icon + '</div>' +
+        '<div style="flex:1;min-width:0;font-size:14px;font-weight:700;color:var(--text)">' + c.name + '</div>' +
+        '<div style="display:flex;gap:6px;flex-shrink:0">' +
+        '<button onclick="moveCatOrder(\'' + id + '\',-1)" ' + (upDisabled ? 'disabled' : '') + ' style="background:rgba(99,102,241,.1);color:#6366f1;border:none;border-radius:7px;padding:6px 11px;font-size:13px;font-weight:700;cursor:pointer;' + (upDisabled ? 'opacity:.35;cursor:not-allowed' : '') + '">⬆️</button>' +
+        '<button onclick="moveCatOrder(\'' + id + '\',1)" ' + (downDisabled ? 'disabled' : '') + ' style="background:rgba(99,102,241,.1);color:#6366f1;border:none;border-radius:7px;padding:6px 11px;font-size:13px;font-weight:700;cursor:pointer;' + (downDisabled ? 'opacity:.35;cursor:not-allowed' : '') + '">⬇️</button>' +
+        '</div>' +
+        '</div>';
+    }).join('');
+  }
+
+  function moveCatOrder(id, dir) {
+    const idx = _coOrder.indexOf(id);
+    const newIdx = idx + dir;
+    if (newIdx < 0 || newIdx >= _coOrder.length) return;
+    const tmp = _coOrder[idx];
+    _coOrder[idx] = _coOrder[newIdx];
+    _coOrder[newIdx] = tmp;
+    renderCategoryOrderList();
+  }
+
+  async function saveCategoryOrder() {
+    const btn = document.getElementById('co-save-btn');
+    if (btn) { btn.textContent = '⏳ Saving...'; btn.disabled = true; }
+    try {
+      const payload = _coOrder.map(function (id, i) { return { cat_id: id, sort_order: i }; });
+      const res = await fetch(SB_URL + '/rest/v1/' + CO_TABLE + '?on_conflict=cat_id', {
+        method: 'POST',
+        headers: { ...SB_HEADERS, 'Prefer': 'resolution=merge-duplicates,return=minimal' },
+        body: JSON.stringify(payload)
+      });
+      if (res.ok) {
+        toast('✅ Order saved! Homepage లో update అయింది.', 'success');
+        applyCategoryOrderToHomepage();
+      } else {
+        const err = await res.json().catch(function () { return {}; });
+        toast('Error: ' + (err.message || err.hint || 'Save failed'), 'error');
+      }
+    } catch (e) { toast('Error: ' + e.message, 'error'); }
+    finally { if (btn) { btn.textContent = '💾 Order Save చేయండి'; btn.disabled = false; } }
+  }
+
+  // Reorder the live .cat-card elements on the homepage based on saved order
+  async function applyCategoryOrderToHomepage() {
+    try {
+      const grid = document.querySelector('.categories-grid');
+      if (!grid) return;
+      const res = await fetch(SB_URL + '/rest/v1/' + CO_TABLE + '?select=*&order=sort_order.asc', { headers: SB_HEADERS });
+      if (!res.ok) return;
+      const rows = await res.json();
+      if (!Array.isArray(rows) || rows.length === 0) return;
+      const orderIds = rows.map(function (r) { return r.cat_id; });
+      const cards = Array.prototype.slice.call(grid.querySelectorAll('.cat-card'));
+      const cardMap = {};
+      cards.forEach(function (el) { cardMap[el.getAttribute('data-cat')] = el; });
+      // Append in saved order first
+      orderIds.forEach(function (id) { if (cardMap[id]) grid.appendChild(cardMap[id]); });
+      // Append any remaining cards (not in saved order) at the end, keeping their relative order
+      cards.forEach(function (el) {
+        const cid = el.getAttribute('data-cat');
+        if (orderIds.indexOf(cid) === -1) grid.appendChild(el);
+      });
+    } catch (e) { console.warn('Category order apply failed:', e); }
+  }
+
+  document.addEventListener('DOMContentLoaded', function () { applyCategoryOrderToHomepage(); });
 
   // ══════════════════════════════════════════════════════════════════
 

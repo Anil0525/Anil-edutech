@@ -18681,19 +18681,11 @@ More exams: https://aniledutech.in
           localStorage.removeItem(SUB_SESSION_KEY);
           return null; // auto-logout
         }
-        // Trial expiry check — auto-revoke premium after 1 day
-        // BUG FIX: also trigger when trialExpiry is present even if premiumPlan got out of
-        // sync (defense in depth) — previously only ran when premiumPlan === 'trial' exactly.
-        if (u.isPremium && (u.premiumPlan === 'trial' || u.trialExpiry)) {
-          // Determine effective expiry: use trialExpiry if set, else fallback to premiumSince + 24h
-          let effectiveExpiry = null;
-          if (u.trialExpiry) {
-            effectiveExpiry = new Date(u.trialExpiry).getTime();
-          } else if (u.premiumSince) {
-            // Fallback for old trial users who didn't get trialExpiry set
-            effectiveExpiry = new Date(u.premiumSince).getTime() + 24 * 60 * 60 * 1000;
-          }
+        // Premium expiry check — auto-revoke after plan duration ends (trial/monthly/yearly)
+        if (u.isPremium && u.trialExpiry) {
+          const effectiveExpiry = new Date(u.trialExpiry).getTime();
           if (effectiveExpiry && Date.now() > effectiveExpiry) {
+            const expiredPlan = u.premiumPlan || 'trial';
             u.isPremium = false;
             u.premiumPlan = null;
             u.trialExpiry = null;
@@ -18705,8 +18697,11 @@ More exams: https://aniledutech.in
               if (idx > -1) { allUsers[idx].isPremium = false; allUsers[idx].premiumPlan = null; allUsers[idx].trialExpiry = null; localStorage.setItem('ae_users', JSON.stringify(allUsers)); }
             } catch (e2) { }
             // Supabase update
-            sbSubUpsert({ gmail: u.gmail, is_premium: false, status: 'trial_expired' }).catch(() => { });
-            setTimeout(() => toast('⏰ మీ ₹1 Trial (1 Day) expire అయింది! Premium continue చేయాలంటే ₹99/month తీసుకోండి.', 'warn'), 1000);
+            sbSubUpsert({ gmail: u.gmail, is_premium: false, status: expiredPlan === 'trial' ? 'trial_expired' : 'premium_expired' }).catch(() => { });
+            const expMsg = expiredPlan === 'trial' ? '⏰ మీ ₹1 Trial (1 Day) expire అయింది! Premium continue చేయాలంటే subscribe చేయండి.'
+              : expiredPlan === 'yearly' ? '⏰ మీ Yearly Premium plan expire అయింది! Renew చేయండి.'
+              : '⏰ మీ Monthly Premium plan expire అయింది! Renew చేయండి.';
+            setTimeout(() => toast(expMsg, 'warn'), 1000);
             if (typeof updateNavUser === 'function') setTimeout(updateNavUser, 500);
             if (typeof filterExams === 'function') setTimeout(filterExams, 500);
           }
@@ -19021,6 +19016,16 @@ More exams: https://aniledutech.in
         }
       } catch (e3) { }
 
+      // Enforce plan expiry even if a stale premium_gmail key still exists
+      if (user.isPremium && user.trialExpiry && Date.now() > new Date(user.trialExpiry).getTime()) {
+        user.isPremium = false;
+        user.premiumPlan = null;
+        user.trialExpiry = null;
+        sbDelete('ae_settings', 'key=eq.premium_gmail_' + gmail.replace(/[@.]/g, '_')).catch(() => { });
+        sbSubUpsert({ gmail, is_premium: false, status: 'premium_expired' }).catch(() => { });
+      }
+
+
       setCurrentUser(user);
       updateNavUser();
       closeSubModal();
@@ -19147,6 +19152,14 @@ More exams: https://aniledutech.in
               if (sr.premium_plan || sr.premiumPlan) user.premiumPlan = sr.premium_plan || sr.premiumPlan;
               if (sr.trial_expiry || sr.trialExpiry) user.trialExpiry = sr.trial_expiry || sr.trialExpiry;
               if (sr.premium_since || sr.premiumSince) user.premiumSince = sr.premium_since || sr.premiumSince;
+            }
+            // Enforce plan expiry even if a stale premium_gmail key still exists
+            if (user.isPremium && user.trialExpiry && Date.now() > new Date(user.trialExpiry).getTime()) {
+              user.isPremium = false;
+              user.premiumPlan = null;
+              user.trialExpiry = null;
+              sbDelete('ae_settings', 'key=eq.premium_gmail_' + gmail.replace(/[@.]/g, '_')).catch(() => { });
+              sbSubUpsert({ gmail, is_premium: false, status: 'premium_expired' }).catch(() => { });
             }
             setCurrentUser({ ...user });
             updateNavUser(); filterExams();
@@ -26569,6 +26582,13 @@ Rules:
       return getCurrentUser();
     }
 
+    // ── Premium plan expiry helper — trial:1 day, monthly:30 days, yearly:365 days ──
+    function _computePlanExpiry(plan) {
+      const DAY = 24 * 60 * 60 * 1000;
+      const durationMs = plan === 'trial' ? DAY : plan === 'yearly' ? 365 * DAY : plan === 'monthly' ? 30 * DAY : null;
+      return durationMs ? new Date(Date.now() + durationMs).toISOString() : null;
+    }
+
     function _onPaymentSuccess(response, plan, amount, user) {
       const record = {
         id: response.razorpay_payment_id,
@@ -26590,8 +26610,8 @@ Rules:
         const approved = getSubApproved();
         const u = approved.find(a => a.gmail === user.gmail);
         const premiumSince = new Date().toISOString();
-        // Trial plan: set 24-hour expiry
-        const trialExpiry = plan === 'trial' ? new Date(Date.now() + 24 * 60 * 60 * 1000).toISOString() : null;
+        // Premium plan expiry — trial:1 day, monthly:30 days, yearly:365 days
+        const trialExpiry = _computePlanExpiry(plan);
         if (u) {
           u.isPremium = true;
           u.premiumPlan = plan;
@@ -26850,7 +26870,7 @@ Rules:
       }).catch(e => console.warn('ae_payments UTR insert:', e));
 
       // 3️⃣ Premium activate — local user object
-      const trialExpiry = plan === 'trial' ? new Date(Date.now() + 24 * 60 * 60 * 1000).toISOString() : null;
+      const trialExpiry = _computePlanExpiry(plan);
       user.isPremium = true;
       user.premiumSince = premiumSince;
       user.premiumPlan = plan;

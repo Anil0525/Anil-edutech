@@ -24685,7 +24685,14 @@ Rules:
       });
       // Show/hide coming-soon banner based on payment status
       const csBanner = document.getElementById('pricing-coming-soon');
-      if (csBanner) csBanner.style.display = PAYMENT_ENABLED ? 'none' : 'flex';
+      const _pBox = document.querySelector('.pricing-box');
+      if (csBanner) {
+        csBanner.style.display = PAYMENT_ENABLED ? 'none' : 'flex';
+        // ⚡ FIX: banner is position:absolute so it was overlapping the plan
+        // cards underneath it. Push content down by the banner's actual
+        // rendered height (handles both 1-line desktop & wrapped mobile text).
+        if (_pBox) _pBox.style.paddingTop = PAYMENT_ENABLED ? '' : (csBanner.offsetHeight + 'px');
+      }
       // Disable pay buttons if payment not enabled
       document.querySelectorAll('.upi-app-btn').forEach(btn => {
         btn.style.opacity = PAYMENT_ENABLED ? '1' : '0.5';

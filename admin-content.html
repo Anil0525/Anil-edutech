@@ -1939,10 +1939,66 @@
 
             <div class="admin-card" style="border-color:rgba(15,118,110,.2);margin-bottom:20px">
               <h3 style="color:#0F766E;margin-bottom:6px">📋 Cards Order</h3>
-              <p style="font-size:12px;color:var(--text3);margin:0 0 16px">⬆️⬇️ buttons తో order మార్చి, తర్వాత "Order
+              <p style="font-size:12px;color:var(--text3);margin:0 0 16px">⬆️⬇️ buttons తో order మార్చి, 🚫Hide తో homepage నుండి తాత్కాలికంగా తీసేయండి, తర్వాత "Order
                 Save చేయండి" నొక్కండి. మార్పు homepage లో అన్ని users కి కనిపిస్తుంది.</p>
               <div id="co-list">
                 <div style="text-align:center;padding:30px;color:var(--text3)">⏳ Loading...</div>
+              </div>
+            </div>
+
+            <!-- ══════ Custom Cards (admin can add brand new cards) ══════ -->
+            <div class="admin-card" style="border-color:rgba(99,102,241,.25);margin-bottom:20px">
+              <h3 style="color:#6366f1;margin-bottom:6px">➕ కొత్త Custom Card Add చేయండి</h3>
+              <p style="font-size:12px;color:var(--text3);margin:0 0 16px">ఇది homepage Exam Categories grid చివర కొత్త card గా కనిపిస్తుంది. Click చేస్తే ఇచ్చిన Link కొత్త tab లో open అవుతుంది (eg: WhatsApp group, Telegram channel, YouTube playlist, external resource).</p>
+
+              <div style="display:grid;grid-template-columns:80px 1fr;gap:14px;margin-bottom:14px">
+                <div>
+                  <label style="font-size:13px;font-weight:600;color:var(--text2);display:block;margin-bottom:5px">😀 Icon</label>
+                  <input type="text" id="cc-icon" placeholder="⭐" maxlength="4"
+                    style="width:100%;padding:9px 12px;border:1.5px solid var(--border2);border-radius:8px;font-size:16px;text-align:center;background:var(--bg);color:var(--text);outline:none;font-family:inherit">
+                </div>
+                <div>
+                  <label style="font-size:13px;font-weight:600;color:var(--text2);display:block;margin-bottom:5px">📝 Card Name</label>
+                  <input type="text" id="cc-name" placeholder="eg: Telegram Channel"
+                    style="width:100%;padding:9px 12px;border:1.5px solid var(--border2);border-radius:8px;font-size:13px;background:var(--bg);color:var(--text);outline:none;font-family:inherit">
+                </div>
+              </div>
+
+              <div style="display:grid;grid-template-columns:1fr 1fr;gap:14px;margin-bottom:14px">
+                <div>
+                  <label style="font-size:13px;font-weight:600;color:var(--text2);display:block;margin-bottom:5px">🏷 Subtitle</label>
+                  <input type="text" id="cc-subtitle" placeholder="eg: Join Now"
+                    style="width:100%;padding:9px 12px;border:1.5px solid var(--border2);border-radius:8px;font-size:13px;background:var(--bg);color:var(--text);outline:none;font-family:inherit">
+                </div>
+                <div>
+                  <label style="font-size:13px;font-weight:600;color:var(--text2);display:block;margin-bottom:5px">🔗 Link URL (https://...)</label>
+                  <input type="text" id="cc-link" placeholder="https://t.me/yourchannel"
+                    style="width:100%;padding:9px 12px;border:1.5px solid var(--border2);border-radius:8px;font-size:13px;background:var(--bg);color:var(--text);outline:none;font-family:inherit">
+                </div>
+              </div>
+
+              <div style="display:grid;grid-template-columns:1fr 1fr;gap:14px;margin-bottom:18px">
+                <div>
+                  <label style="font-size:13px;font-weight:600;color:var(--text2);display:block;margin-bottom:5px">🎨 Color 1</label>
+                  <input type="text" id="cc-color1" placeholder="#6366f1"
+                    style="width:100%;padding:9px 12px;border:1.5px solid var(--border2);border-radius:8px;font-size:13px;background:var(--bg);color:var(--text);outline:none;font-family:inherit">
+                </div>
+                <div>
+                  <label style="font-size:13px;font-weight:600;color:var(--text2);display:block;margin-bottom:5px">🎨 Color 2</label>
+                  <input type="text" id="cc-color2" placeholder="#8b5cf6"
+                    style="width:100%;padding:9px 12px;border:1.5px solid var(--border2);border-radius:8px;font-size:13px;background:var(--bg);color:var(--text);outline:none;font-family:inherit">
+                </div>
+              </div>
+
+              <button class="add-btn" onclick="addCustomCategory()"
+                style="background:linear-gradient(135deg,#6366f1,#8b5cf6)" id="cc-add-btn">➕ Card Add చేయండి</button>
+            </div>
+
+            <div class="admin-card" style="border-color:rgba(99,102,241,.2);margin-bottom:20px">
+              <h3 style="color:#6366f1;margin-bottom:6px">📋 Existing Custom Cards</h3>
+              <p style="font-size:12px;color:var(--text3);margin:0 0 16px">🗑️ Delete నొక్కితే ఆ card homepage నుండి తీసేయబడుతుంది.</p>
+              <div id="cc-list">
+                <div style="text-align:center;padding:20px;color:var(--text3)">⏳ Loading...</div>
               </div>
             </div>
 

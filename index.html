@@ -11755,11 +11755,11 @@
           <div class="cat-name">Daily Current Affairs</div>
           <div class="cat-count">రోజువారీ</div>
         </div>
-        <div class="cat-card" data-cat="monthly-ca" onclick="goCurrentAffairs('monthly')"
+        <div class="cat-card" data-cat="daily-challenge" onclick="goDaily()"
           style="--cat-grad:linear-gradient(135deg,#7C3AED,#A855F7);--cat-soft:rgba(124,58,237,.06);--cat-shadow:rgba(124,58,237,.35);">
-          <div class="cat-icon-wrap"><span class="cat-icon">📅</span></div>
-          <div class="cat-name">CA Monthly Magazine</div>
-          <div class="cat-count">Monthly digest</div>
+          <div class="cat-icon-wrap"><span class="cat-icon">⚡</span></div>
+          <div class="cat-name">Daily Challenge</div>
+          <div class="cat-count">రోజువారీ Quiz</div>
         </div>
         <!-- Online Practice -->
         <div class="cat-card" data-cat="live-test" onclick="goExams('Live Test')"
@@ -30096,7 +30096,7 @@ Rules:
       if (!('serviceWorker' in navigator) || !('Notification' in window)) return;
       try {
         await navigator.serviceWorker.register('/sw.js');
-      } catch (e) { console.warn('SW register failed:', e); }
+      } catch (e) { /* silent: notifications simply unavailable */ }
     },
 
     // Ask permission (call on first interaction)
@@ -30768,7 +30768,7 @@ Rules:
           })(i);
         }
       }
-    } catch (e) { console.warn('Dynamic carousel load failed:', e); }
+    } catch (e) { /* silent: carousel falls back to static slides */ }
   }
 
   // Auto-load on page ready
@@ -30782,7 +30782,7 @@ Rules:
   const CO_DEFAULTS = [
     { id: 'jobs', icon: '💼', name: 'Latest Govt Jobs' },
     { id: 'daily-ca', icon: '📰', name: 'Daily Current Affairs' },
-    { id: 'monthly-ca', icon: '📅', name: 'CA Monthly Magazine' },
+    { id: 'daily-challenge', icon: '⚡', name: 'Daily Challenge' },
     { id: 'live-test', icon: '🔴', name: 'Live Test' },
     { id: 'free-test', icon: '✅', name: 'Free Test' },
     { id: 'mock-test', icon: '📝', name: 'Mock Test' },
@@ -30797,6 +30797,7 @@ Rules:
     { id: 'syllabus', icon: '📚', name: 'Syllabus' }
   ];
   let _coOrder = []; // in-memory working order (array of cat ids)
+  let _coHidden = {}; // cat_id -> true/false (hidden from homepage)
 
   async function loadCategoryOrderAdmin() {
     const listEl = document.getElementById('co-list');
@@ -30806,6 +30807,8 @@ Rules:
       const res = await fetch(SB_URL + '/rest/v1/' + CO_TABLE + '?select=*&order=sort_order.asc', { headers: SB_HEADERS });
       const rows = res.ok ? await res.json() : [];
       const savedIds = Array.isArray(rows) ? rows.map(function (r) { return r.cat_id; }) : [];
+      _coHidden = {};
+      if (Array.isArray(rows)) rows.forEach(function (r) { _coHidden[r.cat_id] = !!r.hidden; });
       // Start with saved order, then append any categories missing from saved order (new cards)
       _coOrder = savedIds.filter(function (id) { return CO_DEFAULTS.some(function (c) { return c.id === id; }); });
       CO_DEFAULTS.forEach(function (c) { if (_coOrder.indexOf(c.id) === -1) _coOrder.push(c.id); });
@@ -30814,6 +30817,7 @@ Rules:
       _coOrder = CO_DEFAULTS.map(function (c) { return c.id; });
       renderCategoryOrderList();
     }
+    loadCustomCategoriesAdmin();
   }
 
   function renderCategoryOrderList() {
@@ -30822,19 +30826,26 @@ Rules:
     listEl.innerHTML = _coOrder.map(function (id, i) {
       const c = CO_DEFAULTS.find(function (x) { return x.id === id; });
       if (!c) return '';
+      const isHidden = !!_coHidden[id];
       const borderStyle = i === _coOrder.length - 1 ? 'border-bottom:none' : '';
       const upDisabled = i === 0;
       const downDisabled = i === _coOrder.length - 1;
-      return '<div style="display:flex;align-items:center;gap:12px;padding:12px 14px;border-bottom:1px solid var(--border2);' + borderStyle + '">' +
+      return '<div style="display:flex;align-items:center;gap:12px;padding:12px 14px;border-bottom:1px solid var(--border2);' + borderStyle + (isHidden ? ';opacity:.5' : '') + '">' +
         '<div style="font-size:13px;font-weight:800;color:var(--text3);width:22px;flex-shrink:0">' + (i + 1) + '</div>' +
         '<div style="width:38px;height:38px;border-radius:9px;background:rgba(15,118,110,.1);display:flex;align-items:center;justify-content:center;font-size:18px;flex-shrink:0">' + c.icon + '</div>' +
-        '<div style="flex:1;min-width:0;font-size:14px;font-weight:700;color:var(--text)">' + c.name + '</div>' +
+        '<div style="flex:1;min-width:0;font-size:14px;font-weight:700;color:var(--text)">' + c.name + (isHidden ? ' <span style="font-size:11px;font-weight:600;color:var(--danger)">(Hidden)</span>' : '') + '</div>' +
         '<div style="display:flex;gap:6px;flex-shrink:0">' +
+        '<button onclick="toggleCatHidden(\'' + id + '\')" title="' + (isHidden ? 'Show on homepage' : 'Hide from homepage') + '" style="background:' + (isHidden ? 'rgba(16,185,129,.12);color:var(--teal)' : 'rgba(239,68,68,.1);color:var(--danger)') + ';border:none;border-radius:7px;padding:6px 11px;font-size:13px;font-weight:700;cursor:pointer;">' + (isHidden ? '👁️ Show' : '🚫 Hide') + '</button>' +
         '<button onclick="moveCatOrder(\'' + id + '\',-1)" ' + (upDisabled ? 'disabled' : '') + ' style="background:rgba(99,102,241,.1);color:#6366f1;border:none;border-radius:7px;padding:6px 11px;font-size:13px;font-weight:700;cursor:pointer;' + (upDisabled ? 'opacity:.35;cursor:not-allowed' : '') + '">⬆️</button>' +
         '<button onclick="moveCatOrder(\'' + id + '\',1)" ' + (downDisabled ? 'disabled' : '') + ' style="background:rgba(99,102,241,.1);color:#6366f1;border:none;border-radius:7px;padding:6px 11px;font-size:13px;font-weight:700;cursor:pointer;' + (downDisabled ? 'opacity:.35;cursor:not-allowed' : '') + '">⬇️</button>' +
         '</div>' +
         '</div>';
     }).join('');
+  }
+
+  function toggleCatHidden(id) {
+    _coHidden[id] = !_coHidden[id];
+    renderCategoryOrderList();
   }
 
   function moveCatOrder(id, dir) {
@@ -30851,7 +30862,7 @@ Rules:
     const btn = document.getElementById('co-save-btn');
     if (btn) { btn.textContent = '⏳ Saving...'; btn.disabled = true; }
     try {
-      const payload = _coOrder.map(function (id, i) { return { cat_id: id, sort_order: i }; });
+      const payload = _coOrder.map(function (id, i) { return { cat_id: id, sort_order: i, hidden: !!_coHidden[id] }; });
       const res = await fetch(SB_URL + '/rest/v1/' + CO_TABLE + '?on_conflict=cat_id', {
         method: 'POST',
         headers: { ...SB_HEADERS, 'Prefer': 'resolution=merge-duplicates,return=minimal' },
@@ -30862,13 +30873,13 @@ Rules:
         applyCategoryOrderToHomepage();
       } else {
         const err = await res.json().catch(function () { return {}; });
-        toast('Error: ' + (err.message || err.hint || 'Save failed'), 'error');
+        toast('Error: ' + (err.message || err.hint || 'Save failed') + ' (Supabase లో ae_category_order table కి "hidden" boolean column add చేశారా?)', 'error');
       }
     } catch (e) { toast('Error: ' + e.message, 'error'); }
     finally { if (btn) { btn.textContent = '💾 Order Save చేయండి'; btn.disabled = false; } }
   }
 
-  // Reorder the live .cat-card elements on the homepage based on saved order
+  // Reorder the live .cat-card elements on the homepage based on saved order, hide flagged ones
   async function applyCategoryOrderToHomepage() {
     try {
       const grid = document.querySelector('.categories-grid');
@@ -30878,6 +30889,8 @@ Rules:
       const rows = await res.json();
       if (!Array.isArray(rows) || rows.length === 0) return;
       const orderIds = rows.map(function (r) { return r.cat_id; });
+      const hiddenMap = {};
+      rows.forEach(function (r) { hiddenMap[r.cat_id] = !!r.hidden; });
       const cards = Array.prototype.slice.call(grid.querySelectorAll('.cat-card'));
       const cardMap = {};
       cards.forEach(function (el) { cardMap[el.getAttribute('data-cat')] = el; });
@@ -30888,10 +30901,136 @@ Rules:
         const cid = el.getAttribute('data-cat');
         if (orderIds.indexOf(cid) === -1) grid.appendChild(el);
       });
-    } catch (e) { console.warn('Category order apply failed:', e); }
+      // Show/hide based on admin toggle
+      cards.forEach(function (el) {
+        const cid = el.getAttribute('data-cat');
+        el.style.display = hiddenMap[cid] ? 'none' : '';
+      });
+    } catch (e) { /* silent: keeps default homepage category order */ }
   }
 
-  document.addEventListener('DOMContentLoaded', function () { applyCategoryOrderToHomepage(); });
+  document.addEventListener('DOMContentLoaded', function () { applyCategoryOrderToHomepage(); renderCustomCategoriesOnHomepage(); });
+
+  // ══════════════════════════════════════════════════════════════════
+  // ➕ CUSTOM CATEGORY CARDS — Admin can add brand-new cards
+  // ══════════════════════════════════════════════════════════════════
+
+  const CC_TABLE = 'ae_custom_categories';
+  let _customCats = [];
+
+  async function loadCustomCategoriesAdmin() {
+    const listEl = document.getElementById('cc-list');
+    if (!listEl) return;
+    listEl.innerHTML = '<div style="text-align:center;padding:20px;color:var(--text3)">⏳ Loading...</div>';
+    try {
+      const res = await fetch(SB_URL + '/rest/v1/' + CC_TABLE + '?select=*&order=sort_order.asc', { headers: SB_HEADERS });
+      _customCats = res.ok ? await res.json() : [];
+      if (!Array.isArray(_customCats)) _customCats = [];
+    } catch (e) { _customCats = []; }
+    renderCustomCategoriesAdminList();
+  }
+
+  function renderCustomCategoriesAdminList() {
+    const listEl = document.getElementById('cc-list');
+    if (!listEl) return;
+    if (!_customCats.length) {
+      listEl.innerHTML = '<div style="text-align:center;padding:20px;color:var(--text3);font-size:13px">ఇంకా custom cards ఏవీ add చేయలేదు.</div>';
+      return;
+    }
+    listEl.innerHTML = _customCats.map(function (c, i) {
+      const borderStyle = i === _customCats.length - 1 ? 'border-bottom:none' : '';
+      return '<div style="display:flex;align-items:center;gap:12px;padding:12px 14px;border-bottom:1px solid var(--border2);' + borderStyle + '">' +
+        '<div style="width:38px;height:38px;border-radius:9px;background:linear-gradient(135deg,' + escHtml(c.color1 || '#6366f1') + ',' + escHtml(c.color2 || '#8b5cf6') + ');display:flex;align-items:center;justify-content:center;font-size:18px;flex-shrink:0">' + escHtml(c.icon || '⭐') + '</div>' +
+        '<div style="flex:1;min-width:0">' +
+        '<div style="font-size:14px;font-weight:700;color:var(--text)">' + escHtml(c.name || '') + '</div>' +
+        '<div style="font-size:11px;color:var(--text3);white-space:nowrap;overflow:hidden;text-overflow:ellipsis">' + escHtml(c.link_url || '') + '</div>' +
+        '</div>' +
+        '<button onclick="deleteCustomCategory(\'' + c.id + '\')" style="background:rgba(239,68,68,.1);color:var(--danger);border:none;border-radius:7px;padding:6px 11px;font-size:13px;font-weight:700;cursor:pointer;flex-shrink:0">🗑️ Delete</button>' +
+        '</div>';
+    }).join('');
+  }
+
+  async function addCustomCategory() {
+    const icon = (document.getElementById('cc-icon').value || '⭐').trim();
+    const name = (document.getElementById('cc-name').value || '').trim();
+    const subtitle = (document.getElementById('cc-subtitle').value || '').trim();
+    const linkUrl = sanitizeUrl((document.getElementById('cc-link').value || '').trim());
+    const color1 = (document.getElementById('cc-color1').value || '#6366f1').trim();
+    const color2 = (document.getElementById('cc-color2').value || '#8b5cf6').trim();
+    if (!name) { toast('⚠️ Card Name పెట్టండి', 'warn'); return; }
+    if (!linkUrl) { toast('⚠️ సరైన Link URL పెట్టండి (https:// తో మొదలవ్వాలి)', 'warn'); return; }
+    const btn = document.getElementById('cc-add-btn');
+    if (btn) { btn.textContent = '⏳ Adding...'; btn.disabled = true; }
+    try {
+      const payload = {
+        icon: icon, name: name, subtitle: subtitle, link_url: linkUrl,
+        color1: color1, color2: color2, sort_order: _customCats.length
+      };
+      const res = await fetch(SB_URL + '/rest/v1/' + CC_TABLE, {
+        method: 'POST',
+        headers: { ...SB_HEADERS, 'Prefer': 'return=minimal' },
+        body: JSON.stringify(payload)
+      });
+      if (res.ok) {
+        toast('✅ కొత్త Card add అయింది!', 'success');
+        ['cc-icon', 'cc-name', 'cc-subtitle', 'cc-link', 'cc-color1', 'cc-color2'].forEach(function (id) {
+          const el = document.getElementById(id); if (el) el.value = '';
+        });
+        await loadCustomCategoriesAdmin();
+        renderCustomCategoriesOnHomepage();
+      } else {
+        const err = await res.json().catch(function () { return {}; });
+        toast('Error: ' + (err.message || err.hint || 'Add failed') + ' (Supabase లో ae_custom_categories table ఉందా?)', 'error');
+      }
+    } catch (e) { toast('Error: ' + e.message, 'error'); }
+    finally { if (btn) { btn.textContent = '➕ Card Add చేయండి'; btn.disabled = false; } }
+  }
+
+  async function deleteCustomCategory(id) {
+    if (!confirm('ఈ card ని delete చేయాలా? Homepage నుండి తీసేయబడుతుంది.')) return;
+    try {
+      const res = await fetch(SB_URL + '/rest/v1/' + CC_TABLE + '?id=eq.' + encodeURIComponent(id), {
+        method: 'DELETE', headers: SB_HEADERS
+      });
+      if (res.ok) {
+        toast('🗑️ Card delete అయింది', 'warn');
+        await loadCustomCategoriesAdmin();
+        renderCustomCategoriesOnHomepage();
+      } else {
+        toast('Error: Delete చేయలేకపోయాం', 'error');
+      }
+    } catch (e) { toast('Error: ' + e.message, 'error'); }
+  }
+
+  // Render admin-created custom cards onto the live homepage grid
+  async function renderCustomCategoriesOnHomepage() {
+    try {
+      const grid = document.querySelector('.categories-grid');
+      if (!grid) return;
+      // Remove any previously-rendered custom cards before re-adding (avoids duplicates on re-call)
+      grid.querySelectorAll('.cat-card[data-custom="1"]').forEach(function (el) { el.remove(); });
+      const res = await fetch(SB_URL + '/rest/v1/' + CC_TABLE + '?select=*&order=sort_order.asc', { headers: SB_HEADERS });
+      if (!res.ok) return;
+      const rows = await res.json();
+      if (!Array.isArray(rows)) return;
+      rows.forEach(function (c) {
+        const url = sanitizeUrl(c.link_url);
+        if (!url) return;
+        const div = document.createElement('div');
+        div.className = 'cat-card';
+        div.setAttribute('data-cat', 'custom-' + c.id);
+        div.setAttribute('data-custom', '1');
+        div.style.cssText = '--cat-grad:linear-gradient(135deg,' + (c.color1 || '#6366f1') + ',' + (c.color2 || '#8b5cf6') + ');--cat-soft:rgba(99,102,241,.06);--cat-shadow:rgba(99,102,241,.35);';
+        div.onclick = function () { window.open(url, '_blank', 'noopener'); };
+        div.innerHTML = '<div class="cat-icon-wrap"><span class="cat-icon">' + (c.icon || '⭐') + '</span></div>' +
+          '<div class="cat-name">' + escHtml(c.name || '') + '</div>' +
+          '<div class="cat-count">' + escHtml(c.subtitle || '') + '</div>';
+        grid.appendChild(div);
+      });
+    } catch (e) { /* silent */ }
+  }
+
+
 
   // ══════════════════════════════════════════════════════════════════
 

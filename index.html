@@ -15181,7 +15181,6 @@
             if (m.key === 'nextExamId') DB.nextExamId = Math.max(parseInt(m.value) || 0, DB.nextExamId);
             if (m.key === 'nextQId') DB.nextQId = Math.max(parseInt(m.value) || 0, DB.nextQId);
             if (m.key === 'nextVideoId') DB.nextVideoId = Math.max(parseInt(m.value) || 0, DB.nextVideoId);
-            if (m.key === 'payment_enabled') PAYMENT_ENABLED = (m.value === 'true');
             if (m.key === 'mockFolders') {
               try {
                 const mf = JSON.parse(m.value);
@@ -15415,6 +15414,13 @@
               // reflect admin's latest change on every device, not just the
               // device admin edited it from.
               try { localStorage.setItem(row.key, row.value); } catch (e) { }
+              // ⚡ Read PAYMENT_ENABLED from ae_payment_config
+              if (row.key === 'ae_payment_config') {
+                try {
+                  const pcfg = JSON.parse(row.value);
+                  if (pcfg && pcfg.enabled !== undefined) PAYMENT_ENABLED = pcfg.enabled;
+                } catch (e) { }
+              }
             }
           });
         }
@@ -22976,7 +22982,7 @@ Rules:
         const pcfg = JSON.parse(_ls.getItem('ae_payment_config') || '{}');
         if (pcfg.key) RZP_KEY = pcfg.key;
         if (pcfg.monthly) PLAN_PRICES.monthly = pcfg.monthly;
-        PLAN_PRICES.yearly = 499; pcfg.yearly = 499; _ls.setItem("ae_payment_config", JSON.stringify(pcfg));
+        PLAN_PRICES.yearly = 499;
         if (pcfg.enabled !== undefined) PAYMENT_ENABLED = pcfg.enabled;
       } catch (e) { }
 
@@ -24506,8 +24512,6 @@ Rules:
       const cfg = JSON.parse(_ls.getItem('ae_payment_config') || '{}');
       cfg.enabled = enabled;
       _ls.setItem('ae_payment_config', JSON.stringify(cfg));
-      // Save to Supabase so it persists across browsers/devices
-      sbUpsert('ae_meta', [{ key: 'payment_enabled', value: String(enabled) }]).catch(e => console.error('❌ payment_enabled save failed:', e));
       toast(enabled ? '✅ Payment feature enabled!' : '⏸ Payment feature disabled', enabled ? 'success' : 'info');
     }
 

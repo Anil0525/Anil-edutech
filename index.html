@@ -24280,6 +24280,13 @@ Rules:
         <!-- hidden price holders kept for JS compatibility -->
         <span style="display:none"><span id="plan-price-big">99</span><span id="plan-period-label">/mo</span><span id="billing-subtotal">99</span></span>
 
+        <!-- Quick benefit strip — reinforces value right where the user decides -->
+        <div style="display:flex;flex-wrap:wrap;gap:6px;margin-bottom:16px;">
+          <span style="background:rgba(99,102,241,.1);color:#6366f1;font-size:11px;font-weight:800;padding:5px 10px;border-radius:20px;">📚 50+ Premium PDFs</span>
+          <span style="background:rgba(99,102,241,.1);color:#6366f1;font-size:11px;font-weight:800;padding:5px 10px;border-radius:20px;">🎯 1000+ MCQs</span>
+          <span style="background:rgba(99,102,241,.1);color:#6366f1;font-size:11px;font-weight:800;padding:5px 10px;border-radius:20px;">📝 Full-Length Mocks</span>
+        </div>
+
         <div class="pm-section-label">Choose Your Plan</div>
         <div class="pm-plan-grid">
           <button id="ptab-trial" class="pay-plan-tab" onclick="switchPricingTab('trial')">
@@ -24303,7 +24310,7 @@ Rules:
         </div>
 
         <div class="pm-section-label second">Payment Method</div>
-        <div class="pm-method-note">* Subscribe నొక్కితే secure Razorpay checkout open అవుతుంది</div>
+        <div class="pm-method-note">* Subscribe నొక్కితే secure Razorpay checkout open అవుతుంది — UPI/Card/Net Banking అన్నీ అక్కడే select చేసుకోవచ్చు</div>
         <div class="pm-method-row">
           <div class="pm-method-card is-active" id="pmc-upi" onclick="selectPayMethod('upi')">
             <span class="pm-method-icon">📱</span>
@@ -24320,12 +24327,8 @@ Rules:
           </div>
         </div>
 
-        <div class="pay-fine-print">By clicking confirm, you agree to Anil EduTech's <a href="#">Terms of Use</a>
-          and <a href="#">Privacy policy</a>.</div>
-
-        <div class="pm-confirm-row">
-          <button id="rzp-pay-btn" class="pm-confirm-btn" onclick="startPayment(_activePricingTab)">Confirm</button>
-        </div>
+        <div class="pay-fine-print">By clicking confirm, you agree to Anil EduTech's <a href="privacy-policy.html" target="_blank" rel="noopener">Terms of Use</a>
+          and <a href="privacy-policy.html" target="_blank" rel="noopener">Privacy policy</a>.</div>
       </div><!-- /pricing-left -->
 
       <!-- RIGHT: Order Summary -->
@@ -24341,12 +24344,19 @@ Rules:
         <button class="pay-subscribe-btn" onclick="startPayment(_activePricingTab)">🔒 Subscribe Now —
           ₹<span id="rzp-btn-price">99</span></button>
 
-        <div class="pm-qr-wrap">
-          <div class="pm-qr-img-box">
-            <img id="pm-qr-img" src="" alt="UPI QR">
-          </div>
-          <div class="pm-qr-caption">Pay &amp; Confirm via UPI QR<br>using <a onclick="openUpiApp(_activePricingTab)">Mobile Application</a></div>
+        <div style="text-align:center;font-size:11px;color:var(--text3);font-weight:700;margin-top:8px;">
+          💯 Money-back guarantee · 🔒 100% Secure
         </div>
+
+        <details style="margin-top:14px;">
+          <summary style="cursor:pointer;font-size:11.5px;color:var(--text3);font-weight:700;text-align:center;list-style:none;">📲 UPI App తో directly pay చేయాలా? Tap here</summary>
+          <div class="pm-qr-wrap">
+            <div class="pm-qr-img-box">
+              <img id="pm-qr-img" src="" alt="UPI QR">
+            </div>
+            <div class="pm-qr-caption">Pay &amp; Confirm via UPI QR<br>using <a onclick="openUpiApp(_activePricingTab)">Mobile Application</a></div>
+          </div>
+        </details>
 
         <div class="pay-security-footer">🔒 Secure Payments via Razorpay</div>
       </div><!-- /pricing-right -->

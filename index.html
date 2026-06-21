@@ -12267,7 +12267,7 @@
                 <button onclick="goExams()" class="ae-slide-btn">Exams చూడండి <span
                     style="font-size:14px">→</span></button>
               </div>
-              <div class="ae-slide-phone" style="display:flex;flex-direction:column;gap:10px;z-index:1">
+              <div class="ae-slide-phone">
                 <div
                   style="background:rgba(255,255,255,.12);border:1px solid rgba(255,255,255,.2);border-radius:14px;padding:12px 16px;color:#fff;min-width:110px">
                   <div style="font-size:22px;font-weight:900;line-height:1">500+</div>
@@ -12291,7 +12291,7 @@
                 <button onclick="document.querySelector('.leaderboard-section').scrollIntoView({behavior:'smooth'})"
                   class="ae-slide-btn">Leaderboard చూడండి <span style="font-size:14px">→</span></button>
               </div>
-              <div class="ae-slide-phone" style="display:flex;flex-direction:column;gap:8px;z-index:1">
+              <div class="ae-slide-phone">
                 <div
                   style="background:rgba(255,255,255,.13);border:1px solid rgba(255,215,0,.3);border-radius:12px;padding:9px 14px;color:#fff;display:flex;align-items:center;gap:9px">
                   <span style="font-size:18px">🥇</span>
@@ -12325,7 +12325,7 @@
                   style="background:linear-gradient(135deg,#F5B731,#E8640A);color:#1a0533;font-weight:900;">⚡ ఇప్పుడే
                   Unlock చేయండి →</button>
               </div>
-              <div class="ae-slide-phone" style="z-index:1;display:flex;flex-direction:column;gap:8px;">
+              <div class="ae-slide-phone">
                 <div
                   style="background:rgba(245,183,49,.18);border:1.5px solid rgba(245,183,49,.5);border-radius:12px;padding:10px 14px;color:#F5B731;font-size:12px;font-weight:700;">
                   🔓 50+ Premium Exams</div>
@@ -12351,7 +12351,7 @@
                 <button onclick="openYT()" class="ae-slide-btn">Subscribe చేయండి <span
                     style="font-size:14px">→</span></button>
               </div>
-              <div class="ae-slide-phone" style="z-index:1">
+              <div class="ae-slide-phone">
                 <div
                   style="background:#0F0F0F;border-radius:16px;padding:14px 16px;border:1px solid rgba(255,255,255,.15);min-width:110px">
                   <div
@@ -12383,7 +12383,7 @@
                   style="background:linear-gradient(135deg,#1E90FF,#00BFFF);color:#0a1f3c;font-weight:900;">📚 Exams
                   చూడండి <span style="font-size:14px">→</span></button>
               </div>
-              <div class="ae-slide-phone" style="z-index:1;display:flex;flex-direction:column;gap:8px;">
+              <div class="ae-slide-phone">
                 <div
                   style="background:rgba(30,144,255,.18);border:1.5px solid rgba(30,144,255,.4);border-radius:12px;padding:10px 14px;color:#00BFFF;font-size:12px;font-weight:700;">
                   🏛️ TSPSC Group-1</div>
@@ -12413,7 +12413,7 @@
                   style="background:linear-gradient(135deg,#FF8C00,#FFD700);color:#1a0a00;font-weight:900;">🎮 Quiz Play
                   చేయండి <span style="font-size:14px">→</span></button>
               </div>
-              <div class="ae-slide-phone" style="z-index:1;display:flex;flex-direction:column;gap:8px;">
+              <div class="ae-slide-phone">
                 <div
                   style="background:rgba(255,140,0,.18);border:1.5px solid rgba(255,140,0,.4);border-radius:12px;padding:10px 14px;color:#FFD700;font-size:12px;font-weight:700;">
                   ⏱️ 10 Min Challenge</div>
@@ -13829,6 +13829,23 @@
     ══════════════════════════════ -->
       <div class="section-title" style="margin-bottom:16px">Answer Review</div>
       <div class="answer-review" id="answer-review"></div>
+
+      <!-- ═══ EXAM REVIEW / FEEDBACK ═══ -->
+      <div class="section-title" style="margin:28px 0 16px">⭐ Review &amp; Feedback</div>
+      <div style="background:var(--surface);border:1.5px solid var(--border2);border-radius:16px;padding:18px;margin-bottom:18px;max-width:520px;">
+        <div style="font-size:14px;font-weight:800;color:var(--text);margin-bottom:10px;">ఈ exam మీకు ఎలా అనిపించింది?</div>
+        <div id="rev-star-picker" style="display:flex;gap:6px;margin-bottom:12px;"></div>
+        <textarea id="rev-comment" rows="2" maxlength="300" placeholder="మీ feedback ఇక్కడ రాయండి... (optional)"
+          style="width:100%;padding:10px 12px;border:1.5px solid var(--border2);border-radius:10px;font-size:13px;background:var(--bg);color:var(--text);outline:none;font-family:inherit;resize:vertical;box-sizing:border-box;margin-bottom:12px;"></textarea>
+        <button id="rev-submit-btn" onclick="submitExamReview()"
+          style="width:100%;padding:11px;background:linear-gradient(135deg,#6366f1,#8b5cf6);color:#fff;border:none;border-radius:10px;font-family:inherit;font-size:14px;font-weight:800;cursor:pointer;">Submit
+          Review</button>
+      </div>
+      <div style="display:flex;align-items:center;justify-content:space-between;max-width:520px;margin-bottom:10px;">
+        <div style="font-size:13px;font-weight:800;color:var(--text);">Student Reviews</div>
+        <div id="rev-summary" style="font-size:12px;color:var(--text3);font-weight:700;"></div>
+      </div>
+      <div id="rev-list" style="max-width:520px;margin-bottom:18px;"></div>
     </div>
     <footer>
       <div class="footer-inner">
@@ -19146,6 +19163,7 @@ More exams: https://aniledutech.in
       }, 300);
 
       if (pct >= 60) spawnConfetti();
+      loadExamReviews(exam.id, exam.name);
 
       // Performance Chart
       const chartWrap = document.getElementById('result-chart-container');
@@ -19441,6 +19459,105 @@ More exams: https://aniledutech.in
     }
 
     // Render leaderboard on goHome — handled inside goHome() above
+
+    // ══════════════════════════════════════════════════════════════════
+    // ⭐ EXAM REVIEW / FEEDBACK
+    // ══════════════════════════════════════════════════════════════════
+    const REV_TABLE = 'ae_exam_reviews';
+    let _revExamId = null;
+    let _revExamName = '';
+    let _revSelectedStars = 0;
+
+    function _renderStarPicker() {
+      const wrap = document.getElementById('rev-star-picker');
+      if (!wrap) return;
+      wrap.innerHTML = [1, 2, 3, 4, 5].map(function (n) {
+        const filled = n <= _revSelectedStars;
+        return '<span onclick="_setRevStars(' + n + ')" style="font-size:28px;cursor:pointer;color:' + (filled ? '#F59E0B' : 'var(--border2)') + ';line-height:1;">★</span>';
+      }).join('');
+    }
+
+    function _setRevStars(n) {
+      _revSelectedStars = n;
+      _renderStarPicker();
+    }
+
+    async function loadExamReviews(examId, examName) {
+      _revExamId = examId;
+      _revExamName = examName || '';
+      _revSelectedStars = 0;
+      _renderStarPicker();
+      const commentEl = document.getElementById('rev-comment');
+      if (commentEl) commentEl.value = '';
+      const listEl = document.getElementById('rev-list');
+      const summaryEl = document.getElementById('rev-summary');
+      if (listEl) listEl.innerHTML = '<div style="text-align:center;padding:16px;color:var(--text3);font-size:13px">⏳ Loading reviews...</div>';
+      try {
+        const res = await fetch(SB_URL + '/rest/v1/' + REV_TABLE + '?select=*&exam_id=eq.' + encodeURIComponent(examId) + '&order=created_at.desc', { headers: SB_HEADERS });
+        const rows = res.ok ? await res.json() : [];
+        _renderExamReviews(Array.isArray(rows) ? rows : []);
+      } catch (e) {
+        if (listEl) listEl.innerHTML = '';
+        if (summaryEl) summaryEl.textContent = '';
+      }
+    }
+
+    function _renderExamReviews(rows) {
+      const listEl = document.getElementById('rev-list');
+      const summaryEl = document.getElementById('rev-summary');
+      if (!listEl) return;
+      if (!rows.length) {
+        listEl.innerHTML = '<div style="text-align:center;padding:16px;color:var(--text3);font-size:13px">ఇంకా reviews ఏవీ లేవు. మొదటి review మీరే ఇవ్వండి! 🙌</div>';
+        if (summaryEl) summaryEl.textContent = '';
+        return;
+      }
+      const avg = rows.reduce(function (s, r) { return s + (r.rating || 0); }, 0) / rows.length;
+      if (summaryEl) summaryEl.textContent = avg.toFixed(1) + ' ★ · ' + rows.length + ' reviews';
+      listEl.innerHTML = rows.slice(0, 20).map(function (r) {
+        const stars = '★★★★★☆☆☆☆☆'.slice(5 - (r.rating || 0), 10 - (r.rating || 0));
+        const initials = (r.user_name || 'A').trim().split(/\s+/).map(function (w) { return w[0]; }).slice(0, 2).join('').toUpperCase();
+        return '<div style="background:var(--surface);border:1.5px solid var(--border2);border-radius:12px;padding:10px 14px;margin-bottom:8px;">' +
+          '<div style="display:flex;align-items:center;gap:8px;margin-bottom:4px;">' +
+          '<div style="width:26px;height:26px;border-radius:50%;background:rgba(99,102,241,.15);display:flex;align-items:center;justify-content:center;font-weight:800;font-size:10px;color:#6366f1;flex-shrink:0;">' + escHtml(initials) + '</div>' +
+          '<div style="font-size:13px;font-weight:800;color:var(--text);">' + escHtml(r.user_name || 'Anonymous') + '</div>' +
+          '<div style="margin-left:auto;font-size:12px;color:#F59E0B;letter-spacing:1px;">' + stars + '</div>' +
+          '</div>' +
+          (r.comment ? '<div style="font-size:12.5px;color:var(--text2);line-height:1.5;">' + escHtml(r.comment) + '</div>' : '') +
+          '</div>';
+      }).join('');
+    }
+
+    async function submitExamReview() {
+      if (!_revExamId) { toast('⚠️ Exam గుర్తించలేకపోయాం', 'error'); return; }
+      if (!_revSelectedStars) { toast('⚠️ ముందు Star Rating select చేయండి', 'warn'); return; }
+      const currentUser = typeof _getCurrentUser === 'function' ? _getCurrentUser() : null;
+      const userName = (currentUser && currentUser.name) ? currentUser.name : (document.getElementById('name-input') ? document.getElementById('name-input').value : '') || 'Anonymous';
+      const comment = (document.getElementById('rev-comment').value || '').trim();
+      const btn = document.getElementById('rev-submit-btn');
+      if (btn) { btn.textContent = '⏳ Submitting...'; btn.disabled = true; }
+      try {
+        const payload = {
+          exam_id: _revExamId, exam_name: _revExamName,
+          user_name: userName, rating: _revSelectedStars, comment: comment
+        };
+        const res = await fetch(SB_URL + '/rest/v1/' + REV_TABLE, {
+          method: 'POST',
+          headers: { ...SB_HEADERS, 'Prefer': 'return=minimal' },
+          body: JSON.stringify(payload)
+        });
+        if (res.ok) {
+          toast('✅ Review submit అయింది, ధన్యవాదాలు!', 'success');
+          _revSelectedStars = 0;
+          document.getElementById('rev-comment').value = '';
+          _renderStarPicker();
+          loadExamReviews(_revExamId, _revExamName);
+        } else {
+          const err = await res.json().catch(function () { return {}; });
+          toast('Error: ' + (err.message || err.hint || 'Submit failed') + ' (Supabase లో ae_exam_reviews table ఉందా?)', 'error');
+        }
+      } catch (e) { toast('Error: ' + e.message, 'error'); }
+      finally { if (btn) { btn.textContent = 'Submit Review'; btn.disabled = false; } }
+    }
 
     function spawnConfetti() {
       const wrap = document.getElementById('result-confetti');

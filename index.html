@@ -15181,6 +15181,7 @@
             if (m.key === 'nextExamId') DB.nextExamId = Math.max(parseInt(m.value) || 0, DB.nextExamId);
             if (m.key === 'nextQId') DB.nextQId = Math.max(parseInt(m.value) || 0, DB.nextQId);
             if (m.key === 'nextVideoId') DB.nextVideoId = Math.max(parseInt(m.value) || 0, DB.nextVideoId);
+            if (m.key === 'payment_enabled') PAYMENT_ENABLED = (m.value === 'true');
             if (m.key === 'mockFolders') {
               try {
                 const mf = JSON.parse(m.value);
@@ -24505,6 +24506,8 @@ Rules:
       const cfg = JSON.parse(_ls.getItem('ae_payment_config') || '{}');
       cfg.enabled = enabled;
       _ls.setItem('ae_payment_config', JSON.stringify(cfg));
+      // Save to Supabase so it persists across browsers/devices
+      sbUpsert('ae_meta', [{ key: 'payment_enabled', value: String(enabled) }]).catch(e => console.error('❌ payment_enabled save failed:', e));
       toast(enabled ? '✅ Payment feature enabled!' : '⏸ Payment feature disabled', enabled ? 'success' : 'info');
     }
 

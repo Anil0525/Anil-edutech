@@ -1464,14 +1464,19 @@
       }
 
       .pm-method-row {
-        flex-direction: row;
+        display: grid;
+        grid-template-columns: repeat(3, 1fr);
         gap: 8px;
+        overflow: visible;
       }
 
       .pm-method-card {
         min-width: 0;
-        padding: 10px 6px;
+        width: 100%;
+        aspect-ratio: 1 / 1;
+        padding: 6px 4px;
         font-size: 10.5px;
+        box-sizing: border-box;
       }
 
       .pm-method-card .pm-method-icon {

@@ -24493,7 +24493,12 @@ Rules:
       const yearly = parseInt(document.getElementById('price-yearly').value) || 499;
       if (!key) { toast('❌ Key ID enter చేయండి', 'warn'); return; }
       const cfg = { key, monthly, yearly, enabled: PAYMENT_ENABLED };
-      _ls.setItem('ae_payment_config', JSON.stringify(cfg));
+      const cfgStr = JSON.stringify(cfg);
+      _ls.setItem('ae_payment_config', cfgStr);
+      // ✅ FIX: Supabase లో కూడా save చేయాలి — refresh అయినా persist అవుతుంది
+      if (typeof saveSetting === 'function') {
+        saveSetting('ae_payment_config', cfgStr).catch(e => console.warn('payment config SB save:', e));
+      }
       RZP_KEY = key; PLAN_PRICES = { monthly, yearly };
       const md = document.getElementById('price-monthly-display');
       const yd = document.getElementById('price-yearly-display');
@@ -24511,7 +24516,12 @@ Rules:
       _updatePremiumNavBtn();
       const cfg = JSON.parse(_ls.getItem('ae_payment_config') || '{}');
       cfg.enabled = enabled;
-      _ls.setItem('ae_payment_config', JSON.stringify(cfg));
+      const cfgStr = JSON.stringify(cfg);
+      _ls.setItem('ae_payment_config', cfgStr);
+      // ✅ FIX: Supabase లో కూడా save చేయాలి — refresh అయినా persist అవుతుంది
+      if (typeof saveSetting === 'function') {
+        saveSetting('ae_payment_config', cfgStr).catch(e => console.warn('payment toggle SB save:', e));
+      }
       toast(enabled ? '✅ Payment feature enabled!' : '⏸ Payment feature disabled', enabled ? 'success' : 'info');
     }
 

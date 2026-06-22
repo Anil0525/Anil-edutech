@@ -12566,6 +12566,14 @@
       <div id="leaderboard-list"></div>
     </div>
 
+    <!-- ═══ HOME REVIEWS SECTION ═══ -->
+    <div style="padding:0 16px 24px;max-width:700px;margin:0 auto;">
+      <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:14px;">
+        <div style="font-size:16px;font-weight:900;color:var(--text);">⭐ Student Reviews</div>
+        <div id="home-rev-summary" style="font-size:12px;font-weight:700;color:var(--text3);"></div>
+      </div>
+      <div id="home-rev-list"></div>
+    </div>
 
     <!-- ═══ AdSense: Footer Banner — approval వచ్చాక enable చేయండి ═══
   <div style="text-align:center;padding:14px 16px 6px;border-top:1px solid var(--border);background:var(--surface);">
@@ -18024,6 +18032,8 @@ More exams: https://aniledutech.in
       updateStats();
       renderLeaderboard();
       _startLbAutoRefresh();
+      // ⭐ Load review stats for exam cards + home page
+      _loadAllReviewStats();
     }
 
 
@@ -18486,6 +18496,29 @@ More exams: https://aniledutech.in
       'Mock Test': '📝', 'Current Affairs': '📰', 'Live Test': '🔴', 'Previous Papers': '📄',
     };
 
+    // ── REVIEWS CACHE (exam_id → {avg, count}) ──
+    const _revCache = {};
+    async function _loadAllReviewStats() {
+      try {
+        const res = await fetch(SB_URL + '/rest/v1/ae_exam_reviews?select=exam_id,rating', { headers: SB_HEADERS });
+        if (!res.ok) return;
+        const rows = await res.json();
+        if (!Array.isArray(rows)) return;
+        const tmp = {};
+        rows.forEach(r => {
+          if (!r.exam_id) return;
+          if (!tmp[r.exam_id]) tmp[r.exam_id] = { sum: 0, count: 0 };
+          tmp[r.exam_id].sum += (r.rating || 0);
+          tmp[r.exam_id].count++;
+        });
+        Object.keys(tmp).forEach(id => {
+          _revCache[id] = { avg: (tmp[id].sum / tmp[id].count).toFixed(1), count: tmp[id].count };
+        });
+        if (window._lastExamList) renderExamCards(window._lastExamList);
+        _renderHomeReviews();
+      } catch (e) { }
+    }
+
     function _examCardHtml(e, idx) {
       const qc = DB.questions.filter(q => q.examId === e.id).length;
       const bmked = isBookmarked(e.id);
@@ -18498,19 +18531,23 @@ More exams: https://aniledutech.in
       const btnStyle = isLocked && !userIsPremium
         ? 'background:linear-gradient(135deg,#F5B731,#E8640A);color:#fff;'
         : 'background:var(--primary);color:#fff;';
+      const rev = _revCache[String(e.id)];
+      const ratingBadge = rev
+        ? `<span style="font-size:10.5px;font-weight:700;color:#F59E0B;background:rgba(245,158,11,.12);border-radius:6px;padding:2px 6px;margin-left:4px;">&#11088; ${rev.avg} (${rev.count})</span>`
+        : '';
       return `<div class="exam-card${isLocked ? ' is-locked' : ''}" onclick="startExam(${e.id})" style="cursor:pointer;">
     <!-- Logo circle -->
     <div style="width:42px;height:42px;border-radius:50%;background:${catColor};display:flex;align-items:center;justify-content:center;font-size:18px;flex-shrink:0;box-shadow:0 3px 10px rgba(0,0,0,.15);">${catEmoji}</div>
     <!-- Info -->
     <div style="flex:1;min-width:0;">
-      <div style="font-size:13px;font-weight:800;color:var(--text);line-height:1.3;margin-bottom:4px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;">${e.name}${isLocked && !userIsPremium ? ' 🔒' : ''}</div>
-      <div style="font-size:11px;color:var(--text3);font-weight:600;">${qc} Questions · ${e.time || '?'} min · ${e.diff || ''}</div>
+      <div style="font-size:13px;font-weight:800;color:var(--text);line-height:1.3;margin-bottom:4px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;">${e.name}${isLocked && !userIsPremium ? ' \uD83D\uDD12' : ''}</div>
+      <div style="font-size:11px;color:var(--text3);font-weight:600;display:flex;align-items:center;flex-wrap:wrap;gap:2px;">${qc} Questions &middot; ${e.time || '?'} min &middot; ${e.diff || ''}${ratingBadge}</div>
     </div>
     <!-- Arrow + bookmark -->
     <div style="display:flex;flex-direction:column;align-items:flex-end;gap:6px;flex-shrink:0;">
       <button id="bm-btn-${e.id}" onclick="event.stopPropagation();toggleBookmark(${e.id})" title="Bookmark"
-        style="background:none;border:none;font-size:14px;cursor:pointer;padding:0;line-height:1;">${bmked ? '⭐' : '🔖'}</button>
-      <div style="width:26px;height:26px;border-radius:50%;background:var(--bg2);display:flex;align-items:center;justify-content:center;font-size:12px;color:var(--text3);">›</div>
+        style="background:none;border:none;font-size:14px;cursor:pointer;padding:0;line-height:1;">${bmked ? '&#11088;' : '\uD83D\uDD16'}</button>
+      <div style="width:26px;height:26px;border-radius:50%;background:var(--bg2);display:flex;align-items:center;justify-content:center;font-size:12px;color:var(--text3);">&#8250;</div>
     </div>
   </div>`;
     }
@@ -19261,7 +19298,7 @@ More exams: https://aniledutech.in
       }, 300);
 
       if (pct >= 60) spawnConfetti();
-      loadExamReviews(exam.current?.id || exam.id, exam.current?.name || exam.name);
+      loadExamReviews(exam.id, exam.name);
 
       // Performance Chart
       const chartWrap = document.getElementById('result-chart-container');
@@ -19600,6 +19637,40 @@ More exams: https://aniledutech.in
       }
     }
 
+    // ── HOME PAGE REVIEWS ──
+    async function _renderHomeReviews() {
+      const listEl = document.getElementById('home-rev-list');
+      const summaryEl = document.getElementById('home-rev-summary');
+      if (!listEl) return;
+      try {
+        const res = await fetch(SB_URL + '/rest/v1/ae_exam_reviews?select=*&order=created_at.desc&limit=50', { headers: SB_HEADERS });
+        if (!res.ok) { listEl.innerHTML = ''; return; }
+        const rows = await res.json();
+        if (!Array.isArray(rows) || !rows.length) {
+          listEl.innerHTML = '<div style="text-align:center;padding:20px;color:var(--text3);font-size:13px;">ఇంకా reviews లేవు. Exam complete చేసి మొదటి review ఇవ్వండి! 🙌</div>';
+          return;
+        }
+        const avg = (rows.reduce((s, r) => s + (r.rating || 0), 0) / rows.length).toFixed(1);
+        if (summaryEl) summaryEl.textContent = avg + ' ★ · ' + rows.length + ' reviews';
+        // Show max 6 on home
+        const display = rows.slice(0, 6);
+        listEl.innerHTML = '<div style="display:grid;grid-template-columns:repeat(auto-fill,minmax(280px,1fr));gap:10px;">' +
+          display.map(r => {
+            const stars = '★★★★★☆☆☆☆☆'.slice(5 - (r.rating || 0), 10 - (r.rating || 0));
+            const initials = (r.user_name || 'A').trim().split(/\s+/).map(w => w[0]).slice(0, 2).join('').toUpperCase();
+            return '<div style="background:var(--surface);border:1.5px solid var(--border2);border-radius:14px;padding:12px 14px;">' +
+              '<div style="display:flex;align-items:center;gap:8px;margin-bottom:6px;">' +
+              '<div style="width:30px;height:30px;border-radius:50%;background:linear-gradient(135deg,#6366f1,#8b5cf6);display:flex;align-items:center;justify-content:center;font-weight:900;font-size:11px;color:#fff;flex-shrink:0;">' + initials + '</div>' +
+              '<div><div style="font-size:12.5px;font-weight:800;color:var(--text);">' + (r.user_name || 'Anonymous') + '</div>' +
+              '<div style="font-size:11px;color:#F59E0B;letter-spacing:1px;">' + stars + '</div></div>' +
+              (r.exam_name ? '<div style="margin-left:auto;font-size:10px;color:var(--text3);font-weight:600;background:var(--bg2);border-radius:6px;padding:2px 7px;max-width:90px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;">' + r.exam_name + '</div>' : '') +
+              '</div>' +
+              (r.comment ? '<div style="font-size:12px;color:var(--text2);line-height:1.5;">' + r.comment + '</div>' : '') +
+              '</div>';
+          }).join('') + '</div>';
+      } catch (e) { }
+    }
+
     function _renderExamReviews(rows) {
       const listEl = document.getElementById('rev-list');
       const summaryEl = document.getElementById('rev-summary');
@@ -19626,7 +19697,6 @@ More exams: https://aniledutech.in
     }
 
     async function submitExamReview() {
-      if (!_revExamId && exam.current?.id) { _revExamId = exam.current.id; _revExamName = exam.current.name || ''; }
       if (!_revExamId) { toast('⚠️ Exam గుర్తించలేకపోయాం', 'error'); return; }
       if (!_revSelectedStars) { toast('⚠️ ముందు Star Rating select చేయండి', 'warn'); return; }
       const currentUser = typeof _getCurrentUser === 'function' ? _getCurrentUser() : null;
@@ -19650,6 +19720,7 @@ More exams: https://aniledutech.in
           document.getElementById('rev-comment').value = '';
           _renderStarPicker();
           loadExamReviews(_revExamId, _revExamName);
+          _loadAllReviewStats(); // refresh cache + home page
         } else {
           const err = await res.json().catch(function () { return {}; });
           toast('Error: ' + (err.message || err.hint || 'Submit failed') + ' (Supabase లో ae_exam_reviews table ఉందా?)', 'error');

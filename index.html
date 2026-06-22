@@ -19261,7 +19261,7 @@ More exams: https://aniledutech.in
       }, 300);
 
       if (pct >= 60) spawnConfetti();
-      loadExamReviews(exam.id, exam.name);
+      loadExamReviews(exam.current?.id || exam.id, exam.current?.name || exam.name);
 
       // Performance Chart
       const chartWrap = document.getElementById('result-chart-container');
@@ -19626,6 +19626,7 @@ More exams: https://aniledutech.in
     }
 
     async function submitExamReview() {
+      if (!_revExamId && exam.current?.id) { _revExamId = exam.current.id; _revExamName = exam.current.name || ''; }
       if (!_revExamId) { toast('⚠️ Exam గుర్తించలేకపోయాం', 'error'); return; }
       if (!_revSelectedStars) { toast('⚠️ ముందు Star Rating select చేయండి', 'warn'); return; }
       const currentUser = typeof _getCurrentUser === 'function' ? _getCurrentUser() : null;
@@ -19699,7 +19700,7 @@ More exams: https://aniledutech.in
       if (tab === 'analytics') { setTimeout(function () { if (typeof _renderAnalytics === 'function') _renderAnalytics(); }, 50); }
       if (tab === 'scheduled') { setTimeout(function () { if (typeof _populateSchedSelect === 'function') _populateSchedSelect(); if (typeof _renderSchedList === 'function') _renderSchedList(); }, 50); }
       if (tab === 'dailymock') { setTimeout(function () { if (typeof dmInit === 'function') dmInit(); }, 50); }
-      if (tab === 'payments') { if (typeof _loadPaymentConfig === 'function') _loadPaymentConfig(); if (typeof renderPaymentsTable === 'function') renderPaymentsTable(); if (typeof renderPaymentStats === 'function') renderPaymentStats(); }
+      if (tab === 'payments') { if (typeof renderPaymentsTable === 'function') renderPaymentsTable(); if (typeof renderPaymentStats === 'function') renderPaymentStats(); }
       if (tab === 'bulkimport') { setTimeout(function () { if (typeof _populateBulkExamDropdown === 'function') _populateBulkExamDropdown(); }, 50); }
       if (tab === 'userbackup') { setTimeout(function () { loadBackupData(); }, 50); }
       if (tab === 'notifications') { setTimeout(function () { loadNotificationRecipients(); }, 50); }
@@ -24472,13 +24473,6 @@ Rules:
         if (cfg.monthly) PLAN_PRICES.monthly = cfg.monthly;
         PLAN_PRICES.yearly = 499;
         if (cfg.enabled !== undefined) PAYMENT_ENABLED = cfg.enabled;
-        // ✅ FIX: Populate input fields so refresh tarvata values disappear kaadu
-        const keyInput = document.getElementById('rzp-key-input');
-        if (keyInput && cfg.key) keyInput.value = cfg.key;
-        const mInput = document.getElementById('price-monthly');
-        if (mInput) mInput.value = PLAN_PRICES.monthly;
-        const yInput = document.getElementById('price-yearly');
-        if (yInput) yInput.value = PLAN_PRICES.yearly;
         // Update price displays
         const md = document.getElementById('price-monthly-display');
         const yd = document.getElementById('price-yearly-display');

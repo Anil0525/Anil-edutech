@@ -14978,7 +14978,16 @@
           headers: { ...SB_HEADERS, 'Prefer': 'resolution=merge-duplicates,return=minimal' },
           body: JSON.stringify(data)
         });
-        if (!r.ok) { _sbFails++; if (_sbFails >= 5) { _sbDead = true; setTimeout(function () { _sbDead = false; _sbFails = 0; }, 2 * 60 * 1000); } }
+        if (!r.ok) {
+          _sbFails++; if (_sbFails >= 5) { _sbDead = true; setTimeout(function () { _sbDead = false; _sbFails = 0; }, 2 * 60 * 1000); }
+          // 🔍 DEBUG: ae_settings save failure details
+          if (table === 'ae_settings') {
+            const errText = await r.text().catch(() => '');
+            console.error(`[AE DEBUG] sbUpsert ae_settings FAILED — status:${r.status} — data:`, data, '— error:', errText);
+          }
+        } else if (table === 'ae_settings') {
+          console.log(`[AE DEBUG] sbUpsert ae_settings OK — key:`, data.key || data);
+        }
         return r.ok;
       } catch (e) { _sbFails++; if (_sbFails >= 2) { _sbDead = true; setTimeout(function () { _sbDead = false; _sbFails = 0; }, 5 * 60 * 1000); } return false; }
     }
@@ -24493,12 +24502,7 @@ Rules:
       const yearly = parseInt(document.getElementById('price-yearly').value) || 499;
       if (!key) { toast('❌ Key ID enter చేయండి', 'warn'); return; }
       const cfg = { key, monthly, yearly, enabled: PAYMENT_ENABLED };
-      const cfgStr = JSON.stringify(cfg);
-      _ls.setItem('ae_payment_config', cfgStr);
-      // ✅ FIX: Supabase లో కూడా save చేయాలి — refresh అయినా persist అవుతుంది
-      if (typeof saveSetting === 'function') {
-        saveSetting('ae_payment_config', cfgStr).catch(e => console.warn('payment config SB save:', e));
-      }
+      _ls.setItem('ae_payment_config', JSON.stringify(cfg));
       RZP_KEY = key; PLAN_PRICES = { monthly, yearly };
       const md = document.getElementById('price-monthly-display');
       const yd = document.getElementById('price-yearly-display');
@@ -24516,12 +24520,7 @@ Rules:
       _updatePremiumNavBtn();
       const cfg = JSON.parse(_ls.getItem('ae_payment_config') || '{}');
       cfg.enabled = enabled;
-      const cfgStr = JSON.stringify(cfg);
-      _ls.setItem('ae_payment_config', cfgStr);
-      // ✅ FIX: Supabase లో కూడా save చేయాలి — refresh అయినా persist అవుతుంది
-      if (typeof saveSetting === 'function') {
-        saveSetting('ae_payment_config', cfgStr).catch(e => console.warn('payment toggle SB save:', e));
-      }
+      _ls.setItem('ae_payment_config', JSON.stringify(cfg));
       toast(enabled ? '✅ Payment feature enabled!' : '⏸ Payment feature disabled', enabled ? 'success' : 'info');
     }
 

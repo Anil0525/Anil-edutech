@@ -24472,6 +24472,13 @@ Rules:
         if (cfg.monthly) PLAN_PRICES.monthly = cfg.monthly;
         PLAN_PRICES.yearly = 499;
         if (cfg.enabled !== undefined) PAYMENT_ENABLED = cfg.enabled;
+        // ✅ FIX: Populate input fields so refresh tarvata values disappear kaadu
+        const keyInput = document.getElementById('rzp-key-input');
+        if (keyInput && cfg.key) keyInput.value = cfg.key;
+        const mInput = document.getElementById('price-monthly');
+        if (mInput) mInput.value = PLAN_PRICES.monthly;
+        const yInput = document.getElementById('price-yearly');
+        if (yInput) yInput.value = PLAN_PRICES.yearly;
         // Update price displays
         const md = document.getElementById('price-monthly-display');
         const yd = document.getElementById('price-yearly-display');

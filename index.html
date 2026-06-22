@@ -14978,16 +14978,7 @@
           headers: { ...SB_HEADERS, 'Prefer': 'resolution=merge-duplicates,return=minimal' },
           body: JSON.stringify(data)
         });
-        if (!r.ok) {
-          _sbFails++; if (_sbFails >= 5) { _sbDead = true; setTimeout(function () { _sbDead = false; _sbFails = 0; }, 2 * 60 * 1000); }
-          // 🔍 DEBUG: ae_settings save failure details
-          if (table === 'ae_settings') {
-            const errText = await r.text().catch(() => '');
-            console.error(`[AE DEBUG] sbUpsert ae_settings FAILED — status:${r.status} — data:`, data, '— error:', errText);
-          }
-        } else if (table === 'ae_settings') {
-          console.log(`[AE DEBUG] sbUpsert ae_settings OK — key:`, data.key || data);
-        }
+        if (!r.ok) { _sbFails++; if (_sbFails >= 5) { _sbDead = true; setTimeout(function () { _sbDead = false; _sbFails = 0; }, 2 * 60 * 1000); } }
         return r.ok;
       } catch (e) { _sbFails++; if (_sbFails >= 2) { _sbDead = true; setTimeout(function () { _sbDead = false; _sbFails = 0; }, 5 * 60 * 1000); } return false; }
     }
@@ -19708,7 +19699,7 @@ More exams: https://aniledutech.in
       if (tab === 'analytics') { setTimeout(function () { if (typeof _renderAnalytics === 'function') _renderAnalytics(); }, 50); }
       if (tab === 'scheduled') { setTimeout(function () { if (typeof _populateSchedSelect === 'function') _populateSchedSelect(); if (typeof _renderSchedList === 'function') _renderSchedList(); }, 50); }
       if (tab === 'dailymock') { setTimeout(function () { if (typeof dmInit === 'function') dmInit(); }, 50); }
-      if (tab === 'payments') { if (typeof renderPaymentsTable === 'function') renderPaymentsTable(); if (typeof renderPaymentStats === 'function') renderPaymentStats(); }
+      if (tab === 'payments') { if (typeof _loadPaymentConfig === 'function') _loadPaymentConfig(); if (typeof renderPaymentsTable === 'function') renderPaymentsTable(); if (typeof renderPaymentStats === 'function') renderPaymentStats(); }
       if (tab === 'bulkimport') { setTimeout(function () { if (typeof _populateBulkExamDropdown === 'function') _populateBulkExamDropdown(); }, 50); }
       if (tab === 'userbackup') { setTimeout(function () { loadBackupData(); }, 50); }
       if (tab === 'notifications') { setTimeout(function () { loadNotificationRecipients(); }, 50); }

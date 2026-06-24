@@ -14961,6 +14961,7 @@
 
     // ── PAYMENT GLOBALS (declared early to avoid ReferenceError) ──
     let PAYMENT_ENABLED = false;
+    let UTR_ENABLED = false; // ✅ Default hidden — admin enable చేయగలరు
     let RZP_KEY = SITE_CONFIG.RZP_DEFAULT;
     let PLAN_PRICES = { monthly: 99, yearly: 499 };
 
@@ -15473,6 +15474,7 @@
                 try {
                   const pcfg = JSON.parse(row.value);
                   if (pcfg && pcfg.enabled !== undefined) PAYMENT_ENABLED = pcfg.enabled;
+                  if (pcfg && pcfg.utr_enabled !== undefined) UTR_ENABLED = pcfg.utr_enabled;
                 } catch (e) { }
               }
             }
@@ -17442,13 +17444,11 @@ More exams: https://aniledutech.in
           if (!user.isPremium) _startPremiumPolling();
         });
 
-        setCurrentUser(user);
-        updateNavUser();
+        // ✅ FIX: early setCurrentUser(user) తొలగించబడింది — isPremium = false తో
+        // flash అవుతుంది. Supabase check complete అయిన తర్వాత మాత్రమే setCurrentUser
+        // call అవుతుంది (inner .then() లో). ఇక్కడ UI non-premium actions మాత్రమే:
         closeSubModal();
-        filterExams();
-        // BUG FIX: Read premium from getCurrentUser() since sbGet may have already updated it
-        const _toastUser = getCurrentUser();
-        toast('🎉 Welcome ' + name + '!' + (_toastUser && _toastUser.isPremium ? ' 👑 Premium' : ''), 'success');
+        toast('🎉 Welcome ' + name + '!', 'success');
         // New user → register email to admin; existing → login email
         sendEmailNotification(isNewUser ? 'register' : 'login', { name, gmail });
         _applyPendingReferral(user);
@@ -17614,15 +17614,17 @@ More exams: https://aniledutech.in
       // 1. Mark in local approved list
       u.isPremium = true;
       u.premiumSince = new Date().toISOString();
+      u.premiumPlan = u.premiumPlan || 'manual'; // ✅ FIX: plan preserve చేయి
       saveSubApproved(approved);
-      await sbSubUpsert({ name: u.name, gmail, is_premium: true, premium_since: u.premiumSince, status: 'approved' });
+      // ✅ FIX: premium_plan column కూడా update చేయి — login తర్వాత session లో కనిపిస్తుంది
+      await sbSubUpsert({ name: u.name, gmail, is_premium: true, premium_since: u.premiumSince, premiumPlan: u.premiumPlan, status: 'approved' });
 
       // 2. Write to Supabase ae_settings so user gets it on next login check
       //    Key: premium_gmail (gmail-based so no userId needed)
       try {
         await sbUpsert('ae_settings', {
           key: 'premium_gmail_' + gmail.replace(/[@.]/g, '_'),
-          value: JSON.stringify({ gmail, since: u.premiumSince, plan: 'manual' }),
+          value: JSON.stringify({ gmail, since: u.premiumSince, plan: u.premiumPlan }),
           updated_at: new Date().toISOString()
         });
       } catch (e) { console.warn('Supabase premium write failed:', e); }
@@ -17630,7 +17632,8 @@ More exams: https://aniledutech.in
       // 3. If this user is currently logged in on THIS device — instant unlock
       const cur = getCurrentUser();
       if (cur && cur.gmail === gmail) {
-        setCurrentUser({ ...cur, isPremium: true });
+        // ✅ FIX: premiumPlan కూడా session లో set చేయి
+        setCurrentUser({ ...cur, isPremium: true, premiumPlan: u.premiumPlan, premiumSince: u.premiumSince });
         // BUG FIX: Stop polling timer since premium is now active
         if (typeof _premPollTimer !== 'undefined' && _premPollTimer) {
           clearInterval(_premPollTimer); _premPollTimer = null;
@@ -23332,8 +23335,10 @@ Rules:
         const pcfg = JSON.parse(_ls.getItem('ae_payment_config') || '{}');
         if (pcfg.key) RZP_KEY = pcfg.key;
         if (pcfg.monthly) PLAN_PRICES.monthly = pcfg.monthly;
-        PLAN_PRICES.yearly = 499;
+        // ✅ FIX: hardcode కాదు — admin set చేసిన yearly price use చేయి
+        if (pcfg.yearly) PLAN_PRICES.yearly = pcfg.yearly;
         if (pcfg.enabled !== undefined) PAYMENT_ENABLED = pcfg.enabled;
+        if (pcfg.utr_enabled !== undefined) UTR_ENABLED = pcfg.utr_enabled;
       } catch (e) { }
 
       // Run payment UI updates after DOM fully ready
@@ -24807,6 +24812,16 @@ Rules:
         </details>
 
         <div class="pay-security-footer">🔒 Secure Payments via Razorpay</div>
+
+        <!-- ✅ UTR Section — default hidden, admin UTR toggle ON చేస్తే కనిపిస్తుంది -->
+        <div id="utr-payment-section" style="display:none;margin-top:16px;border-top:1px solid var(--border2);padding-top:14px;">
+          <div style="font-size:11px;font-weight:800;color:var(--text3);margin-bottom:8px;text-align:center;">📲 UPI చేసి UTR Submit చేయండి</div>
+          <div style="display:flex;gap:8px;align-items:center;">
+            <input id="utr-input" class="pm-utr-input" placeholder="UTR / Transaction ID (min 8 chars)" style="flex:1;padding:10px 12px;border:1.5px solid var(--border2);border-radius:8px;background:var(--bg);color:var(--text);font-family:inherit;font-size:13px;outline:none;">
+            <button class="pm-unlock-btn" onclick="submitUTR()" style="padding:10px 16px;background:linear-gradient(135deg,#F5B731,#E8640A);color:#fff;border:none;border-radius:8px;font-family:inherit;font-size:13px;font-weight:800;cursor:pointer;white-space:nowrap;">🔓 Submit</button>
+          </div>
+          <div style="font-size:10px;color:var(--text3);margin-top:6px;text-align:center;">Admin verify చేసిన తర్వాత premium activate అవుతుంది (1–4 hrs)</div>
+        </div>
       </div><!-- /pricing-right -->
     </div><!-- /pricing-box -->
   </div><!-- /pricing-overlay -->
@@ -24820,8 +24835,10 @@ Rules:
         const cfg = JSON.parse(_ls.getItem('ae_payment_config') || '{}');
         if (cfg.key) RZP_KEY = cfg.key;
         if (cfg.monthly) PLAN_PRICES.monthly = cfg.monthly;
-        PLAN_PRICES.yearly = 499;
+        // ✅ FIX: hardcode కాదు — admin set చేసిన yearly price use చేయి
+        if (cfg.yearly) PLAN_PRICES.yearly = cfg.yearly;
         if (cfg.enabled !== undefined) PAYMENT_ENABLED = cfg.enabled;
+        if (cfg.utr_enabled !== undefined) UTR_ENABLED = cfg.utr_enabled;
         // ✅ Populate input fields so refresh tarvata values disappear kaadu
         const keyInput = document.getElementById('rzp-key-input');
         if (keyInput && cfg.key) keyInput.value = cfg.key;
@@ -24841,6 +24858,12 @@ Rules:
           _updateToggleUI(PAYMENT_ENABLED);
         }
         _updatePaymentStatusMsg();
+        // ✅ UTR section sync — UTR_ENABLED based on config
+        const utrSec = document.getElementById('utr-payment-section');
+        if (utrSec) utrSec.style.display = UTR_ENABLED ? '' : 'none';
+        // Sync UTR toggle in admin if present
+        const utrTog = document.getElementById('utr-toggle-switch');
+        if (utrTog) utrTog.checked = UTR_ENABLED;
       } catch (e) { }
     }
 
@@ -24849,8 +24872,12 @@ Rules:
       const monthly = parseInt(document.getElementById('price-monthly').value) || 99;
       const yearly = parseInt(document.getElementById('price-yearly').value) || 499;
       if (!key) { toast('❌ Key ID enter చేయండి', 'warn'); return; }
-      const cfg = { key, monthly, yearly, enabled: PAYMENT_ENABLED };
-      _ls.setItem('ae_payment_config', JSON.stringify(cfg));
+      const cfg = { key, monthly, yearly, enabled: PAYMENT_ENABLED, utr_enabled: UTR_ENABLED };
+      const cfgStr = JSON.stringify(cfg);
+      _ls.setItem('ae_payment_config', cfgStr);
+      // ✅ FIX: Supabase కి కూడా persist చేయి — refresh తర్వాత config నిలబడుతుంది
+      sbUpsert('ae_settings', { key: 'ae_payment_config', value: cfgStr, updated_at: new Date().toISOString() })
+        .catch(e => console.warn('savePaymentConfig sb:', e));
       RZP_KEY = key; PLAN_PRICES = { monthly, yearly };
       const md = document.getElementById('price-monthly-display');
       const yd = document.getElementById('price-yearly-display');
@@ -24868,11 +24895,32 @@ Rules:
       _updatePremiumNavBtn();
       const cfg = JSON.parse(_ls.getItem('ae_payment_config') || '{}');
       cfg.enabled = enabled;
-      _ls.setItem('ae_payment_config', JSON.stringify(cfg));
+      cfg.utr_enabled = UTR_ENABLED; // preserve current UTR setting
+      const cfgStr = JSON.stringify(cfg);
+      _ls.setItem('ae_payment_config', cfgStr);
+      // ✅ FIX: Supabase కి persist చేయి — refresh తర్వాత toggle నిలబడుతుంది
+      sbUpsert('ae_settings', { key: 'ae_payment_config', value: cfgStr, updated_at: new Date().toISOString() })
+        .catch(e => console.warn('togglePaymentFeature sb:', e));
       toast(enabled ? '✅ Payment feature enabled!' : '⏸ Payment feature disabled', enabled ? 'success' : 'info');
     }
     // alias used in older togglePaymentFeature calls
     window._togglePaymentFeature = togglePaymentFeature;
+
+    // ✅ UTR toggle — admin enable/disable చేయగలరు
+    function toggleUTRFeature(enabled) {
+      UTR_ENABLED = enabled;
+      const cfg = JSON.parse(_ls.getItem('ae_payment_config') || '{}');
+      cfg.utr_enabled = enabled;
+      const cfgStr = JSON.stringify(cfg);
+      _ls.setItem('ae_payment_config', cfgStr);
+      sbUpsert('ae_settings', { key: 'ae_payment_config', value: cfgStr, updated_at: new Date().toISOString() })
+        .catch(e => console.warn('toggleUTRFeature sb:', e));
+      // Admin panel లో UTR section show/hide
+      const utrSection = document.getElementById('utr-payment-section');
+      if (utrSection) utrSection.style.display = enabled ? '' : 'none';
+      toast(enabled ? '✅ UTR Payment enabled!' : '⏸ UTR Payment disabled', enabled ? 'success' : 'info');
+    }
+    window._toggleUTRFeature = toggleUTRFeature;
 
     function _updateToggleUI(enabled) {
       const track = document.getElementById('payment-toggle-track');
@@ -25288,7 +25336,28 @@ Rules:
           method: _selectedPayMethod || 'upi',
         },
         theme: { color: '#1A73E8' },
-        handler: function (response) {
+        handler: async function (response) {
+          // ✅ FIX: Razorpay signature verify చేయి — fake payment_id తో premium కాదు
+          try {
+            toast('⏳ Verifying payment...', 'info');
+            const vRes = await fetch(`${SB_URL}/functions/v1/verify-razorpay-payment`, {
+              method: 'POST',
+              headers: { 'Content-Type': 'application/json', 'Authorization': 'Bearer ' + SB_KEY },
+              body: JSON.stringify({
+                razorpay_order_id: response.razorpay_order_id,
+                razorpay_payment_id: response.razorpay_payment_id,
+                razorpay_signature: response.razorpay_signature,
+              }),
+            });
+            const vData = await vRes.json();
+            if (!vRes.ok || !vData.success) {
+              toast('❌ Payment verification failed. Support కి contact చేయండి.', 'error');
+              return;
+            }
+          } catch (e) {
+            toast('❌ Verification error: ' + e.message, 'error');
+            return;
+          }
           _onPaymentSuccess(response, plan, amount, currentUser);
         },
         modal: {
@@ -25353,6 +25422,12 @@ Rules:
           u.premiumSince = premiumSince;
           if (trialExpiry) u.trialExpiry = trialExpiry;
           saveSubApproved(approved);
+        } else {
+          // ✅ FIX: New user — approved list లో లేకపోతే fresh entry push చేయి
+          const newEntry = { name: user.name, gmail: user.gmail, isPremium: true, premiumPlan: plan, premiumSince, status: 'approved' };
+          if (trialExpiry) newEntry.trialExpiry = trialExpiry;
+          approved.push(newEntry);
+          saveSubApproved(approved);
         }
         // Also update ae_users localStorage
         try {
@@ -25412,9 +25487,36 @@ Rules:
     let _apPage = 0;
     const _AP_PER = 20;
 
-    function renderPaymentsTable() {
+    async function renderPaymentsTable() {
       const el = document.getElementById('payments-table');
       if (!el) return;
+      // ✅ FIX: Supabase ae_payments నుండి fetch చేసి localStorage తో merge చేయి
+      // వేరే device payment చేసినా admin కి కనిపిస్తుంది
+      try {
+        const sbRecs = await sbGet('ae_payments', 'order=created_at.desc&limit=500');
+        if (sbRecs && Array.isArray(sbRecs) && sbRecs.length > 0) {
+          const local = JSON.parse(_ls.getItem('ae_payment_records') || '[]');
+          const sbNorm = sbRecs.map(r => ({
+            id: r.payment_id || r.id,
+            pid: r.payment_id || r.id,
+            utr: r.utr || '',
+            name: r.name || '',
+            gmail: r.gmail || '',
+            plan: r.plan || '',
+            amount: r.amount || 0,
+            date: r.created_at ? new Date(r.created_at).toLocaleString('en-IN') : '',
+            ts: r.created_at ? new Date(r.created_at).getTime() : 0,
+            status: r.status || 'paid'
+          }));
+          // Merge: local entries win for same payment_id (latest status)
+          const merged = [...sbNorm];
+          local.forEach(lr => {
+            if (!merged.find(m => m.pid && lr.pid && m.pid === lr.pid)) merged.push(lr);
+          });
+          merged.sort((a, b) => (b.ts || 0) - (a.ts || 0));
+          _ls.setItem('ae_payment_records', JSON.stringify(merged));
+        }
+      } catch (e) { console.warn('renderPaymentsTable sb fetch:', e); }
       const records = JSON.parse(_ls.getItem('ae_payment_records') || '[]');
       if (!records.length) {
         el.innerHTML = '<tr><td colspan="8" style="text-align:center;color:var(--text3);padding:16px">Payment records లేవు</td></tr>';
@@ -25661,6 +25763,11 @@ Rules:
 
 
     async function submitUTR() {
+      // ✅ UTR_ENABLED = false అయినప్పుడు function execute కాదు
+      if (!UTR_ENABLED) {
+        toast('⚠️ UTR payment currently disabled. Razorpay తో pay చేయండి.', 'warn');
+        return;
+      }
       const utrRaw = (document.getElementById('utr-input')?.value || '').trim();
       const plan = _activePricingTab || 'monthly';
       const user = getCurrentUser();
@@ -25704,15 +25811,16 @@ Rules:
         }
       } catch (e) { console.warn('UTR Supabase check:', e); }
 
-      // ── Both checks passed → ACTIVATE PREMIUM ──
-      if (unlockBtn) { unlockBtn.textContent = '✅ Activating...'; }
+      // ── Both checks passed → PENDING గా save చేయి, admin verify తర్వాత activate ──
+      // ✅ FIX: UTR auto-activate చేయడం లేదు — random string తో premium bypass అవుతుంది
+      //         ఇప్పుడు 'UTR Submitted' గా save అవుతుంది; admin approve చేసిన తర్వాత premium grant
+      if (unlockBtn) { unlockBtn.textContent = '⏳ Submitting...'; }
 
       const amount = plan === 'trial' ? 1 : (plan === 'yearly' ? PLAN_PRICES.yearly : PLAN_PRICES.monthly);
       const now = new Date();
       const dateStr = now.toLocaleString('te-IN');
-      const premiumSince = now.toISOString();
 
-      // 1️⃣ Save payment record as PAID
+      // 1️⃣ Save payment record as UTR Submitted (pending)
       records.unshift({
         name: user.name,
         gmail: user.gmail,
@@ -25721,73 +25829,43 @@ Rules:
         utr: utrRaw,
         date: dateStr,
         ts: now.getTime(),
-        status: 'Premium Activated',
+        status: 'UTR Submitted',
         method: 'UPI'
       });
       _ls.setItem('ae_payment_records', JSON.stringify(records));
 
-      // 2️⃣ Supabase ae_payments — activated గా save
+      // 2️⃣ Supabase ae_payments — pending గా save
       sbInsert('ae_payments', {
         gmail: user.gmail,
         name: user.name,
         plan,
         amount,
         payment_id: utrRaw,
-        status: 'Premium Activated'
+        utr: utrRaw,
+        status: 'UTR Submitted'
       }).catch(e => console.warn('ae_payments UTR insert:', e));
 
-      // 3️⃣ Premium activate — local user object
-      const trialExpiry = _computePlanExpiry(plan);
-      user.isPremium = true;
-      user.premiumSince = premiumSince;
-      user.premiumPlan = plan;
-      if (trialExpiry) user.trialExpiry = trialExpiry;
-      const allUsers = JSON.parse(_ls.getItem('ae_users') || '[]');
-      const uidx = allUsers.findIndex(u => u.gmail === user.gmail);
-      if (uidx > -1) {
-        allUsers[uidx].isPremium = true;
-        allUsers[uidx].premiumSince = premiumSince;
-        allUsers[uidx].premiumPlan = plan;
-        if (trialExpiry) allUsers[uidx].trialExpiry = trialExpiry;
-        _ls.setItem('ae_users', JSON.stringify(allUsers));
-      }
-      // Update current session user
-      // BUG FIX: this used to write to a dead key ('ae_current_user') instead of the
-      // real session key, so the active session never got isPremium/premiumPlan/trialExpiry
-      // saved properly — which meant the 1-day auto-expiry check in getCurrentUser() never
-      // had the data it needed, and premium silently never switched off. setCurrentUser()
-      // writes to the correct session key (ae_logged_user) that getCurrentUser() reads.
-      setCurrentUser({ ...user });
-
-      // 4️⃣ Supabase subscribers లో is_premium = true
-      // FIX: status stays 'approved' regardless of plan — trial vs paid is tracked
-      // via premiumPlan, not by overwriting the subscriber-approval status.
-      const _sbPayload = { name: user.name, gmail: user.gmail, is_premium: true, premium_since: premiumSince, premiumPlan: plan, status: 'approved' };
-      if (trialExpiry) _sbPayload.trial_expiry = trialExpiry;
-      sbSubUpsert(_sbPayload).catch(e => console.warn('sbSubUpsert UTR premium:', e));
-
-      // 5️⃣ WhatsApp alert to admin (FYI — already activated)
-      const waMsg = `✅ *UTR Premium Auto-Activated!*%0A` +
+      // 3️⃣ WhatsApp alert to admin — verify & approve చేయండి
+      const waMsg = `⏳ *New UTR Submitted — Verify చేయండి!*%0A` +
         `👤 Name: ${encodeURIComponent(user.name)}%0A` +
         `📧 Gmail: ${encodeURIComponent(user.gmail)}%0A` +
         `📋 Plan: ${plan} — ₹${amount}%0A` +
         `🔑 UTR: ${utrRaw}%0A` +
         `🕐 Time: ${encodeURIComponent(dateStr)}%0A` +
-        `🏅 Premium automatically activated!`;
+        `⚠️ Admin Panel → Payments లో verify చేసి Approve నొక్కండి!`;
       window.open('https://wa.me/' + SITE_CONFIG.WA_NUMBER + '?text=' + waMsg, '_blank');
 
-      // 6️⃣ Email notifications
-      sendEmailNotification('payment', { name: user.name, gmail: user.gmail, plan, amount, paymentId: utrRaw });
-      sendEmailNotification('payment_admin', { name: user.name, gmail: user.gmail, plan, amount, paymentId: utrRaw });
+      // 4️⃣ Email notifications — user కి pending confirmation, admin కి verify alert
+      sendEmailNotification('utr_user', { name: user.name, gmail: user.gmail, plan, amount, utr: utrRaw });
+      sendEmailNotification('utr_admin', { name: user.name, gmail: user.gmail, plan, amount, utr: utrRaw });
 
-      // 7️⃣ UI refresh
+      // 5️⃣ UI refresh
       closePricing();
-      if (typeof updatePremiumUI === 'function') updatePremiumUI();
       if (typeof renderPaymentsTable === 'function') renderPaymentsTable();
       if (typeof renderPaymentStats === 'function') renderPaymentStats();
       if (unlockBtn) { unlockBtn.disabled = false; unlockBtn.textContent = '🔓 Unlock'; }
 
-      // 8️⃣ Success modal — Premium activated!
+      // 6️⃣ Pending confirmation modal
       setTimeout(() => {
         document.getElementById('premium-success-modal')?.remove();
         const m = document.createElement('div');
@@ -25795,19 +25873,19 @@ Rules:
         m.style.cssText = 'position:fixed;inset:0;z-index:9999;background:rgba(10,18,45,.85);backdrop-filter:blur(18px);display:flex;align-items:center;justify-content:center;padding:16px;';
         m.innerHTML = `
       <div style="background:var(--surface);border-radius:24px;width:100%;max-width:420px;padding:36px 28px;text-align:center;border:2px solid rgba(245,183,49,.5);box-shadow:0 0 60px rgba(245,183,49,.2);">
-        <div style="font-size:64px;margin-bottom:8px">🎉</div>
-        <div style="font-size:24px;font-weight:900;background:linear-gradient(135deg,#F5B731,#E8640A);-webkit-background-clip:text;-webkit-text-fill-color:transparent;margin-bottom:6px">Premium Activated!</div>
+        <div style="font-size:64px;margin-bottom:8px">⏳</div>
+        <div style="font-size:22px;font-weight:900;color:#F5B731;margin-bottom:6px">UTR Submitted!</div>
         <div style="font-size:13px;color:var(--text3);margin-bottom:4px">UTR: <b style="color:var(--text)">${utrRaw}</b></div>
-        <div style="font-size:13px;color:var(--text3);margin-bottom:22px">Plan: <b style="color:var(--text)">${plan === 'yearly' ? 'Yearly — ₹' + PLAN_PRICES.yearly : 'Monthly — ₹' + PLAN_PRICES.monthly}</b></div>
-        <div style="background:linear-gradient(135deg,rgba(245,183,49,.12),rgba(232,100,10,.08));border:1.5px solid rgba(245,183,49,.35);border-radius:16px;padding:18px;margin-bottom:26px">
-          <div style="font-size:14px;font-weight:700;color:#F5B731;line-height:2.1;">
-            ✅ UTR verified — Duplicate కాదు<br>
-            👑 Premium ఇప్పుడే activate అయింది<br>
-            📚 అన్ని Premium exams unlock అయ్యాయి!
+        <div style="font-size:13px;color:var(--text3);margin-bottom:22px">Plan: <b style="color:var(--text)">${plan === 'yearly' ? 'Yearly — ₹' + PLAN_PRICES.yearly : plan === 'trial' ? 'Trial — ₹1' : 'Monthly — ₹' + PLAN_PRICES.monthly}</b></div>
+        <div style="background:rgba(245,183,49,.1);border:1.5px solid rgba(245,183,49,.3);border-radius:16px;padding:18px;margin-bottom:26px">
+          <div style="font-size:13px;font-weight:700;color:var(--text2);line-height:2;">
+            ✅ UTR record చేశాము<br>
+            🔍 Admin verify చేసిన తర్వాత Premium activate అవుతుంది<br>
+            ⏱️ సాధారణంగా 1–4 గంటల్లో activate అవుతుంది
           </div>
         </div>
-        <button onclick="document.getElementById('premium-success-modal').remove();location.reload();" style="width:100%;padding:14px;border-radius:14px;border:none;cursor:pointer;font-size:15px;font-weight:800;background:linear-gradient(135deg,#F5B731,#E8640A);color:#fff;box-shadow:0 4px 20px rgba(245,183,49,.4);">
-          🚀 Exams Start చేయండి!
+        <button onclick="document.getElementById('premium-success-modal').remove();" style="width:100%;padding:14px;border-radius:14px;border:none;cursor:pointer;font-size:15px;font-weight:800;background:var(--card);color:var(--text);border:2px solid var(--border2);">
+          సరే, వేచి ఉంటాను
         </button>
       </div>`;
         document.body.appendChild(m);

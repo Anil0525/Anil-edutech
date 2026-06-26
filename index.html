@@ -2337,7 +2337,7 @@
 
     .nav-links {
       display: flex;
-      gap: 2px;
+      gap: 1px;
       align-items: center;
     }
 
@@ -2346,15 +2346,15 @@
       border: none;
       color: #2D3561;
       font-family: inherit;
-      font-size: 12.5px;
+      font-size: 12px;
       font-weight: 700;
-      padding: 6px 11px;
+      padding: 6px 8px;
       border-radius: 8px;
       cursor: pointer;
       transition: all .2s;
       display: flex;
       align-items: center;
-      gap: 4px;
+      gap: 3px;
     }
 
     .nav-btn:hover {
@@ -8455,6 +8455,11 @@
         display: inline !important;
       }
 
+      /* Show full text in mobile hamburger menu */
+      #nav-progress span[data-full]::before { content: attr(data-full); display: inline; }
+      #nav-progress span[data-full] { font-size: 0; }
+      .nav-refer-text::after { content: ' & Earn'; }
+
       /* HERO */
       .hero {
         padding: 20px 16px 20px !important;
@@ -11713,16 +11718,16 @@
     <div class="nav-links" id="nav-links">
       <button class="nav-btn" id="nav-home" onclick="goHome();closeMenu()">🏠 <span>హోమ్</span></button>
       <button class="nav-btn" id="nav-exams" onclick="goExams();closeMenu()">📝 <span>పరీక్షలు</span></button>
-      <button class="nav-btn" id="nav-progress" onclick="goProgress();closeMenu()">📊 <span>నా Progress</span></button>
+      <button class="nav-btn" id="nav-progress" onclick="goProgress();closeMenu()">📊 <span>Progress</span></button>
       <button class="nav-btn" id="nav-videos" onclick="goVideos();closeMenu()">🎥 <span>Videos</span></button>
       <button class="nav-btn" id="nav-support" onclick="goSupport();closeMenu()">🆘 <span>Support</span></button>
       <button class="nav-btn" id="nav-admin" onclick="goAdmin();closeMenu()">⚙️ <span>Admin</span></button>
       <button class="nav-btn" id="nav-premium-btn" onclick="openPricing();closeMenu()"
-        style="display:none;background:linear-gradient(135deg,#F5B731,#E8640A);color:#fff;border-radius:9px;font-weight:800;box-shadow:0 4px 14px rgba(245,183,49,.4)">⭐
+        style="display:none;background:linear-gradient(135deg,#F5B731,#E8640A);color:#fff;border-radius:9px;font-weight:800;padding:6px 9px;box-shadow:0 4px 14px rgba(245,183,49,.4)">⭐
         <span>Premium</span></button>
       <button class="nav-btn" onclick="goReferral();closeMenu()"
-        style="background:linear-gradient(135deg,#EC4899,#8B5CF6);color:#fff;border-radius:9px;font-weight:800;">🎁
-        <span>Refer & Earn</span></button>
+        style="background:linear-gradient(135deg,#EC4899,#8B5CF6);color:#fff;border-radius:9px;font-weight:800;padding:6px 9px;">🎁
+        <span class="nav-refer-text">Refer</span></button>
       <button class="nav-btn nav-accent" onclick="openYT();closeMenu()">▶ <span>YouTube</span></button>
       <div class="lang-toggle-wrap">
         <button class="lang-btn" id="lang-te" onclick="setLang('te')">తె</button>
@@ -12595,7 +12600,7 @@
   <div style="text-align:center;padding:14px 16px 6px;border-top:1px solid var(--border);background:var(--surface);">
     <ins class="adsbygoogle"
          style="display:block"
-         data-ad-client="ca-pub-XXXXXXXXXXXXXXXX"
+         data-ad-client="ca-pub-4249412359624560"
          data-ad-slot="ADSENSE_SLOT_FOOTER"
          data-ad-format="auto"
          data-full-width-responsive="true"></ins>
@@ -13971,7 +13976,7 @@
     <div style="text-align:center;padding:16px 0 8px;margin-bottom:8px;">
       <ins class="adsbygoogle"
            style="display:block"
-           data-ad-client="ca-pub-XXXXXXXXXXXXXXXX"
+           data-ad-client="ca-pub-4249412359624560"
            data-ad-slot="ADSENSE_SLOT_RESULTS"
            data-ad-format="auto"
            data-full-width-responsive="true"></ins>
@@ -15136,7 +15141,9 @@
 
     async function sbClearResults() {
       if (!confirm('⚠️ ALL results Supabase నుండి permanently delete అవుతాయి. Continue?')) return;
-      try { await fetch(`${SB_URL}/rest/v1/ae_results`, { method: 'DELETE', headers: { ...SB_HEADERS, 'Prefer': 'return=minimal' } }); } catch (e) { }
+      const typed = prompt('ఖచ్చితంగా delete చేయాలంటే "DELETE" అని type చేయండి:');
+      if (typed !== 'DELETE') { toast('Cancelled — "DELETE" type చేయలేదు.', 'warn'); return; }
+      try { await fetch(`${SB_URL}/rest/v1/ae_results?ts=gt.0`, { method: 'DELETE', headers: { ...SB_HEADERS, 'Prefer': 'return=minimal' } }); } catch (e) { }
     }
 
     // ── SUPABASE EXAMS/QUESTIONS TABLE HELPERS ──
@@ -15567,7 +15574,7 @@
     const LANG = {
       te: {
         // Nav
-        home: 'హోమ్', exams: 'పరీక్షలు', progress: 'నా Progress', admin: 'Admin',
+        home: 'హోమ్', exams: 'పరీక్షలు', progress: 'Progress', progressFull: 'నా Progress', admin: 'Admin',
         // Hero
         heroBadge: 'Anil EduTech — ఉచిత Mock Tests',
         heroH1: 'తెలివిగా నేర్వండి.<br><span>High Score సాధించండి.</span>',
@@ -15596,7 +15603,7 @@
       },
       en: {
         // Nav
-        home: 'Home', exams: 'Exams', progress: 'My Progress', admin: 'Admin',
+        home: 'Home', exams: 'Exams', progress: 'Progress', progressFull: 'My Progress', admin: 'Admin',
         // Hero
         heroBadge: 'Anil EduTech — Free Online Mock Tests',
         heroH1: 'Learn Smart.<br><span>Score High.</span>',
@@ -15646,10 +15653,13 @@
       const setHTML = (id, val) => { const el = document.getElementById(id); if (el) el.innerHTML = val; };
       const setAttr = (id, attr, val) => { const el = document.getElementById(id); if (el) el.setAttribute(attr, val); };
 
-      // Nav spans
+      // Nav spans — short text for desktop, full text stored as data-full for mobile hamburger
       document.querySelectorAll('#nav-home span').forEach(s => s.textContent = L.home);
       document.querySelectorAll('#nav-exams span').forEach(s => s.textContent = L.exams);
-      document.querySelectorAll('#nav-progress span').forEach(s => s.textContent = L.progress);
+      document.querySelectorAll('#nav-progress span').forEach(s => {
+        s.textContent = L.progress;
+        s.dataset.full = L.progressFull || L.progress;
+      });
 
       // Hero
       const badge = document.querySelector('.hero-badge'); if (badge) badge.textContent = L.heroBadge;
@@ -15699,7 +15709,7 @@
     }
 
     // exam state — declared early so applyLang() can safely reference it
-    let exam = { current: null, questions: [], idx: 0, answers: {}, timerInterval: null, timeLeft: 0 };
+    let exam = { current: null, questions: [], idx: 0, answers: {}, timerInterval: null, timeLeft: 0, _isSubmitting: false };
 
     // lang init deferred to _appInit() after storage loads
 
@@ -16948,8 +16958,8 @@ More exams: https://aniledutech.in
           return null; // auto-logout
         }
         // Premium expiry check — auto-revoke after plan duration ends (trial/monthly/yearly)
-        if (u.isPremium && u.trialExpiry) {
-          const effectiveExpiry = new Date(u.trialExpiry).getTime();
+        if (u.isPremium && (u.trialExpiry || u.premiumExpiry)) {
+          const effectiveExpiry = new Date(u.trialExpiry || u.premiumExpiry).getTime();
           if (effectiveExpiry && Date.now() > effectiveExpiry) {
             const expiredPlan = u.premiumPlan || 'trial';
             u.isPremium = false;
@@ -17024,9 +17034,9 @@ More exams: https://aniledutech.in
       const navBtn = document.getElementById('user-nav-btn');
 
       if (u) {
-        loginBtn.style.display = 'none';
-        profileWrap.style.display = 'block';
-        navBtn.style.display = 'inline-flex';
+        if (loginBtn) loginBtn.style.display = 'none';
+        if (profileWrap) profileWrap.style.display = 'block';
+        if (navBtn) navBtn.style.display = 'inline-flex';
 
         // Avatar initials
         const initials = u.name ? u.name.split(' ').map(w => w[0]).join('').slice(0, 2).toUpperCase() : 'U';
@@ -17049,7 +17059,7 @@ More exams: https://aniledutech.in
         // Show/hide premium nav button based on premium status
         if (typeof _updatePremiumNavBtn === 'function') _updatePremiumNavBtn();
       } else {
-        loginBtn.style.display = 'inline-flex';
+        if (loginBtn) loginBtn.style.display = 'inline-flex';
         if (profileWrap) profileWrap.style.display = 'none';
         // Hide premium button when logged out
         const _pb = document.getElementById('nav-premium-btn');
@@ -17193,8 +17203,15 @@ More exams: https://aniledutech.in
     }
 
     // ── LOGIN BRUTE FORCE PROTECTION ──
-    const _loginAttempts = { count: 0, lockedUntil: 0 };
-    const _adminAttempts = { count: 0, lockedUntil: 0 };
+    // Persist lockout across page refreshes via localStorage
+    function _loadAttempts(key) {
+      try { return JSON.parse(_ls.getItem(key) || 'null') || { count: 0, lockedUntil: 0 }; } catch (e) { return { count: 0, lockedUntil: 0 }; }
+    }
+    function _saveAttempts(key, obj) {
+      try { _ls.setItem(key, JSON.stringify(obj)); } catch (e) {}
+    }
+    const _loginAttempts = _loadAttempts('_ae_login_attempts');
+    const _adminAttempts = _loadAttempts('_ae_admin_attempts');
 
     // ── LOGIN ──
     async function doLogin() {
@@ -17225,8 +17242,10 @@ More exams: https://aniledutech.in
         if (_loginAttempts.count >= 3) {
           _loginAttempts.lockedUntil = Date.now() + 300000; // 5 minutes lockout
           _loginAttempts.count = 0;
+          _saveAttempts('_ae_login_attempts', _loginAttempts);
           errEl.textContent = '🔒 చాలాసార్లు తప్పు try చేశారు. 5 నిమిషాలు wait చేయండి.';
         } else {
+          _saveAttempts('_ae_login_attempts', _loginAttempts);
           const m = (res.error_description || res.msg || res.error || '').toLowerCase();
           if (m.includes('invalid') || m.includes('credentials')) {
             errEl.textContent = `❌ Email లేదా Password తప్పు. (${3 - _loginAttempts.count} tries మిగిలాయి)`;
@@ -17242,6 +17261,7 @@ More exams: https://aniledutech.in
       // Successful login - reset attempts
       _loginAttempts.count = 0;
       _loginAttempts.lockedUntil = 0;
+      _saveAttempts('_ae_login_attempts', _loginAttempts);
 
       // Save session
       const user = {
@@ -17998,10 +18018,12 @@ More exams: https://aniledutech.in
       document.body.style.overflow = (name === 'exam') ? 'hidden' : '';
       // Hide navbar when exam is active
       document.body.classList.toggle('exam-active', name === 'exam');
-      const nb = document.getElementById('nav-' + name);
-      if (nb) nb.classList.add('active');
       window.scrollTo({ top: 0, behavior: 'smooth' });
-      const _navMap = { home: 'home', exams: 'exams', result: 'exams', exam: 'exams', progress: 'progress', videos: 'videos' };
+      const _navMap = { home: 'home', exams: 'exams', result: 'exams', exam: 'exams', progress: 'progress', videos: 'videos', support: 'support', referral: 'home', badges: 'progress', daily: 'exams', profile: 'home', 'mock-folders': 'exams', 'mock-subfolders': 'exams', 'mock-folder-detail': 'exams', syllabus: 'exams', jobs: 'home', contest: 'exams', 'current-affairs': 'exams', 'exam-ssc': 'exams', feedback: 'exams', admin: 'admin' };
+      // Desktop nav highlight: direct match first, then _navMap fallback
+      const _desktopNavId = 'nav-' + (document.getElementById('nav-' + name) ? name : (_navMap[name] || 'home'));
+      const _desktopNavEl = document.getElementById(_desktopNavId);
+      if (_desktopNavEl) _desktopNavEl.classList.add('active');
       _mobNavActive(_navMap[name] || 'home');
       setTimeout(() => document.dispatchEvent(new Event('ae-page-changed')), 100);
 
@@ -18348,8 +18370,10 @@ More exams: https://aniledutech.in
         if (_adminAttempts.count >= 3) {
           _adminAttempts.lockedUntil = Date.now() + 600000; // 10 minutes
           _adminAttempts.count = 0;
+          _saveAttempts('_ae_admin_attempts', _adminAttempts);
           errEl.textContent = '🔒 చాలాసార్లు తప్పు try చేశారు. Admin account 10 నిమిషాలు lock అయింది.';
         } else {
+          _saveAttempts('_ae_admin_attempts', _adminAttempts);
           errEl.textContent = `❌ Username లేదా Password తప్పు. (${remaining} tries మిగిలాయి)`;
         }
         const inp = document.getElementById('pw-input');
@@ -18362,6 +18386,7 @@ More exams: https://aniledutech.in
       // Success — reset attempts
       _adminAttempts.count = 0;
       _adminAttempts.lockedUntil = 0;
+      _saveAttempts('_ae_admin_attempts', _adminAttempts);
 
       closePwModal();
       stopTimer();
@@ -18399,6 +18424,26 @@ More exams: https://aniledutech.in
       renderMockFolderAdminTable();
       loadAdminCredentials();
       toast('✅ Admin login successful!', 'success');
+      // ── DEFAULT CREDENTIALS WARNING ──
+      const _usingDefaultPw = (ADMIN_PW === 'Anil@2025');
+      const _usingDefaultUname = (ADMIN_USERNAME === 'admin');
+      if (_usingDefaultPw || _usingDefaultUname) {
+        setTimeout(() => {
+          toast('⚠️ Default credentials వాడుతున్నారు! వెంటనే Security Settings లో Password మార్చండి.', 'warn', 8000);
+        }, 1200);
+        // Also show a persistent banner in admin panel if possible
+        setTimeout(() => {
+          const _secEl = document.getElementById('admin-security-warning-banner');
+          if (!_secEl) {
+            const _banner = document.createElement('div');
+            _banner.id = 'admin-security-warning-banner';
+            _banner.style.cssText = 'background:#b91c1c;color:#fff;padding:10px 18px;font-size:13px;font-weight:700;text-align:center;position:sticky;top:0;z-index:9999;border-radius:0;';
+            _banner.innerHTML = '⚠️ Default credentials వాడుతున్నారు! <a href="javascript:void(0)" onclick="document.getElementById(\'admin-settings-tab\')?.click?.()" style="color:#fde68a;text-decoration:underline;">Security Settings లో Password మార్చండి</a>';
+            const _adminPanel = document.getElementById('page-admin');
+            if (_adminPanel) _adminPanel.prepend(_banner);
+          }
+        }, 1500);
+      }
     }
 
     function doAdminForgotReset() {
@@ -18954,7 +18999,7 @@ More exams: https://aniledutech.in
       exam.questions = qs;
       exam.idx = saved.idx || 0;
       exam.answers = saved.answers || {};
-      exam.timeLeft = saved.timeLeft || e.time * 60;
+      exam.timeLeft = Math.min(saved.timeLeft || e.time * 60, e.time * 60);
 
       _launchExamUI(e, qs);
       toast('▶ Exam resume చేయబడింది!', 'success');
@@ -19258,6 +19303,12 @@ More exams: https://aniledutech.in
         console.warn('[submitExam] called with no active exam — ignored');
         return;
       }
+      // Guard: prevent double-submit (timer + manual click same time)
+      if (exam._isSubmitting) {
+        console.warn('[submitExam] already submitting — ignored');
+        return;
+      }
+      exam._isSubmitting = true;
       // Check for unanswered questions and show confirmation
       const qs = exam.questions;
       const answeredCount = qs.filter(q => exam.answers[q.id]).length;
@@ -19267,7 +19318,7 @@ More exams: https://aniledutech.in
         const msg = lang === 'te'
           ? `మీరు ${unanswered} questions answer చేయలేదు!\n\nSubmit చేయాలా? (Unanswered questions skip గా count అవుతాయి)`
           : `You have ${unanswered} unanswered question(s)!\n\nAre you sure you want to submit? (Unanswered questions will be counted as skipped)`;
-        if (!confirm(msg)) return;
+        if (!confirm(msg)) { exam._isSubmitting = false; return; }
       }
       stopTimer();
       _clearExamProgress();
@@ -19413,6 +19464,7 @@ More exams: https://aniledutech.in
     }
 
     function showResultPage() {
+      exam._isSubmitting = false; // reset so next exam can submit normally
       const qs = exam.questions;
       const { correct, wrong, skip, pct } = exam._result;
 
@@ -19460,7 +19512,7 @@ More exams: https://aniledutech.in
       }, 300);
 
       if (pct >= 60) spawnConfetti();
-      _loadFeedbackPage(exam.current?.id || exam.id, exam.current?.name || exam.name);
+      _loadFeedbackPage(exam.current?.id || '', exam.current?.name || '');
 
       // Performance Chart
       const chartWrap = document.getElementById('result-chart-container');
@@ -19823,11 +19875,11 @@ More exams: https://aniledutech.in
             return '<div style="background:var(--surface);border:1.5px solid var(--border2);border-radius:14px;padding:12px 14px;">' +
               '<div style="display:flex;align-items:center;gap:8px;margin-bottom:6px;">' +
               '<div style="width:30px;height:30px;border-radius:50%;background:linear-gradient(135deg,#6366f1,#8b5cf6);display:flex;align-items:center;justify-content:center;font-weight:900;font-size:11px;color:#fff;flex-shrink:0;">' + initials + '</div>' +
-              '<div><div style="font-size:12.5px;font-weight:800;color:var(--text);">' + (r.user_name || 'Anonymous') + '</div>' +
+              '<div><div style="font-size:12.5px;font-weight:800;color:var(--text);">' + escHtml(r.user_name || 'Anonymous') + '</div>' +
               '<div style="font-size:11px;color:#F59E0B;letter-spacing:1px;">' + stars + '</div></div>' +
-              (r.exam_name ? '<div style="margin-left:auto;font-size:10px;color:var(--text3);font-weight:600;background:var(--bg2);border-radius:6px;padding:2px 7px;max-width:90px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;">' + r.exam_name + '</div>' : '') +
+              (r.exam_name ? '<div style="margin-left:auto;font-size:10px;color:var(--text3);font-weight:600;background:var(--bg2);border-radius:6px;padding:2px 7px;max-width:90px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;">' + escHtml(r.exam_name) + '</div>' : '') +
               '</div>' +
-              (r.comment ? '<div style="font-size:12px;color:var(--text2);line-height:1.5;">' + r.comment + '</div>' : '') +
+              (r.comment ? '<div style="font-size:12px;color:var(--text2);line-height:1.5;">' + escHtml(r.comment) + '</div>' : '') +
               '</div>';
           }).join('') + '</div>';
       } catch (e) { }
@@ -19862,7 +19914,7 @@ More exams: https://aniledutech.in
       if (!_revExamId && exam.current?.id) { _revExamId = exam.current.id; _revExamName = exam.current.name || ''; }
       if (!_revExamId) { toast('⚠️ Exam గుర్తించలేకపోయాం', 'error'); return; }
       if (!_revSelectedStars) { toast('⚠️ ముందు Star Rating select చేయండి', 'warn'); return; }
-      const currentUser = typeof _getCurrentUser === 'function' ? _getCurrentUser() : null;
+      const currentUser = typeof getCurrentUser === 'function' ? getCurrentUser() : (typeof _getCurrentUser === 'function' ? _getCurrentUser() : null);
       const userName = (currentUser && currentUser.name) ? currentUser.name : (document.getElementById('name-input') ? document.getElementById('name-input').value : '') || 'Anonymous';
       const comment = (document.getElementById('rev-comment').value || '').trim();
       const btn = document.getElementById('rev-submit-btn');
@@ -20250,8 +20302,11 @@ More exams: https://aniledutech.in
       const total = DB.questions.length;
       if (!total) { toast('Questions లేవు!', 'warn'); return; }
       if (!confirm('మొత్తం ' + total + ' questions delete చేయాలా? ఇది undo చేయలేరు!')) return;
-      // Delete all from Supabase too
-      fetch(`${SB_URL}/rest/v1/ae_questions`, { method: 'DELETE', headers: SB_HEADERS });
+      // Delete from Supabase with id filter (never delete entire table without filter)
+      const ids = DB.questions.map(q => q.id).filter(Boolean);
+      if (ids.length) {
+        fetch(`${SB_URL}/rest/v1/ae_questions?id=in.(${ids.join(',')})`, { method: 'DELETE', headers: SB_HEADERS });
+      }
       DB.questions = [];
       saveDB();
       renderAdminTable();
@@ -20385,7 +20440,7 @@ More exams: https://aniledutech.in
       }
     }
 
-    function toast(msg, type = 'success') {
+    function toast(msg, type = 'success', duration = 3200) {
       const wrap = document.getElementById('ae-toast-wrap');
       if (!wrap) return;
       const icons = { success: '✅', error: '❌', info: 'ℹ️', warn: '⚠️' };
@@ -20400,7 +20455,7 @@ More exams: https://aniledutech.in
       setTimeout(() => {
         el.classList.add('removing');
         setTimeout(() => el.remove(), 300);
-      }, 3200);
+      }, duration);
     }
 
     /* ---- MCQ PARSER (No API needed) ---- */
@@ -22356,7 +22411,7 @@ Rules:
     function goBadges() {
       stopTimer();
       showPage('badges');
-      document.querySelectorAll('.nav-btn').forEach(b => b.classList.remove('active'));
+      document.querySelectorAll('.nav-btn:not(.nav-accent)').forEach(b => b.classList.remove('active'));
       _renderBadges();
     }
 
@@ -22413,7 +22468,7 @@ Rules:
     function goDaily() {
       stopTimer();
       showPage('daily');
-      document.querySelectorAll('.nav-btn').forEach(b => b.classList.remove('active'));
+      document.querySelectorAll('.nav-btn:not(.nav-accent)').forEach(b => b.classList.remove('active'));
       _renderDaily();
     }
 
@@ -22629,7 +22684,7 @@ Rules:
     function goReferral() {
       stopTimer();
       showPage('referral');
-      document.querySelectorAll('.nav-btn').forEach(b => b.classList.remove('active'));
+      document.querySelectorAll('.nav-btn:not(.nav-accent)').forEach(b => b.classList.remove('active'));
       _renderReferral();
     }
 
@@ -22871,6 +22926,7 @@ Rules:
       if (!file) return;
       const ext = file.name.split('.').pop().toLowerCase();
       if (ext === 'csv') {
+        if (file.size > 5 * 1024 * 1024) { toast('⚠️ CSV file 5MB కంటే తక్కువ ఉండాలి. File చిన్నగా split చేయండి.', 'warn'); return; }
         const reader = new FileReader();
         reader.onload = ev => _parseCSVText(ev.target.result);
         reader.readAsText(file);
@@ -22881,6 +22937,7 @@ Rules:
     function _parsePastedCSV() {
       const text = document.getElementById('bulk-csv-text').value.trim();
       if (!text) { toast('❌ CSV text paste చేయండి', 'error'); return; }
+      if (text.length > 5 * 1024 * 1024) { toast('⚠️ CSV text చాలా పెద్దగా ఉంది (5MB limit). Chunk చేసి paste చేయండి.', 'warn'); return; }
       _parseCSVText(text);
     }
     function _parseCSVText(text) {
@@ -23390,7 +23447,7 @@ Rules:
     function goVideos() {
       stopTimer();
       showPage('videos');
-      document.querySelectorAll('.nav-btn').forEach(b => b.classList.remove('active'));
+      document.querySelectorAll('.nav-btn:not(.nav-accent)').forEach(b => b.classList.remove('active'));
       const nb = document.getElementById('nav-videos');
       if (nb) nb.classList.add('active');
       renderVideos();
@@ -23399,7 +23456,7 @@ Rules:
     function goSupport() {
       stopTimer();
       showPage('support');
-      document.querySelectorAll('.nav-btn').forEach(b => b.classList.remove('active'));
+      document.querySelectorAll('.nav-btn:not(.nav-accent)').forEach(b => b.classList.remove('active'));
       const nb = document.getElementById('nav-support');
       if (nb) nb.classList.add('active');
     }
@@ -32556,14 +32613,19 @@ Rules:
   // ── Hook: update contest score + push notification when exam completed (MERGED) ──
   const _origSaveScoreContest = window.saveScoreAndShow;
   window.saveScoreAndShow = async function () {
+    // Snapshot exam data immediately — exam.current may be cleared after async awaits
+    const _snapExamId   = exam?.current?.id   || null;
+    const _snapExamName = exam?.current?.name || 'Exam';
+    const _snapPct      = exam?._result?.pct  ?? 0;
+
     _origSaveScoreContest && _origSaveScoreContest.apply(this, arguments);
 
     // 1. Push notification (ask permission at natural moment)
     const granted = await AE_NOTIF.requestPermission();
     if (granted) {
       setTimeout(async () => {
-        const examName = exam?.current?.name || 'Exam';
-        const pct = exam?._result?.pct ?? 0;
+        const examName = _snapExamName;
+        const pct = _snapPct;
         const u = getCurrentUser && getCurrentUser();
         const name = u?.name || 'User';
         await AE_NOTIF.onExamComplete(name, examName, pct);
@@ -32573,9 +32635,9 @@ Rules:
     // 2. Contest score update
     try {
       const u = getCurrentUser();
-      if (!u || !exam.current) return;
-      const examId = exam.current.id;
-      const pct = exam?._result?.pct ?? 0;
+      if (!u || !_snapExamId) return;
+      const examId = _snapExamId;
+      const pct = _snapPct;
       const entryRes = await fetch(`${SB_URL}/rest/v1/ae_contest_entries?gmail=eq.${encodeURIComponent(u.gmail)}&status=eq.approved`, { headers: SB_HEADERS });
       const entries = entryRes.ok ? await entryRes.json() : [];
       for (const entry of entries) {
@@ -32587,12 +32649,12 @@ Rules:
               method: 'PATCH', headers: SB_HEADERS,
               body: JSON.stringify({ score: pct })
             });
-            // Bell notification: contest score updated
+            // Bell notification: contest score updated (only to this user)
             const contestName = cData[0].title || 'Contest';
             createBellNotifications(
               '🏆 Contest Score Update!',
               `${contestName} లో మీ score: ${pct}% — Leaderboard చూడండి 🚀`,
-              'all',
+              u.gmail,
               'https://aniledutech.in'
             );
           }

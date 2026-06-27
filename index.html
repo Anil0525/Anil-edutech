@@ -213,6 +213,25 @@
   ]
 }
 </script>
+  <!-- ===== EXAM-WISE SEO STRUCTURED DATA ===== -->
+  <script type="application/ld+json">
+  {
+    "@context": "https://schema.org",
+    "@type": "ItemList",
+    "name": "Free Mock Tests — Anil EduTech",
+    "description": "TSPSC, APPSC, SSC, Banking, RRB, GK exams కోసం free mock tests Telugu లో",
+    "url": "https://aniledutech.in/",
+    "numberOfItems": 6,
+    "itemListElement": [
+      {"@type":"ListItem","position":1,"name":"TSPSC Free Mock Test Telugu","url":"https://aniledutech.in/?exam=tspsc","description":"TSPSC Group 1 2 3 4 exams కి Telugu medium లో free practice tests"},
+      {"@type":"ListItem","position":2,"name":"APPSC Free Mock Test Telugu","url":"https://aniledutech.in/?exam=appsc","description":"APPSC Groups exams కి Telugu medium లో free online tests"},
+      {"@type":"ListItem","position":3,"name":"SSC CGL CHSL Free Mock Test","url":"https://aniledutech.in/?exam=ssc","description":"SSC CGL CHSL MTS exams కి free practice tests Telugu and English"},
+      {"@type":"ListItem","position":4,"name":"Banking IBPS SBI Free Mock Test","url":"https://aniledutech.in/?exam=banking","description":"IBPS PO Clerk SBI Banking exams కి free online mock tests"},
+      {"@type":"ListItem","position":5,"name":"RRB NTPC Group D Free Mock Test","url":"https://aniledutech.in/?exam=rrb","description":"RRB NTPC Group D exams కి Telugu medium free tests"},
+      {"@type":"ListItem","position":6,"name":"GK Daily Quiz Telugu","url":"https://aniledutech.in/?exam=gk","description":"Daily GK current affairs quiz Telugu లో free"}
+    ]
+  }
+  </script>
   <!-- ===== END SEO OPTIMIZATION ===== -->
   <link rel="icon" type="image/png" sizes="32x32" href="/favicon.png">
   <link rel="shortcut icon" href="logo.png" type="image/png">
@@ -12576,6 +12595,15 @@
           <button class="lb-tab-btn" data-f="today" onclick="_lbSetFilter('today')">📅 Today</button>
           <button class="lb-tab-btn" data-f="week" onclick="_lbSetFilter('week')">📆 This Week</button>
         </div>
+        <div style="display:flex;gap:6px;flex-wrap:wrap;margin-top:8px;">
+          <button class="lb-tab-btn lb-cat-btn active" data-cat="all" onclick="_lbSetCat('all')">📋 All Exams</button>
+          <button class="lb-tab-btn lb-cat-btn" data-cat="TSPSC" onclick="_lbSetCat('TSPSC')">🏛️ TSPSC</button>
+          <button class="lb-tab-btn lb-cat-btn" data-cat="APPSC" onclick="_lbSetCat('APPSC')">🏛️ APPSC</button>
+          <button class="lb-tab-btn lb-cat-btn" data-cat="SSC" onclick="_lbSetCat('SSC')">📝 SSC</button>
+          <button class="lb-tab-btn lb-cat-btn" data-cat="Banking" onclick="_lbSetCat('Banking')">🏦 Banking</button>
+          <button class="lb-tab-btn lb-cat-btn" data-cat="GK" onclick="_lbSetCat('GK')">🌍 GK</button>
+          <button class="lb-tab-btn lb-cat-btn" data-cat="RRB" onclick="_lbSetCat('RRB')">🚆 RRB
+        </div>
         <div style="display:flex;align-items:center;gap:10px;font-size:11px;opacity:.75;">
           <span id="lb-source-badge">🌐 Live</span>
           <span id="lb-last-updated" style="font-size:10px;"></span>
@@ -13988,6 +14016,21 @@
         <div id="rev-summary" style="font-size:12px;color:var(--text3);font-weight:700;"></div>
       </div>
       <div id="rev-list" style="max-width:520px;margin-bottom:28px;"></div>
+
+      <!-- Refer & Earn card on result page -->
+      <div id="result-referral-card" style="max-width:520px;margin-bottom:24px;background:linear-gradient(135deg,rgba(236,72,153,.1),rgba(139,92,246,.08));border:1.5px solid rgba(139,92,246,.3);border-radius:16px;padding:16px 18px;">
+        <div style="display:flex;align-items:center;gap:10px;margin-bottom:10px;">
+          <span style="font-size:24px;">🎁</span>
+          <div>
+            <div style="font-size:13px;font-weight:900;color:var(--text);">Friends కి Share చేయండి — వారూ practice చేస్తారు!</div>
+            <div style="font-size:11px;color:var(--text3);font-weight:600;">మీ referral link తో join చేస్తే మీకు rewards వస్తాయి</div>
+          </div>
+        </div>
+        <div style="display:flex;gap:8px;flex-wrap:wrap;">
+          <button onclick="shareResult('whatsapp')" style="padding:9px 14px;background:linear-gradient(135deg,#25D366,#128C7E);color:#fff;border:none;border-radius:10px;font-family:inherit;font-size:12px;font-weight:800;cursor:pointer;flex:1;min-width:120px;">📤 Score + Link Share</button>
+          <button onclick="goReferral()" style="padding:9px 14px;background:linear-gradient(135deg,#EC4899,#8B5CF6);color:#fff;border:none;border-radius:10px;font-family:inherit;font-size:12px;font-weight:800;cursor:pointer;flex:1;min-width:120px;">🔗 Refer & Earn చూడండి</button>
+        </div>
+      </div>
 
       <div class="section-title" style="margin-bottom:16px">Answer Review</div>
       <div class="answer-review" id="answer-review"></div>
@@ -16254,7 +16297,48 @@ More exams: https://aniledutech.in
       });
     }
 
-    // ── SUBJECT-WISE WEAK AREAS ──
+    function _showStreakCelebration(streakCount) {
+      // Milestone thresholds
+      const milestones = {
+        1:  { emoji: '🔥', title: 'Streak Start!', msg: 'చాలా బాగుంది! రేపు కూడా రండి.', color: '#F59E0B' },
+        3:  { emoji: '⚡', title: '3-Day Streak!', msg: 'Super! 3 రోజులు completed! 💪', color: '#8B5CF6' },
+        7:  { emoji: '🏆', title: 'Week Warrior!', msg: 'అద్భుతం! పూర్తి week maintain చేశారు!', color: '#EF4444' },
+        14: { emoji: '💎', title: '2 Weeks Strong!', msg: '14 రోజులు! మీరు నిజమైన champion!', color: '#06B6D4' },
+        30: { emoji: '👑', title: '30-Day Legend!', msg: 'UNSTOPPABLE! 30 రోజులు completed! 🎉', color: '#F5B731' },
+      };
+      const milestone = milestones[streakCount];
+      // Show popup only on milestones; for non-milestones just show share option after day 1
+      const isMilestone = !!milestone;
+      if (!isMilestone && streakCount < 1) return;
+
+      const info = milestone || { emoji: '🔥', title: `${streakCount}-Day Streak!`, msg: 'Great going! Keep it up!', color: '#F59E0B' };
+      const u = getCurrentUser();
+      const waMsg = encodeURIComponent(`🔥 *Anil EduTech Daily Challenge*\n\n${info.emoji} ${info.title}\nనేను ${streakCount} రోజులు వరుసగా Daily Challenge complete చేశాను!\n\n💪 మీరు కూడా try చేయండి → https://aniledutech.in`);
+
+      document.getElementById('streak-celebration-modal')?.remove();
+      const m = document.createElement('div');
+      m.id = 'streak-celebration-modal';
+      m.style.cssText = 'position:fixed;inset:0;z-index:850;background:rgba(5,12,35,.85);backdrop-filter:blur(16px);display:flex;align-items:center;justify-content:center;padding:16px;animation:fadeUp .3s ease;';
+      m.innerHTML = `<div style="background:var(--surface);border-radius:24px;width:100%;max-width:360px;padding:0;text-align:center;overflow:hidden;box-shadow:0 30px 80px rgba(0,0,0,.5);border:1.5px solid ${info.color}44;">
+  <div style="height:4px;background:linear-gradient(90deg,${info.color},${info.color}99,${info.color});"></div>
+  <div style="padding:28px 22px 22px;">
+    <div style="font-size:60px;margin-bottom:8px;filter:drop-shadow(0 0 20px ${info.color}66);">${info.emoji}</div>
+    <div style="font-size:20px;font-weight:900;color:var(--text);margin-bottom:4px;">${info.title}</div>
+    <div style="font-size:13px;color:var(--text3);margin-bottom:6px;">${info.msg}</div>
+    <div style="display:inline-flex;align-items:center;gap:6px;background:${info.color}18;border:1px solid ${info.color}44;border-radius:20px;padding:5px 14px;margin-bottom:18px;">
+      <span style="font-size:22px;font-weight:900;color:${info.color};">${streakCount}</span>
+      <span style="font-size:11px;color:var(--text3);font-weight:700;">Day${streakCount>1?'s':''} Streak</span>
+    </div>
+    <div style="font-size:12px;color:var(--text3);margin-bottom:12px;font-weight:600;">Friends కి share చేయండి — వాళ్ళూ join అవుతారు! 👥</div>
+    <button onclick="window.open('https://wa.me/?text=${waMsg}','_blank');document.getElementById('streak-celebration-modal').remove();" style="width:100%;padding:13px;border-radius:14px;border:none;cursor:pointer;font-size:14px;font-weight:900;background:linear-gradient(135deg,#25D366,#128C7E);color:#fff;box-shadow:0 6px 20px rgba(37,211,102,.35);transition:transform .2s;margin-bottom:8px;" onmouseover="this.style.transform='translateY(-2px)'" onmouseout="this.style.transform=''">📤 WhatsApp లో Share చేయండి</button>
+    <button onclick="document.getElementById('streak-celebration-modal').remove();" style="width:100%;padding:10px;border-radius:12px;border:none;cursor:pointer;font-size:12px;font-weight:600;background:none;color:var(--text3);">తర్వాత share చేస్తాను</button>
+  </div>
+</div>`;
+      document.body.appendChild(m);
+      m.addEventListener('click', function(ev){ if(ev.target===this) this.remove(); });
+    }
+
+
     function _getSubjectStats(myScores) {
       const catMap = {};
       myScores.forEach(s => {
@@ -17320,6 +17404,7 @@ More exams: https://aniledutech.in
       updateNavUser();
       closeSubModal();
       filterExams();
+      localStorage.removeItem('ae_guest_exam_count'); // Reset guest exam counter on login
       toast('🎉 Welcome ' + user.name + '!' + (user.isPremium ? ' 👑 Premium' : ''), 'success');
       _logUserActivity(user.name, user.gmail, 'login');
       sendEmailNotification('login', { name: user.name, gmail: user.gmail });
@@ -17468,6 +17553,7 @@ More exams: https://aniledutech.in
         // flash అవుతుంది. Supabase check complete అయిన తర్వాత మాత్రమే setCurrentUser
         // call అవుతుంది (inner .then() లో). ఇక్కడ UI non-premium actions మాత్రమే:
         closeSubModal();
+        localStorage.removeItem('ae_guest_exam_count'); // Reset guest exam counter on login
         toast('🎉 Welcome ' + name + '!', 'success');
         // New user → register email to admin; existing → login email
         sendEmailNotification(isNewUser ? 'register' : 'login', { name, gmail });
@@ -18870,11 +18956,22 @@ More exams: https://aniledutech.in
         }
       }
 
-      // Require login
+      // Guest exam gate: allow 3 free exams without login, then show signup wall
       if (!getCurrentUser()) {
-        toast('⚠️ Exam చేయాలంటే ముందు Login చేయండి!', 'warn');
-        openSubModal(() => startExam(examId));
-        return;
+        const _guestCount = parseInt(localStorage.getItem('ae_guest_exam_count') || '0');
+        const FREE_GUEST_EXAMS = 3;
+        if (_guestCount >= FREE_GUEST_EXAMS) {
+          _showGuestSignupWall(examId);
+          return;
+        }
+        // Increment guest count and allow
+        localStorage.setItem('ae_guest_exam_count', String(_guestCount + 1));
+        const _remaining = FREE_GUEST_EXAMS - (_guestCount + 1);
+        if (_remaining > 0) {
+          toast(`🎯 Free exam ${_guestCount + 1}/${FREE_GUEST_EXAMS} — ఇంకా ${_remaining} free exams మిగిలాయి!`, 'info');
+        } else {
+          toast('🎁 Last free exam! తర్వాత login అవసరం.', 'warn');
+        }
       }
 
       const e = DB.exams.find(x => x.id === examId);
@@ -18956,6 +19053,40 @@ More exams: https://aniledutech.in
       document.body.appendChild(m);
       m.addEventListener('click', function (ev) { if (ev.target === this) this.remove(); });
     }
+    function _showGuestSignupWall(examId) {
+      document.getElementById('guest-signup-wall')?.remove();
+      const m = document.createElement('div');
+      m.id = 'guest-signup-wall';
+      m.style.cssText = 'position:fixed;inset:0;z-index:800;background:rgba(5,12,35,.88);backdrop-filter:blur(20px);display:flex;align-items:center;justify-content:center;padding:16px;animation:fadeUp .25s ease;';
+      m.innerHTML = `<div style="background:var(--surface);border-radius:24px;width:100%;max-width:400px;padding:0;box-shadow:0 30px 100px rgba(0,0,0,.6);text-align:center;position:relative;overflow:hidden;border:1.5px solid rgba(99,102,241,.4);">
+  <div style="height:4px;background:linear-gradient(90deg,#6366F1,#8B5CF6,#EC4899,#6366F1);background-size:300%;animation:gradientSlide 2s linear infinite;"></div>
+  <div style="padding:24px 22px 20px;">
+    <button onclick="document.getElementById('guest-signup-wall').remove()" style="position:absolute;top:12px;right:14px;background:rgba(128,128,128,.15);border:none;font-size:15px;cursor:pointer;color:var(--text3);width:28px;height:28px;border-radius:50%;display:flex;align-items:center;justify-content:center;">✕</button>
+    <div style="font-size:48px;margin-bottom:8px;filter:drop-shadow(0 0 20px rgba(99,102,241,.5));">🎓</div>
+    <div style="font-size:19px;font-weight:900;color:var(--text);margin-bottom:4px;">3 Free Exams అయిపోయాయి!</div>
+    <div style="font-size:12.5px;color:var(--text3);margin-bottom:16px;line-height:1.6;">మీరు ఇప్పటికే <strong style="color:#6366F1;">3 free exams</strong> చేశారు 🎉<br>మరిన్ని exams కోసం Free లో Register చేయండి!</div>
+
+    <!-- Benefits -->
+    <div style="background:linear-gradient(135deg,rgba(99,102,241,.1),rgba(139,92,246,.08));border:1px solid rgba(99,102,241,.25);border-radius:14px;padding:14px;margin-bottom:16px;text-align:left;">
+      <div style="font-size:10px;font-weight:900;color:#6366F1;margin-bottom:10px;text-transform:uppercase;letter-spacing:1px;">✨ Register చేస్తే ఏమి వస్తుంది?</div>
+      <div style="display:flex;flex-direction:column;gap:7px;">
+        <div style="font-size:12px;color:var(--text2);display:flex;gap:8px;align-items:center;"><span style="color:#22C55E;font-size:14px;">✅</span> Unlimited Free Exams</div>
+        <div style="font-size:12px;color:var(--text2);display:flex;gap:8px;align-items:center;"><span style="color:#22C55E;font-size:14px;">✅</span> Daily Streak & Badges</div>
+        <div style="font-size:12px;color:var(--text2);display:flex;gap:8px;align-items:center;"><span style="color:#22C55E;font-size:14px;">✅</span> Progress Tracking & Analytics</div>
+        <div style="font-size:12px;color:var(--text2);display:flex;gap:8px;align-items:center;"><span style="color:#22C55E;font-size:14px;">✅</span> Score Cards & Certificates</div>
+        <div style="font-size:12px;color:var(--text2);display:flex;gap:8px;align-items:center;"><span style="color:#F59E0B;font-size:14px;">🆓</span> 100% Free — Credit Card అక్కరలేదు!</div>
+      </div>
+    </div>
+
+    <!-- CTA buttons -->
+    <button onclick="document.getElementById('guest-signup-wall').remove();openSubModal(${examId ? `()=>startExam(${examId})` : 'null'});" style="width:100%;padding:14px;border-radius:14px;border:none;cursor:pointer;font-size:15px;font-weight:900;background:linear-gradient(135deg,#6366F1,#8B5CF6);color:#fff;box-shadow:0 6px 24px rgba(99,102,241,.4);transition:transform .2s;margin-bottom:8px;" onmouseover="this.style.transform='translateY(-2px)'" onmouseout="this.style.transform=''">🚀 Free లో Register / Login చేయండి →</button>
+    <div style="font-size:10.5px;color:var(--text3);">🔒 No credit card · 100% Free · 30 seconds లో done</div>
+  </div>
+</div>`;
+      document.body.appendChild(m);
+      m.addEventListener('click', function(ev){ if(ev.target===this) this.remove(); });
+    }
+
     function _showResumeModal(e, qs, saved, answered, timeStr) {
       // Remove existing modal if any
       const old = document.getElementById('resume-modal-overlay');
@@ -19337,7 +19468,11 @@ More exams: https://aniledutech.in
           _ls.setItem('ae_daily_done', JSON.stringify(doneDays));
           const dc = parseInt(_ls.getItem('ae_daily_done_count') || '0') + 1;
           _ls.setItem('ae_daily_done_count', dc.toString());
-          setTimeout(() => toast('⚡ Daily Challenge Complete! 🔥 +1 streak', 'success'), 1200);
+          const newStreak = doneDays.length;
+          setTimeout(() => {
+            toast('⚡ Daily Challenge Complete! 🔥 +1 streak', 'success');
+            setTimeout(() => _showStreakCelebration(newStreak), 800);
+          }, 1200);
         }
         window._pendingDailyComplete = null;
       }
@@ -19619,6 +19754,7 @@ More exams: https://aniledutech.in
 
 
     let _lbFilter = 'all'; // 'all' | 'today' | 'week'
+    let _lbCat = 'all';    // 'all' | 'TSPSC' | 'APPSC' | 'SSC' | 'Banking' | 'GK' | 'RRB'
     let _lbRefreshTimer = null;
     let _lbAllScores = [];
     let _lbPage = 0;
@@ -19628,7 +19764,7 @@ More exams: https://aniledutech.in
       const el = document.getElementById('leaderboard-list');
       if (!el) return;
 
-      // Filter
+      // Time filter
       const now = new Date();
       let filtered = scores;
       if (_lbFilter === 'today') {
@@ -19642,9 +19778,15 @@ More exams: https://aniledutech.in
         filtered = scores.filter(s => s.ts && Number(s.ts) > weekAgo);
       }
 
+      // Category filter
+      if (_lbCat && _lbCat !== 'all') {
+        filtered = filtered.filter(s => (s.examCat || '').toUpperCase().includes(_lbCat.toUpperCase()) || (s.examName || '').toUpperCase().includes(_lbCat.toUpperCase()));
+      }
+
       if (!filtered.length) {
+        const catLabel = _lbCat !== 'all' ? ` (${_lbCat})` : '';
         const msgs = { all: 'ఇంకా ఎవరూ score save చేయలేదు.<br>Exam complete చేసి మీ పేరు enter చేయండి!', today: 'ఈ రోజు ఇంకా ఎవరూ test ఇవ్వలేదు. మీరు మొదలు పెట్టండి!', week: 'ఈ వారం ఇంకా results లేవు.' };
-        el.innerHTML = `<div class="lb-empty"><span class="lb-empty-icon">🏅</span>${msgs[_lbFilter] || msgs.all}</div>`;
+        el.innerHTML = `<div class="lb-empty"><span class="lb-empty-icon">🏅</span>${(msgs[_lbFilter] || msgs.all).replace('results', 'results' + catLabel)}</div>`;
         return;
       }
 
@@ -19659,18 +19801,23 @@ More exams: https://aniledutech.in
       const medals = ['🥇', '🥈', '🥉'];
       const cardCls = ['lb-gold', 'lb-silver', 'lb-bronze'];
 
+      const _myName = getCurrentUser()?.name || '';
       const cards = pageItems.map((s, i) => {
         const globalIdx = start + i;
         const isTop = globalIdx < 3;
-        return `<div class="lb-card ${isTop ? cardCls[globalIdx] : ''}">
+        const isMe = _myName && s.name === _myName;
+        const rankLabel = globalIdx === 0 ? '🥇 1st' : globalIdx === 1 ? '🥈 2nd' : globalIdx === 2 ? '🥉 3rd' : `#${globalIdx + 1}`;
+        const waShareMsg = encodeURIComponent(`🏆 *Anil EduTech Leaderboard*\n\n${rankLabel} Rank సాధించాను!\n📝 ${s.examName || 'Exam'}\n✅ Score: ${s.correct}/${s.total} (${s.pct}%)\n\n📚 మీరు కూడా try చేయండి → https://aniledutech.in`);
+        return `<div class="lb-card ${isTop ? cardCls[globalIdx] : ''}" style="${isMe ? 'border:2px solid var(--primary);background:rgba(26,115,232,.07);' : ''}">
       ${isTop ? `<div class="lb-rank">${medals[globalIdx]}</div>` : `<div class="lb-rank-num">${globalIdx + 1}</div>`}
       <div class="lb-info">
-        <div class="lb-name">${escHtml(s.name)}</div>
+        <div class="lb-name">${escHtml(s.name)}${isMe ? ' <span style="font-size:10px;background:var(--primary);color:#fff;padding:1px 6px;border-radius:8px;font-weight:800;">You</span>' : ''}</div>
         <div class="lb-meta">📝 ${escHtml(s.examName)} &nbsp;·&nbsp; 📅 ${s.date || ''}</div>
       </div>
-      <div class="lb-score-wrap">
+      <div class="lb-score-wrap" style="align-items:flex-end;">
         <div class="lb-pct">${s.pct}%</div>
         <div class="lb-score-small">${s.correct} / ${s.total} correct</div>
+        ${isMe ? `<button onclick="window.open('https://wa.me/?text=${waShareMsg}','_blank')" style="margin-top:4px;padding:3px 8px;background:linear-gradient(135deg,#25D366,#128C7E);color:#fff;border:none;border-radius:8px;font-size:9px;font-weight:800;cursor:pointer;white-space:nowrap;">📤 Share</button>` : ''}
       </div>
     </div>`;
       }).join('');
@@ -19706,7 +19853,14 @@ More exams: https://aniledutech.in
     function _lbSetFilter(f) {
       _lbFilter = f;
       _lbPage = 0; // reset to first page on filter change
-      document.querySelectorAll('.lb-tab-btn').forEach(b => b.classList.toggle('active', b.dataset.f === f));
+      document.querySelectorAll('.lb-tab-btn:not(.lb-cat-btn)').forEach(b => b.classList.toggle('active', b.dataset.f === f));
+      _renderLeaderboardUI(_lbAllScores);
+    }
+
+    function _lbSetCat(cat) {
+      _lbCat = cat;
+      _lbPage = 0;
+      document.querySelectorAll('.lb-cat-btn').forEach(b => b.classList.toggle('active', b.dataset.cat === cat));
       _renderLeaderboardUI(_lbAllScores);
     }
 
@@ -19765,6 +19919,18 @@ More exams: https://aniledutech.in
       if (badge) {
         badge.textContent = sbScores.length ? `🌐 Live — ${sbScores.length} records` : '💾 Local only';
         badge.style.color = sbScores.length ? '#06B96B' : '#F77F00';
+      }
+
+      // Nudge logged-in user if they are in Top 10 — share rank prompt
+      const _myName = getCurrentUser()?.name;
+      if (_myName) {
+        const myRank = merged.findIndex(s => s.name === _myName);
+        if (myRank >= 0 && myRank < 10) {
+          setTimeout(() => {
+            const rankStr = myRank === 0 ? '🥇 1st' : myRank === 1 ? '🥈 2nd' : myRank === 2 ? '🥉 3rd' : `#${myRank + 1}`;
+            toast(`🏆 మీరు Leaderboard లో ${rankStr} స్థానంలో ఉన్నారు! Share చేయండి 👇`, 'success');
+          }, 1500);
+        }
       }
     }
 
@@ -20060,6 +20226,13 @@ More exams: https://aniledutech.in
       _pageHistory.pop();
       showPage('result');
       loadExamReviews(_revExamId, _revExamName);
+      // Nudge user to share score after 4 seconds (only if good score)
+      setTimeout(() => {
+        const pct = exam._result?.pct || 0;
+        if (pct >= 50) {
+          toast('📤 మీ score friends కి share చేయండి! WhatsApp button click చేయండి 👆', 'info');
+        }
+      }, 4000);
     }
 
     function spawnConfetti() {
@@ -22171,10 +22344,15 @@ Rules:
       const r = exam._result;
       if (!r) { toast('ముందు exam complete చేయండి!', 'warn'); return; }
       const examName = exam.current?.name || 'Exam';
-      const msg = `🎯 Anil Edutech — ${examName}\n✅ Score: ${r.correct}/${exam.questions.length} (${r.pct}%)\n🏆 నేను ${r.pct >= 75 ? 'Excellent' : r.pct >= 50 ? 'Good' : 'Try Again'} rank సాధించాను!\n📚 మీరు కూడా try చేయండి: ${window.location.href}`;
+      const u = getCurrentUser();
+      const refCode = u ? _getReferralCode(u) : null;
+      const siteUrl = 'https://aniledutech.in' + (refCode ? '?ref=' + refCode : '');
+      const rankLabel = r.pct >= 90 ? '🏆 Excellent' : r.pct >= 75 ? '🥇 Very Good' : r.pct >= 50 ? '💪 Good' : '📚 Keep Trying';
+      const msg = `🎯 *Anil EduTech* — ${examName}\n\n✅ Score: ${r.correct}/${exam.questions.length} (*${r.pct}%*)\n${rankLabel} rank సాధించాను!\n\n📚 TSPSC · SSC · Banking · GK exams కి Free Mock Tests!\n👉 Try చేయండి: ${siteUrl}`;
 
       if (type === 'whatsapp') {
         window.open('https://wa.me/?text=' + encodeURIComponent(msg), '_blank');
+        toast('📤 WhatsApp opened!', 'success');
       } else if (type === 'copy') {
         navigator.clipboard.writeText(msg).then(() => {
           toast('✓ Result text copied! Paste చేయండి.', 'success');
@@ -22522,7 +22700,8 @@ Rules:
             <span style="background:rgba(0,184,148,.12);color:#00B894;font-size:11px;font-weight:700;padding:3px 10px;border-radius:20px;">🔀 Random Pick</span>
           </div>
           ${doneToday
-          ? `<div style="font-size:13px;color:#00B894;font-weight:700;">🎉 Today's challenge complete! రేపు మళ్ళీ వెయ్యండి.</div>`
+          ? `<div style="font-size:13px;color:#00B894;font-weight:700;margin-bottom:10px;">🎉 Today's challenge complete! రేపు మళ్ళీ వెయ్యండి.</div>
+             <button onclick=\"_showStreakCelebration(doneDays.length)\" style=\"padding:10px 18px;background:linear-gradient(135deg,#25D366,#128C7E);color:#fff;border:none;border-radius:10px;font-family:inherit;font-size:12px;font-weight:800;cursor:pointer;\">📤 Streak Share చేయండి</button>`
           : `<button onclick="_startDailyChallenge()" style="padding:14px 28px;background:linear-gradient(135deg,#8B5CF6,#EC4899);color:#fff;border:none;border-radius:12px;font-family:inherit;font-size:15px;font-weight:800;cursor:pointer;box-shadow:0 6px 20px rgba(139,92,246,.4);transition:transform .2s;" onmouseover="this.style.transform='translateY(-2px)'" onmouseout="this.style.transform=''">⚡ Challenge Start చేయండి →</button>`}
         </div>
       </div>
@@ -23379,6 +23558,26 @@ Rules:
             _ls.setItem('ae_pending_ref', urlRef);
             setTimeout(() => toast(`🎁 Referral code "${urlRef}" detected! Register/Login చేసి apply చేయండి.`, 'info'), 1500);
           }
+        }
+      } catch (e) { }
+
+      // ?exam= param — auto-filter exam category for SEO deep-links
+      // e.g. aniledutech.in/?exam=tspsc  or  ?exam=banking
+      try {
+        const urlExam = new URLSearchParams(window.location.search).get('exam');
+        if (urlExam) {
+          const catMap = { tspsc:'TSPSC', appsc:'APPSC', ssc:'SSC', banking:'Banking', rrb:'RRB', gk:'GK', math:'Math', maths:'Math' };
+          const mappedCat = catMap[urlExam.toLowerCase()] || urlExam;
+          // Wait for DB to load, then go to exams page filtered
+          setTimeout(() => {
+            if (typeof goExams === 'function') goExams(mappedCat);
+            // Also update leaderboard category filter for consistency
+            _lbCat = mappedCat;
+            document.querySelectorAll('.lb-cat-btn').forEach(b => b.classList.toggle('active', b.dataset.cat === mappedCat));
+            // Set page title for SEO
+            const examTitles = { TSPSC:'TSPSC Mock Test Telugu', APPSC:'APPSC Mock Test Telugu', SSC:'SSC CGL CHSL Mock Test', Banking:'Banking Mock Test Telugu', RRB:'RRB NTPC Group D Mock Test', GK:'GK Daily Quiz Telugu' };
+            if (examTitles[mappedCat]) document.title = `${examTitles[mappedCat]} | Anil EduTech — Free Online Tests`;
+          }, 800);
         }
       } catch (e) { }
 

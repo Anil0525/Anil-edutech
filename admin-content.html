@@ -1063,6 +1063,62 @@
               </div>
             </div>
 
+            <!-- ✨ AI GENERATE JOBS PANEL -->
+            <div class="admin-card" style="margin-top:16px;background:linear-gradient(135deg,rgba(234,179,8,0.06),rgba(249,115,22,0.04));border:1.5px solid rgba(234,179,8,0.22);">
+              <div style="display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:12px;margin-bottom:14px;">
+                <div>
+                  <h3 style="margin:0 0 4px;">✨ AI తో Jobs Generate చేయండి</h3>
+                  <div style="font-size:11px;color:var(--text3);">Free AI (Pollinations.ai) → No Key అవసరం లేదు · Telugu+English · Auto-save · Bell Notify</div>
+                </div>
+                <button id="ai-jobs-gen-btn" onclick="aiGenerateJobs()"
+                  style="padding:9px 20px;border-radius:10px;border:none;background:linear-gradient(135deg,#f59e0b,#ef4444);color:#fff;font-family:inherit;font-size:13px;font-weight:800;cursor:pointer;white-space:nowrap;box-shadow:0 2px 8px rgba(245,158,11,0.3);">
+                  ✨ Generate చేయండి
+                </button>
+              </div>
+
+              <!-- Controls row -->
+              <div style="display:flex;gap:10px;flex-wrap:wrap;margin-bottom:12px;align-items:flex-end;">
+                <div style="display:flex;flex-direction:column;gap:4px;">
+                  <label style="font-size:11px;font-weight:700;color:var(--text3);">Category</label>
+                  <select id="ai-jobs-category"
+                    style="padding:7px 10px;border:1.5px solid var(--border2);border-radius:8px;font-family:inherit;font-size:12px;background:var(--bg);color:var(--text);outline:none;min-width:130px;">
+                    <option value="all">🔀 All Categories</option>
+                    <option value="notification">📢 Notification</option>
+                    <option value="result">✅ Result</option>
+                    <option value="admit_card">🎫 Admit Card</option>
+                    <option value="answer_key">🔑 Answer Key</option>
+                  </select>
+                </div>
+                <div style="display:flex;flex-direction:column;gap:4px;">
+                  <label style="font-size:11px;font-weight:700;color:var(--text3);">Count</label>
+                  <select id="ai-jobs-count"
+                    style="padding:7px 10px;border:1.5px solid var(--border2);border-radius:8px;font-family:inherit;font-size:12px;background:var(--bg);color:var(--text);outline:none;">
+                    <option value="3">3 articles</option>
+                    <option value="5" selected>5 articles</option>
+                    <option value="8">8 articles</option>
+                    <option value="10">10 articles</option>
+                  </select>
+                </div>
+                <div style="display:flex;flex-direction:column;gap:4px;flex:1;min-width:180px;">
+                  <label style="font-size:11px;font-weight:700;color:var(--text3);">Focus Topic (optional)</label>
+                  <input id="ai-jobs-topic" type="text" placeholder="e.g. TSPSC, SSC CGL, Banking..."
+                    style="padding:7px 10px;border:1.5px solid var(--border2);border-radius:8px;font-family:inherit;font-size:12px;background:var(--bg);color:var(--text);outline:none;">
+                </div>
+              </div>
+
+              <!-- Feature pills -->
+              <div style="display:flex;gap:8px;flex-wrap:wrap;margin-bottom:10px;">
+                <span style="font-size:11px;padding:3px 9px;border-radius:12px;background:rgba(234,179,8,0.12);color:#b45309;font-weight:700;">🆓 Free AI — No Key</span>
+                <span style="font-size:11px;padding:3px 9px;border-radius:12px;background:rgba(234,179,8,0.12);color:#b45309;font-weight:700;">🔤 Telugu+English</span>
+                <span style="font-size:11px;padding:3px 9px;border-radius:12px;background:rgba(16,185,129,0.1);color:#059669;font-weight:700;">💾 Auto-save</span>
+                <span style="font-size:11px;padding:3px 9px;border-radius:12px;background:rgba(16,185,129,0.1);color:#059669;font-weight:700;">🔔 Bell Notify</span>
+                <span style="font-size:11px;padding:3px 9px;border-radius:12px;background:rgba(16,185,129,0.1);color:#059669;font-weight:700;">🔁 Dedup Check</span>
+              </div>
+
+              <!-- Log area -->
+              <div id="ai-jobs-log" style="display:none;background:var(--bg);border:1px solid var(--border2);border-radius:8px;padding:12px 14px;font-size:12px;line-height:1.8;margin-top:4px;max-height:220px;overflow-y:auto;"></div>
+            </div>
+
             <!-- All Job Articles List -->
             <div class="admin-card" style="margin-top:16px">
               <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:14px">

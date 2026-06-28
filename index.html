@@ -33000,6 +33000,216 @@ Rules:
     }
   }
 
+  // ══════════════════════════════════════════════
+  // ✨ AI GENERATE GOVT JOBS — Groq → Supabase
+  // ══════════════════════════════════════════════
+
+  async function aiGenerateJobs() {
+    const btn    = document.getElementById('ai-jobs-gen-btn');
+    const logEl  = document.getElementById('ai-jobs-log');
+    if (!btn || !logEl) return;
+
+    const categoryVal = document.getElementById('ai-jobs-category')?.value || 'all';
+    const countVal    = parseInt(document.getElementById('ai-jobs-count')?.value || '5');
+    const topicVal    = (document.getElementById('ai-jobs-topic')?.value || '').trim();
+
+    btn.disabled = true;
+    btn.textContent = '⏳ Generating...';
+    logEl.style.display = 'block';
+    logEl.innerHTML = '';
+
+    const _log = (msg, color) => {
+      logEl.innerHTML += `<span style="color:${color || 'var(--text2)'}">${msg}</span><br>`;
+      logEl.scrollTop = logEl.scrollHeight;
+    };
+
+    // ── Free AI helper — Pollinations.ai (no key, no signup) with Groq fallback ──
+    async function _freeAIGenerate(prompt) {
+      // Primary: Pollinations.ai — 100% free, no API key
+      try {
+        const encoded = encodeURIComponent(prompt);
+        const seed    = Math.floor(Math.random() * 9999);
+        const url     = `https://text.pollinations.ai/${encoded}?model=mistral&seed=${seed}&json=true`;
+        const res     = await fetch(url, { signal: AbortSignal.timeout(30000) });
+        if (res.ok) {
+          const text = await res.text();
+          if (text && text.trim().length > 10) return text;
+        }
+      } catch (e) { console.warn('Pollinations failed:', e.message); }
+
+      // Fallback: Groq free tier (if key saved)
+      const GROQ_KEY = _ls.getItem('groq_api_key') || '';
+      if (GROQ_KEY) {
+        _log('⚡ Groq fallback వాడుతున్నాం...', '#d97706');
+        const res = await fetch('https://api.groq.com/openai/v1/chat/completions', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json', 'Authorization': 'Bearer ' + GROQ_KEY },
+          body: JSON.stringify({
+            model: 'llama-3.3-70b-versatile',
+            messages: [{ role: 'user', content: prompt }],
+            temperature: 0.75,
+            max_tokens: 4096
+          }),
+          signal: AbortSignal.timeout(30000)
+        });
+        if (res.ok) {
+          const data = await res.json();
+          return data.choices?.[0]?.message?.content || '';
+        }
+      }
+
+      throw new Error('AI service అందుబాటులో లేదు. కొంచెం సేపు wait చేసి మళ్ళీ try చేయండి.');
+    }
+
+    try {
+      // ── Step 1: Today's date context ──
+      const today     = new Date();
+      const dateStr   = today.toLocaleDateString('en-IN', { day: '2-digit', month: 'long', year: 'numeric' });
+      const monthYear = today.toLocaleDateString('en-IN', { month: 'long', year: 'numeric' });
+      const futureDate = new Date(today.getTime() + 25*24*60*60*1000).toLocaleDateString('en-IN');
+
+      const catInstructions = {
+        all:          'Mix of notification (new jobs), result (exam results), admit_card, and answer_key articles',
+        notification: 'New job recruitment notifications only',
+        result:       'Exam result declarations only',
+        admit_card:   'Admit card / hall ticket release articles only',
+        answer_key:   'Answer key release articles only'
+      };
+      const catNote  = catInstructions[categoryVal] || catInstructions.all;
+      const topicNote = topicVal
+        ? `Focus on: ${topicVal} related jobs/exams.`
+        : 'Cover major Indian govt exams: TSPSC, APPSC, SSC, UPSC, IBPS, SBI, RRB, State PSCs, Police, Teaching.';
+
+      _log(`✨ Free AI కి request పంపుతున్నాం... (${countVal} articles)`);
+
+      // ── Step 2: Prompt ──
+      const prompt = `You are an Indian government jobs news writer. Generate exactly ${countVal} government job articles for ${dateStr}.
+
+Category: ${catNote}
+${topicNote}
+
+IMPORTANT: Return ONLY a valid JSON array. No markdown. No explanation. No extra text. Start with [ and end with ].
+
+[
+  {
+    "title": "Telugu+English mixed title (e.g. 'SSC CGL 2025 Notification విడుదల — 17,000+ పోస్టులు')",
+    "organization": "SSC",
+    "category": "notification",
+    "total_posts": "17000",
+    "qualification": "Degree / Graduation",
+    "age_limit": "18-32 సంవత్సరాలు",
+    "fee": "General: ₹100, SC/ST: Free",
+    "last_date": "${futureDate}",
+    "description": "2 sentences in Telugu+English. Example: SSC CGL 2025 కోసం notification విడుదల అయింది. 17,000+ పోస్టులకు apply చేసుకోవచ్చు.",
+    "apply_link": "",
+    "notification_link": ""
+  }
+]
+
+Rules:
+- Exactly ${countVal} items
+- category must be: notification OR result OR admit_card OR answer_key
+- total_posts and last_date: only for notification type, empty string for others
+- Each article must be a DIFFERENT organization
+- Telugu+English naturally mixed in title and description
+- Realistic data for ${monthYear}`;
+
+      // ── Step 3: Free AI call ──
+      const rawText = await _freeAIGenerate(prompt);
+
+      // ── Step 4: JSON parse ──
+      let articles = [];
+      try {
+        let clean = rawText.replace(/```json|```/g, '').trim();
+        const arrMatch = clean.match(/\[[\s\S]*\]/);
+        if (arrMatch) clean = arrMatch[0];
+        articles = JSON.parse(clean);
+        if (!Array.isArray(articles) || !articles.length) throw new Error('Empty array');
+      } catch (e) {
+        throw new Error('AI response parse కాలేదు. మళ్ళీ try చేయండి.');
+      }
+
+      _log(`✅ ${articles.length} articles generate అయ్యాయి!`, '#059669');
+
+      // ── Step 5: Existing titles check (dedup) ──
+      _log('🔁 Duplicate check చేస్తున్నాం...');
+      const existRes = await fetch(`${SB_URL}/rest/v1/ae_job_articles?select=title&limit=500`, { headers: SB_HEADERS });
+      const existData = existRes.ok ? await existRes.json() : [];
+      const existingTitles = new Set((existData || []).map(x => (x.title || '').toLowerCase().trim()));
+
+      const toInsert = articles.filter(a => {
+        const t = (a.title || '').trim();
+        return t.length > 3 && !existingTitles.has(t.toLowerCase().trim());
+      });
+
+      const skipped = articles.length - toInsert.length;
+      if (skipped > 0) _log(`⚠️ ${skipped} duplicates skip చేశాం.`, '#d97706');
+      if (!toInsert.length) {
+        _log('ℹ️ అన్నీ already exist చేస్తున్నాయి. Different topic try చేయండి.', '#6B7280');
+        toast('⚠️ Generate అయిన articles already exist చేస్తున్నాయి!', 'warn');
+        return;
+      }
+
+      // ── Step 6: Supabase insert ──
+      _log(`💾 ${toInsert.length} articles Supabase లో save చేస్తున్నాం...`);
+      const payload = toInsert.map(a => ({
+        title:             (a.title || '').trim(),
+        organization:      (a.organization || '').trim(),
+        category:          ['notification','result','admit_card','answer_key'].includes(a.category) ? a.category : 'notification',
+        total_posts:       (a.total_posts || '').trim(),
+        qualification:     (a.qualification || '').trim(),
+        age_limit:         (a.age_limit || '').trim(),
+        fee:               (a.fee || '').trim(),
+        last_date:         (a.last_date || '').trim(),
+        description:       (a.description || '').trim(),
+        apply_link:        (a.apply_link || '').trim(),
+        notification_link: (a.notification_link || '').trim(),
+        is_active:         true,
+        created_at:        new Date().toISOString()
+      }));
+
+      const insRes = await fetch(`${SB_URL}/rest/v1/ae_job_articles`, {
+        method: 'POST',
+        headers: { ...SB_HEADERS, 'Prefer': 'return=minimal' },
+        body: JSON.stringify(payload)
+      });
+
+      if (!insRes.ok && insRes.status !== 201) {
+        throw new Error(`Supabase insert failed: ${insRes.status}`);
+      }
+
+      _log(`✅ ${toInsert.length} articles successfully saved!`, '#059669');
+
+      // ── Step 7: Bell notification ──
+      _log('🔔 Users కి bell notification పంపుతున్నాం...');
+      try {
+        const notifTitle = topicVal
+          ? `💼 ${topicVal} — కొత్త Updates వచ్చాయి!`
+          : '💼 కొత్త Govt Jobs & Results వచ్చాయి!';
+        const notifMsg = `${toInsert.length} కొత్త articles available — Notifications, Results, Admit Cards చూడండి 👀`;
+        await createBellNotifications(notifTitle, notifMsg, 'all', 'https://aniledutech.in');
+        _log('✅ Bell notification sent!', '#059669');
+      } catch (e) {
+        _log('⚠️ Notification పంపడం fail అయింది.', '#d97706');
+      }
+
+      // Summary
+      _log('─'.repeat(38));
+      _log(`🎉 Done! ${toInsert.length} articles auto-saved · ${skipped} skipped`, '#059669');
+      toast(`✨ ${toInsert.length} AI articles auto-saved! 🔔 Notification sent.`, 'success', 4000);
+
+      loadAdminJobArticles(); // List refresh
+
+    } catch (e) {
+      _log(`❌ Error: ${e.message}`, '#ef4444');
+      toast('❌ AI Generate failed! ' + e.message, 'error', 5000);
+      console.error('aiGenerateJobs error:', e);
+    } finally {
+      btn.disabled = false;
+      btn.textContent = '✨ Generate చేయండి';
+    }
+  }
+
   // ── Hook: populate exam select when admin contests tab is opened ──
   const _origSwitchAdminTab = window.switchAdminTab;
   window.switchAdminTab = function (tab, btn) {

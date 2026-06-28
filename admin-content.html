@@ -1032,6 +1032,37 @@
               </div>
             </div>
 
+            <!-- 🤖 AUTO-FETCH PANEL -->
+            <div class="admin-card" style="margin-top:16px;background:linear-gradient(135deg,rgba(79,70,229,0.06),rgba(6,182,212,0.04));border:1.5px solid rgba(79,70,229,0.18);">
+              <div style="display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:12px;margin-bottom:12px;">
+                <div>
+                  <h3 style="margin:0 0 4px;">🤖 Auto-Fetch Govt Jobs</h3>
+                  <div style="font-size:11px;color:var(--text3);">Supabase Cron → <strong>Every 6 hours automatic</strong> &nbsp;|&nbsp; Employment News · FreeJobAlert · Sarkari Result RSS</div>
+                </div>
+                <div style="display:flex;align-items:center;gap:10px;">
+                  <span style="font-size:11px;font-weight:700;padding:4px 10px;border-radius:20px;background:rgba(16,185,129,0.12);color:#059669;border:1px solid rgba(16,185,129,0.25);">⏰ Cron: Every 6hrs</span>
+                  <button id="auto-fetch-trigger-btn" onclick="manualTriggerAutoFetch()"
+                    style="padding:9px 18px;border-radius:10px;border:none;background:linear-gradient(135deg,#4F46E5,#7C3AED);color:#fff;font-family:inherit;font-size:13px;font-weight:800;cursor:pointer;white-space:nowrap;">
+                    🤖 Now Fetch చేయండి
+                  </button>
+                </div>
+              </div>
+              <div style="display:flex;gap:8px;flex-wrap:wrap;margin-bottom:10px;">
+                <span style="font-size:11px;padding:3px 9px;border-radius:12px;background:rgba(26,115,232,0.1);color:var(--primary);font-weight:700;">📡 Employment News RSS</span>
+                <span style="font-size:11px;padding:3px 9px;border-radius:12px;background:rgba(26,115,232,0.1);color:var(--primary);font-weight:700;">📡 FreeJobAlert RSS</span>
+                <span style="font-size:11px;padding:3px 9px;border-radius:12px;background:rgba(26,115,232,0.1);color:var(--primary);font-weight:700;">📡 Sarkari Result RSS</span>
+                <span style="font-size:11px;padding:3px 9px;border-radius:12px;background:rgba(16,185,129,0.1);color:#059669;font-weight:700;">🔍 Smart Parse</span>
+                <span style="font-size:11px;padding:3px 9px;border-radius:12px;background:rgba(16,185,129,0.1);color:#059669;font-weight:700;">🔁 Auto Deduplicate</span>
+                <span style="font-size:11px;padding:3px 9px;border-radius:12px;background:rgba(16,185,129,0.1);color:#059669;font-weight:700;">🔔 Bell Notify</span>
+              </div>
+              <div id="auto-fetch-log" style="display:none;background:var(--bg);border:1px solid var(--border2);border-radius:8px;padding:12px 14px;font-size:12px;line-height:1.7;margin-top:4px;"></div>
+              <div style="font-size:11px;color:var(--text3);margin-top:10px;line-height:1.5;">
+                ⚡ <strong>Setup అవసరం:</strong> Supabase → Edge Functions లో
+                <code style="background:var(--bg);padding:1px 5px;border-radius:4px;">fetch-govt-jobs</code> deploy చేయాలి &nbsp;|&nbsp;
+                SQL Editor లో cron.schedule() run చేయాలి
+              </div>
+            </div>
+
             <!-- All Job Articles List -->
             <div class="admin-card" style="margin-top:16px">
               <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:14px">

@@ -46,6 +46,7 @@
           Contests</button>
         <button class="admin-tab" onclick="switchAdminTab('jobs',this);loadAdminJobArticles()">💼 Govt Jobs</button>
         <button class="admin-tab" onclick="switchAdminTab('ebooks',this);renderEbookAdminList()">📖 eBooks</button>
+        <button class="admin-tab" onclick="switchAdminTab('livechat',this);loadAdminChat()">💬 Live Chat</button>
       </div>
 
       <!-- MAIN AREA -->
@@ -2041,27 +2042,22 @@
           ══════════════════════════════════════════════════════ -->
           <div id="atab-ebooks" class="admin-panel">
             <div class="admin-card">
-
-              <!-- Header -->
               <div style="display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:10px;margin-bottom:20px;">
                 <div>
                   <h2 style="font-size:17px;font-weight:900;color:var(--text);margin:0 0 4px;">📖 eBooks Manager</h2>
-                  <p style="font-size:12.5px;color:var(--text3);margin:0;">PDF eBooks upload చేయండి — users read-only గా చదువుతారు (download కాదు) · Max 200 MB per file</p>
+                  <p style="font-size:12.5px;color:var(--text3);margin:0;">PDF eBooks upload చేయండి — users read-only గా చదువుతారు · Max 200 MB per file</p>
                 </div>
               </div>
 
-              <!-- ── ADD EBOOK FORM ── -->
               <div style="background:var(--bg2,rgba(0,0,0,.03));border:1.5px solid var(--border);border-radius:14px;padding:18px;margin-bottom:24px;">
                 <div style="font-size:14px;font-weight:800;color:var(--text);margin-bottom:14px;">➕ New eBook Add చేయండి</div>
 
-                <!-- Title -->
                 <div style="margin-bottom:12px;">
                   <label style="font-size:12px;font-weight:700;color:var(--text3);display:block;margin-bottom:5px;">📝 Title *</label>
                   <input id="ebook-admin-title" type="text" placeholder="eBook title enter చేయండి..."
                     style="width:100%;padding:10px 12px;border:1.5px solid var(--border);border-radius:10px;font-size:13.5px;font-weight:600;background:var(--bg);color:var(--text);font-family:inherit;box-sizing:border-box;">
                 </div>
 
-                <!-- Subject -->
                 <div style="margin-bottom:12px;">
                   <label style="font-size:12px;font-weight:700;color:var(--text3);display:block;margin-bottom:5px;">📚 Subject / Category</label>
                   <select id="ebook-admin-sub"
@@ -2084,17 +2080,14 @@
                   </select>
                 </div>
 
-                <!-- Description -->
                 <div style="margin-bottom:16px;">
                   <label style="font-size:12px;font-weight:700;color:var(--text3);display:block;margin-bottom:5px;">📄 Description (optional)</label>
                   <textarea id="ebook-admin-desc" placeholder="Brief description..." rows="2"
                     style="width:100%;padding:10px 12px;border:1.5px solid var(--border);border-radius:10px;font-size:13px;font-weight:600;background:var(--bg);color:var(--text);font-family:inherit;box-sizing:border-box;resize:vertical;"></textarea>
                 </div>
 
-                <!-- PDF Drop Zone -->
                 <div style="margin-bottom:14px;">
                   <label style="font-size:12px;font-weight:700;color:var(--text3);display:block;margin-bottom:8px;">📁 PDF File * (max 200 MB)</label>
-
                   <div id="ebook-admin-dropzone"
                     onclick="document.getElementById('ebook-admin-file-input').click()"
                     ondrop="_onEbookAdminDrop(event)"
@@ -2104,14 +2097,12 @@
                     <div style="font-size:36px;margin-bottom:8px;">📄</div>
                     <div style="font-size:13px;font-weight:700;color:var(--text2);">PDF drag & drop చేయండి</div>
                     <div style="font-size:12px;color:var(--text3);margin-top:4px;">లేదా click చేసి file select చేయండి</div>
-                    <div style="font-size:11px;color:var(--text3);margin-top:6px;font-weight:600;">PDF only &nbsp;·&nbsp; Max 200 MB</div>
+                    <div style="font-size:11px;color:var(--text3);margin-top:6px;font-weight:600;">PDF only · Max 200 MB</div>
                   </div>
                   <input id="ebook-admin-file-input" type="file" accept=".pdf,application/pdf"
                     style="display:none;" onchange="_onEbookFileSelect(this.files[0])">
-
-                  <!-- File Preview -->
                   <div id="ebook-admin-file-preview"
-                    style="display:none;margin-top:10px;padding:10px 14px;border:1.5px solid var(--border);border-radius:10px;background:var(--bg);display:none;align-items:center;gap:12px;">
+                    style="display:none;margin-top:10px;padding:10px 14px;border:1.5px solid var(--border);border-radius:10px;background:var(--bg);align-items:center;gap:12px;">
                     <span style="font-size:24px;flex-shrink:0;">📄</span>
                     <div style="flex:1;min-width:0;">
                       <div id="ebook-admin-filename" style="font-size:13px;font-weight:800;color:var(--text);white-space:nowrap;overflow:hidden;text-overflow:ellipsis;"></div>
@@ -2122,7 +2113,6 @@
                   </div>
                 </div>
 
-                <!-- Progress Bar -->
                 <div id="ebook-admin-progress" style="display:none;margin-bottom:14px;">
                   <div style="height:8px;background:var(--border);border-radius:10px;overflow:hidden;margin-bottom:6px;">
                     <div id="ebook-admin-bar" style="height:100%;width:0%;background:linear-gradient(90deg,#1B2D5E,#2563EB);border-radius:10px;transition:width .3s;"></div>
@@ -2130,25 +2120,79 @@
                   <div id="ebook-admin-pct" style="font-size:12px;font-weight:700;color:var(--text3);text-align:center;">0% uploaded...</div>
                 </div>
 
-                <!-- Submit Button -->
                 <button onclick="addEbookAdmin()"
-                  style="width:100%;padding:12px;background:linear-gradient(135deg,#1B2D5E,#2563EB);color:#fff;border:none;border-radius:12px;font-size:14px;font-weight:900;cursor:pointer;font-family:inherit;letter-spacing:.3px;">
+                  style="width:100%;padding:12px;background:linear-gradient(135deg,#1B2D5E,#2563EB);color:#fff;border:none;border-radius:12px;font-size:14px;font-weight:900;cursor:pointer;font-family:inherit;">
                   📤 eBook Upload & Save
                 </button>
-
-                <!-- Status Message -->
                 <div id="ebook-admin-status"
-                  style="display:none;margin-top:10px;font-size:13px;font-weight:700;text-align:center;padding:8px 12px;border-radius:8px;background:var(--bg2,rgba(0,0,0,.04));"></div>
+                  style="display:none;margin-top:10px;font-size:13px;font-weight:700;text-align:center;padding:8px 12px;border-radius:8px;"></div>
               </div>
 
-              <!-- ── EXISTING EBOOKS LIST ── -->
               <div style="font-size:14px;font-weight:800;color:var(--text);margin-bottom:12px;">📚 Uploaded eBooks</div>
               <div id="ebook-admin-list">
                 <div style="text-align:center;padding:30px;color:var(--text3);font-size:13px;font-weight:600;">⏳ Loading...</div>
               </div>
-
-            </div><!-- /admin-card -->
+            </div>
           </div><!-- /atab-ebooks -->
+
+          <!-- ══════════════════════════════════════════════════════
+               💬 TAB: LIVE CHAT
+          ══════════════════════════════════════════════════════ -->
+          <div id="atab-livechat" class="admin-panel">
+            <div class="admin-card">
+              <div style="display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:10px;margin-bottom:20px;">
+                <div>
+                  <h2 style="font-size:17px;font-weight:900;color:var(--text);margin:0 0 4px;">💬 Live Chat</h2>
+                  <p style="font-size:12.5px;color:var(--text3);margin:0;">Students messages చూసి reply చేయండి</p>
+                </div>
+                <div style="display:flex;gap:8px;align-items:center;flex-wrap:wrap;">
+                  <span id="admin-chat-unread-badge" style="display:none;padding:4px 12px;background:#ef4444;color:#fff;border-radius:20px;font-size:12px;font-weight:800;"></span>
+                  <button onclick="loadAdminChat()"
+                    style="padding:8px 16px;background:linear-gradient(135deg,#10b981,#059669);color:#fff;border:none;border-radius:10px;font-size:13px;font-weight:800;cursor:pointer;font-family:inherit;">🔄 Refresh</button>
+                </div>
+              </div>
+
+              <!-- Users list + chat window layout -->
+              <div style="display:grid;grid-template-columns:min(220px,38%) 1fr;gap:14px;height:520px;">
+
+                <!-- Left: Users who sent messages -->
+                <div style="border:1.5px solid var(--border);border-radius:14px;overflow:hidden;display:flex;flex-direction:column;">
+                  <div style="padding:10px 12px;background:var(--bg2,rgba(0,0,0,.03));border-bottom:1.5px solid var(--border);font-size:12px;font-weight:800;color:var(--text3);">💬 Conversations</div>
+                  <div id="admin-chat-users" style="flex:1;overflow-y:auto;">
+                    <div style="text-align:center;padding:30px 10px;color:var(--text3);font-size:12.5px;font-weight:600;">⏳ Loading...</div>
+                  </div>
+                </div>
+
+                <!-- Right: Selected user chat -->
+                <div style="border:1.5px solid var(--border);border-radius:14px;overflow:hidden;display:flex;flex-direction:column;">
+                  <!-- Chat header -->
+                  <div id="admin-chat-header"
+                    style="padding:12px 14px;background:linear-gradient(135deg,#10b981,#059669);display:flex;align-items:center;gap:10px;flex-shrink:0;">
+                    <div style="font-size:22px;">💬</div>
+                    <div>
+                      <div id="admin-chat-uname" style="font-size:13px;font-weight:800;color:#fff;">Student select చేయండి</div>
+                      <div id="admin-chat-ugmail" style="font-size:11px;color:rgba(255,255,255,.8);font-weight:600;"></div>
+                    </div>
+                  </div>
+                  <!-- Messages -->
+                  <div id="admin-chat-msgs"
+                    style="flex:1;overflow-y:auto;padding:12px;display:flex;flex-direction:column;gap:8px;background:var(--bg);">
+                    <div style="text-align:center;padding:40px 10px;color:var(--text3);font-size:13px;font-weight:600;">← Left side లో student select చేయండి</div>
+                  </div>
+                  <!-- Reply input -->
+                  <div style="padding:10px 12px;border-top:1.5px solid var(--border);display:flex;gap:8px;align-items:flex-end;background:var(--bg);flex-shrink:0;">
+                    <textarea id="admin-chat-reply-input" placeholder="Reply type చేయండి... (Enter = send)" rows="1"
+                      oninput="this.style.height='auto';this.style.height=this.scrollHeight+'px'"
+                      onkeydown="if(event.key==='Enter'&&!event.shiftKey){event.preventDefault();sendAdminReply();}"
+                      style="flex:1;border:1.5px solid var(--border);border-radius:10px;padding:9px 12px;font-size:13px;font-weight:600;resize:none;font-family:inherit;background:var(--bg);color:var(--text);outline:none;max-height:80px;line-height:1.4;"></textarea>
+                    <button onclick="sendAdminReply()"
+                      style="width:38px;height:38px;border-radius:50%;border:none;background:linear-gradient(135deg,#10b981,#059669);color:#fff;font-size:16px;cursor:pointer;display:flex;align-items:center;justify-content:center;flex-shrink:0;">➤</button>
+                  </div>
+                </div>
+
+              </div><!-- /grid -->
+            </div><!-- /admin-card -->
+          </div><!-- /atab-livechat -->
 
         </div><!-- /admin-content-wrap -->
       </div><!-- /admin-main-area -->
@@ -2163,5 +2207,194 @@ function _onEbookAdminDrop(e) {
   if (dz) dz.style.borderColor = 'var(--border)';
   var f = e.dataTransfer && e.dataTransfer.files[0];
   if (f) _onEbookFileSelect(f);
+}
+
+// ════════════════════════════════════════════════════════════════
+// 💬 ADMIN LIVE CHAT JS
+// ════════════════════════════════════════════════════════════════
+var _adminChatSelectedGmail = null;
+var _adminChatAllMsgs = [];
+var _adminChatPollTimer = null;
+
+function _escHtml(s) {
+  return String(s || '').replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;');
+}
+function _fmtTs(ts) {
+  var d = new Date(ts);
+  return d.toLocaleDateString('te-IN') + ' ' + d.getHours().toString().padStart(2,'0') + ':' + d.getMinutes().toString().padStart(2,'0');
+}
+
+async function loadAdminChat() {
+  if (!window.SB_URL) return;
+  var usersEl = document.getElementById('admin-chat-users');
+  if (usersEl) usersEl.innerHTML = '<div style="text-align:center;padding:24px;color:var(--text3);font-size:12.5px;">⏳ Loading...</div>';
+
+  try {
+    var r = await fetch(window.SB_URL + '/rest/v1/ae_chat_messages?order=ts.desc&limit=500', {
+      headers: window.SB_HEADERS
+    });
+    if (!r.ok) { throw new Error('Fetch failed'); }
+    _adminChatAllMsgs = await r.json();
+    _renderAdminChatUsers();
+    if (_adminChatSelectedGmail) _renderAdminChatWindow(_adminChatSelectedGmail);
+    _updateAdminUnreadBadge();
+    // Start polling
+    if (!_adminChatPollTimer) {
+      _adminChatPollTimer = setInterval(loadAdminChat, 12000);
+    }
+  } catch(e) {
+    if (usersEl) usersEl.innerHTML = '<div style="text-align:center;padding:24px;color:#ef4444;font-size:12.5px;">❌ Load failed. Retry చేయండి.</div>';
+  }
+}
+
+function _renderAdminChatUsers() {
+  var el = document.getElementById('admin-chat-users');
+  if (!el) return;
+
+  // Group by gmail, get last message per user
+  var byUser = {};
+  _adminChatAllMsgs.forEach(function(m) {
+    if (!byUser[m.gmail]) byUser[m.gmail] = { gmail: m.gmail, name: m.name, msgs: [], unread: 0 };
+    byUser[m.gmail].msgs.push(m);
+    if (m.sender === 'user' && !m.read_by_admin) byUser[m.gmail].unread++;
+  });
+
+  var users = Object.values(byUser).sort(function(a,b) {
+    return (b.msgs[0].ts||0) - (a.msgs[0].ts||0);
+  });
+
+  if (!users.length) {
+    el.innerHTML = '<div style="text-align:center;padding:30px 10px;color:var(--text3);font-size:12.5px;font-weight:600;">Messages ఇంకా రాలేదు</div>';
+    return;
+  }
+
+  el.innerHTML = users.map(function(u) {
+    var lastMsg = u.msgs[0];
+    var isActive = u.gmail === _adminChatSelectedGmail;
+    var preview = (lastMsg.msg || '').slice(0, 32) + (lastMsg.msg && lastMsg.msg.length > 32 ? '…' : '');
+    return '<div onclick="selectAdminChatUser(\'' + _escHtml(u.gmail) + '\',\'' + _escHtml(u.name||'') + '\')"' +
+      'style="padding:11px 12px;cursor:pointer;border-bottom:1px solid var(--border);display:flex;gap:9px;align-items:center;' +
+      (isActive ? 'background:rgba(16,185,129,.1);' : 'background:var(--bg);') + '">' +
+      '<div style="width:34px;height:34px;border-radius:50%;background:linear-gradient(135deg,#10b981,#059669);color:#fff;display:flex;align-items:center;justify-content:center;font-size:15px;font-weight:800;flex-shrink:0;">' +
+      _escHtml((u.name||'?')[0].toUpperCase()) + '</div>' +
+      '<div style="flex:1;min-width:0;">' +
+      '<div style="font-size:12.5px;font-weight:800;color:var(--text);white-space:nowrap;overflow:hidden;text-overflow:ellipsis;">' + _escHtml(u.name || u.gmail.split('@')[0]) + '</div>' +
+      '<div style="font-size:11px;color:var(--text3);font-weight:600;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;">' + _escHtml(preview) + '</div>' +
+      '</div>' +
+      (u.unread > 0 ? '<span style="background:#ef4444;color:#fff;border-radius:9px;min-width:18px;height:18px;font-size:10px;font-weight:800;display:flex;align-items:center;justify-content:center;padding:0 4px;flex-shrink:0;">' + u.unread + '</span>' : '') +
+      '</div>';
+  }).join('');
+}
+
+function selectAdminChatUser(gmail, name) {
+  _adminChatSelectedGmail = gmail;
+  var nameEl = document.getElementById('admin-chat-uname');
+  var gmailEl = document.getElementById('admin-chat-ugmail');
+  if (nameEl) nameEl.textContent = name || gmail.split('@')[0];
+  if (gmailEl) gmailEl.textContent = gmail;
+  _renderAdminChatWindow(gmail);
+  _renderAdminChatUsers(); // refresh active state
+  _markAdminReadMsgs(gmail);
+  // Focus reply input
+  var inp = document.getElementById('admin-chat-reply-input');
+  if (inp) inp.focus();
+}
+
+function _renderAdminChatWindow(gmail) {
+  var el = document.getElementById('admin-chat-msgs');
+  if (!el) return;
+  var msgs = _adminChatAllMsgs.filter(function(m) { return m.gmail === gmail; })
+    .sort(function(a,b) { return a.ts - b.ts; });
+
+  if (!msgs.length) {
+    el.innerHTML = '<div style="text-align:center;padding:40px;color:var(--text3);font-size:13px;">Messages లేవు</div>';
+    return;
+  }
+
+  el.innerHTML = msgs.map(function(m) {
+    var isUser = m.sender === 'user';
+    return '<div style="display:flex;flex-direction:column;align-items:' + (isUser ? 'flex-start' : 'flex-end') + ';gap:2px;">' +
+      '<div style="max-width:82%;padding:9px 13px;border-radius:16px;font-size:13px;font-weight:600;line-height:1.45;word-break:break-word;' +
+      (isUser
+        ? 'background:var(--bg2,#f1f5f9);color:var(--text);border:1px solid var(--border);border-bottom-left-radius:4px;'
+        : 'background:linear-gradient(135deg,#10b981,#059669);color:#fff;border-bottom-right-radius:4px;') + '">' +
+      _escHtml(m.msg) + '</div>' +
+      '<div style="font-size:10px;color:var(--text3);font-weight:600;padding:0 4px;">' + _fmtTs(m.ts) + (isUser ? ' · ' + _escHtml(m.name||'Student') : ' · You') + '</div>' +
+      '</div>';
+  }).join('');
+
+  // Scroll to bottom
+  el.scrollTop = el.scrollHeight;
+}
+
+async function sendAdminReply() {
+  if (!_adminChatSelectedGmail) {
+    if (typeof toast === 'function') toast('⚠️ Student select చేయండి!', 'warn');
+    return;
+  }
+  var inp = document.getElementById('admin-chat-reply-input');
+  if (!inp) return;
+  var msg = inp.value.trim();
+  if (!msg) return;
+  inp.value = '';
+  inp.style.height = 'auto';
+
+  var item = {
+    id: 'cm_adm_' + Date.now() + '_' + Math.random().toString(36).slice(2,6),
+    gmail: _adminChatSelectedGmail,
+    name: 'Anil Sir',
+    msg: msg,
+    sender: 'admin',
+    ts: Date.now(),
+    read_by_user: false,
+    read_by_admin: true
+  };
+
+  // Optimistic render
+  _adminChatAllMsgs.unshift(item);
+  _renderAdminChatWindow(_adminChatSelectedGmail);
+
+  try {
+    await fetch(window.SB_URL + '/rest/v1/ae_chat_messages', {
+      method: 'POST',
+      headers: Object.assign({}, window.SB_HEADERS, { 'Prefer': 'resolution=merge-duplicates,return=minimal' }),
+      body: JSON.stringify(item)
+    });
+    if (typeof toast === 'function') toast('✅ Reply పంపబడింది!', 'success');
+  } catch(e) {
+    if (typeof toast === 'function') toast('❌ Send failed', 'error');
+  }
+}
+
+async function _markAdminReadMsgs(gmail) {
+  if (!window.SB_URL || !gmail) return;
+  try {
+    await fetch(
+      window.SB_URL + '/rest/v1/ae_chat_messages?gmail=eq.' + encodeURIComponent(gmail) + '&sender=eq.user&read_by_admin=eq.false',
+      {
+        method: 'PATCH',
+        headers: Object.assign({}, window.SB_HEADERS, { 'Prefer': 'return=minimal' }),
+        body: JSON.stringify({ read_by_admin: true })
+      }
+    );
+    // Update local cache
+    _adminChatAllMsgs.forEach(function(m) {
+      if (m.gmail === gmail && m.sender === 'user') m.read_by_admin = true;
+    });
+    _updateAdminUnreadBadge();
+    _renderAdminChatUsers();
+  } catch(e) {}
+}
+
+function _updateAdminUnreadBadge() {
+  var total = _adminChatAllMsgs.filter(function(m) { return m.sender === 'user' && !m.read_by_admin; }).length;
+  var badge = document.getElementById('admin-chat-unread-badge');
+  if (!badge) return;
+  if (total > 0) {
+    badge.style.display = 'inline-block';
+    badge.textContent = total + ' unread';
+  } else {
+    badge.style.display = 'none';
+  }
 }
 </script>

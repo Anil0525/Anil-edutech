@@ -11939,7 +11939,7 @@
           <div class="cat-name">Previous Papers</div>
           <div class="cat-count">Year-wise</div>
         </div>
-        <div class="cat-card" data-cat="ebook" onclick="goExams('eBook')"
+        <div class="cat-card" data-cat="ebook" onclick="showPage('ebooks');loadEbooksPage()"
           style="--cat-grad:linear-gradient(135deg,#1B2D5E,#2563EB);--cat-soft:rgba(27,45,94,.06);--cat-shadow:rgba(27,45,94,.35);">
           <div class="cat-icon-wrap"><span class="cat-icon">📖</span></div>
           <div class="cat-name">eBook</div>
@@ -14992,6 +14992,87 @@
     </div>
   </div>
 
+
+  <!-- ══════════════ EBOOKS PAGE ══════════════ -->
+  <div id="page-ebooks" class="page">
+    <div class="prog-header" style="background:linear-gradient(135deg,#1B2D5E,#2563EB);color:#fff;padding:28px 20px 22px;">
+      <button onclick="goHome()" style="background:rgba(255,255,255,.18);border:none;color:#fff;border-radius:10px;padding:7px 14px;font-size:13px;font-weight:700;cursor:pointer;margin-bottom:14px;font-family:inherit;">← Back</button>
+      <h2 style="color:#fff;margin:0 0 6px;font-size:22px;">📖 eBooks Library</h2>
+      <p style="color:rgba(255,255,255,.82);margin:0;font-size:13px;">TSPSC, SSC, Banking పరీక్షలకు పూర్తి PDF Books చదవండి</p>
+    </div>
+
+    <div style="max-width:900px;margin:0 auto;padding:18px 14px;">
+      <!-- Search -->
+      <div class="search-bar-wrap" style="max-width:480px;margin-bottom:14px;">
+        <span class="search-icon">🔍</span>
+        <input class="search-bar" id="ebook-search" placeholder="eBook search చేయండి..." oninput="renderEbooksGrid()">
+      </div>
+      <!-- Subject Filter Chips -->
+      <div id="ebook-filter-chips" style="display:flex;flex-wrap:wrap;gap:8px;margin-bottom:18px;">
+        <button class="filter-chip active" data-esub="" onclick="setEbookFilter(this,'')">📚 All</button>
+        <button class="filter-chip" data-esub="Telugu History" onclick="setEbookFilter(this,'Telugu History')">📜 Telugu History</button>
+        <button class="filter-chip" data-esub="Indian History" onclick="setEbookFilter(this,'Indian History')">🇮🇳 Indian History</button>
+        <button class="filter-chip" data-esub="Geography" onclick="setEbookFilter(this,'Geography')">🗺️ Geography</button>
+        <button class="filter-chip" data-esub="Polity" onclick="setEbookFilter(this,'Polity')">⚖️ Polity</button>
+        <button class="filter-chip" data-esub="Economy" onclick="setEbookFilter(this,'Economy')">💹 Economy</button>
+        <button class="filter-chip" data-esub="Science" onclick="setEbookFilter(this,'Science')">🔬 Science</button>
+        <button class="filter-chip" data-esub="Environment" onclick="setEbookFilter(this,'Environment')">🌿 Environment</button>
+        <button class="filter-chip" data-esub="Mathematics" onclick="setEbookFilter(this,'Mathematics')">🧮 Mathematics</button>
+        <button class="filter-chip" data-esub="General Knowledge" onclick="setEbookFilter(this,'General Knowledge')">📰 General Knowledge</button>
+        <button class="filter-chip" data-esub="Current Affairs" onclick="setEbookFilter(this,'Current Affairs')">🗞️ Current Affairs</button>
+      </div>
+      <!-- Count badge -->
+      <div id="ebook-count-badge" style="font-size:12.5px;font-weight:700;color:var(--text3);margin-bottom:12px;"></div>
+      <!-- Loading state -->
+      <div id="ebook-loading" style="text-align:center;padding:48px;display:none;">
+        <div style="font-size:36px;margin-bottom:12px;">⏳</div>
+        <div style="font-size:14px;font-weight:700;color:var(--text3);">eBooks load అవుతున్నాయి...</div>
+      </div>
+      <!-- eBooks Grid -->
+      <div id="ebooks-grid" style="display:grid;grid-template-columns:repeat(auto-fill,minmax(min(260px,100%),1fr));gap:16px;"></div>
+      <!-- Empty state -->
+      <div id="ebooks-empty" style="display:none;text-align:center;padding:60px 20px;">
+        <div style="font-size:56px;margin-bottom:14px;">📖</div>
+        <div style="font-size:16px;font-weight:800;color:var(--text2);margin-bottom:8px;">eBooks ఇంకా add చేయలేదు</div>
+        <div style="font-size:13px;color:var(--text3);">Admin Panel → 📖 eBooks tab లో PDFs upload చేయండి</div>
+      </div>
+    </div>
+
+    <footer>
+      <div class="footer-inner">
+        <div class="footer-brand">Anil <span>EduTech</span></div>
+        <div class="footer-tagline">Free Online Mock Tests</div>
+        <div class="footer-links">
+          <a class="footer-link" href="/" onclick="goHome();return false;">🏠 Home</a>
+          <a class="footer-link" href="/#exams" onclick="goExams();return false;">📝 Exams</a>
+          <a class="footer-link" href="/#progress" onclick="goProgress();return false;">📊 Progress</a>
+        </div>
+        <div class="footer-divider"></div>
+        <div class="footer-copy">Made with ❤️ by <strong>Anil EduTech</strong> &nbsp;·&nbsp; © 2026</div>
+      </div>
+    </footer>
+  </div>
+
+  <!-- EBOOK PDF VIEWER MODAL — Read Only, No Download -->
+  <div id="ebook-viewer-overlay"
+    style="display:none;position:fixed;inset:0;z-index:10000;background:rgba(0,0,0,.82);backdrop-filter:blur(8px);flex-direction:column;align-items:center;justify-content:center;">
+    <div style="width:100%;max-width:920px;height:100%;display:flex;flex-direction:column;padding:10px 12px 12px;">
+      <div style="display:flex;align-items:center;gap:10px;margin-bottom:8px;flex-shrink:0;">
+        <button onclick="closeEbookViewer()"
+          style="background:rgba(255,255,255,.15);border:none;color:#fff;border-radius:10px;padding:8px 16px;font-size:13px;font-weight:800;cursor:pointer;font-family:inherit;flex-shrink:0;">✕ Close</button>
+        <div id="ebook-viewer-title"
+          style="font-size:14px;font-weight:800;color:#fff;flex:1;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;"></div>
+      </div>
+      <div style="flex:1;border-radius:14px;overflow:hidden;background:#1a1a2e;position:relative;">
+        <iframe id="ebook-pdf-iframe" src="" style="width:100%;height:100%;border:none;display:block;"
+          oncontextmenu="return false;"
+          sandbox="allow-scripts allow-same-origin allow-forms">
+        </iframe>
+        <!-- Blocker div prevents right-click save on iframe -->
+        <div style="position:absolute;inset:0;z-index:1;pointer-events:none;" oncontextmenu="return false;"></div>
+      </div>
+    </div>
+  </div>
 
   <div id="page-admin" class="page"></div>
   <!-- admin content lazy-loaded from admin-content.html -->
@@ -18105,7 +18186,7 @@ More exams: https://aniledutech.in
       // Hide navbar when exam is active
       document.body.classList.toggle('exam-active', name === 'exam');
       window.scrollTo({ top: 0, behavior: 'smooth' });
-      const _navMap = { home: 'home', exams: 'exams', result: 'exams', exam: 'exams', progress: 'progress', videos: 'videos', support: 'support', referral: 'home', badges: 'progress', daily: 'exams', profile: 'home', 'mock-folders': 'exams', 'mock-subfolders': 'exams', 'mock-folder-detail': 'exams', syllabus: 'exams', jobs: 'home', contest: 'exams', 'current-affairs': 'exams', 'exam-ssc': 'exams', feedback: 'exams', admin: 'admin' };
+      const _navMap = { home: 'home', exams: 'exams', result: 'exams', exam: 'exams', progress: 'progress', videos: 'videos', support: 'support', referral: 'home', badges: 'progress', daily: 'exams', profile: 'home', 'mock-folders': 'exams', 'mock-subfolders': 'exams', 'mock-folder-detail': 'exams', syllabus: 'exams', jobs: 'home', contest: 'exams', 'current-affairs': 'exams', 'exam-ssc': 'exams', feedback: 'exams', admin: 'admin', ebooks: 'home' };
       // Desktop nav highlight: direct match first, then _navMap fallback
       const _desktopNavId = 'nav-' + (document.getElementById('nav-' + name) ? name : (_navMap[name] || 'home'));
       const _desktopNavEl = document.getElementById(_desktopNavId);
@@ -20263,7 +20344,7 @@ More exams: https://aniledutech.in
       if (btnEl) {
         btnEl.classList.add('active');
         const lbl = document.getElementById('admin-logged-label');
-        const labels = { exams: 'Dashboard / Exams', questions: 'Dashboard / Questions', pdfitems: 'Dashboard / PDFs & Images', subscribers: 'Dashboard / Subscribers', videos: 'Dashboard / Videos', ai: 'Dashboard / AI Tools', payments: 'Dashboard / Payments', bulkimport: 'Dashboard / Bulk Import', analytics: 'Dashboard / Analytics', dailymock: 'Dashboard / Daily Mock', scheduled: 'Dashboard / Scheduled', settings: 'Dashboard / Settings', userbackup: 'Dashboard / User Backup', contests: 'Dashboard / Contests', jobs: 'Dashboard / Govt Jobs', categories: 'Dashboard / Category Order' };
+        const labels = { exams: 'Dashboard / Exams', questions: 'Dashboard / Questions', pdfitems: 'Dashboard / PDFs & Images', subscribers: 'Dashboard / Subscribers', videos: 'Dashboard / Videos', ai: 'Dashboard / AI Tools', payments: 'Dashboard / Payments', bulkimport: 'Dashboard / Bulk Import', analytics: 'Dashboard / Analytics', dailymock: 'Dashboard / Daily Mock', scheduled: 'Dashboard / Scheduled', settings: 'Dashboard / Settings', userbackup: 'Dashboard / User Backup', contests: 'Dashboard / Contests', jobs: 'Dashboard / Govt Jobs', categories: 'Dashboard / Category Order', ebooks: 'Dashboard / eBooks' };
         if (lbl && labels[tab]) lbl.textContent = labels[tab];
         const tabsBar = document.getElementById('admin-tabs-bar');
         if (tabsBar) tabsBar.scrollTo({ top: btnEl.offsetTop - 60, behavior: 'smooth' });
@@ -20281,6 +20362,7 @@ More exams: https://aniledutech.in
       if (tab === 'bulkimport') { setTimeout(function () { if (typeof _populateBulkExamDropdown === 'function') _populateBulkExamDropdown(); }, 50); }
       if (tab === 'userbackup') { setTimeout(function () { loadBackupData(); }, 50); }
       if (tab === 'notifications') { setTimeout(function () { loadNotificationRecipients(); }, 50); }
+      if (tab === 'ebooks') { setTimeout(function () { if (typeof renderEbookAdminList === 'function') renderEbookAdminList(); }, 50); }
     }
 
     function switchGenTab(tab, btnEl) {
@@ -22226,6 +22308,328 @@ Rules:
     (async function initPdfItems() {
       _pdfItemsCache = await _loadPdfItems();
     })();
+
+
+    // ══════════════════════════════════════════════════════════════
+    // 📖 EBOOKS PAGE — Dedicated library with read-only PDF viewer
+    // ══════════════════════════════════════════════════════════════
+
+    let _ebookSubFilter = '';
+
+    function setEbookFilter(el, sub) {
+      _ebookSubFilter = sub;
+      document.querySelectorAll('#ebook-filter-chips .filter-chip').forEach(b => b.classList.remove('active'));
+      if (el) el.classList.add('active');
+      renderEbooksGrid();
+    }
+
+    function renderEbooksGrid() {
+      const grid = document.getElementById('ebooks-grid');
+      const emptyEl = document.getElementById('ebooks-empty');
+      const countEl = document.getElementById('ebook-count-badge');
+      if (!grid) return;
+
+      const search = (document.getElementById('ebook-search')?.value || '').toLowerCase().trim();
+      let items = _pdfItemsCache.filter(x => x.cat === 'eBook');
+
+      if (_ebookSubFilter) {
+        items = items.filter(x => (x.sub || '').toLowerCase() === _ebookSubFilter.toLowerCase());
+      }
+      if (search) {
+        items = items.filter(x =>
+          (x.title || '').toLowerCase().includes(search) ||
+          (x.sub || '').toLowerCase().includes(search) ||
+          (x.description || '').toLowerCase().includes(search)
+        );
+      }
+
+      if (countEl) countEl.textContent = items.length + ' eBook' + (items.length !== 1 ? 's' : '') + ' found';
+
+      if (!items.length) {
+        grid.innerHTML = '';
+        if (emptyEl) emptyEl.style.display = 'block';
+        return;
+      }
+      if (emptyEl) emptyEl.style.display = 'none';
+
+      const subColors = {
+        'Telugu History': '#C2410C', 'Indian History': '#B45309', 'Geography': '#047857',
+        'Polity': '#1D4ED8', 'Economy': '#6D28D9', 'Science': '#0E7490',
+        'Environment': '#15803D', 'Mathematics': '#9D174D', 'General Knowledge': '#374151',
+        'Current Affairs': '#0369A1'
+      };
+
+      grid.innerHTML = items.map(item => {
+        const col = subColors[item.sub] || '#1B2D5E';
+        const safeTitle = escHtml(item.title || '');
+        const safeSub = escHtml(item.sub || '');
+        const safeDesc = escHtml(item.description || '');
+        return `
+        <div style="background:var(--bg);border:1.5px solid var(--border);border-radius:16px;overflow:hidden;display:flex;flex-direction:column;box-shadow:0 2px 12px rgba(0,0,0,.07);transition:transform .18s,box-shadow .18s;cursor:pointer;"
+          onmouseover="this.style.transform='translateY(-3px)';this.style.boxShadow='0 8px 28px rgba(0,0,0,.13)'"
+          onmouseout="this.style.transform='';this.style.boxShadow='0 2px 12px rgba(0,0,0,.07)'">
+          <!-- Color banner top -->
+          <div style="background:linear-gradient(135deg,${col},${col}cc);padding:18px 16px 14px;position:relative;">
+            <div style="font-size:36px;margin-bottom:8px;line-height:1;">📖</div>
+            <div style="font-size:14px;font-weight:900;color:#fff;line-height:1.35;word-break:break-word;">${safeTitle}</div>
+            ${safeSub ? `<span style="display:inline-block;margin-top:8px;padding:2px 10px;background:rgba(255,255,255,.2);border-radius:20px;font-size:11px;font-weight:700;color:#fff;">${safeSub}</span>` : ''}
+          </div>
+          <!-- Card body -->
+          <div style="padding:12px 14px 14px;flex:1;display:flex;flex-direction:column;gap:8px;">
+            ${safeDesc ? `<div style="font-size:12px;color:var(--text3);font-weight:600;line-height:1.5;flex:1;">${safeDesc}</div>` : '<div style="flex:1;"></div>'}
+            <button onclick="openEbookViewer('${item.id}')"
+              style="width:100%;padding:10px;background:linear-gradient(135deg,${col},${col}cc);color:#fff;border:none;border-radius:10px;font-size:13px;font-weight:800;cursor:pointer;font-family:inherit;display:flex;align-items:center;justify-content:center;gap:6px;">
+              📖 Read eBook
+            </button>
+          </div>
+        </div>`;
+      }).join('');
+    }
+
+    function openEbookViewer(id) {
+      const item = _pdfItemsCache.find(x => x.id == id);
+      if (!item || !item.url) { toast('⚠️ PDF URL దొరకలేదు', 'error'); return; }
+
+      const overlay = document.getElementById('ebook-viewer-overlay');
+      const iframe = document.getElementById('ebook-pdf-iframe');
+      const titleEl = document.getElementById('ebook-viewer-title');
+
+      if (!overlay || !iframe) return;
+
+      // Build viewer URL — Google Docs viewer embeds PDF read-only (no download toolbar in most browsers)
+      // Use #toolbar=0&navpanes=0 for native PDF.js rendering without toolbar
+      const rawUrl = item.url;
+      // For Supabase hosted PDFs, embed directly with toolbar hidden
+      const viewerUrl = rawUrl.includes('supabase') || rawUrl.startsWith('http')
+        ? rawUrl + '#toolbar=0&navpanes=0&scrollbar=0'
+        : rawUrl;
+
+      if (titleEl) titleEl.textContent = '📖 ' + (item.title || 'eBook');
+      iframe.src = viewerUrl;
+      overlay.style.display = 'flex';
+      document.body.style.overflow = 'hidden';
+
+      // Block right-click on the page while viewer is open
+      document.addEventListener('contextmenu', _ebookBlockCtx, true);
+    }
+
+    function _ebookBlockCtx(e) { e.preventDefault(); return false; }
+
+    function closeEbookViewer() {
+      const overlay = document.getElementById('ebook-viewer-overlay');
+      const iframe = document.getElementById('ebook-pdf-iframe');
+      if (overlay) overlay.style.display = 'none';
+      if (iframe) iframe.src = '';
+      document.body.style.overflow = '';
+      document.removeEventListener('contextmenu', _ebookBlockCtx, true);
+    }
+
+    // Close viewer on Escape key
+    document.addEventListener('keydown', function(e) {
+      if (e.key === 'Escape') {
+        const ov = document.getElementById('ebook-viewer-overlay');
+        if (ov && ov.style.display !== 'none') closeEbookViewer();
+      }
+    });
+
+    // ── Load ebooks page (called when navigating to page-ebooks) ──
+    async function loadEbooksPage() {
+      // Show loading if cache is empty
+      const loadEl = document.getElementById('ebook-loading');
+      const grid = document.getElementById('ebooks-grid');
+      const emptyEl = document.getElementById('ebooks-empty');
+
+      if (!_pdfItemsCache.filter(x => x.cat === 'eBook').length) {
+        if (loadEl) loadEl.style.display = 'block';
+        if (grid) grid.innerHTML = '';
+        if (emptyEl) emptyEl.style.display = 'none';
+        _pdfItemsCache = await _loadPdfItems();
+        if (loadEl) loadEl.style.display = 'none';
+      }
+      renderEbooksGrid();
+    }
+
+    // ── Large file upload for eBooks (up to 200MB via chunked XHR) ──
+    async function _uploadEbookToSupabase(file, onProgress) {
+      if (file.size > 209715200) { // 200MB hard limit
+        throw new Error('File 200 MB కంటే ఎక్కువ ఉంది! చిన్న file try చేయండి.');
+      }
+      const ext = file.name.split('.').pop().toLowerCase();
+      const fname = 'ebook_' + Date.now() + '_' + Math.random().toString(36).slice(2, 7) + '.' + ext;
+      const uploadUrl = `${SB_URL}/storage/v1/object/${PDF_BUCKET}/${fname}`;
+
+      return new Promise((resolve, reject) => {
+        const xhr = new XMLHttpRequest();
+        xhr.open('POST', uploadUrl);
+        xhr.setRequestHeader('apikey', SB_HEADERS['apikey']);
+        xhr.setRequestHeader('Authorization', SB_HEADERS['Authorization']);
+        xhr.setRequestHeader('Content-Type', file.type || 'application/pdf');
+        xhr.setRequestHeader('x-upsert', 'true');
+
+        xhr.upload.onprogress = (e) => {
+          if (e.lengthComputable && onProgress) onProgress(Math.round(e.loaded / e.total * 100));
+        };
+        xhr.onload = () => {
+          if (xhr.status === 200 || xhr.status === 201) {
+            const publicUrl = `${SB_URL}/storage/v1/object/public/${PDF_BUCKET}/${fname}`;
+            resolve(publicUrl);
+          } else {
+            try {
+              const err = JSON.parse(xhr.responseText);
+              reject(new Error(err.message || 'Upload failed ' + xhr.status));
+            } catch { reject(new Error('Upload failed: ' + xhr.status)); }
+          }
+        };
+        xhr.onerror = () => reject(new Error('Network error during upload'));
+        xhr.send(file);
+      });
+    }
+
+    // ── Admin: Add eBook (called from admin-content.html atab-ebooks) ──
+    let _ebookAdminFile = null;
+
+    function _onEbookFileSelect(file) {
+      if (!file) return;
+      if (!file.type.includes('pdf') && !file.name.match(/\.pdf$/i)) {
+        toast('⚠️ PDF file మాత్రమే upload చేయండి!', 'error'); return;
+      }
+      if (file.size > 209715200) { toast('⚠️ File 200MB కంటే ఎక్కువ ఉంది!', 'error'); return; }
+      _ebookAdminFile = file;
+      const prev = document.getElementById('ebook-admin-file-preview');
+      if (prev) {
+        document.getElementById('ebook-admin-filename').textContent = file.name;
+        document.getElementById('ebook-admin-filesize').textContent = (file.size / 1048576).toFixed(1) + ' MB';
+        prev.style.display = 'flex';
+      }
+      const dz = document.getElementById('ebook-admin-dropzone');
+      if (dz) dz.style.opacity = '0.5';
+    }
+
+    function _clearEbookAdminFile() {
+      _ebookAdminFile = null;
+      const fi = document.getElementById('ebook-admin-file-input');
+      if (fi) fi.value = '';
+      const prev = document.getElementById('ebook-admin-file-preview');
+      if (prev) prev.style.display = 'none';
+      const dz = document.getElementById('ebook-admin-dropzone');
+      if (dz) dz.style.opacity = '1';
+      const prog = document.getElementById('ebook-admin-progress');
+      if (prog) prog.style.display = 'none';
+      const bar = document.getElementById('ebook-admin-bar');
+      if (bar) bar.style.width = '0%';
+    }
+
+    async function addEbookAdmin() {
+      const title = (document.getElementById('ebook-admin-title')?.value || '').trim();
+      const sub = (document.getElementById('ebook-admin-sub')?.value || '').trim();
+      const desc = (document.getElementById('ebook-admin-desc')?.value || '').trim();
+      const st = document.getElementById('ebook-admin-status');
+
+      if (!title) {
+        if (st) { st.style.display = 'block'; st.style.color = 'var(--red)'; st.textContent = '⚠️ Title తప్పనిసరి!'; setTimeout(() => st.style.display = 'none', 3000); }
+        return;
+      }
+      if (!_ebookAdminFile) {
+        if (st) { st.style.display = 'block'; st.style.color = 'var(--red)'; st.textContent = '⚠️ PDF file select చేయండి!'; setTimeout(() => st.style.display = 'none', 3000); }
+        return;
+      }
+
+      if (st) { st.style.display = 'block'; st.style.color = 'var(--amber)'; st.textContent = '⏳ Uploading PDF...'; }
+
+      const prog = document.getElementById('ebook-admin-progress');
+      const bar = document.getElementById('ebook-admin-bar');
+      const pct = document.getElementById('ebook-admin-pct');
+      if (prog) prog.style.display = 'block';
+
+      try {
+        const url = await _uploadEbookToSupabase(_ebookAdminFile, (p) => {
+          if (bar) bar.style.width = p + '%';
+          if (pct) pct.textContent = p + '% uploaded...';
+        });
+        if (bar) bar.style.width = '100%';
+        if (pct) pct.textContent = '✅ Upload complete!';
+        setTimeout(() => { if (prog) prog.style.display = 'none'; }, 2000);
+
+        const item = {
+          id: 'pdf_' + Date.now(),
+          cat: 'eBook',
+          type: 'pdf',
+          title, sub, url, description: desc,
+          created_at: new Date().toISOString()
+        };
+
+        if (st) st.textContent = '⏳ Saving to database...';
+        const ok = await sbUpsert(PDF_TABLE, item);
+
+        // Update local cache
+        const cache = _pdfCacheLoad();
+        cache.unshift(item);
+        _pdfCacheSave(cache);
+        _pdfItemsCache = cache;
+
+        // Clear form
+        ['ebook-admin-title', 'ebook-admin-desc'].forEach(id => { const el = document.getElementById(id); if (el) el.value = ''; });
+        const subEl = document.getElementById('ebook-admin-sub');
+        if (subEl) subEl.value = '';
+        _clearEbookAdminFile();
+
+        if (ok) {
+          if (st) { st.style.color = 'var(--teal)'; st.textContent = '✅ eBook permanently saved!'; }
+          toast('✅ eBook upload అయింది & saved!', 'success');
+        } else {
+          if (st) { st.style.color = 'var(--amber)'; st.textContent = '⚠️ Locally saved (Supabase offline)'; }
+          toast('⚠️ Locally saved. Supabase check చేయండి.', 'warn');
+        }
+        setTimeout(() => { if (st) st.style.display = 'none'; }, 3500);
+
+        // Refresh admin ebooks list
+        renderEbookAdminList();
+
+      } catch (err) {
+        if (prog) prog.style.display = 'none';
+        if (st) { st.style.color = 'var(--red)'; st.textContent = '❌ Upload failed: ' + err.message; }
+        toast('❌ Upload failed: ' + err.message, 'error');
+        setTimeout(() => { if (st) st.style.display = 'none'; }, 5000);
+      }
+    }
+
+    async function deleteEbookAdmin(id) {
+      if (!confirm('eBook delete చేయాలా? Permanently remove అవుతుంది.')) return;
+      const ok = await sbDelete(PDF_TABLE, `id=eq.${id}`);
+      const cache = _pdfCacheLoad().filter(x => x.id != id);
+      _pdfCacheSave(cache);
+      _pdfItemsCache = cache;
+      toast(ok ? '🗑 eBook deleted' : '🗑 Deleted (local)', ok ? 'info' : 'warn');
+      renderEbookAdminList();
+    }
+
+    function renderEbookAdminList() {
+      const el = document.getElementById('ebook-admin-list');
+      if (!el) return;
+      const items = _pdfItemsCache.filter(x => x.cat === 'eBook');
+      if (!items.length) {
+        el.innerHTML = '<div style="text-align:center;padding:30px;color:var(--text3);font-size:13px;font-weight:600;">eBooks ఇంకా add చేయలేదు.</div>';
+        return;
+      }
+      el.innerHTML = items.map(item => `
+        <div style="display:flex;align-items:center;gap:12px;padding:12px 14px;border-radius:12px;border:1.5px solid var(--border);background:var(--bg);margin-bottom:10px;flex-wrap:wrap;">
+          <div style="font-size:26px;line-height:1;">📖</div>
+          <div style="flex:1;min-width:0;">
+            <div style="font-weight:800;font-size:13.5px;color:var(--text);white-space:nowrap;overflow:hidden;text-overflow:ellipsis;">${escHtml(item.title)}</div>
+            <div style="display:flex;gap:6px;margin-top:4px;flex-wrap:wrap;align-items:center;">
+              ${item.sub ? `<span style="font-size:11px;font-weight:700;padding:2px 8px;border-radius:20px;background:#1B2D5E22;color:#1B2D5E;">${escHtml(item.sub)}</span>` : ''}
+              ${item.description ? `<span style="font-size:11px;color:var(--text3);">— ${escHtml(item.description)}</span>` : ''}
+              <span style="font-size:11px;color:var(--text3);">${item.created_at ? new Date(item.created_at).toLocaleDateString('te-IN') : ''}</span>
+            </div>
+          </div>
+          <div style="display:flex;gap:6px;flex-shrink:0;">
+            <a href="${sanitizeUrl(item.url)||'#'}" target="_blank" style="padding:6px 12px;border-radius:8px;background:rgba(26,115,232,.1);color:var(--primary);font-weight:800;font-size:12px;text-decoration:none;border:1px solid rgba(26,115,232,.2);">👁 View</a>
+            <button onclick="deleteEbookAdmin('${item.id}')" style="padding:6px 12px;border-radius:8px;background:rgba(239,35,60,.08);color:var(--red);font-weight:800;font-size:12px;cursor:pointer;border:1px solid rgba(239,35,60,.2);font-family:inherit;">🗑</button>
+          </div>
+        </div>`).join('');
+    }
+
+    // ── END EBOOKS PAGE ──
 
 
     function setBankingSubFilter(el, subName) {

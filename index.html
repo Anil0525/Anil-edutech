@@ -32796,6 +32796,210 @@ Rules:
     } catch (e) { toast('Error!', 'error'); }
   }
 
+  // ══════════════════════════════════════════════
+  // 🤖 AUTO-FETCH GOVT JOBS — RSS → Supabase
+  // ══════════════════════════════════════════════
+
+  // RSS Feeds — CORS proxy వాడి browser నుండే fetch చేస్తాం
+  const _RSS_FEEDS = [
+    {
+      url: 'https://www.employmentnews.gov.in/rss/rss.aspx',
+      source: 'Employment News',
+      defaultCategory: 'notification'
+    },
+    {
+      url: 'https://www.freejobalert.com/feed/',
+      source: 'FreeJobAlert',
+      defaultCategory: 'notification'
+    },
+    {
+      url: 'https://www.sarkariresult.com/rss.xml',
+      source: 'Sarkari Result',
+      defaultCategory: 'result'
+    }
+  ];
+
+  // Title లో keywords చూసి category detect చేస్తాం
+  function _detectJobCategory(title) {
+    const t = (title || '').toLowerCase();
+    if (t.includes('answer key') || t.includes('answer sheet')) return 'answer_key';
+    if (t.includes('admit card') || t.includes('hall ticket') || t.includes('call letter')) return 'admit_card';
+    if (t.includes('result') || t.includes('merit list') || t.includes('selection list') || t.includes('cut off')) return 'result';
+    return 'notification';
+  }
+
+  // Organization name RSS title నుండి extract చేస్తాం
+  function _extractOrg(title) {
+    // "SSC CGL 2024 Result Released" → "SSC"
+    // "UPSC Civil Services Notification" → "UPSC"
+    const known = ['SSC', 'UPSC', 'IBPS', 'SBI', 'RBI', 'RRB', 'TSPSC', 'APPSC', 'NVS', 'KVS',
+      'DRDO', 'ISRO', 'HAL', 'BHEL', 'ONGC', 'BSNL', 'LIC', 'ESIC', 'EPFO', 'NHM',
+      'High Court', 'Supreme Court', 'Railway', 'Army', 'Navy', 'Air Force', 'Police',
+      'DSSSB', 'Delhi', 'Bihar', 'UP', 'MP', 'Rajasthan', 'Punjab', 'Haryana'];
+    for (const k of known) {
+      if (title.toLowerCase().includes(k.toLowerCase())) return k;
+    }
+    // First 2 words try చేయాలి
+    const words = title.trim().split(/\s+/);
+    return words.slice(0, 2).join(' ');
+  }
+
+  // CORS proxy ద్వారా RSS XML fetch చేయాలి
+  async function _fetchRSSFeed(feedUrl) {
+    // Multiple CORS proxies try చేస్తాం — fallback గా
+    const proxies = [
+      `https://api.allorigins.win/get?url=${encodeURIComponent(feedUrl)}`,
+      `https://corsproxy.io/?${encodeURIComponent(feedUrl)}`
+    ];
+
+    for (const proxyUrl of proxies) {
+      try {
+        const res = await fetch(proxyUrl, { signal: AbortSignal.timeout(12000) });
+        if (!res.ok) continue;
+        const json = await res.json();
+        const xmlText = json.contents || json.body || '';
+        if (!xmlText) continue;
+
+        // XML parse చేయాలి
+        const parser = new DOMParser();
+        const doc = parser.parseFromString(xmlText, 'text/xml');
+        const items = Array.from(doc.querySelectorAll('item'));
+        return items;
+      } catch (e) {
+        console.warn('Proxy failed:', proxyUrl, e);
+      }
+    }
+    return [];
+  }
+
+  // Main function — button click చేసినపుడు పిలుస్తుంది
+  async function manualTriggerAutoFetch() {
+    const btn = document.getElementById('auto-fetch-trigger-btn');
+    const logEl = document.getElementById('auto-fetch-log');
+    if (!btn || !logEl) return;
+
+    btn.disabled = true;
+    btn.textContent = '⏳ Fetching...';
+    logEl.style.display = 'block';
+    logEl.innerHTML = '⏳ RSS feeds fetch చేస్తున్నాం...<br>';
+
+    const _log = (msg, color) => {
+      logEl.innerHTML += `<span style="color:${color || 'var(--text2)'}">${msg}</span><br>`;
+      logEl.scrollTop = logEl.scrollHeight;
+    };
+
+    try {
+      // Step 1: Existing titles తీసుకో (deduplication కోసం)
+      _log('📋 Existing articles check చేస్తున్నాం...');
+      const existRes = await fetch(`${SB_URL}/rest/v1/ae_job_articles?select=title&limit=1000`, { headers: SB_HEADERS });
+      const existData = existRes.ok ? await existRes.json() : [];
+      const existingTitles = new Set((existData || []).map(x => (x.title || '').toLowerCase().trim()));
+      _log(`✅ ${existingTitles.size} existing articles found.`, '#059669');
+
+      let totalInserted = 0;
+      let totalSkipped = 0;
+      const newArticles = [];
+
+      // Step 2: ప్రతి RSS feed fetch చేయాలి
+      for (const feed of _RSS_FEEDS) {
+        _log(`📡 ${feed.source} fetch చేస్తున్నాం...`);
+        const items = await _fetchRSSFeed(feed.url);
+
+        if (!items.length) {
+          _log(`⚠️ ${feed.source} — items రాలేదు (CORS issue అయి ఉండవచ్చు).`, '#d97706');
+          continue;
+        }
+
+        _log(`   → ${items.length} items వచ్చాయి.`);
+        let feedNew = 0;
+
+        for (const item of items.slice(0, 20)) { // max 20 per feed
+          const title = (item.querySelector('title')?.textContent || '').trim();
+          const link = (item.querySelector('link')?.textContent || item.querySelector('guid')?.textContent || '').trim();
+          const desc = (item.querySelector('description')?.textContent || '').replace(/<[^>]*>/g, '').trim().slice(0, 500);
+          const pubDate = item.querySelector('pubDate')?.textContent || '';
+
+          if (!title || title.length < 5) continue;
+
+          // Duplicate check
+          if (existingTitles.has(title.toLowerCase().trim())) {
+            totalSkipped++;
+            continue;
+          }
+
+          const category = _detectJobCategory(title);
+          const org = _extractOrg(title);
+
+          newArticles.push({
+            title,
+            organization: org,
+            category,
+            description: desc || `Source: ${feed.source}`,
+            apply_link: link || '',
+            notification_link: link || '',
+            is_active: true,
+            created_at: pubDate ? new Date(pubDate).toISOString() : new Date().toISOString()
+          });
+
+          existingTitles.add(title.toLowerCase().trim()); // prevent cross-feed duplicates
+          feedNew++;
+        }
+
+        _log(`   → ${feedNew} new articles found from ${feed.source}.`, feedNew > 0 ? '#059669' : 'var(--text3)');
+      }
+
+      // Step 3: Supabase లో batch insert
+      if (newArticles.length > 0) {
+        _log(`💾 ${newArticles.length} articles Supabase లో save చేస్తున్నాం...`);
+
+        // 10 articles per batch
+        for (let i = 0; i < newArticles.length; i += 10) {
+          const batch = newArticles.slice(i, i + 10);
+          const insRes = await fetch(`${SB_URL}/rest/v1/ae_job_articles`, {
+            method: 'POST',
+            headers: { ...SB_HEADERS, 'Prefer': 'return=minimal' },
+            body: JSON.stringify(batch)
+          });
+          if (insRes.ok || insRes.status === 201) {
+            totalInserted += batch.length;
+          } else {
+            _log(`⚠️ Batch ${Math.floor(i/10)+1} insert failed: ${insRes.status}`, '#ef4444');
+          }
+        }
+
+        // Step 4: Bell notification — new jobs వచ్చాయని
+        if (totalInserted > 0) {
+          _log('🔔 Users కి notification పంపుతున్నాం...');
+          try {
+            await createBellNotifications(
+              '💼 కొత్త Govt Jobs వచ్చాయి!',
+              `${totalInserted} కొత్త notifications, results, updates available — ఇప్పుడే చూడండి 👀`,
+              'all',
+              'https://aniledutech.in'
+            );
+            _log('✅ Bell notification sent!', '#059669');
+          } catch (e) {
+            _log('⚠️ Notification send కాలేదు.', '#d97706');
+          }
+        }
+      }
+
+      // Final summary
+      _log('─'.repeat(40));
+      _log(`✅ Done! ${totalInserted} inserted · ${totalSkipped} skipped (duplicates)`, '#059669');
+      toast(`🤖 Auto-Fetch complete! ${totalInserted} new articles added.`, 'success');
+      loadAdminJobArticles(); // List refresh చేయాలి
+
+    } catch (e) {
+      _log(`❌ Error: ${e.message}`, '#ef4444');
+      toast('❌ Auto-fetch failed! Console చూడండి.', 'error');
+      console.error('manualTriggerAutoFetch error:', e);
+    } finally {
+      btn.disabled = false;
+      btn.textContent = '🤖 Now Fetch చేయండి';
+    }
+  }
+
   // ── Hook: populate exam select when admin contests tab is opened ──
   const _origSwitchAdminTab = window.switchAdminTab;
   window.switchAdminTab = function (tab, btn) {

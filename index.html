@@ -29817,9 +29817,18 @@ Rules:
           : '')
         : '';
 
+      // Category బట్టి button label నిర్ణయించాలి
+      const _jobBtnLabels = {
+        notification: { primary: '🚀 Apply Now',           secondary: '📄 Official Notification' },
+        result:       { primary: '📊 Result చూడండి',       secondary: '📄 Official Result' },
+        admit_card:   { primary: '🎫 Admit Card Download',  secondary: '📄 Official Notice' },
+        answer_key:   { primary: '🔑 Answer Key చూడండి',   secondary: '📄 Answer Key PDF' }
+      };
+      const _btnLbl = _jobBtnLabels[j.category] || _jobBtnLabels.notification;
+
       let actions = '';
-      if (j.apply_link) actions += `<a href="${escHtml(j.apply_link)}" target="_blank" rel="noopener" class="job-btn-primary">🚀 Apply Now</a>`;
-      if (j.notification_link) actions += `<a href="${escHtml(j.notification_link)}" target="_blank" rel="noopener" class="job-btn-secondary">📄 Official Notification</a>`;
+      if (j.apply_link) actions += `<a href="${escHtml(j.apply_link)}" target="_blank" rel="noopener" class="job-btn-primary">${_btnLbl.primary}</a>`;
+      if (j.notification_link) actions += `<a href="${escHtml(j.notification_link)}" target="_blank" rel="noopener" class="job-btn-secondary">${_btnLbl.secondary}</a>`;
       const actionsBlock = actions ? `<div class="job-actions">${actions}</div>` : '';
 
       // Views / Likes / Comments / Share bar

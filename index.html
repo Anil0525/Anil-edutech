@@ -23551,6 +23551,7 @@ Rules:
         updateStats();
         renderLeaderboard();
         filterExams();
+        if (typeof _loadAllReviewStats === 'function') _loadAllReviewStats();
         if (typeof renderAdminTable === 'function') renderAdminTable();
         if (typeof renderExamsManageTable === 'function') renderExamsManageTable();
         if (typeof _populateBulkExamDropdown === 'function') _populateBulkExamDropdown();
@@ -23571,6 +23572,7 @@ Rules:
         updateStats();
         renderLeaderboard();
         filterExams();
+        if (typeof _loadAllReviewStats === 'function') _loadAllReviewStats();
       });
 
       // Notification reminder
@@ -33602,10 +33604,10 @@ Rules:
 
   // ── Helpers ──
   function _sbUrl(path) {
-    return window.SB_URL + '/rest/v1/' + path;
+    return SB_URL + '/rest/v1/' + path;
   }
   function _sbH(extra) {
-    return Object.assign({}, window.SB_HEADERS, extra || {});
+    return Object.assign({}, SB_HEADERS, extra || {});
   }
   function _fmtTime(ts) {
     const d = new Date(ts);
@@ -33664,7 +33666,7 @@ Rules:
 
   // ── Load messages ──
   async function _loadMsgs(scroll) {
-    if (!_chatUserGmail || !window.SB_URL) return;
+    if (!_chatUserGmail || typeof SB_URL === 'undefined') return;
     try {
       const r = await fetch(
         _sbUrl(CHAT_TABLE + '?gmail=eq.' + encodeURIComponent(_chatUserGmail) + '&order=ts.asc&limit=200'),
@@ -33758,7 +33760,7 @@ Rules:
 
   // ── Mark admin messages as read by user ──
   async function _markReadByUser() {
-    if (!_chatUserGmail || !window.SB_URL) return;
+    if (!_chatUserGmail || typeof SB_URL === 'undefined') return;
     try {
       await fetch(
         _sbUrl(CHAT_TABLE + '?gmail=eq.' + encodeURIComponent(_chatUserGmail) + '&sender=eq.admin&read_by_user=eq.false'),
@@ -33793,7 +33795,7 @@ Rules:
   }
 
   async function _pollMsgs() {
-    if (!_chatUserGmail || !window.SB_URL) return;
+    if (!_chatUserGmail || typeof SB_URL === 'undefined') return;
     try {
       const r = await fetch(
         _sbUrl(CHAT_TABLE + '?gmail=eq.' + encodeURIComponent(_chatUserGmail) + '&order=ts.asc&limit=200'),

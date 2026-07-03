@@ -20290,7 +20290,7 @@ More exams: https://aniledutech.in
       if (btnEl) {
         btnEl.classList.add('active');
         const lbl = document.getElementById('admin-logged-label');
-        const labels = { exams: 'Dashboard / Exams', questions: 'Dashboard / Questions', pdfitems: 'Dashboard / PDFs & Images', subscribers: 'Dashboard / Subscribers', videos: 'Dashboard / Videos', ai: 'Dashboard / AI Tools', payments: 'Dashboard / Payments', bulkimport: 'Dashboard / Bulk Import', analytics: 'Dashboard / Analytics', dailymock: 'Dashboard / Daily Mock', scheduled: 'Dashboard / Scheduled', settings: 'Dashboard / Settings', userbackup: 'Dashboard / User Backup', contests: 'Dashboard / Contests', jobs: 'Dashboard / Govt Jobs', categories: 'Dashboard / Category Order', ebooks: 'Dashboard / eBooks', livechat: 'Dashboard / Live Chat' };
+        const labels = { exams: 'Dashboard / Exams', questions: 'Dashboard / Questions', pdfitems: 'Dashboard / PDFs & Images', subscribers: 'Dashboard / Subscribers', videos: 'Dashboard / Videos', ai: 'Dashboard / AI Tools', payments: 'Dashboard / Payments', bulkimport: 'Dashboard / Bulk Import', analytics: 'Dashboard / Analytics', dailymock: 'Dashboard / Daily Mock', scheduled: 'Dashboard / Scheduled', settings: 'Dashboard / Settings', userbackup: 'Dashboard / User Backup', contests: 'Dashboard / Contests', jobs: 'Dashboard / Govt Jobs', categories: 'Dashboard / Category Order', ebooks: 'Dashboard / eBooks' };
         if (lbl && labels[tab]) lbl.textContent = labels[tab];
         const tabsBar = document.getElementById('admin-tabs-bar');
         if (tabsBar) tabsBar.scrollTo({ top: btnEl.offsetTop - 60, behavior: 'smooth' });
@@ -20309,7 +20309,7 @@ More exams: https://aniledutech.in
       if (tab === 'userbackup') { setTimeout(function () { loadBackupData(); }, 50); }
       if (tab === 'notifications') { setTimeout(function () { loadNotificationRecipients(); }, 50); }
       if (tab === 'ebooks') { setTimeout(function () { if (typeof renderEbookAdminList === 'function') renderEbookAdminList(); }, 50); }
-      if (tab === 'livechat') { setTimeout(function () { if (typeof loadAdminChat === 'function') loadAdminChat(); }, 50); }
+
     }
 
     function switchGenTab(tab, btnEl) {
@@ -33376,6 +33376,24 @@ Rules:
     transform: scale(0.93);
   }
 
+  /* WhatsApp Floating Button */
+  .ae-wa-btn {
+    width: 50px; height: 50px;
+    border-radius: 50%; border: none; cursor: pointer;
+    background: linear-gradient(135deg, #25D366, #128C7E);
+    box-shadow: 0 4px 18px rgba(37,211,102,.5);
+    display: flex; align-items: center; justify-content: center;
+    flex-shrink: 0; transition: transform .2s, box-shadow .2s;
+    text-decoration: none;
+  }
+  .ae-wa-btn:hover { transform: translateY(-2px); box-shadow: 0 7px 24px rgba(37,211,102,.6); }
+  .ae-wa-btn:active { transform: scale(.93); }
+  body.exam-active .ae-wa-btn { display: none; }
+
+  @media (max-width: 480px) {
+    .ae-wa-btn { width: 46px; height: 46px; }
+    .ae-wa-btn svg { width: 22px; height: 22px; }
+  }
 
 
   /* Mobile adjustments */
@@ -33392,180 +33410,16 @@ Rules:
     }
   }
 
-  /* ═══════════ LIVE CHAT ═══════════ */
-  .ae-chat-bubble {
-    width: 50px; height: 50px;
-    border-radius: 50%; border: none; cursor: pointer;
-    background: linear-gradient(135deg, #10b981, #059669);
-    box-shadow: 0 4px 18px rgba(16,185,129,.5);
-    color: #fff; font-size: 22px;
-    display: flex; align-items: center; justify-content: center;
-    position: relative; transition: transform .2s, box-shadow .2s;
-    flex-shrink: 0;
-  }
-  .ae-chat-bubble:hover { transform: translateY(-2px); box-shadow: 0 7px 24px rgba(16,185,129,.6); }
-  .ae-chat-bubble:active { transform: scale(.93); }
-  body.exam-active .ae-chat-bubble { display: none; }
-
-  .ae-chat-badge {
-    position: absolute; top: -4px; right: -4px;
-    background: #ef4444; color: #fff;
-    font-size: 10px; font-weight: 800;
-    min-width: 18px; height: 18px; border-radius: 9px;
-    display: flex; align-items: center; justify-content: center;
-    padding: 0 4px; border: 2px solid #fff;
-    animation: ae-badge-pop .3s ease;
-    display: none;
-  }
-  @keyframes ae-badge-pop { 0%{transform:scale(0)} 70%{transform:scale(1.25)} 100%{transform:scale(1)} }
-
-  /* Chat Window */
-  .ae-chat-win {
-    position: fixed; bottom: 90px; right: 18px;
-    width: min(360px, calc(100vw - 24px));
-    height: min(480px, calc(100vh - 120px));
-    background: var(--bg, #fff);
-    border: 1.5px solid var(--border, #e2e8f0);
-    border-radius: 20px;
-    box-shadow: 0 12px 48px rgba(0,0,0,.18);
-    display: flex; flex-direction: column;
-    z-index: 99998; overflow: hidden;
-    transform: scale(.85) translateY(20px);
-    opacity: 0; pointer-events: none;
-    transform-origin: bottom right;
-    transition: transform .22s cubic-bezier(.34,1.56,.64,1), opacity .18s;
-  }
-  .ae-chat-win.open {
-    transform: scale(1) translateY(0);
-    opacity: 1; pointer-events: auto;
-  }
-  .ae-chat-header {
-    background: linear-gradient(135deg, #10b981, #059669);
-    padding: 13px 16px; display: flex; align-items: center; gap: 10px; flex-shrink: 0;
-  }
-  .ae-chat-avatar {
-    width: 36px; height: 36px; border-radius: 50%;
-    background: rgba(255,255,255,.25);
-    display: flex; align-items: center; justify-content: center; font-size: 18px; flex-shrink: 0;
-  }
-  .ae-chat-header-info { flex: 1; min-width: 0; }
-  .ae-chat-header-name { font-size: 14px; font-weight: 800; color: #fff; }
-  .ae-chat-header-status { font-size: 11px; color: rgba(255,255,255,.82); font-weight: 600; margin-top: 1px; }
-  .ae-chat-close {
-    background: rgba(255,255,255,.2); border: none; color: #fff;
-    width: 28px; height: 28px; border-radius: 50%; cursor: pointer;
-    font-size: 14px; display: flex; align-items: center; justify-content: center;
-    transition: background .15s;
-  }
-  .ae-chat-close:hover { background: rgba(255,255,255,.35); }
-
-  .ae-chat-msgs {
-    flex: 1; overflow-y: auto; padding: 14px 12px; display: flex;
-    flex-direction: column; gap: 8px;
-    scrollbar-width: thin; scrollbar-color: var(--border,#e2e8f0) transparent;
-  }
-  .ae-msg { max-width: 82%; display: flex; flex-direction: column; gap: 2px; }
-  .ae-msg.user { align-self: flex-end; align-items: flex-end; }
-  .ae-msg.admin { align-self: flex-start; align-items: flex-start; }
-  .ae-msg-bubble {
-    padding: 9px 13px; border-radius: 16px; font-size: 13px;
-    font-weight: 600; line-height: 1.45; word-break: break-word;
-  }
-  .ae-msg.user .ae-msg-bubble {
-    background: linear-gradient(135deg, #10b981, #059669); color: #fff;
-    border-bottom-right-radius: 4px;
-  }
-  .ae-msg.admin .ae-msg-bubble {
-    background: var(--bg2, #f1f5f9); color: var(--text, #1e293b);
-    border-bottom-left-radius: 4px;
-    border: 1px solid var(--border, #e2e8f0);
-  }
-  .ae-msg-time { font-size: 10px; color: var(--text3, #94a3b8); font-weight: 600; padding: 0 4px; }
-
-  .ae-chat-input-wrap {
-    padding: 10px 12px; border-top: 1.5px solid var(--border, #e2e8f0);
-    display: flex; gap: 8px; align-items: flex-end; flex-shrink: 0;
-    background: var(--bg, #fff);
-  }
-  .ae-chat-input {
-    flex: 1; border: 1.5px solid var(--border, #e2e8f0); border-radius: 12px;
-    padding: 9px 13px; font-size: 13px; font-weight: 600; resize: none;
-    font-family: inherit; background: var(--bg, #fff); color: var(--text, #1e293b);
-    outline: none; max-height: 90px; line-height: 1.4;
-    transition: border-color .15s;
-  }
-  .ae-chat-input:focus { border-color: #10b981; }
-  .ae-chat-send {
-    width: 38px; height: 38px; border-radius: 50%; border: none; cursor: pointer;
-    background: linear-gradient(135deg, #10b981, #059669); color: #fff;
-    font-size: 16px; display: flex; align-items: center; justify-content: center;
-    flex-shrink: 0; transition: transform .15s, box-shadow .15s;
-  }
-  .ae-chat-send:hover { transform: scale(1.08); box-shadow: 0 4px 12px rgba(16,185,129,.4); }
-  .ae-chat-send:active { transform: scale(.94); }
-
-  .ae-chat-empty {
-    flex: 1; display: flex; flex-direction: column;
-    align-items: center; justify-content: center;
-    color: var(--text3, #94a3b8); gap: 8px;
-  }
-  .ae-chat-login-prompt {
-    flex: 1; display: flex; flex-direction: column;
-    align-items: center; justify-content: center; padding: 20px; gap: 12px; text-align: center;
-  }
-
-  @media (max-width: 480px) {
-    .ae-chat-win { bottom: 80px; right: 12px; }
-    .ae-chat-bubble { width: 46px; height: 46px; font-size: 20px; }
-  }
-</style>
-
 <div class="ae-float-wrap" id="aeFloatWrap">
   <button class="ae-top-btn" id="aeTopBtn" onclick="window.scrollTo({top:0,behavior:'smooth'})" title="పైకి వెళ్ళు"
     aria-label="Scroll to top">
     &#8679;
   </button>
-  <!-- Live Chat Bubble -->
-  <button class="ae-chat-bubble" id="ae-chat-bubble" onclick="toggleChat()" title="Chat with us"
-    aria-label="Live chat">
-    💬
-    <span class="ae-chat-badge" id="ae-chat-badge"></span>
-  </button>
-</div>
-
-<!-- Live Chat Window -->
-<div class="ae-chat-win" id="ae-chat-win">
-  <!-- Header -->
-  <div class="ae-chat-header">
-    <div class="ae-chat-avatar">👨‍🏫</div>
-    <div class="ae-chat-header-info">
-      <div class="ae-chat-header-name">Anil EduTech Support</div>
-      <div class="ae-chat-header-status" id="ae-chat-status">● Online</div>
-    </div>
-    <button class="ae-chat-close" onclick="toggleChat()">✕</button>
-  </div>
-  <!-- Messages -->
-  <div class="ae-chat-msgs" id="ae-chat-msgs">
-    <div class="ae-chat-login-prompt" id="ae-chat-login-prompt" style="display:none;">
-      <div style="font-size:40px;">🔐</div>
-      <div style="font-size:14px;font-weight:800;color:var(--text);">Login అవ్వండి</div>
-      <div style="font-size:12.5px;color:var(--text3);font-weight:600;">Chat చేయడానికి login అవ్వాలి</div>
-      <button onclick="showPage('login');toggleChat()"
-        style="margin-top:8px;padding:9px 22px;background:linear-gradient(135deg,#10b981,#059669);color:#fff;border:none;border-radius:10px;font-size:13px;font-weight:800;cursor:pointer;font-family:inherit;">Login చేయండి</button>
-    </div>
-    <div class="ae-chat-empty" id="ae-chat-empty" style="display:none;">
-      <div style="font-size:40px;">💬</div>
-      <div style="font-size:13px;font-weight:700;">మీ message పంపండి</div>
-      <div style="font-size:12px;font-weight:600;">మేము తొందరగా reply చేస్తాం!</div>
-    </div>
-  </div>
-  <!-- Input -->
-  <div class="ae-chat-input-wrap" id="ae-chat-input-area">
-    <textarea class="ae-chat-input" id="ae-chat-input" placeholder="Message type చేయండి..." rows="1"
-      oninput="this.style.height='auto';this.style.height=this.scrollHeight+'px'"
-      onkeydown="if(event.key==='Enter'&&!event.shiftKey){event.preventDefault();sendChatMsg();}"></textarea>
-    <button class="ae-chat-send" onclick="sendChatMsg()" title="Send">➤</button>
-  </div>
+  <!-- WhatsApp Floating Button -->
+  <a class="ae-wa-btn" id="ae-wa-btn" href="#" onclick="window.open('https://wa.me/'+SITE_CONFIG.WA_NUMBER+'?text='+encodeURIComponent('Hi Anil EduTech, naaku help కావాలి 🙏'),'_blank');return false;"
+    title="WhatsApp support" aria-label="WhatsApp support">
+    <svg viewBox="0 0 32 32" width="26" height="26" fill="#fff"><path d="M16.001 3C9.107 3 3.5 8.607 3.5 15.5c0 2.42.678 4.68 1.855 6.607L3 29l7.09-2.31A12.44 12.44 0 0 0 16 28c6.894 0 12.5-5.607 12.5-12.5S22.895 3 16.001 3zm7.34 17.86c-.31.87-1.53 1.6-2.5 1.81-.66.14-1.53.25-4.45-.95-3.73-1.55-6.13-5.34-6.32-5.59-.19-.25-1.5-2-1.5-3.8 0-1.8.94-2.68 1.28-3.05.31-.34.68-.42.9-.42.23 0 .45.002.65.012.21.01.49-.08.76.58.31.75 1.05 2.55 1.14 2.73.09.19.15.4.03.65-.12.25-.19.4-.37.62-.19.22-.4.49-.57.66-.19.19-.39.4-.17.78.22.38.98 1.62 2.1 2.62 1.45 1.29 2.67 1.69 3.05 1.88.38.19.6.16.83-.1.23-.25.98-1.14 1.24-1.53.25-.38.5-.32.85-.19.34.12 2.18 1.03 2.55 1.22.38.19.63.28.72.44.09.16.09.9-.22 1.77z"/></svg>
+  </a>
 </div>
 
 <script>
@@ -33583,259 +33437,4 @@ Rules:
     window.addEventListener('scroll', onScroll, { passive: true });
     onScroll(); // initial check
   })();
-</script>
-
-<script>
-// ════════════════════════════════════════════════════════════════
-// 💬 LIVE CHAT SYSTEM — Supabase backed, Admin ↔ User
-// Table: ae_chat_messages
-// Columns: id(text PK), gmail(text), name(text), msg(text),
-//          sender(text: 'user'|'admin'), ts(bigint), read_by_user(bool), read_by_admin(bool)
-// ════════════════════════════════════════════════════════════════
-(function () {
-  const CHAT_TABLE = 'ae_chat_messages';
-  let _chatOpen = false;
-  let _chatMsgs = [];
-  let _chatPollTimer = null;
-  let _chatLastTs = 0;
-  let _chatUserGmail = null;
-  let _chatUserName = null;
-  let _chatInited = false;
-
-  // ── Helpers ──
-  function _sbUrl(path) {
-    return SB_URL + '/rest/v1/' + path;
-  }
-  function _sbH(extra) {
-    return Object.assign({}, SB_HEADERS, extra || {});
-  }
-  function _fmtTime(ts) {
-    const d = new Date(ts);
-    const h = d.getHours().toString().padStart(2, '0');
-    const m = d.getMinutes().toString().padStart(2, '0');
-    return h + ':' + m;
-  }
-  function _escH(s) {
-    return String(s || '').replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;');
-  }
-
-  // ── Init: get user ──
-  function _chatGetUser() {
-    const u = typeof getCurrentUser === 'function' ? getCurrentUser() : null;
-    if (u && u.gmail) {
-      _chatUserGmail = u.gmail;
-      _chatUserName = u.name || u.gmail.split('@')[0];
-      return true;
-    }
-    return false;
-  }
-
-  // ── Toggle chat window ──
-  window.toggleChat = function () {
-    _chatOpen = !_chatOpen;
-    const win = document.getElementById('ae-chat-win');
-    if (!win) return;
-    if (_chatOpen) {
-      win.classList.add('open');
-      _initChat();
-    } else {
-      win.classList.remove('open');
-    }
-  };
-
-  // ── Init chat on first open ──
-  function _initChat() {
-    if (!_chatGetUser()) {
-      // Not logged in
-      document.getElementById('ae-chat-login-prompt').style.display = 'flex';
-      document.getElementById('ae-chat-empty').style.display = 'none';
-      document.getElementById('ae-chat-input-area').style.display = 'none';
-      return;
-    }
-    document.getElementById('ae-chat-login-prompt').style.display = 'none';
-    document.getElementById('ae-chat-input-area').style.display = 'flex';
-
-    if (!_chatInited) {
-      _chatInited = true;
-      _loadMsgs(true);
-    } else {
-      _markReadByUser();
-    }
-    _startPoll();
-  }
-
-  // ── Load messages ──
-  async function _loadMsgs(scroll) {
-    if (!_chatUserGmail || typeof SB_URL === 'undefined') return;
-    try {
-      const r = await fetch(
-        _sbUrl(CHAT_TABLE + '?gmail=eq.' + encodeURIComponent(_chatUserGmail) + '&order=ts.asc&limit=200'),
-        { headers: _sbH({ 'Prefer': 'return=representation' }) }
-      );
-      if (!r.ok) return;
-      _chatMsgs = await r.json();
-      _renderMsgs();
-      if (scroll) _scrollBottom();
-      // Mark admin msgs as read
-      _markReadByUser();
-      // Update badge (clear)
-      _setBadge(0);
-    } catch (e) {}
-  }
-
-  // ── Render messages ──
-  function _renderMsgs() {
-    const el = document.getElementById('ae-chat-msgs');
-    if (!el) return;
-    const empty = document.getElementById('ae-chat-empty');
-    const loginPr = document.getElementById('ae-chat-login-prompt');
-    if (loginPr) loginPr.style.display = 'none';
-
-    if (!_chatMsgs.length) {
-      if (empty) empty.style.display = 'flex';
-      // Keep only empty state in msgs
-      el.innerHTML = '';
-      el.appendChild(empty);
-      return;
-    }
-    if (empty) empty.style.display = 'none';
-
-    // Build msgs HTML (keep login-prompt and empty divs, replace rest)
-    const existingSpecial = el.querySelectorAll('#ae-chat-login-prompt,#ae-chat-empty');
-    el.innerHTML = '';
-    existingSpecial.forEach(n => el.appendChild(n));
-
-    _chatMsgs.forEach(m => {
-      const isUser = m.sender === 'user';
-      const div = document.createElement('div');
-      div.className = 'ae-msg ' + (isUser ? 'user' : 'admin');
-      div.innerHTML =
-        '<div class="ae-msg-bubble">' + _escH(m.msg) + '</div>' +
-        '<div class="ae-msg-time">' + _fmtTime(m.ts) + (isUser ? '' : ' · Anil Sir') + '</div>';
-      el.appendChild(div);
-    });
-  }
-
-  function _scrollBottom() {
-    const el = document.getElementById('ae-chat-msgs');
-    if (el) el.scrollTop = el.scrollHeight;
-  }
-
-  // ── Send message ──
-  window.sendChatMsg = async function () {
-    if (!_chatGetUser()) return;
-    const inp = document.getElementById('ae-chat-input');
-    if (!inp) return;
-    const msg = inp.value.trim();
-    if (!msg) return;
-    inp.value = '';
-    inp.style.height = 'auto';
-
-    const item = {
-      id: 'cm_' + Date.now() + '_' + Math.random().toString(36).slice(2, 6),
-      gmail: _chatUserGmail,
-      name: _chatUserName,
-      msg: msg,
-      sender: 'user',
-      ts: Date.now(),
-      read_by_user: true,
-      read_by_admin: false
-    };
-
-    // Optimistic render
-    _chatMsgs.push(item);
-    _renderMsgs();
-    _scrollBottom();
-
-    try {
-      await fetch(_sbUrl(CHAT_TABLE), {
-        method: 'POST',
-        headers: _sbH({ 'Prefer': 'resolution=merge-duplicates,return=minimal' }),
-        body: JSON.stringify(item)
-      });
-    } catch (e) {
-      if (typeof toast === 'function') toast('⚠️ Message send కాలేదు. Retry చేయండి.', 'warn');
-    }
-  };
-
-  // ── Mark admin messages as read by user ──
-  async function _markReadByUser() {
-    if (!_chatUserGmail || typeof SB_URL === 'undefined') return;
-    try {
-      await fetch(
-        _sbUrl(CHAT_TABLE + '?gmail=eq.' + encodeURIComponent(_chatUserGmail) + '&sender=eq.admin&read_by_user=eq.false'),
-        {
-          method: 'PATCH',
-          headers: _sbH({ 'Prefer': 'return=minimal' }),
-          body: JSON.stringify({ read_by_user: true })
-        }
-      );
-    } catch (e) {}
-  }
-
-  // ── Badge: unread admin replies ──
-  function _setBadge(n) {
-    const b = document.getElementById('ae-chat-badge');
-    if (!b) return;
-    if (n > 0) {
-      b.style.display = 'flex';
-      b.textContent = n > 9 ? '9+' : n;
-    } else {
-      b.style.display = 'none';
-    }
-  }
-
-  // ── Poll for new messages ──
-  function _startPoll() {
-    if (_chatPollTimer) return;
-    _chatPollTimer = setInterval(_pollMsgs, 8000); // every 8s
-  }
-  function _stopPoll() {
-    if (_chatPollTimer) { clearInterval(_chatPollTimer); _chatPollTimer = null; }
-  }
-
-  async function _pollMsgs() {
-    if (!_chatUserGmail || typeof SB_URL === 'undefined') return;
-    try {
-      const r = await fetch(
-        _sbUrl(CHAT_TABLE + '?gmail=eq.' + encodeURIComponent(_chatUserGmail) + '&order=ts.asc&limit=200'),
-        { headers: _sbH({ 'Prefer': 'return=representation' }) }
-      );
-      if (!r.ok) return;
-      const fresh = await r.json();
-      const prevCount = _chatMsgs.length;
-      _chatMsgs = fresh;
-
-      const unreadAdmin = fresh.filter(m => m.sender === 'admin' && !m.read_by_user).length;
-
-      if (_chatOpen) {
-        _renderMsgs();
-        if (fresh.length > prevCount) _scrollBottom();
-        if (unreadAdmin > 0) _markReadByUser();
-        _setBadge(0);
-      } else {
-        // Window closed — show badge
-        _setBadge(unreadAdmin);
-      }
-    } catch (e) {}
-  }
-
-  // ── Poll unread badge even when chat closed (after login) ──
-  document.addEventListener('ae-page-changed', function () {
-    if (_chatGetUser() && !_chatPollTimer) {
-      _startPoll();
-      _pollMsgs(); // immediate check
-    }
-  });
-
-  // ── On login: restart chat init ──
-  document.addEventListener('ae-user-login', function () {
-    _chatInited = false;
-    _chatMsgs = [];
-    _chatLastTs = 0;
-    if (_chatOpen) _initChat();
-    else { _chatGetUser(); _startPoll(); _pollMsgs(); }
-  });
-
-})();
 </script>

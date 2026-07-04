@@ -11114,6 +11114,7 @@
   <!-- ADSENSE_SCRIPT_2 — duplicate removed, enable only after approval -->
   <!-- Chart.js for Progress Dashboard -->
   <script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/4.4.1/chart.umd.min.js" defer></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js" defer></script>
 
 </head>
 
@@ -14000,6 +14001,10 @@
         <button class="btn-nav" id="cert-btn" onclick="showCertificate()"
           style="background:linear-gradient(135deg,#F5B731,#E8640A);color:#fff;border:none;display:none">🏅 Certificate
           Download</button>
+        <button class="btn-nav" onclick="downloadResultPdf()"
+          style="background:linear-gradient(135deg,#06B6D4,#3B82F6);color:#fff;border:none">📄 Solutions PDF</button>
+        <button class="btn-nav" onclick="challengeFriend()"
+          style="background:linear-gradient(135deg,#F97316,#DC2626);color:#fff;border:none">⚔️ Challenge Friend</button>
         <button class="btn-nav" onclick="shareResult('whatsapp')"
           style="background:linear-gradient(135deg,#25D366,#128C7E);color:#fff;border:none">📤 WhatsApp</button>
         <button class="btn-nav" onclick="shareResult('copy')"
@@ -19749,6 +19754,20 @@ More exams: https://aniledutech.in
       }
       _renderArPage();
 
+      // Challenge comparison — if user arrived via a friend's challenge link for THIS exam
+      if (window._incomingChallenge && window._incomingChallenge.examId === (exam.current?.id || '')) {
+        const ch = window._incomingChallenge;
+        const won = pct > ch.score;
+        const tie = pct === ch.score;
+        const chMsg = tie
+          ? `🤝 Tie! మీరు మరియు ${ch.name} ఇద్దరూ ${pct}% score చేసారు!`
+          : won
+            ? `🏆 మీరు గెలిచారు! ${ch.name} (${ch.score}%) ని beat చేసారు మీ ${pct}% తో! 🎉`
+            : `😅 ${ch.name} ఇంకా ముందుంది (${ch.score}% vs మీ ${pct}%). మళ్ళీ try చేయండి!`;
+        setTimeout(() => toast(chMsg, won || tie ? 'success' : 'info'), 1000);
+        window._incomingChallenge = null; // consume once
+      }
+
       showPage('feedback');
     }
 
@@ -19758,6 +19777,110 @@ More exams: https://aniledutech.in
       } else {
         goHome();
       }
+    }
+
+    // ── FEATURE: Solutions PDF Download (free, client-side via jsPDF) ──
+    function downloadResultPdf() {
+      try {
+        if (!window.jspdf || !exam._result || !exam.questions) {
+          toast('PDF library ఇంకా load అవుతోంది, కాసేపు ఆగి try చేయండి.', 'error');
+          return;
+        }
+        const { jsPDF } = window.jspdf;
+        const doc = new jsPDF({ unit: 'pt', format: 'a4' });
+        const pageW = doc.internal.pageSize.getWidth();
+        const marginX = 40;
+        let y = 50;
+
+        const u = getCurrentUser();
+        const examName = exam.current?.name || 'Exam';
+        const { correct, wrong, skip, pct } = exam._result;
+        const score = exam._result.score ?? correct;
+        const maxScore = exam._result.maxScore ?? exam.questions.length;
+
+        doc.setFont('helvetica', 'bold'); doc.setFontSize(16);
+        doc.text('Anil EduTech — Result & Solutions', marginX, y); y += 22;
+        doc.setFontSize(11); doc.setFont('helvetica', 'normal');
+        doc.text(`Exam: ${examName}`, marginX, y); y += 16;
+        doc.text(`Name: ${u ? u.name : (document.getElementById('name-input')?.value || '-')}`, marginX, y); y += 16;
+        doc.text(`Date: ${new Date().toLocaleDateString('en-IN')}`, marginX, y); y += 16;
+        doc.text(`Score: ${score}/${maxScore} (${pct}%)  |  Correct: ${correct}  Wrong: ${wrong}  Skipped: ${skip}`, marginX, y);
+        y += 24;
+        doc.setLineWidth(0.5); doc.line(marginX, y, pageW - marginX, y); y += 18;
+
+        const _normAns2 = (v) => {
+          if (v === undefined || v === null || v === '') return null;
+          if (typeof v === 'number') return String.fromCharCode(65 + v);
+          if (typeof v === 'string' && v.length === 1 && v >= 'A' && v <= 'D') return v;
+          if (typeof v === 'string' && !isNaN(v)) return String.fromCharCode(65 + parseInt(v));
+          return v;
+        };
+
+        exam.questions.forEach((q, i) => {
+          const a = exam.answers[q.id];
+          const ansLetter = _normAns2(q.ans);
+          const myLetter = _normAns2(a);
+          const ok = myLetter && ansLetter && myLetter === ansLetter;
+          const optIdx = (L) => L ? L.charCodeAt(0) - 65 : -1;
+
+          if (y > 760) { doc.addPage(); y = 50; }
+          doc.setFont('helvetica', 'bold'); doc.setFontSize(10.5);
+          const qLines = doc.splitTextToSize(`${i + 1}. ${q.q}`, pageW - marginX * 2);
+          doc.text(qLines, marginX, y); y += qLines.length * 13 + 4;
+
+          doc.setFont('helvetica', 'normal'); doc.setFontSize(9.5);
+          const myAnsText = myLetter ? `${myLetter}: ${q.opts[optIdx(myLetter)] || ''}` : 'Skip చేశారు';
+          doc.setTextColor(ok ? 0 : 200, ok ? 130 : 0, 0);
+          const myLines = doc.splitTextToSize(`మీ Answer: ${myAnsText}`, pageW - marginX * 2);
+          doc.text(myLines, marginX, y); y += myLines.length * 12 + 2;
+
+          if (!ok) {
+            doc.setTextColor(0, 130, 0);
+            const corText = `సరైన Answer: ${ansLetter}: ${q.opts[optIdx(ansLetter)] || ''}`;
+            const corLines = doc.splitTextToSize(corText, pageW - marginX * 2);
+            doc.text(corLines, marginX, y); y += corLines.length * 12 + 2;
+          }
+          doc.setTextColor(0, 0, 0);
+          y += 10;
+        });
+
+        doc.save(`AnilEduTech_${examName.replace(/[^a-zA-Z0-9]/g, '_')}_Solutions.pdf`);
+        toast('📄 Solutions PDF download అయ్యింది!', 'success');
+      } catch (e) {
+        console.warn('[downloadResultPdf]', e);
+        toast('PDF generate చేయడంలో సమస్య వచ్చింది.', 'error');
+      }
+    }
+
+    // ── FEATURE: Challenge a Friend (free, uses existing referral/share infra) ──
+    function challengeFriend() {
+      if (!exam._result || !exam.current) { toast('Exam result లేదు.', 'error'); return; }
+      const u = getCurrentUser();
+      const name = u ? u.name : (document.getElementById('name-input')?.value || 'ఒక Student');
+      const { pct } = exam._result;
+      const examId = exam.current?.id || '';
+      const examName = exam.current?.name || 'Exam';
+      const link = `https://aniledutech.in/?challenge=${encodeURIComponent(examId)}&cname=${encodeURIComponent(name)}&cscore=${pct}`;
+      const msg = encodeURIComponent(
+        `⚔️ *Challenge Alert!* ⚔️\n\nనేను "${examName}" లో ${pct}% score చేసాను!\n\nనన్ను beat చేయగలరా? 💪\n\n👉 ${link}`
+      );
+      window.open(`https://wa.me/?text=${msg}`, '_blank');
+    }
+
+    // Handle incoming challenge link on page load: ?challenge=examId&cname=X&cscore=Y
+    function _checkIncomingChallenge() {
+      try {
+        const params = new URLSearchParams(window.location.search);
+        const cid = params.get('challenge');
+        if (!cid) return;
+        const cname = params.get('cname') || 'ఒక Friend';
+        const cscore = params.get('cscore') || '0';
+        window._incomingChallenge = { examId: cid, name: cname, score: parseInt(cscore) || 0 };
+        setTimeout(() => {
+          toast(`⚔️ ${cname} ఈ exam లో ${cscore}% score చేసారు! వారిని beat చేయడానికి exam start చేయండి 👇`, 'info');
+        }, 1200);
+        setTimeout(() => { if (typeof startExam === 'function') startExam(cid); }, 2200);
+      } catch (e) { }
     }
 
 
@@ -23577,6 +23700,9 @@ Rules:
           }
         }
       } catch (e) { }
+
+      // ?challenge= param — friend challenge deep-link (check first, takes priority)
+      _checkIncomingChallenge();
 
       // ?exam= param — auto-filter exam category for SEO deep-links
       // e.g. aniledutech.in/?exam=tspsc  or  ?exam=banking

@@ -14141,6 +14141,7 @@
         <button class="prog-tab" data-tab="charts" onclick="switchProgTab('charts',this)">📈 Score Trend</button>
         <button class="prog-tab" data-tab="subjects" onclick="switchProgTab('subjects',this)">🎯 Subjects</button>
         <button class="prog-tab" data-tab="history" onclick="switchProgTab('history',this)">🕐 History</button>
+        <button class="prog-tab" data-tab="premium" onclick="switchProgTab('premium',this)">👑 Premium Insights</button>
       </div>
     </div>
     <div class="prog-body">
@@ -16352,6 +16353,68 @@ More exams: https://aniledutech.in
     }
 
 
+    // ── PREMIUM FEATURE: Percentile ranking + weakest-area spotlight ──
+    async function _renderPremiumPanel(u, myScores, subjects) {
+      const panel = document.getElementById('prog-panel-premium');
+      if (!panel) return;
+
+      if (!u || !u.isPremium) {
+        panel.innerHTML = `<div class="prog-section" style="text-align:center;padding:40px 20px;background:var(--card);border:2px solid var(--border);border-radius:var(--radius);">
+      <div style="font-size:44px;margin-bottom:10px;">👑</div>
+      <div style="font-size:17px;font-weight:900;color:var(--text);margin-bottom:8px;">Premium Insights Locked</div>
+      <div style="font-size:13.5px;color:var(--text2);max-width:380px;margin:0 auto 18px;">Percentile ranking (మీరు ఇతర students తో పోలిస్తే ఎక్కడ ఉన్నారో), మరియు weakest-area spotlight — Premium members కి మాత్రమే.</div>
+      <button class="btn-primary" onclick="openSubModal()">👑 Premium కి Upgrade చేయండి</button>
+    </div>`;
+        return;
+      }
+
+      panel.innerHTML = `<div class="prog-empty"><span class="prog-empty-icon">⏳</span>Loading premium insights...</div>`;
+
+      let allScores = [];
+      try { allScores = await _fetchLbFromSupabase(500); } catch (e) { allScores = []; }
+      if (!allScores.length) allScores = JSON.parse(_ls.getItem('ae_scores') || '[]');
+
+      const catStats = {};
+      subjects.forEach(s => {
+        const catScores = allScores.filter(m =>
+          (m.examCat || '').toUpperCase().includes(s.cat.toUpperCase()) ||
+          (m.examName || '').toUpperCase().includes(s.cat.toUpperCase())
+        );
+        if (catScores.length < 3) return; // not enough data for meaningful percentile
+        const below = catScores.filter(c => c.pct < s.avg).length;
+        const percentile = Math.round((below / catScores.length) * 100);
+        catStats[s.cat] = { percentile, sampleSize: catScores.length, myAvg: s.avg };
+      });
+
+      const weakest = subjects.length ? [...subjects].sort((a, b) => a.avg - b.avg)[0] : null;
+      const catKeys = Object.keys(catStats);
+
+      panel.innerHTML = `
+    <div class="prog-section" style="background:var(--card);border:2px solid var(--border);border-radius:var(--radius);padding:20px;margin-bottom:18px;">
+      <div class="prog-section-title" style="margin-bottom:14px;">🏆 Percentile Ranking</div>
+      ${catKeys.length ? catKeys.map(cat => {
+        const st = catStats[cat];
+        return `<div style="margin-bottom:16px;">
+          <div style="display:flex;justify-content:space-between;margin-bottom:4px;">
+            <span style="font-size:13px;font-weight:800;color:var(--text);">${escHtml(cat)}</span>
+            <span style="font-size:13px;font-weight:900;color:var(--primary);">Top ${100 - st.percentile}%</span>
+          </div>
+          <div style="height:8px;background:var(--border);border-radius:4px;overflow:hidden;">
+            <div style="width:${st.percentile}%;height:100%;background:linear-gradient(90deg,#1A73E8,#7C3AED);border-radius:4px;transition:width 1s;"></div>
+          </div>
+          <div style="font-size:11px;color:var(--text3);margin-top:3px;">మీ average ${st.myAvg}% — ${st.sampleSize} student attempts ఆధారంగా</div>
+        </div>`;
+      }).join('') : '<div style="color:var(--text3);font-size:13px;">ఇంకా enough data లేదు percentile calculate చేయడానికి. మరిన్ని mock tests attempt చేయండి — data పెరిగే కొద్దీ ఇక్కడ కనిపిస్తుంది!</div>'}
+    </div>
+    ${weakest ? `
+    <div class="prog-section" style="background:linear-gradient(135deg,rgba(239,68,68,.08),rgba(245,158,11,.06));border:2px solid rgba(239,68,68,.25);border-radius:var(--radius);padding:20px;">
+      <div class="prog-section-title" style="margin-bottom:10px;">🎯 Weakest Area: ${escHtml(weakest.cat)}</div>
+      <div style="font-size:13.5px;color:var(--text2);margin-bottom:14px;">మీ ${escHtml(weakest.cat)} average score ${weakest.avg}% — ఇది మీ ఇతర subjects కంటే తక్కువ. దీని మీద ఎక్కువ practice పెట్టడం వల్ల మీ overall rank పెరుగుతుంది.</div>
+      <button class="btn-primary" onclick="goExams('${weakest.cat.replace(/'/g, "\\'")}')">📝 ${escHtml(weakest.cat)} Practice చేయండి →</button>
+    </div>` : ''}
+  `;
+    }
+
     function _getSubjectStats(myScores) {
       const catMap = {};
       myScores.forEach(s => {
@@ -16762,6 +16825,11 @@ More exams: https://aniledutech.in
         <div id="prog-history-pagination"></div>
       </div>
     </div>
+
+    <!-- ── PREMIUM INSIGHTS PANEL ── -->
+    <div class="prog-panel" id="prog-panel-premium">
+      <div class="prog-empty"><span class="prog-empty-icon">⏳</span>Loading...</div>
+    </div>
   `;
 
       // Fill streak calendar
@@ -16823,6 +16891,9 @@ More exams: https://aniledutech.in
       btnWrap.style = 'text-align:center;margin:12px 0 4px';
       btnWrap.innerHTML = '<button onclick="openDetailedAnalytics(\'' + u.gmail + '\')" style="background:linear-gradient(135deg,#1565C0,#1E88E5);color:#fff;border:none;border-radius:12px;padding:10px 22px;font-family:inherit;font-size:13px;font-weight:800;cursor:pointer;box-shadow:0 4px 16px rgba(21,101,192,.3)">🔍 Detailed Question Analytics చూడండి</button>';
       contentEl.appendChild(btnWrap);
+
+      // ── Premium Insights panel (percentile ranking + weakest-area spotlight) ──
+      _renderPremiumPanel(u, myScores, subjects);
 
       // Chart tab toggle
       document.querySelectorAll('.chart-tab').forEach(t => {

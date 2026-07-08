@@ -2305,6 +2305,10 @@
       display: none !important;
     }
 
+    body.exam-active #promo-banner {
+      display: none !important;
+    }
+
     body.exam-active .mob-bottom-nav {
       display: none !important;
     }
@@ -3143,7 +3147,10 @@
       flex-direction: column;
       border-right: 1px solid #E2E8F0;
       overflow: hidden;
-      background: #F8FAFF;
+      background:
+        radial-gradient(circle at 100% 0%, rgba(99, 102, 241, .05), transparent 45%),
+        radial-gradient(circle at 0% 100%, rgba(236, 72, 153, .04), transparent 45%),
+        #F8FAFF;
     }
 
     .exam-left-inner {
@@ -3189,8 +3196,9 @@
       color: #0F172A;
       background: #fff;
       border-radius: 16px;
-      padding: 20px 24px;
+      padding: 20px 24px 20px 28px;
       border: 1.5px solid #E2E8F0;
+      border-left: 4px solid #6366F1;
       box-shadow: 0 4px 20px rgba(15, 23, 42, .06);
       position: relative;
     }
@@ -3254,6 +3262,13 @@
       color: #94A3B8;
       transition: all .2s;
     }
+
+    /* Signature touch: each option letter gets its own accent so the list reads
+       less like a plain form and more like a quiz card */
+    .option:nth-child(4n+1) .opt-letter { background: #EFF6FF; color: #2563EB; border-color: #DBEAFE; }
+    .option:nth-child(4n+2) .opt-letter { background: #FDF4FF; color: #A21CAF; border-color: #F5D0FE; }
+    .option:nth-child(4n+3) .opt-letter { background: #FFFBEB; color: #B45309; border-color: #FDE68A; }
+    .option:nth-child(4n+4) .opt-letter { background: #ECFDF5; color: #047857; border-color: #A7F3D0; }
 
     .option:hover .opt-letter {
       background: #EEF2FF;

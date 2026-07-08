@@ -12605,6 +12605,37 @@
           <button class="lb-tab-btn lb-cat-btn" data-cat="GK" onclick="_lbSetCat('GK')">🌍 GK</button>
           <button class="lb-tab-btn lb-cat-btn" data-cat="RRB" onclick="_lbSetCat('RRB')">🚆 RRB
         </div>
+        <div style="display:flex;align-items:center;gap:6px;flex-wrap:wrap;margin-top:8px;">
+          <button class="lb-tab-btn" onclick="_lbSetDistrict('mine')" title="మీ జిల్లా ర్యాంకింగ్">📍 నా జిల్లా</button>
+          <select id="lb-district-select" onchange="_lbOnDistrictSelect(this.value)"
+            style="font-family:inherit;font-size:12px;font-weight:700;padding:6px 10px;border-radius:20px;border:1.5px solid var(--border2);background:#fff;color:var(--text3);cursor:pointer;">
+            <option value="all">🗺️ అన్ని జిల్లాలు</option>
+            <optgroup label="Telangana">
+              <option value="Adilabad">Adilabad</option><option value="Bhadradri Kothagudem">Bhadradri Kothagudem</option><option value="Hyderabad">Hyderabad</option>
+              <option value="Jagtial">Jagtial</option><option value="Jangaon">Jangaon</option><option value="Jayashankar Bhupalpally">Jayashankar Bhupalpally</option>
+              <option value="Jogulamba Gadwal">Jogulamba Gadwal</option><option value="Kamareddy">Kamareddy</option><option value="Karimnagar">Karimnagar</option>
+              <option value="Khammam">Khammam</option><option value="Kumuram Bheem Asifabad">Kumuram Bheem Asifabad</option><option value="Mahabubabad">Mahabubabad</option>
+              <option value="Mahabubnagar">Mahabubnagar</option><option value="Mancherial">Mancherial</option><option value="Medak">Medak</option>
+              <option value="Medchal-Malkajgiri">Medchal-Malkajgiri</option><option value="Mulugu">Mulugu</option><option value="Nagarkurnool">Nagarkurnool</option>
+              <option value="Nalgonda">Nalgonda</option><option value="Narayanpet">Narayanpet</option><option value="Nirmal">Nirmal</option>
+              <option value="Nizamabad">Nizamabad</option><option value="Peddapalli">Peddapalli</option><option value="Rajanna Sircilla">Rajanna Sircilla</option>
+              <option value="Rangareddy">Rangareddy</option><option value="Sangareddy">Sangareddy</option><option value="Siddipet">Siddipet</option>
+              <option value="Suryapet">Suryapet</option><option value="Vikarabad">Vikarabad</option><option value="Wanaparthy">Wanaparthy</option>
+              <option value="Warangal (Rural)">Warangal (Rural)</option><option value="Warangal (Urban)">Warangal (Urban)</option><option value="Yadadri Bhuvanagiri">Yadadri Bhuvanagiri</option>
+            </optgroup>
+            <optgroup label="Andhra Pradesh">
+              <option value="Alluri Sitharama Raju">Alluri Sitharama Raju</option><option value="Anakapalli">Anakapalli</option><option value="Anantapur">Anantapur</option>
+              <option value="Annamayya">Annamayya</option><option value="Bapatla">Bapatla</option><option value="Chittoor">Chittoor</option>
+              <option value="East Godavari">East Godavari</option><option value="Eluru">Eluru</option><option value="Guntur">Guntur</option>
+              <option value="Kakinada">Kakinada</option><option value="Konaseema">Konaseema</option><option value="Krishna">Krishna</option>
+              <option value="Kurnool">Kurnool</option><option value="Nandyal">Nandyal</option><option value="NTR">NTR</option>
+              <option value="Palnadu">Palnadu</option><option value="Parvathipuram Manyam">Parvathipuram Manyam</option><option value="Prakasam">Prakasam</option>
+              <option value="Srikakulam">Srikakulam</option><option value="Sri Sathya Sai">Sri Sathya Sai</option><option value="Tirupati">Tirupati</option>
+              <option value="Visakhapatnam">Visakhapatnam</option><option value="Vizianagaram">Vizianagaram</option><option value="West Godavari">West Godavari</option>
+              <option value="YSR Kadapa">YSR Kadapa</option>
+            </optgroup>
+          </select>
+        </div>
         <div style="display:flex;align-items:center;gap:10px;font-size:11px;opacity:.75;">
           <span id="lb-source-badge">🌐 Live</span>
           <span id="lb-last-updated" style="font-size:10px;"></span>
@@ -12923,6 +12954,37 @@
             style="font-size:20px;font-weight:900;color:var(--text);line-height:1.2;word-break:break-word;">Loading...
           </div>
           <div id="pf-gmail" style="font-size:12px;color:var(--text3);margin-top:3px;word-break:break-all;"></div>
+          <div style="margin-top:8px;display:flex;align-items:center;gap:6px;">
+            <span style="font-size:12px;">📍</span>
+            <select id="pf-district-select" onchange="_pfSaveDistrict(this.value)"
+              style="font-family:inherit;font-size:11px;font-weight:700;padding:4px 8px;border-radius:10px;border:1.5px solid var(--border2);background:var(--bg);color:var(--text2);cursor:pointer;max-width:200px;">
+              <option value="">జిల్లా ఎంచుకోండి</option>
+              <optgroup label="Telangana">
+                <option>Adilabad</option><option>Bhadradri Kothagudem</option><option>Hyderabad</option>
+                <option>Jagtial</option><option>Jangaon</option><option>Jayashankar Bhupalpally</option>
+                <option>Jogulamba Gadwal</option><option>Kamareddy</option><option>Karimnagar</option>
+                <option>Khammam</option><option>Kumuram Bheem Asifabad</option><option>Mahabubabad</option>
+                <option>Mahabubnagar</option><option>Mancherial</option><option>Medak</option>
+                <option>Medchal-Malkajgiri</option><option>Mulugu</option><option>Nagarkurnool</option>
+                <option>Nalgonda</option><option>Narayanpet</option><option>Nirmal</option>
+                <option>Nizamabad</option><option>Peddapalli</option><option>Rajanna Sircilla</option>
+                <option>Rangareddy</option><option>Sangareddy</option><option>Siddipet</option>
+                <option>Suryapet</option><option>Vikarabad</option><option>Wanaparthy</option>
+                <option>Warangal (Rural)</option><option>Warangal (Urban)</option><option>Yadadri Bhuvanagiri</option>
+              </optgroup>
+              <optgroup label="Andhra Pradesh">
+                <option>Alluri Sitharama Raju</option><option>Anakapalli</option><option>Anantapur</option>
+                <option>Annamayya</option><option>Bapatla</option><option>Chittoor</option>
+                <option>East Godavari</option><option>Eluru</option><option>Guntur</option>
+                <option>Kakinada</option><option>Konaseema</option><option>Krishna</option>
+                <option>Kurnool</option><option>Nandyal</option><option>NTR</option>
+                <option>Palnadu</option><option>Parvathipuram Manyam</option><option>Prakasam</option>
+                <option>Srikakulam</option><option>Sri Sathya Sai</option><option>Tirupati</option>
+                <option>Visakhapatnam</option><option>Vizianagaram</option><option>West Godavari</option>
+                <option>YSR Kadapa</option>
+              </optgroup>
+            </select>
+          </div>
           <div id="pf-badge-pill"
             style="display:inline-block;margin-top:6px;padding:3px 12px;border-radius:20px;font-size:11px;font-weight:800;background:rgba(26,115,232,.12);color:var(--primary);">
             ⭐ Free</div>
@@ -14280,6 +14342,42 @@
           <span class="sub-field-icon">
             <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"
               stroke-linejoin="round">
+              <circle cx="12" cy="10" r="3" />
+              <path d="M12 21c-4-4.5-7-8-7-11a7 7 0 0 1 14 0c0 3-3 6.5-7 11z" />
+            </svg>
+          </span>
+          <select id="reg-district" style="width:100%;border:none;background:transparent;font-family:inherit;font-size:14px;color:var(--text);outline:none;">
+            <option value="">జిల్లా ఎంచుకోండి (District) — Optional</option>
+            <optgroup label="Telangana">
+              <option>Adilabad</option><option>Bhadradri Kothagudem</option><option>Hyderabad</option>
+              <option>Jagtial</option><option>Jangaon</option><option>Jayashankar Bhupalpally</option>
+              <option>Jogulamba Gadwal</option><option>Kamareddy</option><option>Karimnagar</option>
+              <option>Khammam</option><option>Kumuram Bheem Asifabad</option><option>Mahabubabad</option>
+              <option>Mahabubnagar</option><option>Mancherial</option><option>Medak</option>
+              <option>Medchal-Malkajgiri</option><option>Mulugu</option><option>Nagarkurnool</option>
+              <option>Nalgonda</option><option>Narayanpet</option><option>Nirmal</option>
+              <option>Nizamabad</option><option>Peddapalli</option><option>Rajanna Sircilla</option>
+              <option>Rangareddy</option><option>Sangareddy</option><option>Siddipet</option>
+              <option>Suryapet</option><option>Vikarabad</option><option>Wanaparthy</option>
+              <option>Warangal (Rural)</option><option>Warangal (Urban)</option><option>Yadadri Bhuvanagiri</option>
+            </optgroup>
+            <optgroup label="Andhra Pradesh">
+              <option>Alluri Sitharama Raju</option><option>Anakapalli</option><option>Anantapur</option>
+              <option>Annamayya</option><option>Bapatla</option><option>Chittoor</option>
+              <option>East Godavari</option><option>Eluru</option><option>Guntur</option>
+              <option>Kakinada</option><option>Konaseema</option><option>Krishna</option>
+              <option>Kurnool</option><option>Nandyal</option><option>NTR</option>
+              <option>Palnadu</option><option>Parvathipuram Manyam</option><option>Prakasam</option>
+              <option>Srikakulam</option><option>Sri Sathya Sai</option><option>Tirupati</option>
+              <option>Visakhapatnam</option><option>Vizianagaram</option><option>West Godavari</option>
+              <option>YSR Kadapa</option>
+            </optgroup>
+          </select>
+        </div>
+        <div class="sub-field">
+          <span class="sub-field-icon">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"
+              stroke-linejoin="round">
               <rect x="3" y="11" width="18" height="11" rx="2" />
               <path d="M7 11V7a5 5 0 0 1 10 0v4" />
             </svg>
@@ -15131,6 +15229,7 @@
             exam_id: scoreObj.examId || null,
             exam_name: scoreObj.examName || '',
             exam_cat: scoreObj.examCat || '',
+            district: scoreObj.district || '',
             correct: scoreObj.correct,
             wrong: scoreObj.wrong,
             skip: scoreObj.skip,
@@ -15159,7 +15258,7 @@
         const data = await r.json();
         return data.map(d => ({
           name: d.user_name, gmail: d.user_gmail,
-          examName: d.exam_name, examId: d.exam_id, examCat: d.exam_cat,
+          examName: d.exam_name, examId: d.exam_id, examCat: d.exam_cat, district: d.district || '',
           correct: d.correct, wrong: d.wrong, skip: d.skip,
           total: d.total, pct: d.pct, score: d.score, maxScore: d.max_score,
           answers: d.answers || {}, ts: d.ts,
@@ -17098,6 +17197,10 @@ More exams: https://aniledutech.in
         if (sub.premiumPlan || sub.premium_plan) {
           payload.premium_plan = sub.premiumPlan || sub.premium_plan;
         }
+        // Save district if provided (used for district-wise leaderboard filter)
+        if (sub.district) {
+          payload.district = sub.district;
+        }
         await fetch(`${SB_URL}/rest/v1/ae_subscribers`, {
           method: 'POST',
           headers: { ...SB_HEADERS, 'Prefer': 'resolution=merge-duplicates,return=minimal' },
@@ -17469,6 +17572,7 @@ More exams: https://aniledutech.in
           if (sr.trial_expiry || sr.trialExpiry) user.trialExpiry = sr.trial_expiry || sr.trialExpiry;
           if (sr.premium_since || sr.premiumSince) user.premiumSince = sr.premium_since || sr.premiumSince;
           if (sr.status) user.subStatus = sr.status;
+          if (sr.district) user.district = sr.district;
         }
       } catch (e3) { }
 
@@ -17503,6 +17607,7 @@ More exams: https://aniledutech.in
     async function doRegister() {
       const name = document.getElementById('reg-name').value.trim();
       const gmail = document.getElementById('reg-gmail').value.trim().toLowerCase();
+      const district = document.getElementById('reg-district')?.value || '';
       const pw = document.getElementById('reg-pw').value;
       const errEl = document.getElementById('reg-err');
       const okEl = document.getElementById('reg-ok');
@@ -17533,10 +17638,10 @@ More exams: https://aniledutech.in
       // Also save to ae_sub_approved for backward compat
       const approved = getSubApproved();
       if (!approved.find(s => s.gmail === gmail)) {
-        approved.push({ name, gmail, date: new Date().toLocaleDateString('te-IN'), sbUserId: res.user?.id });
+        approved.push({ name, gmail, district, date: new Date().toLocaleDateString('te-IN'), sbUserId: res.user?.id });
         saveSubApproved(approved);
       }
-      await sbSubUpsert({ name, gmail, sbUserId: res.user?.id, status: 'approved' });
+      await sbSubUpsert({ name, gmail, district, sbUserId: res.user?.id, status: 'approved' });
 
       sendEmailNotification('register', { name, gmail });
       // BUG FIX: Apply pending referral on register
@@ -17548,6 +17653,7 @@ More exams: https://aniledutech.in
       document.getElementById('reg-name').value = '';
       document.getElementById('reg-gmail').value = '';
       document.getElementById('reg-pw').value = '';
+      if (document.getElementById('reg-district')) document.getElementById('reg-district').value = '';
     }
 
     // ── GOOGLE LOGIN ──
@@ -19626,6 +19732,7 @@ More exams: https://aniledutech.in
         examName,
         examId: exam.current?.id,
         examCat: exam.current?.cat || '',
+        district: u?.district || '',
         correct,
         wrong,
         skip,
@@ -19644,8 +19751,8 @@ More exams: https://aniledutech.in
       if (scores.length > 500) scores.length = 500; // FIX: increased from 50 to 500
       _ls.setItem('ae_scores', JSON.stringify(scores));
       // ── Supabase ae_results save ──
-      sbSaveResult({ name, gmail: u?.gmail || '', examName, examId: exam.current?.id, examCat: exam.current?.cat || '', correct, wrong, skip, total, pct, score: exam._result?.score ?? correct, maxScore: exam._result?.maxScore ?? total, answers: { ...exam.answers || {} }, ts: Date.now() });
-      _saveExamResultBackup({ name, gmail: u?.gmail || '', examName, examId: exam.current?.id, examCat: exam.current?.cat || '', correct, wrong, skip, total, pct, score: exam._result?.score ?? correct, maxScore: exam._result?.maxScore ?? total });
+      sbSaveResult({ name, gmail: u?.gmail || '', examName, examId: exam.current?.id, examCat: exam.current?.cat || '', district: u?.district || '', correct, wrong, skip, total, pct, score: exam._result?.score ?? correct, maxScore: exam._result?.maxScore ?? total, answers: { ...exam.answers || {} }, ts: Date.now() });
+      _saveExamResultBackup({ name, gmail: u?.gmail || '', examName, examId: exam.current?.id, examCat: exam.current?.cat || '', district: u?.district || '', correct, wrong, skip, total, pct, score: exam._result?.score ?? correct, maxScore: exam._result?.maxScore ?? total });
 
       document.getElementById('name-overlay').classList.remove('show');
       toast(`🏅 ${name} — Leaderboard లో save అయింది!`, 'success');
@@ -19957,6 +20064,7 @@ More exams: https://aniledutech.in
 
     let _lbFilter = 'all'; // 'all' | 'today' | 'week'
     let _lbCat = 'all';    // 'all' | 'TSPSC' | 'APPSC' | 'SSC' | 'Banking' | 'GK' | 'RRB'
+    let _lbDistrict = 'all'; // 'all' | 'mine' | <district name>
     let _lbRefreshTimer = null;
     let _lbAllScores = [];
     let _lbPage = 0;
@@ -19985,9 +20093,22 @@ More exams: https://aniledutech.in
         filtered = filtered.filter(s => (s.examCat || '').toUpperCase().includes(_lbCat.toUpperCase()) || (s.examName || '').toUpperCase().includes(_lbCat.toUpperCase()));
       }
 
+      // District filter
+      if (_lbDistrict && _lbDistrict !== 'all') {
+        const targetDistrict = _lbDistrict === 'mine' ? (getCurrentUser()?.district || '') : _lbDistrict;
+        filtered = targetDistrict ? filtered.filter(s => (s.district || '') === targetDistrict) : [];
+      }
+
       if (!filtered.length) {
         const catLabel = _lbCat !== 'all' ? ` (${_lbCat})` : '';
         const msgs = { all: 'ఇంకా ఎవరూ score save చేయలేదు.<br>Exam complete చేసి మీ పేరు enter చేయండి!', today: 'ఈ రోజు ఇంకా ఎవరూ test ఇవ్వలేదు. మీరు మొదలు పెట్టండి!', week: 'ఈ వారం ఇంకా results లేవు.' };
+        if (_lbDistrict && _lbDistrict !== 'all') {
+          const dName = _lbDistrict === 'mine' ? (getCurrentUser()?.district || '') : _lbDistrict;
+          el.innerHTML = dName
+            ? `<div class="lb-empty"><span class="lb-empty-icon">📍</span>${escHtml(dName)} జిల్లా నుండి ఇంకా ఎవరూ score save చేయలేదు.<br>మీరే మొదటివారు అవ్వండి!</div>`
+            : `<div class="lb-empty"><span class="lb-empty-icon">📍</span>మీ Profile లో జిల్లా set చేయలేదు.<br>Register/Profile లో జిల్లా ఎంచుకోండి.</div>`;
+          return;
+        }
         el.innerHTML = `<div class="lb-empty"><span class="lb-empty-icon">🏅</span>${(msgs[_lbFilter] || msgs.all).replace('results', 'results' + catLabel)}</div>`;
         return;
       }
@@ -20066,6 +20187,18 @@ More exams: https://aniledutech.in
       _renderLeaderboardUI(_lbAllScores);
     }
 
+    function _lbSetDistrict(val) {
+      _lbDistrict = val;
+      _lbPage = 0;
+      const sel = document.getElementById('lb-district-select');
+      if (sel) sel.value = val === 'mine' ? '__mine__' : val;
+      _renderLeaderboardUI(_lbAllScores);
+    }
+
+    function _lbOnDistrictSelect(val) {
+      _lbSetDistrict(val === '__mine__' ? 'mine' : val);
+    }
+
     async function _fetchLbFromSupabase(limit) {
       // Direct fetch bypassing _sbDead circuit breaker (leaderboard reads are low-risk)
       try {
@@ -20074,7 +20207,7 @@ More exams: https://aniledutech.in
         const data = await r.json();
         return data.map(d => ({
           name: d.user_name, gmail: d.user_gmail,
-          examName: d.exam_name, examId: d.exam_id, examCat: d.exam_cat,
+          examName: d.exam_name, examId: d.exam_id, examCat: d.exam_cat, district: d.district || '',
           correct: d.correct, wrong: d.wrong, skip: d.skip,
           total: d.total, pct: d.pct, score: d.score, maxScore: d.max_score,
           answers: d.answers || {}, ts: d.ts || new Date(d.created_at).getTime(),
@@ -30956,6 +31089,15 @@ Rules:
   }
 
   /* ══ USER PROFILE PAGE ══ */
+  async function _pfSaveDistrict(district) {
+    const u = getCurrentUser();
+    if (!u) return;
+    u.district = district;
+    localStorage.setItem(SUB_SESSION_KEY, JSON.stringify(u));
+    try { await sbSubUpsert({ gmail: u.gmail, name: u.name, district, status: 'approved' }); } catch (e) { }
+    toast(district ? `📍 జిల్లా "${district}" గా సేవ్ అయింది!` : '📍 జిల్లా clear అయింది', 'success');
+  }
+
   async function showProfile() {
     const u = getCurrentUser();
     if (!u) { openSubModal(); return; }
@@ -30972,6 +31114,8 @@ Rules:
     if (nameEl) nameEl.textContent = u.name || 'User';
     const gmailEl = document.getElementById('pf-gmail');
     if (gmailEl) gmailEl.textContent = u.gmail || '';
+    const distEl = document.getElementById('pf-district-select');
+    if (distEl) distEl.value = u.district || '';
     const pillEl = document.getElementById('pf-badge-pill');
     if (pillEl) {
       pillEl.textContent = u.isPremium ? '👑 Premium' : '⭐ Free';

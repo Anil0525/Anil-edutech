@@ -3148,8 +3148,8 @@
       border-right: 1px solid #E2E8F0;
       overflow: hidden;
       background:
-        radial-gradient(circle at 100% 0%, rgba(99, 102, 241, .05), transparent 45%),
-        radial-gradient(circle at 0% 100%, rgba(236, 72, 153, .04), transparent 45%),
+        radial-gradient(circle at 100% 0%, rgba(99, 102, 241, .09), transparent 45%),
+        radial-gradient(circle at 0% 100%, rgba(236, 72, 153, .07), transparent 45%),
         #F8FAFF;
     }
 
@@ -3175,8 +3175,8 @@
       display: inline-flex;
       align-items: center;
       gap: 6px;
-      background: #0F172A;
-      color: #A5B4FC;
+      background: linear-gradient(135deg, #6366F1, #A855F7);
+      color: #fff;
       font-size: 11px;
       font-weight: 800;
       padding: 5px 14px;
@@ -3184,7 +3184,7 @@
       margin-bottom: 16px;
       letter-spacing: 1.2px;
       text-transform: uppercase;
-      box-shadow: 0 2px 8px rgba(99, 102, 241, .2);
+      box-shadow: 0 4px 14px rgba(99, 102, 241, .35);
     }
 
     /* Question text card */
@@ -3239,14 +3239,15 @@
 
     .option:hover {
       border-color: #6366F1;
-      box-shadow: 0 4px 16px rgba(99, 102, 241, .14);
-      transform: translateY(-1px);
+      box-shadow: 0 6px 20px rgba(99, 102, 241, .18);
+      transform: translateY(-2px);
     }
 
     .option.selected {
-      border-color: #6366F1;
-      background: linear-gradient(135deg, #EEF2FF, #F5F3FF);
-      box-shadow: 0 4px 20px rgba(99, 102, 241, .18);
+      border-color: #8B5CF6;
+      border-width: 2px;
+      background: linear-gradient(135deg, #EEF2FF, #FAE8FF);
+      box-shadow: 0 6px 24px rgba(139, 92, 246, .28);
     }
 
     .opt-letter {
@@ -3263,21 +3264,19 @@
       transition: all .2s;
     }
 
-    /* Signature touch: each option letter gets its own accent so the list reads
-       less like a plain form and more like a quiz card */
-    .option:nth-child(4n+1) .opt-letter { background: #EFF6FF; color: #2563EB; border-color: #DBEAFE; }
-    .option:nth-child(4n+2) .opt-letter { background: #FDF4FF; color: #A21CAF; border-color: #F5D0FE; }
-    .option:nth-child(4n+3) .opt-letter { background: #FFFBEB; color: #B45309; border-color: #FDE68A; }
-    .option:nth-child(4n+4) .opt-letter { background: #ECFDF5; color: #047857; border-color: #A7F3D0; }
+    /* Signature touch: each option letter gets its own bold accent so the list reads
+       less like a plain form and more like a vibrant quiz card */
+    .option:nth-child(4n+1) .opt-letter { background: linear-gradient(135deg, #3B82F6, #2563EB); color: #fff; border-color: #2563EB; }
+    .option:nth-child(4n+2) .opt-letter { background: linear-gradient(135deg, #D946EF, #A21CAF); color: #fff; border-color: #A21CAF; }
+    .option:nth-child(4n+3) .opt-letter { background: linear-gradient(135deg, #F59E0B, #D97706); color: #fff; border-color: #D97706; }
+    .option:nth-child(4n+4) .opt-letter { background: linear-gradient(135deg, #10B981, #059669); color: #fff; border-color: #059669; }
 
     .option:hover .opt-letter {
-      background: #EEF2FF;
-      color: #6366F1;
-      border-color: #C7D2FE;
+      filter: brightness(1.08);
     }
 
     .option.selected .opt-letter {
-      background: #6366F1;
+      background: linear-gradient(135deg, #8B5CF6, #6366F1);
       color: #fff;
       border-color: #6366F1;
     }
@@ -3348,7 +3347,7 @@
 
     /* Submit button */
     .btn-submit {
-      background: #0F172A;
+      background: linear-gradient(135deg, #6366F1, #A855F7);
       border: none;
       color: #fff;
       font-family: inherit;
@@ -3358,7 +3357,7 @@
       border-radius: 10px;
       cursor: pointer;
       transition: all .2s;
-      box-shadow: 0 4px 16px rgba(15, 23, 42, .25);
+      box-shadow: 0 4px 18px rgba(99, 102, 241, .4);
       white-space: nowrap;
       letter-spacing: .3px;
       position: relative;
@@ -3369,9 +3368,14 @@
       content: '';
       position: absolute;
       inset: 0;
-      background: linear-gradient(135deg, #6366F1, #EC4899);
+      background: linear-gradient(135deg, #EC4899, #F59E0B);
       opacity: 0;
       transition: opacity .2s;
+    }
+
+    .btn-submit:hover {
+      transform: translateY(-1px);
+      box-shadow: 0 6px 22px rgba(236, 72, 153, .45);
     }
 
     .btn-submit:hover::after {
@@ -3397,11 +3401,12 @@
 
     /* Timer card */
     .exam-timer-card {
-      background: #1E293B;
+      background: linear-gradient(160deg, #1E293B, #1E1B4B);
       border-radius: 14px;
       padding: 16px;
       text-align: center;
-      border: 1px solid #334155;
+      border: 1px solid #4338CA;
+      box-shadow: 0 4px 20px rgba(99, 102, 241, .18);
     }
 
     .exam-timer-label {

@@ -12627,13 +12627,14 @@
           <button class="lb-tab-btn lb-cat-btn" data-cat="SSC" onclick="_lbSetCat('SSC')">📝 SSC</button>
           <button class="lb-tab-btn lb-cat-btn" data-cat="Banking" onclick="_lbSetCat('Banking')">🏦 Banking</button>
           <button class="lb-tab-btn lb-cat-btn" data-cat="GK" onclick="_lbSetCat('GK')">🌍 GK</button>
-          <button class="lb-tab-btn lb-cat-btn" data-cat="RRB" onclick="_lbSetCat('RRB')">🚆 RRB
+          <button class="lb-tab-btn lb-cat-btn" data-cat="RRB" onclick="_lbSetCat('RRB')">🚆 RRB</button>
         </div>
         <div style="display:flex;align-items:center;gap:6px;flex-wrap:wrap;margin-top:8px;">
           <button class="lb-tab-btn" onclick="_lbSetDistrict('mine')" title="మీ జిల్లా ర్యాంకింగ్">📍 నా జిల్లా</button>
           <select id="lb-district-select" onchange="_lbOnDistrictSelect(this.value)"
             style="font-family:inherit;font-size:12px;font-weight:700;padding:6px 10px;border-radius:20px;border:1.5px solid var(--border2);background:#fff;color:var(--text3);cursor:pointer;">
             <option value="all">🗺️ అన్ని జిల్లాలు</option>
+            <option value="__mine__" style="display:none;">📍 నా జిల్లా</option>
             <optgroup label="Telangana">
               <option value="Adilabad">Adilabad</option><option value="Bhadradri Kothagudem">Bhadradri Kothagudem</option><option value="Hyderabad">Hyderabad</option>
               <option value="Jagtial">Jagtial</option><option value="Jangaon">Jangaon</option><option value="Jayashankar Bhupalpally">Jayashankar Bhupalpally</option>
@@ -26917,8 +26918,6 @@ Rules:
     })();
   </script>
 
-</html>
-
 <!-- ═══════════════════════════════════════════════════════════
      SSC TESTBOOK-STYLE EXAM — CSS, HTML & JS
 ═══════════════════════════════════════════════════════════ -->
@@ -30766,8 +30765,6 @@ Rules:
   };
 </script>
 
-</html>
-
 <script>
 
 
@@ -31118,7 +31115,20 @@ Rules:
     if (!u) return;
     u.district = district;
     localStorage.setItem(SUB_SESSION_KEY, JSON.stringify(u));
-    try { await sbSubUpsert({ gmail: u.gmail, name: u.name, district, status: 'approved' }); } catch (e) { }
+    // BUG FIX: previously only sent gmail/name/district — since sbSubUpsert always
+    // writes is_premium/sb_user_id/etc with defaults, this was silently wiping out
+    // the user's premium status and sb_user_id in Supabase on every district save.
+    try {
+      await sbSubUpsert({
+        gmail: u.gmail, name: u.name, district,
+        isPremium: u.isPremium || false,
+        premiumSince: u.premiumSince || null,
+        trialExpiry: u.trialExpiry || null,
+        premiumPlan: u.premiumPlan || null,
+        sbUserId: u.sbUserId || u.id || '',
+        status: u.subStatus || 'approved'
+      });
+    } catch (e) { }
     toast(district ? `📍 జిల్లా "${district}" గా సేవ్ అయింది!` : '📍 జిల్లా clear అయింది', 'success');
   }
 
@@ -33760,6 +33770,7 @@ Rules:
       font-size: 18px;
     }
   }
+</style>
 
 <div class="ae-float-wrap" id="aeFloatWrap">
   <button class="ae-top-btn" id="aeTopBtn" onclick="window.scrollTo({top:0,behavior:'smooth'})" title="పైకి వెళ్ళు"
@@ -33767,8 +33778,8 @@ Rules:
     &#8679;
   </button>
   <!-- WhatsApp Floating Button -->
-  <a class="ae-wa-btn" id="ae-wa-btn" href="#" onclick="window.open('https://wa.me/'+SITE_CONFIG.WA_NUMBER+'?text='+encodeURIComponent('Hi Anil EduTech, naaku help కావాలి 🙏'),'_blank');return false;"
-    title="WhatsApp support" aria-label="WhatsApp support">
+  <a class="ae-wa-btn" id="ae-wa-btn" href="#" onclick="window.open('https://whatsapp.com/channel/0029VbDHW7DK5cDFtBNByt2H','_blank');return false;"
+    title="WhatsApp Channel - Join చేయండి" aria-label="WhatsApp Channel">
     <svg viewBox="0 0 32 32" width="26" height="26" fill="#fff"><path d="M16.001 3C9.107 3 3.5 8.607 3.5 15.5c0 2.42.678 4.68 1.855 6.607L3 29l7.09-2.31A12.44 12.44 0 0 0 16 28c6.894 0 12.5-5.607 12.5-12.5S22.895 3 16.001 3zm7.34 17.86c-.31.87-1.53 1.6-2.5 1.81-.66.14-1.53.25-4.45-.95-3.73-1.55-6.13-5.34-6.32-5.59-.19-.25-1.5-2-1.5-3.8 0-1.8.94-2.68 1.28-3.05.31-.34.68-.42.9-.42.23 0 .45.002.65.012.21.01.49-.08.76.58.31.75 1.05 2.55 1.14 2.73.09.19.15.4.03.65-.12.25-.19.4-.37.62-.19.22-.4.49-.57.66-.19.19-.39.4-.17.78.22.38.98 1.62 2.1 2.62 1.45 1.29 2.67 1.69 3.05 1.88.38.19.6.16.83-.1.23-.25.98-1.14 1.24-1.53.25-.38.5-.32.85-.19.34.12 2.18 1.03 2.55 1.22.38.19.63.28.72.44.09.16.09.9-.22 1.77z"/></svg>
   </a>
 </div>
@@ -33789,3 +33800,5 @@ Rules:
     onScroll(); // initial check
   })();
 </script>
+</body>
+</html>

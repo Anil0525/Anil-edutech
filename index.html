@@ -22254,6 +22254,33 @@ Rules:
       toast(f.locked ? `🔒 "${f.name}" folder locked!` : `🔓 "${f.name}" folder unlocked!`, f.locked ? 'warn' : 'success');
     }
 
+    // BUG FIX: this function was called via onclick (🗑 delete button) in the
+    // admin mock-folder table but was never defined anywhere — clicking delete
+    // silently did nothing (threw "adminDeleteFolder is not defined").
+    async function adminDeleteFolder(folderId) {
+      const folders = getMockFolders();
+      const f = folders.find(x => x.id === folderId);
+      if (!f) return;
+      const subFolders = folders.filter(sf => String(sf.parentId) === String(folderId));
+      const examCount = DB.exams.filter(e => String(e.mockFolder) === String(folderId)).length;
+      let warnMsg = `"${f.name}" folder ని delete చేయాలా?`;
+      if (subFolders.length) warnMsg += `\n⚠️ ఇందులో ${subFolders.length} sub-folders కూడా ఉన్నాయి, అవి కూడా delete అవుతాయి.`;
+      if (examCount) warnMsg += `\n⚠️ ఈ folder కి ${examCount} tests linked అయి ఉన్నాయి, అవి "Uncategorized" గా మారతాయి.`;
+      if (!confirm(warnMsg)) return;
+
+      const idsToDelete = [folderId, ...subFolders.map(sf => sf.id)];
+      const remaining = folders.filter(x => !idsToDelete.includes(x.id));
+      saveMockFolders(remaining);
+      idsToDelete.forEach(id => { sbDelete('ae_folders', `id=eq.${id}`).catch(e => console.error('❌ folder delete failed:', e)); });
+      // Un-assign exams that pointed to the deleted folder(s)
+      DB.exams.forEach(e => { if (idsToDelete.includes(String(e.mockFolder))) e.mockFolder = null; });
+      try { _saveMeta(); } catch (e) { }
+
+      renderMockFolderAdminTable();
+      renderMockFoldersGrid();
+      toast(`🗑 "${f.name}" folder delete అయింది!`, 'success');
+    }
+
     let _examPage = 0;
     const _EXAMS_PER_PAGE = 12;
 

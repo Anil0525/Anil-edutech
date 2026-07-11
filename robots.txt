@@ -6,4 +6,10 @@ Disallow: /admin
 Disallow: /page-admin
 Disallow: /admin-content.html
 
+# Block spam/junk query-string URLs (e.g. ?q=...) picked up from
+# spam backlinks/referrers - these are not real pages, canonical
+# tag already points to homepage but this stops wasted crawl budget
+Disallow: /*?q=
+Disallow: /*?*q=
+
 Sitemap: https://aniledutech.in/sitemap.xml

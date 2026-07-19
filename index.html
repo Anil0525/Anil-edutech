@@ -20636,7 +20636,7 @@ More exams: https://aniledutech.in
       if (btnEl) {
         btnEl.classList.add('active');
         const lbl = document.getElementById('admin-logged-label');
-        const labels = { exams: 'Dashboard / Exams', questions: 'Dashboard / Questions', pdfitems: 'Dashboard / PDFs & Images', subscribers: 'Dashboard / Subscribers', videos: 'Dashboard / Videos', ai: 'Dashboard / AI Tools', payments: 'Dashboard / Payments', bulkimport: 'Dashboard / Bulk Import', analytics: 'Dashboard / Analytics', dailymock: 'Dashboard / Daily Mock', scheduled: 'Dashboard / Scheduled', settings: 'Dashboard / Settings', userbackup: 'Dashboard / User Backup', contests: 'Dashboard / Contests', jobs: 'Dashboard / Govt Jobs', categories: 'Dashboard / Category Order', ebooks: 'Dashboard / eBooks' };
+        const labels = { exams: 'Dashboard / Exams', questions: 'Dashboard / Questions', pdfitems: 'Dashboard / PDFs & Images', subscribers: 'Dashboard / Subscribers', videos: 'Dashboard / Videos', ai: 'Dashboard / AI Tools', payments: 'Dashboard / Payments', bulkimport: 'Dashboard / Bulk Import', analytics: 'Dashboard / Analytics', dailymock: 'Dashboard / Daily Mock', scheduled: 'Dashboard / Scheduled', settings: 'Dashboard / Settings', userbackup: 'Dashboard / User Backup', contests: 'Dashboard / Contests', jobs: 'Dashboard / Govt Jobs', categories: 'Dashboard / Category Order', ebooks: 'Dashboard / eBooks', retention: 'Dashboard / Retention' };
         if (lbl && labels[tab]) lbl.textContent = labels[tab];
         const tabsBar = document.getElementById('admin-tabs-bar');
         if (tabsBar) tabsBar.scrollTo({ top: btnEl.offsetTop - 60, behavior: 'smooth' });
@@ -20655,6 +20655,7 @@ More exams: https://aniledutech.in
       if (tab === 'userbackup') { setTimeout(function () { loadBackupData(); }, 50); }
       if (tab === 'notifications') { setTimeout(function () { loadNotificationRecipients(); }, 50); }
       if (tab === 'ebooks') { setTimeout(function () { if (typeof renderEbookAdminList === 'function') renderEbookAdminList(); }, 50); }
+      if (tab === 'retention') { setTimeout(function () { if (typeof _renderRetention === 'function') _renderRetention(); }, 50); }
 
     }
 
@@ -23761,6 +23762,213 @@ Rules:
       toast('✅ Analytics CSV exported!', 'success');
     }
 
+
+    // ══════════════════════════════════════════════════════════════════
+    //  📉 COHORT RETENTION DASHBOARD — Admin Panel (self-injected tab)
+    // ══════════════════════════════════════════════════════════════════
+    const RET_ACTIVE_DAYS = 7;   // inactive <=7d  = Active
+    const RET_RISK_DAYS = 20;  // 8-20d           = At Risk
+    // >20d (or never active)  = Churned
+
+    let _retentionRows = []; // cache last computed rows for export/notify
+
+    function _retWeekStart(ts) {
+      const d = new Date(ts);
+      const day = d.getDay();
+      const diff = (day === 0 ? -6 : 1 - day); // Monday start
+      d.setDate(d.getDate() + diff);
+      d.setHours(0, 0, 0, 0);
+      return d.getTime();
+    }
+
+    function _retFmtDate(ts) {
+      return ts ? new Date(ts).toLocaleDateString('en-IN', { day: '2-digit', month: 'short', year: '2-digit' }) : '—';
+    }
+
+    async function _renderRetention() {
+      const el = document.getElementById('retention-content');
+      if (!el) return;
+      el.innerHTML = '<div style="text-align:center;padding:40px;color:var(--text3);">⏳ Loading...</div>';
+
+      const [subsRaw, resultsRaw] = await Promise.all([
+        sbSubGet('approved'),
+        sbGet('ae_results')
+      ]);
+      const subs = Array.isArray(subsRaw) ? subsRaw : [];
+      const results = Array.isArray(resultsRaw) ? resultsRaw : [];
+
+      if (!subs.length) {
+        el.innerHTML = '<div style="text-align:center;padding:40px;color:var(--text3);">ఇంకా students లేరు.</div>';
+        return;
+      }
+
+      const DAY = 86400000, now = Date.now();
+
+      // last-active + full attempt-timestamp list per gmail
+      const lastActive = {}, attemptsByUser = {};
+      results.forEach(r => {
+        const g = r.user_gmail; if (!g) return;
+        const t = r.ts || (r.created_at ? new Date(r.created_at).getTime() : 0);
+        if (!t) return;
+        if (!lastActive[g] || t > lastActive[g]) lastActive[g] = t;
+        (attemptsByUser[g] = attemptsByUser[g] || []).push(t);
+      });
+
+      const rows = subs.filter(u => u.gmail).map(u => {
+        const joined = u.joined_at ? new Date(u.joined_at).getTime() : null;
+        const last = lastActive[u.gmail] || null;
+        const refPoint = last || joined;
+        const daysInactive = refPoint ? Math.floor((now - refPoint) / DAY) : null;
+        let status = 'unknown';
+        if (daysInactive !== null) {
+          status = daysInactive <= RET_ACTIVE_DAYS ? 'active' : (daysInactive <= RET_RISK_DAYS ? 'at_risk' : 'churned');
+        }
+        return { name: u.name || 'Student', gmail: u.gmail, isPremium: !!u.is_premium, joined, last, daysInactive, status };
+      });
+      _retentionRows = rows;
+
+      const total = rows.length;
+      const activeCt = rows.filter(r => r.status === 'active').length;
+      const riskCt = rows.filter(r => r.status === 'at_risk').length;
+      const churnCt = rows.filter(r => r.status === 'churned').length;
+      const neverCt = rows.filter(r => r.status === 'unknown').length;
+
+      // ── Cohort table: weekly signup cohorts × weeks-since-signup activity % ──
+      const cohortMap = {}; // weekStartTs -> [gmail...]
+      rows.forEach(r => {
+        if (!r.joined) return;
+        const wk = _retWeekStart(r.joined);
+        (cohortMap[wk] = cohortMap[wk] || []).push(r.gmail);
+      });
+      const cohortKeys = Object.keys(cohortMap).map(Number).sort((a, b) => b - a).slice(0, 8);
+      const OFFSETS = [0, 1, 2, 3, 4];
+      const cohortTableRows = cohortKeys.map(wk => {
+        const members = cohortMap[wk];
+        const pcts = OFFSETS.map(off => {
+          const winStart = wk + off * 7 * DAY, winEnd = winStart + 7 * DAY;
+          if (winStart > now) return null; // week hasn't happened yet for this cohort
+          let activeInWk = 0;
+          members.forEach(g => {
+            const atts = attemptsByUser[g];
+            if (atts && atts.some(t => t >= winStart && t < winEnd)) activeInWk++;
+          });
+          return Math.round(activeInWk / members.length * 100);
+        });
+        return { wk, count: members.length, pcts };
+      });
+
+      function cellColor(pct) {
+        if (pct === null) return 'background:var(--bg2,transparent);color:var(--text3);';
+        if (pct >= 70) return 'background:#06B96B;color:#fff;';
+        if (pct >= 50) return 'background:#8BC34A;color:#fff;';
+        if (pct >= 30) return 'background:#F5B731;color:#1a1a1a;';
+        if (pct >= 10) return 'background:#F77F00;color:#fff;';
+        return 'background:#EF233C;color:#fff;';
+      }
+
+      const atRiskList = rows.filter(r => r.status === 'at_risk' || r.status === 'churned')
+        .sort((a, b) => (b.daysInactive || 0) - (a.daysInactive || 0));
+
+      el.innerHTML = `
+    <div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(110px,1fr));gap:10px;margin-bottom:18px;">
+      ${[['👥', total, 'Total', 'var(--primary)'], ['✅', activeCt, 'Active (≤7d)', '#06B96B'], ['⚠️', riskCt, 'At Risk (8-20d)', '#F5B731'], ['💔', churnCt, 'Churned (20d+)', '#EF233C'], ['❔', neverCt, 'Never Active', 'var(--text3)']]
+        .map(([i, v, l, c]) => `
+        <div style="background:var(--bg);border:2px solid var(--border);border-radius:12px;padding:12px;text-align:center;">
+          <div style="font-size:20px;">${i}</div><div style="font-size:22px;font-weight:900;color:${c};">${v}</div>
+          <div style="font-size:10px;color:var(--text3);font-weight:700;">${l}</div>
+        </div>`).join('')}
+    </div>
+
+    <div style="background:var(--bg);border:2px solid var(--border);border-radius:12px;padding:14px;margin-bottom:16px;">
+      <div style="font-size:13px;font-weight:900;color:var(--text);margin-bottom:4px;">📊 Weekly Cohort Retention</div>
+      <div style="font-size:11px;color:var(--text3);margin-bottom:12px;">ప్రతి cohort (సైన్-అప్ వారం) లో, ఆ తర్వాత వారాల్లో ఎంత % మంది కనీసం ఒక్క exam attempt చేశారో చూపిస్తుంది</div>
+      ${!cohortTableRows.length ? '<div style="text-align:center;padding:20px;color:var(--text3);">Signup date data లేదు</div>' : `
+      <div style="overflow-x:auto;"><table class="exams-manage-table" style="min-width:520px;">
+        <thead><tr><th>Cohort Week</th><th>Users</th>${OFFSETS.map(o => `<th>Wk ${o}</th>`).join('')}</tr></thead>
+        <tbody>${cohortTableRows.map(c => `
+          <tr><td style="font-weight:700;white-space:nowrap;">${_retFmtDate(c.wk)}</td><td style="font-weight:800;color:var(--primary);">${c.count}</td>
+          ${c.pcts.map(p => `<td style="text-align:center;font-weight:800;border-radius:6px;${cellColor(p)}">${p === null ? '—' : p + '%'}</td>`).join('')}
+          </tr>`).join('')}
+        </tbody></table></div>`}
+    </div>
+
+    <div style="background:var(--bg);border:2px solid var(--border);border-radius:12px;padding:14px;">
+      <div style="display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:8px;margin-bottom:10px;">
+        <div style="font-size:13px;font-weight:900;color:var(--text);">🚩 At-Risk / Churned Students (${atRiskList.length})</div>
+        <div style="display:flex;gap:8px;">
+          <button onclick="_notifyAllAtRisk()" style="padding:7px 12px;background:linear-gradient(135deg,#F5B731,#F77F00);color:#fff;border:none;border-radius:8px;font-size:11px;font-weight:800;cursor:pointer;">📢 Notify All</button>
+          <button onclick="_exportRetentionCSV()" style="padding:7px 12px;background:var(--primary);color:#fff;border:none;border-radius:8px;font-size:11px;font-weight:800;cursor:pointer;">⬇️ Export CSV</button>
+        </div>
+      </div>
+      <div style="overflow-x:auto;"><table class="exams-manage-table">
+        <thead><tr><th>Name</th><th>Gmail</th><th>Last Active</th><th>Days Inactive</th><th>Status</th><th>Premium</th><th></th></tr></thead>
+        <tbody>${atRiskList.slice(0, 200).map(r => `
+          <tr><td style="font-weight:700;">${escHtml(r.name)}</td><td style="font-size:11px;">${escHtml(r.gmail)}</td>
+          <td style="font-size:11px;">${_retFmtDate(r.last)}</td>
+          <td style="font-weight:800;color:${r.status === 'churned' ? 'var(--red)' : 'var(--amber)'};">${r.daysInactive === null ? '—' : r.daysInactive + 'd'}</td>
+          <td>${r.status === 'churned' ? '<span style="color:#EF233C;font-weight:800;">💔 Churned</span>' : '<span style="color:#F5B731;font-weight:800;">⚠️ At Risk</span>'}</td>
+          <td>${r.isPremium ? '👑' : '—'}</td>
+          <td><button onclick="_notifyOneAtRisk('${(r.gmail || '').replace(/'/g, "\\'")}','${escHtml(r.name).replace(/'/g, "\\'")}')" style="padding:5px 10px;background:var(--teal);color:#fff;border:none;border-radius:7px;font-size:10px;font-weight:800;cursor:pointer;white-space:nowrap;">🔔 Notify</button></td>
+          </tr>`).join('')}
+        ${!atRiskList.length ? '<tr><td colspan="7" style="text-align:center;padding:16px;color:var(--text3);">🎉 అందరూ active గా ఉన్నారు!</td></tr>' : ''}
+        </tbody></table></div>
+      ${atRiskList.length > 200 ? `<div style="text-align:center;font-size:11px;color:var(--text3);margin-top:6px;">Export CSV లో అన్ని ${atRiskList.length} students వస్తారు</div>` : ''}
+    </div>`;
+    }
+
+    async function _sendRetentionNudge(users, title, message) {
+      if (!users || !users.length) return;
+      const rows = users.map(u => ({ gmail: u.gmail, title, message, link: 'https://aniledutech.in', is_read: false, created_at: new Date().toISOString() }));
+      try {
+        for (let i = 0; i < rows.length; i += 200) {
+          await fetch(`${SB_URL}/rest/v1/ae_notifications`, { method: 'POST', headers: SB_HEADERS, body: JSON.stringify(rows.slice(i, i + 200)) });
+        }
+      } catch (e) { /* silent */ }
+      // Optional email nudge, reusing existing EmailJS setup if configured
+      try {
+        const cfg = typeof getEmailJSConfig === 'function' ? getEmailJSConfig() : null;
+        if (cfg && cfg.serviceId && cfg.templateId && cfg.publicKey && typeof emailjs !== 'undefined') {
+          users.forEach(u => {
+            if (!u.gmail) return;
+            const htmlBody = typeof _buildBroadcastEmailHTML === 'function'
+              ? _buildBroadcastEmailHTML(u.name || 'Student', title, message, 'Practice Now →', 'https://aniledutech.in')
+              : message;
+            emailjs.send(cfg.serviceId, cfg.templateId, {
+              to_email: u.gmail, to_name: u.name || 'Student',
+              subject: title + ' — Anil EduTech', html_body: htmlBody, message: message
+            }, cfg.publicKey).catch(() => { });
+          });
+        }
+      } catch (e) { /* silent */ }
+      toast('✅ ' + users.length + ' మంది కి re-engage message పంపబడింది', 'success');
+    }
+
+    function _notifyOneAtRisk(gmail, name) {
+      _sendRetentionNudge(
+        [{ gmail, name }],
+        'మిమ్మల్ని మిస్ అవుతున్నాం! 😢',
+        'చాలా రోజులుగా practice చేయలేదు. ఈరోజే ఒక mock test attempt చేసి మీ streak కొనసాగించండి!'
+      );
+    }
+
+    function _notifyAllAtRisk() {
+      const targets = _retentionRows.filter(r => r.status === 'at_risk' || r.status === 'churned')
+        .map(r => ({ gmail: r.gmail, name: r.name }));
+      if (!targets.length) { toast('At-risk students లేరు', 'info'); return; }
+      _sendRetentionNudge(
+        targets,
+        'మిమ్మల్ని మిస్ అవుతున్నాం! 😢',
+        'చాలా రోజులుగా practice చేయలేదు. ఈరోజే ఒక mock test attempt చేసి మీ streak కొనసాగించండి!'
+      );
+    }
+
+    function _exportRetentionCSV() {
+      if (!_retentionRows.length) { toast('❌ Data లేదు', 'error'); return; }
+      const header = 'Name,Gmail,LastActive,DaysInactive,Status,Premium';
+      const rows = _retentionRows.map(r => `"${(r.name || '').replace(/"/g, '""')}","${(r.gmail || '').replace(/"/g, '""')}","${r.last ? new Date(r.last).toLocaleDateString('en-IN') : ''}",${r.daysInactive ?? ''},${r.status},${r.isPremium ? 'Yes' : 'No'}`);
+      _downloadText([header, ...rows].join('\n'), 'AniEduTech_Retention.csv', 'text/csv');
+      toast('✅ Retention CSV exported!', 'success');
+    }
 
     function _getScheduled() { try { return JSON.parse(_ls.getItem('ae_scheduled') || '[]'); } catch (e) { return []; } }
     function _saveScheduled(arr) { _ls.setItem('ae_scheduled', JSON.stringify(arr)); }

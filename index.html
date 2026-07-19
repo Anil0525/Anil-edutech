@@ -23804,10 +23804,16 @@ Rules:
 
       const DAY = 86400000, now = Date.now();
 
+      // Normalize gmail for matching — case/whitespace differences between
+      // ae_subscribers.gmail and ae_results.user_gmail would otherwise cause
+      // every lookup to silently miss (this was the root cause of the
+      // "everyone churned / 0% every week" bug).
+      const _normG = g => (g || '').toString().trim().toLowerCase();
+
       // last-active + full attempt-timestamp list per gmail
       const lastActive = {}, attemptsByUser = {};
       results.forEach(r => {
-        const g = r.user_gmail; if (!g) return;
+        const g = _normG(r.user_gmail); if (!g) return;
         const t = r.ts || (r.created_at ? new Date(r.created_at).getTime() : 0);
         if (!t) return;
         if (!lastActive[g] || t > lastActive[g]) lastActive[g] = t;
@@ -23815,15 +23821,16 @@ Rules:
       });
 
       const rows = subs.filter(u => u.gmail).map(u => {
+        const gKey = _normG(u.gmail);
         const joined = u.joined_at ? new Date(u.joined_at).getTime() : null;
-        const last = lastActive[u.gmail] || null;
+        const last = lastActive[gKey] || null;
         const refPoint = last || joined;
         const daysInactive = refPoint ? Math.floor((now - refPoint) / DAY) : null;
         let status = 'unknown';
         if (daysInactive !== null) {
           status = daysInactive <= RET_ACTIVE_DAYS ? 'active' : (daysInactive <= RET_RISK_DAYS ? 'at_risk' : 'churned');
         }
-        return { name: u.name || 'Student', gmail: u.gmail, isPremium: !!u.is_premium, joined, last, daysInactive, status };
+        return { name: u.name || 'Student', gmail: u.gmail, gKey, isPremium: !!u.is_premium, joined, last, daysInactive, status };
       });
       _retentionRows = rows;
 
@@ -23834,11 +23841,11 @@ Rules:
       const neverCt = rows.filter(r => r.status === 'unknown').length;
 
       // ── Cohort table: weekly signup cohorts × weeks-since-signup activity % ──
-      const cohortMap = {}; // weekStartTs -> [gmail...]
+      const cohortMap = {}; // weekStartTs -> [gKey...]
       rows.forEach(r => {
         if (!r.joined) return;
         const wk = _retWeekStart(r.joined);
-        (cohortMap[wk] = cohortMap[wk] || []).push(r.gmail);
+        (cohortMap[wk] = cohortMap[wk] || []).push(r.gKey);
       });
       const cohortKeys = Object.keys(cohortMap).map(Number).sort((a, b) => b - a).slice(0, 8);
       const OFFSETS = [0, 1, 2, 3, 4];

@@ -33508,30 +33508,46 @@ Rules:
   }
 
   // CORS proxy ద్వారా RSS XML fetch చేయాలి
-  async function _fetchRSSFeed(feedUrl) {
-    // Multiple CORS proxies try చేస్తాం — fallback గా
+  async function _fetchRSSFeed(feedUrl, onProxyFail) {
+    // Multiple CORS proxies try చేస్తాం — fallback గా (json-wrapping వి, raw-text వి రెండూ కలిపి)
     const proxies = [
-      `https://api.allorigins.win/get?url=${encodeURIComponent(feedUrl)}`,
-      `https://corsproxy.io/?${encodeURIComponent(feedUrl)}`
+      { url: `https://api.allorigins.win/get?url=${encodeURIComponent(feedUrl)}`, type: 'json' },
+      { url: `https://api.allorigins.win/raw?url=${encodeURIComponent(feedUrl)}`, type: 'raw' },
+      { url: `https://api.codetabs.com/v1/proxy?quest=${encodeURIComponent(feedUrl)}`, type: 'raw' },
+      { url: `https://corsproxy.io/?url=${encodeURIComponent(feedUrl)}`, type: 'raw' },
+      { url: `https://thingproxy.freeboard.io/fetch/${feedUrl}`, type: 'raw' }
     ];
 
-    for (const proxyUrl of proxies) {
+    let lastError = 'అన్ని proxies fail అయ్యాయి';
+
+    for (const proxy of proxies) {
       try {
-        const res = await fetch(proxyUrl, { signal: AbortSignal.timeout(12000) });
-        if (!res.ok) continue;
-        const json = await res.json();
-        const xmlText = json.contents || json.body || '';
-        if (!xmlText) continue;
+        const res = await fetch(proxy.url, { signal: AbortSignal.timeout(15000) });
+        if (!res.ok) { lastError = `HTTP ${res.status} (${proxy.url.split('/')[2]})`; continue; }
+
+        let xmlText = '';
+        if (proxy.type === 'json') {
+          const json = await res.json();
+          xmlText = json.contents || json.body || '';
+        } else {
+          xmlText = await res.text();
+        }
+        if (!xmlText || xmlText.trim().length < 50) { lastError = `Empty response (${proxy.url.split('/')[2]})`; continue; }
 
         // XML parse చేయాలి
         const parser = new DOMParser();
         const doc = parser.parseFromString(xmlText, 'text/xml');
+        if (doc.querySelector('parsererror')) { lastError = `XML parse error (${proxy.url.split('/')[2]})`; continue; }
+
         const items = Array.from(doc.querySelectorAll('item'));
-        return items;
+        if (items.length) return items;
+        lastError = `No <item> tags found (${proxy.url.split('/')[2]})`;
       } catch (e) {
-        console.warn('Proxy failed:', proxyUrl, e);
+        lastError = `${e.message || 'fetch failed'} (${proxy.url.split('/')[2]})`;
+        console.warn('Proxy failed:', proxy.url, e);
       }
     }
+    if (onProxyFail) onProxyFail(lastError);
     return [];
   }
 
@@ -33566,10 +33582,11 @@ Rules:
       // Step 2: ప్రతి RSS feed fetch చేయాలి
       for (const feed of _RSS_FEEDS) {
         _log(`📡 ${feed.source} fetch చేస్తున్నాం...`);
-        const items = await _fetchRSSFeed(feed.url);
+        let _failReason = '';
+        const items = await _fetchRSSFeed(feed.url, (reason) => { _failReason = reason; });
 
         if (!items.length) {
-          _log(`⚠️ ${feed.source} — items రాలేదు (CORS issue అయి ఉండవచ్చు).`, '#d97706');
+          _log(`⚠️ ${feed.source} — items రాలేదు (${_failReason || 'CORS issue అయి ఉండవచ్చు'}).`, '#d97706');
           continue;
         }
 

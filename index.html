@@ -20468,6 +20468,22 @@ More exams: https://aniledutech.in
       }
     }
 
+    // ── REVIEW CARD COLOR + DATE HELPERS ──
+    const REV_PALETTE = [
+      ['#6366f1', '#8b5cf6'], ['#f59e0b', '#ef4444'], ['#10b981', '#059669'],
+      ['#ec4899', '#f43f5e'], ['#0ea5e9', '#2563eb'], ['#f97316', '#eab308'],
+      ['#a855f7', '#d946ef'], ['#14b8a6', '#06b6d4']
+    ];
+    function _revColor(name) {
+      let h = 0; const s = String(name || 'A');
+      for (let i = 0; i < s.length; i++) h = (h * 31 + s.charCodeAt(i)) >>> 0;
+      return REV_PALETTE[h % REV_PALETTE.length];
+    }
+    function _revDate(ts) {
+      if (!ts) return '';
+      return new Date(ts).toLocaleDateString('te-IN', { day: '2-digit', month: 'short', year: 'numeric' });
+    }
+
     // ── HOME PAGE REVIEWS ──
     async function _renderHomeReviews() {
       const listEl = document.getElementById('home-rev-list');
@@ -20488,12 +20504,15 @@ More exams: https://aniledutech.in
         const cardHtml = display.map(r => {
           const stars = '★★★★★☆☆☆☆☆'.slice(5 - (r.rating || 0), 10 - (r.rating || 0));
           const initials = (r.user_name || 'A').trim().split(/\s+/).map(w => w[0]).slice(0, 2).join('').toUpperCase();
-          return '<div class="rev-marquee-card" style="background:var(--surface);border:1.5px solid var(--border2);border-radius:14px;padding:12px 14px;">' +
+          const [c1, c2] = _revColor(r.user_name);
+          const dateStr = _revDate(r.created_at);
+          return '<div class="rev-marquee-card" style="background:linear-gradient(180deg,' + c1 + '14,var(--surface) 40%);border:1.5px solid ' + c1 + '55;border-left:4px solid ' + c1 + ';border-radius:14px;padding:12px 14px;">' +
             '<div style="display:flex;align-items:center;gap:8px;margin-bottom:6px;">' +
-            '<div style="width:30px;height:30px;border-radius:50%;background:linear-gradient(135deg,#6366f1,#8b5cf6);display:flex;align-items:center;justify-content:center;font-weight:900;font-size:11px;color:#fff;flex-shrink:0;">' + initials + '</div>' +
+            '<div style="width:30px;height:30px;border-radius:50%;background:linear-gradient(135deg,' + c1 + ',' + c2 + ');display:flex;align-items:center;justify-content:center;font-weight:900;font-size:11px;color:#fff;flex-shrink:0;">' + initials + '</div>' +
             '<div><div style="font-size:12.5px;font-weight:800;color:var(--text);">' + escHtml(r.user_name || 'Anonymous') + '</div>' +
-            '<div style="font-size:11px;color:#F59E0B;letter-spacing:1px;">' + stars + '</div></div>' +
-            (r.exam_name ? '<div style="margin-left:auto;font-size:10px;color:var(--text3);font-weight:600;background:var(--bg2);border-radius:6px;padding:2px 7px;max-width:90px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;">' + escHtml(r.exam_name) + '</div>' : '') +
+            '<div style="display:flex;align-items:center;gap:6px;"><span style="font-size:11px;color:#F59E0B;letter-spacing:1px;">' + stars + '</span>' +
+            (dateStr ? '<span style="font-size:10px;color:var(--text3);font-weight:600;">· ' + dateStr + '</span>' : '') + '</div></div>' +
+            (r.exam_name ? '<div style="margin-left:auto;font-size:10px;color:' + c1 + ';font-weight:700;background:' + c1 + '1f;border-radius:6px;padding:2px 7px;max-width:90px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;">' + escHtml(r.exam_name) + '</div>' : '') +
             '</div>' +
             (r.comment ? '<div style="font-size:12px;color:var(--text2);line-height:1.5;max-width:220px;overflow:hidden;text-overflow:ellipsis;display:-webkit-box;-webkit-line-clamp:3;-webkit-box-orient:vertical;">' + escHtml(r.comment) + '</div>' : '') +
             '</div>';
@@ -20521,12 +20540,16 @@ More exams: https://aniledutech.in
       listEl.innerHTML = rows.slice(0, 20).map(function (r) {
         const stars = '★★★★★☆☆☆☆☆'.slice(5 - (r.rating || 0), 10 - (r.rating || 0));
         const initials = (r.user_name || 'A').trim().split(/\s+/).map(function (w) { return w[0]; }).slice(0, 2).join('').toUpperCase();
-        return '<div style="background:var(--surface);border:1.5px solid var(--border2);border-radius:12px;padding:10px 14px;margin-bottom:8px;">' +
+        const c = _revColor(r.user_name); const c1 = c[0], c2 = c[1];
+        const dateStr = _revDate(r.created_at);
+        return '<div style="background:linear-gradient(180deg,' + c1 + '14,var(--surface) 40%);border:1.5px solid ' + c1 + '55;border-left:4px solid ' + c1 + ';border-radius:12px;padding:10px 14px;margin-bottom:8px;">' +
           '<div style="display:flex;align-items:center;gap:8px;margin-bottom:4px;">' +
-          '<div style="width:26px;height:26px;border-radius:50%;background:rgba(99,102,241,.15);display:flex;align-items:center;justify-content:center;font-weight:800;font-size:10px;color:#6366f1;flex-shrink:0;">' + escHtml(initials) + '</div>' +
+          '<div style="width:26px;height:26px;border-radius:50%;background:linear-gradient(135deg,' + c1 + ',' + c2 + ');display:flex;align-items:center;justify-content:center;font-weight:800;font-size:10px;color:#fff;flex-shrink:0;">' + escHtml(initials) + '</div>' +
           '<div style="font-size:13px;font-weight:800;color:var(--text);">' + escHtml(r.user_name || 'Anonymous') + '</div>' +
-          '<div style="margin-left:auto;font-size:12px;color:#F59E0B;letter-spacing:1px;">' + stars + '</div>' +
-          '</div>' +
+          '<div style="margin-left:auto;text-align:right;">' +
+          '<div style="font-size:12px;color:#F59E0B;letter-spacing:1px;">' + stars + '</div>' +
+          (dateStr ? '<div style="font-size:10px;color:var(--text3);font-weight:600;">' + dateStr + '</div>' : '') +
+          '</div></div>' +
           (r.comment ? '<div style="font-size:12.5px;color:var(--text2);line-height:1.5;">' + escHtml(r.comment) + '</div>' : '') +
           '</div>';
       }).join('');
@@ -20631,12 +20654,16 @@ More exams: https://aniledutech.in
       listEl.innerHTML = rows.map(function (r) {
         const stars = '★★★★★☆☆☆☆☆'.slice(5 - (r.rating || 0), 10 - (r.rating || 0));
         const initials = (r.user_name || 'A').trim().split(/\s+/).map(function (w) { return w[0]; }).slice(0, 2).join('').toUpperCase();
-        return '<div style="background:var(--surface);border:1.5px solid var(--border2);border-radius:12px;padding:10px 14px;margin-bottom:8px;">' +
+        const c = _revColor(r.user_name); const c1 = c[0], c2 = c[1];
+        const dateStr = _revDate(r.created_at);
+        return '<div style="background:linear-gradient(180deg,' + c1 + '14,var(--surface) 40%);border:1.5px solid ' + c1 + '55;border-left:4px solid ' + c1 + ';border-radius:12px;padding:10px 14px;margin-bottom:8px;">' +
           '<div style="display:flex;align-items:center;gap:8px;margin-bottom:4px;">' +
-          '<div style="width:26px;height:26px;border-radius:50%;background:rgba(99,102,241,.15);display:flex;align-items:center;justify-content:center;font-weight:800;font-size:10px;color:#6366f1;flex-shrink:0;">' + escHtml(initials) + '</div>' +
+          '<div style="width:26px;height:26px;border-radius:50%;background:linear-gradient(135deg,' + c1 + ',' + c2 + ');display:flex;align-items:center;justify-content:center;font-weight:800;font-size:10px;color:#fff;flex-shrink:0;">' + escHtml(initials) + '</div>' +
           '<div style="font-size:13px;font-weight:800;color:var(--text);">' + escHtml(r.user_name || 'Anonymous') + '</div>' +
-          '<div style="margin-left:auto;font-size:12px;color:#F59E0B;letter-spacing:1px;">' + stars + '</div>' +
-          '</div>' +
+          '<div style="margin-left:auto;text-align:right;">' +
+          '<div style="font-size:12px;color:#F59E0B;letter-spacing:1px;">' + stars + '</div>' +
+          (dateStr ? '<div style="font-size:10px;color:var(--text3);font-weight:600;">' + dateStr + '</div>' : '') +
+          '</div></div>' +
           (r.comment ? '<div style="font-size:12.5px;color:var(--text2);line-height:1.5;">' + escHtml(r.comment) + '</div>' : '') +
           '</div>';
       }).join('');

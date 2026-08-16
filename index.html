@@ -9327,7 +9327,9 @@
       z-index: 998;
       align-items: center;
       justify-content: center;
-      background: radial-gradient(ellipse at 30% 20%, #d4eaf7 0%, #c2dff0 40%, #d6edd6 100%);
+      background: radial-gradient(ellipse at 30% 20%, #241a34 0%, #150f24 55%, #0a0812 100%);
+      padding: 16px;
+      box-sizing: border-box;
     }
 
     .sub-overlay.show {
@@ -9340,24 +9342,25 @@
       content: '';
       position: absolute;
       border-radius: 50%;
-      background: rgba(255, 255, 255, .6);
-      filter: blur(40px);
+      background: rgba(150, 110, 230, .18);
+      filter: blur(60px);
       pointer-events: none;
       animation: cloudFloat 8s ease-in-out infinite alternate;
     }
 
     .sub-overlay::before {
-      width: 320px;
-      height: 180px;
-      top: 5%;
-      left: -4%;
+      width: 360px;
+      height: 220px;
+      top: 3%;
+      left: -6%;
     }
 
     .sub-overlay::after {
-      width: 260px;
-      height: 150px;
-      bottom: 8%;
-      right: -3%;
+      width: 300px;
+      height: 200px;
+      bottom: 5%;
+      right: -6%;
+      background: rgba(240, 140, 90, .14);
       animation-delay: -4s;
     }
 
@@ -9371,38 +9374,24 @@
       }
     }
 
-    [data-theme="dark"] .sub-overlay {
-      background: radial-gradient(ellipse at 30% 20%, #0e1c2e 0%, #0b1825 50%, #0d1f12 100%);
-    }
-
+    .sub-overlay .sub-back-btn,
     [data-theme="dark"] .sub-overlay .sub-back-btn {
-      color: #a0c8ff !important;
-      border-color: rgba(160, 200, 255, .3) !important;
-      background: rgba(160, 200, 255, .1) !important;
+      color: #e6dbff !important;
+      border-color: rgba(230, 210, 255, .25) !important;
+      background: rgba(230, 210, 255, .1) !important;
     }
 
-    [data-theme="dark"] .sub-overlay::before,
-    [data-theme="dark"] .sub-overlay::after {
-      background: rgba(255, 255, 255, .05);
-    }
-
-    /* ── SQUARE GLASS CARD ── */
+    /* ── DARK GLASS CARD — always dark, like a dedicated auth screen ── */
     .sub-box {
-      background: rgba(255, 255, 255, .72);
-      backdrop-filter: blur(32px) saturate(180%);
-      -webkit-backdrop-filter: blur(32px) saturate(180%);
-      border: 1.5px solid rgba(255, 255, 255, .95);
-      border-radius: 28px;
-      width: 330px;
+      background: #171025;
+      border: 1px solid rgba(255, 255, 255, .08);
+      border-radius: 26px;
+      width: 340px;
       height: auto;
-      /* MOBILE FIX: was fixed 360px */
       min-height: 320px;
-      padding: 26px 26px;
+      padding: 0;
       box-sizing: border-box;
-      box-shadow:
-        0 2px 0 rgba(255, 255, 255, .8) inset,
-        0 20px 60px rgba(60, 120, 180, .18),
-        0 4px 16px rgba(60, 120, 180, .1);
+      box-shadow: 0 24px 70px rgba(0, 0, 0, .55), 0 1px 0 rgba(255, 255, 255, .06) inset;
       position: relative;
       z-index: 2;
       display: flex;
@@ -9411,129 +9400,160 @@
     }
 
     [data-theme="dark"] .sub-box {
-      background: rgba(14, 22, 40, .85);
-      border-color: rgba(255, 255, 255, .1);
-      box-shadow: 0 20px 60px rgba(0, 0, 0, .6), 0 1px 0 rgba(255, 255, 255, .08) inset;
+      background: #171025;
+      border-color: rgba(255, 255, 255, .08);
     }
 
-    /* hide decorative elements */
-    .sub-icon-box {
-      display: none;
+    /* ── decorative banner (pure CSS dusk/dune scene, no image needed) ── */
+    .sub-banner {
+      position: relative;
+      height: 92px;
+      flex-shrink: 0;
+      overflow: hidden;
+      background: linear-gradient(155deg, #4b3f80 0%, #6c4a8c 40%, #a85f7c 75%, #d98a63 100%);
+      display: flex;
+      flex-direction: column;
+      justify-content: space-between;
+      padding: 12px 16px;
     }
 
-    .sub-icon {
-      display: none;
+    .sub-banner::before {
+      content: '';
+      position: absolute;
+      left: -15%;
+      right: -15%;
+      bottom: -26px;
+      height: 60px;
+      background: rgba(18, 10, 28, .55);
+      border-radius: 50%;
+      transform: scaleX(1.5);
     }
 
-    .sub-desc {
+    .sub-banner::after {
+      content: '';
+      position: absolute;
+      right: -10%;
+      bottom: -34px;
+      width: 55%;
+      height: 54px;
+      background: rgba(10, 6, 18, .45);
+      border-radius: 50%;
+    }
+
+    .sub-banner-logo {
+      position: relative;
+      z-index: 1;
+      font-size: 12.5px;
+      font-weight: 900;
+      color: #fff;
+      letter-spacing: .2px;
+      display: flex;
+      align-items: center;
+      gap: 5px;
+      text-shadow: 0 1px 6px rgba(0, 0, 0, .3);
+    }
+
+    .sub-banner-tagline {
+      position: relative;
+      z-index: 1;
+      font-size: 10px;
+      font-weight: 700;
+      color: rgba(255, 255, 255, .88);
+      line-height: 1.3;
+      text-shadow: 0 1px 6px rgba(0, 0, 0, .3);
+    }
+
+    .sub-banner-dots {
+      position: absolute;
+      right: 14px;
+      bottom: 10px;
+      display: flex;
+      gap: 4px;
+      z-index: 1;
+    }
+
+    .sub-banner-dots span {
+      width: 5px;
+      height: 5px;
+      border-radius: 50%;
+      background: rgba(255, 255, 255, .35);
+    }
+
+    .sub-banner-dots span.active {
+      width: 14px;
+      border-radius: 3px;
+      background: rgba(255, 255, 255, .9);
+    }
+
+    /* form body wrapper */
+    .sub-body {
+      padding: 20px 24px 22px;
+      display: flex;
+      flex-direction: column;
+      flex: 1;
+      min-height: 0;
+    }
+
+    /* hide decorative elements from older layout (no longer used) */
+    .sub-icon-box,
+    .sub-icon,
+    .sub-desc,
+    .sub-cancel,
+    .sub-divider,
+    .sub-socials,
+    .sub-footer-text,
+    .sub-title,
+    .sub-tabs {
       display: none;
     }
 
     .sub-yt-note {
-      background: rgba(255, 80, 0, .08);
-      border: 1px solid rgba(255, 80, 0, .2);
-      border-radius: 9px;
+      background: rgba(255, 130, 60, .1);
+      border: 1px solid rgba(255, 130, 60, .25);
+      border-radius: 10px;
       padding: 6px 10px;
       font-size: 10.5px;
-      color: #c0440a;
+      color: #ffab7a;
       font-weight: 700;
       text-align: center;
-      margin-bottom: 8px;
+      margin-bottom: 10px;
       line-height: 1.4;
       flex-shrink: 0;
     }
 
     .sub-yt-note a {
-      color: #e05000;
+      color: #ffc199;
       text-decoration: underline;
     }
 
-    [data-theme="dark"] .sub-yt-note {
-      background: rgba(255, 100, 0, .1);
-      border-color: rgba(255, 100, 0, .25);
-      color: #ff8040;
-    }
-
-    [data-theme="dark"] .sub-yt-note a {
-      color: #ff9060;
-    }
-
-    .sub-cancel {
-      display: none;
-    }
-
-    .sub-divider {
-      display: none;
-    }
-
-    .sub-socials {
-      display: none;
-    }
-
-    .sub-footer-text {
-      display: none;
-    }
-
-    /* title with gradient text */
-    .sub-title {
-      font-size: 15px;
+    /* panel title (replaces old pill tabs, matches reference layout) */
+    .sub-panel-title {
+      font-size: 19px;
       font-weight: 900;
-      text-align: center;
-      background: linear-gradient(135deg, #1a3a5c, #1a73e8);
-      -webkit-background-clip: text;
-      -webkit-text-fill-color: transparent;
-      background-clip: text;
-      margin: 0 0 10px;
-      letter-spacing: -.4px;
-      flex-shrink: 0;
-    }
-
-    [data-theme="dark"] .sub-title {
-      background: linear-gradient(135deg, #7ec8f8, #a8d8ff);
-      -webkit-background-clip: text;
-      background-clip: text;
-    }
-
-    /* tabs pill */
-    .sub-tabs {
-      display: flex;
-      gap: 3px;
-      margin-bottom: 12px;
-      background: rgba(200, 220, 245, .35);
-      border-radius: 12px;
-      padding: 3px;
-      border: 1px solid rgba(180, 210, 240, .4);
-      flex-shrink: 0;
-    }
-
-    [data-theme="dark"] .sub-tabs {
-      background: rgba(255, 255, 255, .07);
-      border-color: rgba(255, 255, 255, .1);
-    }
-
-    .sub-tab {
-      flex: 1;
-      padding: 5px 6px;
-      border-radius: 9px;
-      border: none;
-      font-family: inherit;
-      font-size: 11px;
-      font-weight: 800;
-      cursor: pointer;
-      transition: all .2s cubic-bezier(.16, 1, .3, 1);
-      background: transparent;
-      color: #6a8aaa;
-      letter-spacing: .1px;
-    }
-
-    .sub-tab.active {
-      background: linear-gradient(135deg, #1a73e8, #0d5bbd);
       color: #fff;
-      box-shadow: 0 3px 10px rgba(26, 115, 232, .4), 0 1px 0 rgba(255, 255, 255, .2) inset;
+      letter-spacing: -.3px;
+      margin-bottom: 4px;
+      flex-shrink: 0;
     }
 
-    [data-theme="dark"] .sub-tab {
-      color: #7090b0;
+    .sub-panel-sub {
+      font-size: 11.5px;
+      color: #8b849c;
+      font-weight: 600;
+      margin-bottom: 16px;
+      flex-shrink: 0;
+    }
+
+    .sub-panel-sub button {
+      background: none;
+      border: none;
+      color: #a78bfa;
+      font-weight: 800;
+      font-size: 11.5px;
+      cursor: pointer;
+      padding: 0;
+      text-decoration: underline;
+      font-family: inherit;
     }
 
     /* panels */
@@ -9551,7 +9571,7 @@
 
     /* fields */
     .sub-field {
-      margin-bottom: 8px;
+      margin-bottom: 10px;
       position: relative;
       flex-shrink: 0;
     }
@@ -9561,87 +9581,81 @@
     }
 
     .sub-field-icon {
-      position: absolute;
-      left: 11px;
-      top: 50%;
-      transform: translateY(-50%);
-      color: #90b4d0;
-      pointer-events: none;
-      display: flex;
-      align-items: center;
+      display: none;
     }
 
-    .sub-field-icon svg {
-      width: 13px;
-      height: 13px;
-    }
-
-    .sub-field input {
+    .sub-field input,
+    .sub-field select {
       width: 100%;
-      padding: 9px 32px 9px 32px;
-      border: 1.5px solid rgba(180, 215, 245, .55);
-      border-radius: 11px;
+      padding: 12px 14px;
+      border: 1.5px solid rgba(255, 255, 255, .1);
+      border-radius: 12px;
       font-family: inherit;
-      font-size: 12.5px;
-      color: var(--text);
-      background: rgba(255, 255, 255, .65);
+      font-size: 13px;
+      font-weight: 600;
+      color: #f0edf7;
+      background: rgba(255, 255, 255, .05);
       transition: all .2s cubic-bezier(.16, 1, .3, 1);
       box-sizing: border-box;
-      box-shadow: 0 1px 3px rgba(60, 120, 180, .06), 0 1px 0 rgba(255, 255, 255, .8) inset;
     }
 
     .sub-field input::placeholder {
-      color: #b0c8de;
-      font-size: 12px;
+      color: #6e6784;
+      font-weight: 500;
     }
 
-    .sub-field input:focus {
+    .sub-field input:focus,
+    .sub-field select:focus {
       outline: none;
-      border-color: rgba(26, 115, 232, .6);
-      box-shadow: 0 0 0 3.5px rgba(26, 115, 232, .14), 0 1px 0 rgba(255, 255, 255, .9) inset;
-      background: rgba(255, 255, 255, .95);
-      transform: scale(1.01);
-    }
-
-    [data-theme="dark"] .sub-field input {
+      border-color: rgba(167, 139, 250, .7);
+      box-shadow: 0 0 0 3.5px rgba(167, 139, 250, .16);
       background: rgba(255, 255, 255, .08);
-      border-color: rgba(255, 255, 255, .14);
-      color: var(--text);
-      box-shadow: 0 1px 3px rgba(0, 0, 0, .2);
     }
 
-    [data-theme="dark"] .sub-field input:focus {
-      background: rgba(255, 255, 255, .14);
+    .sub-field select {
+      color: #cfc9dd;
+      cursor: pointer;
+    }
+
+    .sub-field select option {
+      background: #1c1530;
+      color: #f0edf7;
+    }
+
+    #login-pw,
+    #reg-pw {
+      padding-right: 42px;
     }
 
     .sub-field-eye {
       position: absolute;
-      right: 10px;
+      right: 12px;
       top: 50%;
       transform: translateY(-50%);
       background: none;
       border: none;
       cursor: pointer;
-      color: #b0c8de;
+      color: #756e8c;
       padding: 0;
       display: flex;
       align-items: center;
+      font-size: 14px;
       transition: color .15s;
     }
 
     .sub-field-eye:hover {
-      color: #6a8aaa;
+      color: #cfc9dd;
     }
 
     .sub-field-eye svg {
-      width: 13px;
-      height: 13px;
+      width: 15px;
+      height: 15px;
     }
 
     /* forgot */
     .sub-forgot-link {
       text-align: right;
-      margin: 0 0 9px;
+      margin: -3px 0 12px;
       flex-shrink: 0;
     }
 
@@ -9649,8 +9663,8 @@
       background: none;
       border: none;
       font-family: inherit;
-      font-size: 10.5px;
-      color: #5a9ecf;
+      font-size: 11px;
+      color: #a78bfa;
       font-weight: 700;
       cursor: pointer;
       padding: 0;
@@ -9658,30 +9672,30 @@
     }
 
     .sub-forgot-link button:hover {
-      color: #1a73e8;
+      color: #c4b5fd;
     }
 
     /* CTA button */
     .sub-btn {
       width: 100%;
-      padding: 10px;
-      background: linear-gradient(135deg, #1a1a2e 0%, #16213e 100%);
+      padding: 13px;
+      background: linear-gradient(135deg, #8b5cf6 0%, #7c3aed 100%);
       color: #fff;
       border: none;
-      border-radius: 11px;
+      border-radius: 12px;
       font-family: inherit;
-      font-size: 13px;
-      font-weight: 900;
+      font-size: 13.5px;
+      font-weight: 800;
       cursor: pointer;
       transition: all .2s cubic-bezier(.16, 1, .3, 1);
-      letter-spacing: .3px;
+      letter-spacing: .2px;
       flex-shrink: 0;
-      box-shadow: 0 6px 20px rgba(20, 20, 46, .3), 0 1px 0 rgba(255, 255, 255, .15) inset;
+      box-shadow: 0 10px 24px rgba(124, 58, 237, .35);
     }
 
     .sub-btn:hover {
       transform: translateY(-2px);
-      box-shadow: 0 10px 28px rgba(20, 20, 46, .35), 0 1px 0 rgba(255, 255, 255, .15) inset;
+      box-shadow: 0 14px 30px rgba(124, 58, 237, .45);
     }
 
     .sub-btn:active {
@@ -9689,33 +9703,33 @@
     }
 
     .sub-btn.green-btn {
-      background: linear-gradient(135deg, #059669, #047857);
-      box-shadow: 0 6px 20px rgba(5, 150, 105, .3), 0 1px 0 rgba(255, 255, 255, .15) inset;
+      background: linear-gradient(135deg, #8b5cf6 0%, #7c3aed 100%);
+      box-shadow: 0 10px 24px rgba(124, 58, 237, .35);
     }
 
     .sub-btn.green-btn:hover {
-      box-shadow: 0 10px 28px rgba(5, 150, 105, .4), 0 1px 0 rgba(255, 255, 255, .15) inset;
+      box-shadow: 0 14px 30px rgba(124, 58, 237, .45);
     }
 
     /* errors */
     .sub-err {
       font-size: 10.5px;
-      color: var(--red);
+      color: #ff8080;
       font-weight: 700;
       text-align: center;
       min-height: 14px;
-      margin-top: 5px;
+      margin-top: 8px;
       display: block;
       flex-shrink: 0;
     }
 
     .sub-ok {
       font-size: 10.5px;
-      color: var(--teal);
+      color: #5eead4;
       font-weight: 700;
       text-align: center;
       min-height: 14px;
-      margin-top: 5px;
+      margin-top: 8px;
       display: block;
       flex-shrink: 0;
     }
@@ -9724,12 +9738,14 @@
     .sub-or-divider {
       display: flex;
       align-items: center;
-      gap: 8px;
-      margin: 10px 0 8px;
+      gap: 10px;
+      margin: 16px 0 12px;
       flex-shrink: 0;
-      color: #94a3b8;
-      font-size: 11px;
-      font-weight: 600;
+      color: #59516f;
+      font-size: 10.5px;
+      font-weight: 700;
+      text-transform: uppercase;
+      letter-spacing: .4px;
     }
 
     .sub-or-divider::before,
@@ -9737,18 +9753,13 @@
       content: '';
       flex: 1;
       height: 1px;
-      background: var(--border);
-    }
-
-    [data-theme="dark"] .sub-or-divider {
-      color: #4a6080;
+      background: rgba(255, 255, 255, .08);
     }
 
     .sub-social-row {
       display: flex;
-      gap: 8px;
+      gap: 10px;
       flex-shrink: 0;
-      margin-bottom: 2px;
     }
 
     .sub-social-btn {
@@ -9756,36 +9767,29 @@
       display: flex;
       align-items: center;
       justify-content: center;
-      gap: 6px;
-      padding: 9px 10px;
-      border-radius: 11px;
-      border: 1.5px solid var(--border);
-      background: #fff;
-      color: #3c4043;
+      gap: 7px;
+      padding: 11px 10px;
+      border-radius: 12px;
+      border: 1.5px solid rgba(255, 255, 255, .1);
+      background: rgba(255, 255, 255, .05);
+      color: #e4e0f0;
       font-family: inherit;
-      font-size: 12px;
+      font-size: 12.5px;
       font-weight: 700;
       cursor: pointer;
       transition: all .18s;
-      box-shadow: 0 2px 8px rgba(0, 0, 0, .08);
     }
 
     .sub-social-btn:hover {
+      background: rgba(255, 255, 255, .1);
       transform: translateY(-2px);
-      box-shadow: 0 6px 18px rgba(0, 0, 0, .14);
     }
 
     .sub-social-btn:active {
       transform: scale(.97);
     }
 
-    [data-theme="dark"] .sub-social-btn {
-      background: #1e2a38;
-      color: #c8d8f0;
-      border-color: rgba(255, 255, 255, .12);
-    }
-
-    /* login badge */
+    /* login badge — unrelated component, untouched */
     .login-badge {
       display: inline-flex;
       align-items: center;
@@ -9811,10 +9815,18 @@
 
     @media (max-width:400px) {
       .sub-box {
-        width: calc(100vw - 32px) !important;
+        width: 100% !important;
+        max-width: 360px;
         min-height: unset !important;
-        padding: 20px !important;
         border-radius: 22px !important;
+      }
+
+      .sub-banner {
+        height: 80px;
+      }
+
+      .sub-body {
+        padding: 18px 20px 20px !important;
       }
 
       .sub-overlay {
@@ -9830,7 +9842,7 @@
       }
 
       .sub-box {
-        width: calc(100vw - 40px) !important;
+        width: 100% !important;
         max-width: 360px !important;
       }
     }
@@ -14268,206 +14280,166 @@
     display:flex; align-items:center; padding:0 18px;
     z-index:10;
   ">
-      <button onclick="closeSubModal()" style="
-      background:rgba(255,255,255,.25);
-      border:1.5px solid rgba(255,255,255,.5);
-      color:#1a3a5c;
+      <button onclick="closeSubModal()" class="sub-back-btn" style="
+      background:rgba(230,210,255,.1);
+      border:1.5px solid rgba(230,210,255,.25);
+      color:#e6dbff;
       border-radius:20px;
       font-family:inherit; font-size:13px; font-weight:800;
       padding:7px 16px; cursor:pointer;
       display:flex; align-items:center; gap:6px;
       backdrop-filter:blur(8px);
       transition:all .2s;
-    " onmouseover="this.style.background='rgba(255,255,255,.45)'"
-        onmouseout="this.style.background='rgba(255,255,255,.25)'">← Back</button>
+    " onmouseover="this.style.background='rgba(230,210,255,.2)'"
+        onmouseout="this.style.background='rgba(230,210,255,.1)'">← Back</button>
     </div>
 
     <div class="sub-box">
 
-      <div class="sub-title">Anil EduTech</div>
-
-      <div class="sub-tabs">
-        <button class="sub-tab active" id="subtab-login" onclick="switchSubTab('login')">🔑 Login</button>
-        <button class="sub-tab" id="subtab-register" onclick="switchSubTab('register')">📝 Register</button>
+      <!-- decorative brand banner -->
+      <div class="sub-banner">
+        <div class="sub-banner-logo">🎓 Anil EduTech</div>
+        <div class="sub-banner-tagline">మీ Exam Success<br>ఇక్కడ మొదలవుతుంది</div>
+        <div class="sub-banner-dots"><span></span><span></span><span class="active"></span></div>
       </div>
 
-      <!-- LOGIN PANEL -->
-      <div class="sub-panel active" id="subpanel-login">
-        <div class="sub-yt-note">
-          📺 <a href="https://www.youtube.com/@AnilEduTechYT" target="_blank">YouTube Subscribe</a> చేసి Register
-          చేసుకోండి!
-        </div>
-        <div class="sub-field">
-          <span class="sub-field-icon">
-            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"
-              stroke-linejoin="round">
-              <rect x="2" y="4" width="20" height="16" rx="2" />
-              <path d="m22 7-8.97 5.7a1.94 1.94 0 0 1-2.06 0L2 7" />
-            </svg>
-          </span>
-          <input type="email" id="login-gmail" placeholder="Email" autocomplete="email">
-        </div>
-        <div class="sub-field">
-          <span class="sub-field-icon">
-            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"
-              stroke-linejoin="round">
-              <rect x="3" y="11" width="18" height="11" rx="2" />
-              <path d="M7 11V7a5 5 0 0 1 10 0v4" />
-            </svg>
-          </span>
-          <input type="password" id="login-pw" placeholder="Password" autocomplete="current-password"
-            onkeydown="if(event.key==='Enter') doLogin()">
-          <button type="button" class="sub-field-eye" onclick="toggleFieldVis('login-pw',this)">
-            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"
-              stroke-linejoin="round">
-              <path
-                d="M17.94 17.94A10.07 10.07 0 0 1 12 20c-7 0-11-8-11-8a18.45 18.45 0 0 1 5.06-5.94M9.9 4.24A9.12 9.12 0 0 1 12 4c7 0 11 8 11 8a18.5 18.5 0 0 1-2.16 3.19m-6.72-1.07a3 3 0 1 1-4.24-4.24" />
-              <line x1="1" y1="1" x2="23" y2="23" />
-            </svg>
-          </button>
-        </div>
-        <div class="sub-forgot-link">
-          <button onclick="switchSubTab('forgot')">Forgot password?</button>
-        </div>
-        <button class="sub-btn" onclick="doLogin()">Get Started</button>
-        <span class="sub-err" id="login-err"></span>
-        <div class="sub-or-divider">లేదా</div>
-        <div class="sub-social-row">
-          <button class="sub-social-btn" onclick="doGoogleLogin()">
-            <svg width="16" height="16" viewBox="0 0 24 24">
-              <path fill="#4285F4"
-                d="M22.56 12.25c0-.78-.07-1.53-.2-2.25H12v4.26h5.92c-.26 1.37-1.04 2.53-2.21 3.31v2.77h3.57c2.08-1.92 3.28-4.74 3.28-8.09z" />
-              <path fill="#34A853"
-                d="M12 23c2.97 0 5.46-.98 7.28-2.66l-3.57-2.77c-.98.66-2.23 1.06-3.71 1.06-2.86 0-5.29-1.93-6.16-4.53H2.18v2.84C3.99 20.53 7.7 23 12 23z" />
-              <path fill="#FBBC05"
-                d="M5.84 14.09c-.22-.66-.35-1.36-.35-2.09s.13-1.43.35-2.09V7.07H2.18C1.43 8.55 1 10.22 1 12s.43 3.45 1.18 4.93l3.66-2.84z" />
-              <path fill="#EA4335"
-                d="M12 5.38c1.62 0 3.06.56 4.21 1.64l3.15-3.15C17.45 2.09 14.97 1 12 1 7.7 1 3.99 3.47 2.18 7.07l3.66 2.84c.87-2.6 3.3-4.53 6.16-4.53z" />
-            </svg>
-            Google తో Login
-          </button>
-        </div>
-      </div>
+      <div class="sub-body">
 
-      <!-- REGISTER PANEL -->
-      <div class="sub-panel" id="subpanel-register">
-        <div class="sub-field">
-          <span class="sub-field-icon">
-            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"
-              stroke-linejoin="round">
-              <circle cx="12" cy="8" r="4" />
-              <path d="M4 20c0-4 3.6-7 8-7s8 3 8 7" />
-            </svg>
-          </span>
-          <input type="text" id="reg-name" placeholder="మీ పేరు" maxlength="50">
+        <!-- LOGIN PANEL -->
+        <div class="sub-panel active" id="subpanel-login">
+          <div class="sub-panel-title">Welcome Back 👋</div>
+          <div class="sub-panel-sub">కొత్తవారా? <button id="subtab-register" onclick="switchSubTab('register')">Register చేసుకోండి</button></div>
+          <div class="sub-yt-note">
+            📺 <a href="https://www.youtube.com/@AnilEduTechYT" target="_blank">YouTube Subscribe</a> చేసి Register
+            చేసుకోండి!
+          </div>
+          <div class="sub-field">
+            <input type="email" id="login-gmail" placeholder="Email" autocomplete="email">
+          </div>
+          <div class="sub-field">
+            <input type="password" id="login-pw" placeholder="Password" autocomplete="current-password"
+              onkeydown="if(event.key==='Enter') doLogin()">
+            <button type="button" class="sub-field-eye" onclick="toggleFieldVis('login-pw',this)">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"
+                stroke-linejoin="round">
+                <path
+                  d="M17.94 17.94A10.07 10.07 0 0 1 12 20c-7 0-11-8-11-8a18.45 18.45 0 0 1 5.06-5.94M9.9 4.24A9.12 9.12 0 0 1 12 4c7 0 11 8 11 8a18.5 18.5 0 0 1-2.16 3.19m-6.72-1.07a3 3 0 1 1-4.24-4.24" />
+                <line x1="1" y1="1" x2="23" y2="23" />
+              </svg>
+            </button>
+          </div>
+          <div class="sub-forgot-link">
+            <button onclick="switchSubTab('forgot')">Forgot password?</button>
+          </div>
+          <button class="sub-btn" onclick="doLogin()">Log in</button>
+          <span class="sub-err" id="login-err"></span>
+          <div class="sub-or-divider">లేదా</div>
+          <div class="sub-social-row">
+            <button class="sub-social-btn" onclick="doGoogleLogin()">
+              <svg width="16" height="16" viewBox="0 0 24 24">
+                <path fill="#4285F4"
+                  d="M22.56 12.25c0-.78-.07-1.53-.2-2.25H12v4.26h5.92c-.26 1.37-1.04 2.53-2.21 3.31v2.77h3.57c2.08-1.92 3.28-4.74 3.28-8.09z" />
+                <path fill="#34A853"
+                  d="M12 23c2.97 0 5.46-.98 7.28-2.66l-3.57-2.77c-.98.66-2.23 1.06-3.71 1.06-2.86 0-5.29-1.93-6.16-4.53H2.18v2.84C3.99 20.53 7.7 23 12 23z" />
+                <path fill="#FBBC05"
+                  d="M5.84 14.09c-.22-.66-.35-1.36-.35-2.09s.13-1.43.35-2.09V7.07H2.18C1.43 8.55 1 10.22 1 12s.43 3.45 1.18 4.93l3.66-2.84z" />
+                <path fill="#EA4335"
+                  d="M12 5.38c1.62 0 3.06.56 4.21 1.64l3.15-3.15C17.45 2.09 14.97 1 12 1 7.7 1 3.99 3.47 2.18 7.07l3.66 2.84c.87-2.6 3.3-4.53 6.16-4.53z" />
+              </svg>
+              Google తో Login
+            </button>
+          </div>
         </div>
-        <div class="sub-field">
-          <span class="sub-field-icon">
-            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"
-              stroke-linejoin="round">
-              <rect x="2" y="4" width="20" height="16" rx="2" />
-              <path d="m22 7-8.97 5.7a1.94 1.94 0 0 1-2.06 0L2 7" />
-            </svg>
-          </span>
-          <input type="email" id="reg-gmail" placeholder="Email">
-        </div>
-        <div class="sub-field">
-          <span class="sub-field-icon">
-            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"
-              stroke-linejoin="round">
-              <circle cx="12" cy="10" r="3" />
-              <path d="M12 21c-4-4.5-7-8-7-11a7 7 0 0 1 14 0c0 3-3 6.5-7 11z" />
-            </svg>
-          </span>
-          <select id="reg-district" style="width:100%;border:none;background:transparent;font-family:inherit;font-size:14px;color:var(--text);outline:none;">
-            <option value="">జిల్లా ఎంచుకోండి (District) — Optional</option>
-            <optgroup label="Telangana">
-              <option>Adilabad</option><option>Bhadradri Kothagudem</option><option>Hyderabad</option>
-              <option>Jagtial</option><option>Jangaon</option><option>Jayashankar Bhupalpally</option>
-              <option>Jogulamba Gadwal</option><option>Kamareddy</option><option>Karimnagar</option>
-              <option>Khammam</option><option>Kumuram Bheem Asifabad</option><option>Mahabubabad</option>
-              <option>Mahabubnagar</option><option>Mancherial</option><option>Medak</option>
-              <option>Medchal-Malkajgiri</option><option>Mulugu</option><option>Nagarkurnool</option>
-              <option>Nalgonda</option><option>Narayanpet</option><option>Nirmal</option>
-              <option>Nizamabad</option><option>Peddapalli</option><option>Rajanna Sircilla</option>
-              <option>Rangareddy</option><option>Sangareddy</option><option>Siddipet</option>
-              <option>Suryapet</option><option>Vikarabad</option><option>Wanaparthy</option>
-              <option>Warangal (Rural)</option><option>Warangal (Urban)</option><option>Yadadri Bhuvanagiri</option>
-            </optgroup>
-            <optgroup label="Andhra Pradesh">
-              <option>Alluri Sitharama Raju</option><option>Anakapalli</option><option>Anantapur</option>
-              <option>Annamayya</option><option>Bapatla</option><option>Chittoor</option>
-              <option>East Godavari</option><option>Eluru</option><option>Guntur</option>
-              <option>Kakinada</option><option>Konaseema</option><option>Krishna</option>
-              <option>Kurnool</option><option>Nandyal</option><option>NTR</option>
-              <option>Palnadu</option><option>Parvathipuram Manyam</option><option>Prakasam</option>
-              <option>Srikakulam</option><option>Sri Sathya Sai</option><option>Tirupati</option>
-              <option>Visakhapatnam</option><option>Vizianagaram</option><option>West Godavari</option>
-              <option>YSR Kadapa</option>
-            </optgroup>
-          </select>
-        </div>
-        <div class="sub-field">
-          <span class="sub-field-icon">
-            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"
-              stroke-linejoin="round">
-              <rect x="3" y="11" width="18" height="11" rx="2" />
-              <path d="M7 11V7a5 5 0 0 1 10 0v4" />
-            </svg>
-          </span>
-          <input type="password" id="reg-pw" placeholder="Password" onkeydown="if(event.key==='Enter') doRegister()">
-          <button type="button" class="sub-field-eye" onclick="toggleFieldVis('reg-pw',this)">
-            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"
-              stroke-linejoin="round">
-              <path
-                d="M17.94 17.94A10.07 10.07 0 0 1 12 20c-7 0-11-8-11-8a18.45 18.45 0 0 1 5.06-5.94M9.9 4.24A9.12 9.12 0 0 1 12 4c7 0 11 8 11 8a18.5 18.5 0 0 1-2.16 3.19m-6.72-1.07a3 3 0 1 1-4.24-4.24" />
-              <line x1="1" y1="1" x2="23" y2="23" />
-            </svg>
-          </button>
-        </div>
-        <button class="sub-btn green-btn" onclick="doRegister()">✅ Register</button>
-        <span class="sub-err" id="reg-err"></span>
-        <span class="sub-ok" id="reg-ok"></span>
-        <div class="sub-or-divider">లేదా</div>
-        <div class="sub-social-row">
-          <button class="sub-social-btn" onclick="doGoogleLogin()">
-            <svg width="16" height="16" viewBox="0 0 24 24">
-              <path fill="#4285F4"
-                d="M22.56 12.25c0-.78-.07-1.53-.2-2.25H12v4.26h5.92c-.26 1.37-1.04 2.53-2.21 3.31v2.77h3.57c2.08-1.92 3.28-4.74 3.28-8.09z" />
-              <path fill="#34A853"
-                d="M12 23c2.97 0 5.46-.98 7.28-2.66l-3.57-2.77c-.98.66-2.23 1.06-3.71 1.06-2.86 0-5.29-1.93-6.16-4.53H2.18v2.84C3.99 20.53 7.7 23 12 23z" />
-              <path fill="#FBBC05"
-                d="M5.84 14.09c-.22-.66-.35-1.36-.35-2.09s.13-1.43.35-2.09V7.07H2.18C1.43 8.55 1 10.22 1 12s.43 3.45 1.18 4.93l3.66-2.84z" />
-              <path fill="#EA4335"
-                d="M12 5.38c1.62 0 3.06.56 4.21 1.64l3.15-3.15C17.45 2.09 14.97 1 12 1 7.7 1 3.99 3.47 2.18 7.07l3.66 2.84c.87-2.6 3.3-4.53 6.16-4.53z" />
-            </svg>
-            Google తో Sign Up
-          </button>
-        </div>
-      </div>
 
-      <!-- FORGOT PANEL -->
-      <div class="sub-panel" id="subpanel-forgot">
-        <div class="sub-field">
-          <span class="sub-field-icon">
-            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"
-              stroke-linejoin="round">
-              <rect x="2" y="4" width="20" height="16" rx="2" />
-              <path d="m22 7-8.97 5.7a1.94 1.94 0 0 1-2.06 0L2 7" />
-            </svg>
-          </span>
-          <input type="email" id="forgot-gmail" placeholder="Registered Email"
-            onkeydown="if(event.key==='Enter') doForgotPw()">
+        <!-- REGISTER PANEL -->
+        <div class="sub-panel" id="subpanel-register">
+          <div class="sub-panel-title">Create an account</div>
+          <div class="sub-panel-sub">ఇప్పటికే account ఉందా? <button id="subtab-login" onclick="switchSubTab('login')">Log in</button></div>
+          <div class="sub-field">
+            <input type="text" id="reg-name" placeholder="మీ పేరు" maxlength="50">
+          </div>
+          <div class="sub-field">
+            <input type="email" id="reg-gmail" placeholder="Email">
+          </div>
+          <div class="sub-field">
+            <select id="reg-district">
+              <option value="">జిల్లా ఎంచుకోండి (District) — Optional</option>
+              <optgroup label="Telangana">
+                <option>Adilabad</option><option>Bhadradri Kothagudem</option><option>Hyderabad</option>
+                <option>Jagtial</option><option>Jangaon</option><option>Jayashankar Bhupalpally</option>
+                <option>Jogulamba Gadwal</option><option>Kamareddy</option><option>Karimnagar</option>
+                <option>Khammam</option><option>Kumuram Bheem Asifabad</option><option>Mahabubabad</option>
+                <option>Mahabubnagar</option><option>Mancherial</option><option>Medak</option>
+                <option>Medchal-Malkajgiri</option><option>Mulugu</option><option>Nagarkurnool</option>
+                <option>Nalgonda</option><option>Narayanpet</option><option>Nirmal</option>
+                <option>Nizamabad</option><option>Peddapalli</option><option>Rajanna Sircilla</option>
+                <option>Rangareddy</option><option>Sangareddy</option><option>Siddipet</option>
+                <option>Suryapet</option><option>Vikarabad</option><option>Wanaparthy</option>
+                <option>Warangal (Rural)</option><option>Warangal (Urban)</option><option>Yadadri Bhuvanagiri</option>
+              </optgroup>
+              <optgroup label="Andhra Pradesh">
+                <option>Alluri Sitharama Raju</option><option>Anakapalli</option><option>Anantapur</option>
+                <option>Annamayya</option><option>Bapatla</option><option>Chittoor</option>
+                <option>East Godavari</option><option>Eluru</option><option>Guntur</option>
+                <option>Kakinada</option><option>Konaseema</option><option>Krishna</option>
+                <option>Kurnool</option><option>Nandyal</option><option>NTR</option>
+                <option>Palnadu</option><option>Parvathipuram Manyam</option><option>Prakasam</option>
+                <option>Srikakulam</option><option>Sri Sathya Sai</option><option>Tirupati</option>
+                <option>Visakhapatnam</option><option>Vizianagaram</option><option>West Godavari</option>
+                <option>YSR Kadapa</option>
+              </optgroup>
+            </select>
+          </div>
+          <div class="sub-field">
+            <input type="password" id="reg-pw" placeholder="Password" onkeydown="if(event.key==='Enter') doRegister()">
+            <button type="button" class="sub-field-eye" onclick="toggleFieldVis('reg-pw',this)">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"
+                stroke-linejoin="round">
+                <path
+                  d="M17.94 17.94A10.07 10.07 0 0 1 12 20c-7 0-11-8-11-8a18.45 18.45 0 0 1 5.06-5.94M9.9 4.24A9.12 9.12 0 0 1 12 4c7 0 11 8 11 8a18.5 18.5 0 0 1-2.16 3.19m-6.72-1.07a3 3 0 1 1-4.24-4.24" />
+                <line x1="1" y1="1" x2="23" y2="23" />
+              </svg>
+            </button>
+          </div>
+          <button class="sub-btn green-btn" onclick="doRegister()">Create account</button>
+          <span class="sub-err" id="reg-err"></span>
+          <span class="sub-ok" id="reg-ok"></span>
+          <div class="sub-or-divider">లేదా</div>
+          <div class="sub-social-row">
+            <button class="sub-social-btn" onclick="doGoogleLogin()">
+              <svg width="16" height="16" viewBox="0 0 24 24">
+                <path fill="#4285F4"
+                  d="M22.56 12.25c0-.78-.07-1.53-.2-2.25H12v4.26h5.92c-.26 1.37-1.04 2.53-2.21 3.31v2.77h3.57c2.08-1.92 3.28-4.74 3.28-8.09z" />
+                <path fill="#34A853"
+                  d="M12 23c2.97 0 5.46-.98 7.28-2.66l-3.57-2.77c-.98.66-2.23 1.06-3.71 1.06-2.86 0-5.29-1.93-6.16-4.53H2.18v2.84C3.99 20.53 7.7 23 12 23z" />
+                <path fill="#FBBC05"
+                  d="M5.84 14.09c-.22-.66-.35-1.36-.35-2.09s.13-1.43.35-2.09V7.07H2.18C1.43 8.55 1 10.22 1 12s.43 3.45 1.18 4.93l3.66-2.84z" />
+                <path fill="#EA4335"
+                  d="M12 5.38c1.62 0 3.06.56 4.21 1.64l3.15-3.15C17.45 2.09 14.97 1 12 1 7.7 1 3.99 3.47 2.18 7.07l3.66 2.84c.87-2.6 3.3-4.53 6.16-4.53z" />
+              </svg>
+              Google తో Sign Up
+            </button>
+          </div>
         </div>
-        <button class="sub-btn" style="background:linear-gradient(135deg,#E65100,#FF8F00)" onclick="doForgotPw()">📧
-          Reset Password</button>
-        <span class="sub-err" id="forgot-err"></span>
-        <span class="sub-ok" id="forgot-ok"></span>
-        <div class="sub-forgot-link" style="text-align:center;margin-top:8px">
-          <button onclick="switchSubTab('login')">← Back to Login</button>
-        </div>
-      </div>
 
+        <!-- FORGOT PANEL -->
+        <div class="sub-panel" id="subpanel-forgot">
+          <div class="sub-panel-title">Reset Password</div>
+          <div class="sub-panel-sub">Registered email enter చేయండి</div>
+          <div class="sub-field">
+            <input type="email" id="forgot-gmail" placeholder="Registered Email"
+              onkeydown="if(event.key==='Enter') doForgotPw()">
+          </div>
+          <button class="sub-btn" style="background:linear-gradient(135deg,#f59e0b,#ea580c);box-shadow:0 10px 24px rgba(234,88,12,.35)" onclick="doForgotPw()">📧
+            Reset Password</button>
+          <span class="sub-err" id="forgot-err"></span>
+          <span class="sub-ok" id="forgot-ok"></span>
+          <div class="sub-forgot-link" style="text-align:center;margin-top:10px">
+            <button onclick="switchSubTab('login')">← Back to Login</button>
+          </div>
+        </div>
+
+      </div>
     </div>
   </div>
 

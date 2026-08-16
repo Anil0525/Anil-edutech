@@ -17234,6 +17234,14 @@ More exams: https://aniledutech.in
         if (sub.district) {
           payload.district = sub.district;
         }
+        // Save Google profile photo, if వచ్చింది
+        if (sub.avatarUrl || sub.avatar_url) {
+          payload.avatar_url = sub.avatarUrl || sub.avatar_url;
+        }
+        // Save login method — 'google' or 'password' (helps see ఎవరు ఏ method తో join అయ్యారో)
+        if (sub.loginProvider || sub.login_provider) {
+          payload.login_provider = sub.loginProvider || sub.login_provider;
+        }
         await fetch(`${SB_URL}/rest/v1/ae_subscribers`, {
           method: 'POST',
           headers: { ...SB_HEADERS, 'Prefer': 'resolution=merge-duplicates,return=minimal' },
@@ -17674,7 +17682,7 @@ More exams: https://aniledutech.in
         approved.push({ name, gmail, district, date: new Date().toLocaleDateString('te-IN'), sbUserId: res.user?.id });
         saveSubApproved(approved);
       }
-      await sbSubUpsert({ name, gmail, district, sbUserId: res.user?.id, status: 'approved' });
+      await sbSubUpsert({ name, gmail, district, sbUserId: res.user?.id, status: 'approved', loginProvider: 'password' });
 
       sendEmailNotification('register', { name, gmail });
       // BUG FIX: Apply pending referral on register
@@ -17719,16 +17727,21 @@ More exams: https://aniledutech.in
         if (!userData || userData.error) { toast('Login failed. Try again.', 'error'); return; }
         const gmail = userData.email || '';
         const name = userData.user_metadata?.full_name || userData.user_metadata?.name || gmail.split('@')[0];
-        const user = { name, gmail, sbToken: accessToken, sbUserId: userData.id, isPremium: false };
+        // Google profile photo — user_metadata.avatar_url లేదా .picture లో వస్తుంది
+        const avatarUrl = userData.user_metadata?.avatar_url || userData.user_metadata?.picture || '';
+        const user = { name, gmail, sbToken: accessToken, sbUserId: userData.id, isPremium: false, avatarUrl, provider: 'google' };
 
         // Save to ae_sub_approved for backward compat
         const approved = getSubApproved();
         const isNewUser = !approved.find(s => s.gmail === gmail);
         if (isNewUser) {
-          approved.push({ name, gmail, date: new Date().toLocaleDateString('te-IN'), sbUserId: userData.id });
+          approved.push({ name, gmail, date: new Date().toLocaleDateString('te-IN'), sbUserId: userData.id, avatarUrl, provider: 'google' });
           saveSubApproved(approved);
         }
-        sbSubUpsert({ name, gmail, sbUserId: userData.id, status: 'approved' });
+        sbSubUpsert({ name, gmail, sbUserId: userData.id, status: 'approved', avatarUrl, loginProvider: 'google' });
+        // BUG FIX: Google login users ఇంతకుముందు activity log లో track అయ్యేవారు కాదు
+        // (password login మాత్రమే _logUserActivity call చేసేది) — ఇప్పుడు ఇద్దరికీ సమానంగా.
+        _logUserActivity(name, gmail, 'login');
 
         // Check premium status (same logic as password login)
         const gmailKey = 'premium_gmail_' + gmail.replace(/[@.]/g, '_');
@@ -17876,9 +17889,17 @@ More exams: https://aniledutech.in
         const premBtn = isPrem
           ? `<button class="del-btn" style="background:rgba(239,68,68,.15);color:#ef4444;border:1px solid rgba(239,68,68,.3);margin-left:4px" onclick="adminRevokePremium('${escHtml(s.gmail)}')">Revoke</button>`
           : `<button class="edit-btn" style="background:linear-gradient(135deg,#F5B731,#E8640A);color:#fff;min-width:90px" onclick="adminGrantPremium('${escHtml(s.gmail)}')">👑 Grant</button>`;
+        const avatarUrl = s.avatarUrl || s.avatar_url || '';
+        const photoHtml = avatarUrl
+          ? `<img src="${escHtml(avatarUrl)}" referrerpolicy="no-referrer" style="width:28px;height:28px;border-radius:50%;object-fit:cover;vertical-align:middle;margin-right:6px;border:1px solid var(--border2)" onerror="this.style.display='none'">`
+          : `<span style="display:inline-flex;width:28px;height:28px;border-radius:50%;background:var(--bg);align-items:center;justify-content:center;font-size:13px;vertical-align:middle;margin-right:6px;border:1px solid var(--border2)">👤</span>`;
+        const provider = s.loginProvider || s.login_provider || '';
+        const providerBadge = provider === 'google'
+          ? `<span style="font-size:9px;font-weight:800;color:#4285F4;">G</span>`
+          : '';
         return `<tr>
       <td>${globalIdx + 1}</td>
-      <td style="font-weight:700;color:var(--text)">${escHtml(s.name)}</td>
+      <td style="font-weight:700;color:var(--text)">${photoHtml}${escHtml(s.name)} ${providerBadge}</td>
       <td><span class="meta-pill pill-green">${escHtml(s.gmail)}</span></td>
       <td style="font-size:12px;color:var(--text3)">${escHtml(s.date || '')}</td>
       <td>${premBadge} ${premBtn}</td>

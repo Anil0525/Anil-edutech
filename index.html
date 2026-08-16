@@ -2922,14 +2922,14 @@
     .exam-card {
       background: #fff;
       border: 1.5px solid var(--border);
-      border-radius: 20px;
+      border-radius: 16px;
       padding: 18px 20px 18px 22px;
       display: flex;
       align-items: center;
       justify-content: space-between;
       gap: 16px;
       transition: all .3s cubic-bezier(.2, .8, .2, 1);
-      box-shadow: 0 2px 14px rgba(0, 0, 0, .05);
+      box-shadow: var(--shadow-sm);
       position: relative;
       overflow: hidden;
     }
@@ -2972,7 +2972,7 @@
 
     .exam-card:hover {
       border-color: rgba(26, 115, 232, .28);
-      box-shadow: 0 10px 36px rgba(26, 115, 232, .13);
+      box-shadow: var(--shadow-md);
       background: #F5F8FF;
       transform: translateY(-3px);
     }
@@ -7783,7 +7783,7 @@
 
 
     .leaderboard-section {
-      padding: 32px 20px;
+      padding: 40px 20px 44px;
       max-width: 860px;
       margin: 0 auto;
     }
@@ -8238,7 +8238,7 @@
       font-family: inherit;
       font-size: 12px;
       font-weight: 700;
-      padding: 6px 12px;
+      padding: 7px 14px;
       border-radius: 20px;
       border: 1.5px solid var(--border2);
       background: #fff;
@@ -8283,6 +8283,38 @@
       font-size: 40px;
       margin-bottom: 12px;
       display: block;
+    }
+
+    /* ── Skeleton loaders ── */
+    @keyframes skelPulse {
+      0%, 100% { opacity: .55; }
+      50% { opacity: 1; }
+    }
+    .skel-block {
+      background: linear-gradient(90deg, var(--border) 25%, var(--border2) 37%, var(--border) 63%);
+      background-size: 400% 100%;
+      animation: skelShine 1.6s ease-in-out infinite;
+      border-radius: 6px;
+    }
+    @keyframes skelShine {
+      0% { background-position: 100% 50%; }
+      100% { background-position: 0% 50%; }
+    }
+    .skel-lb-card {
+      background: #fff;
+      border: 1.5px solid var(--border);
+      border-radius: 16px;
+      padding: 16px 20px;
+      display: flex;
+      align-items: center;
+      gap: 16px;
+      box-shadow: var(--shadow-sm);
+    }
+    .skel-rev-card {
+      background: var(--surface);
+      border: 1.5px solid var(--border);
+      border-radius: 16px;
+      padding: 12px 14px;
     }
 
     .lb-list {
@@ -11980,6 +12012,10 @@
       <div class="hero-shape"></div>
       <div class="hero-inner">
         <div class="hero-badge">🎓 Anil EduTech — India's Free Exam Portal</div>
+        <div id="hero-trust-badge" style="display:none;align-items:center;gap:6px;justify-content:center;margin:8px 0 0;font-size:13px;font-weight:800;color:#F5B731;">
+          <span id="hero-trust-stars">★★★★★</span>
+          <span id="hero-trust-text" style="color:var(--text2);font-weight:700;"></span>
+        </div>
         <h1>స్మార్ట్‌గా చదవండి.<br><span>High Score సాధించండి!</span></h1>
         <p>TSPSC · SSC · Banking · RRB · GK — అన్ని రకాల competitive exams కి<br>100% Free Mock Tests. మీ success మా
           లక్ష్యం! 🚀</p>
@@ -12724,13 +12760,13 @@
 
       <!-- Filter tabs + meta -->
       <div
-        style="display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:8px;margin:10px 0 14px;">
-        <div style="display:flex;gap:6px;">
+        style="display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:12px;margin:16px 0 20px;">
+        <div style="display:flex;gap:8px;">
           <button class="lb-tab-btn active" data-f="all" onclick="_lbSetFilter('all')">🌐 All Time</button>
           <button class="lb-tab-btn" data-f="today" onclick="_lbSetFilter('today')">📅 Today</button>
           <button class="lb-tab-btn" data-f="week" onclick="_lbSetFilter('week')">📆 This Week</button>
         </div>
-        <div style="display:flex;gap:6px;flex-wrap:wrap;margin-top:8px;">
+        <div style="display:flex;gap:8px;flex-wrap:wrap;margin-top:10px;">
           <button class="lb-tab-btn lb-cat-btn active" data-cat="all" onclick="_lbSetCat('all')">📋 All Exams</button>
           <button class="lb-tab-btn lb-cat-btn" data-cat="TSPSC" onclick="_lbSetCat('TSPSC')">🏛️ TSPSC</button>
           <button class="lb-tab-btn lb-cat-btn" data-cat="APPSC" onclick="_lbSetCat('APPSC')">🏛️ APPSC</button>
@@ -12739,10 +12775,10 @@
           <button class="lb-tab-btn lb-cat-btn" data-cat="GK" onclick="_lbSetCat('GK')">🌍 GK</button>
           <button class="lb-tab-btn lb-cat-btn" data-cat="RRB" onclick="_lbSetCat('RRB')">🚆 RRB</button>
         </div>
-        <div style="display:flex;align-items:center;gap:6px;flex-wrap:wrap;margin-top:8px;">
+        <div style="display:flex;align-items:center;gap:8px;flex-wrap:wrap;margin-top:10px;">
           <button class="lb-tab-btn" onclick="_lbSetDistrict('mine')" title="మీ జిల్లా ర్యాంకింగ్">📍 నా జిల్లా</button>
           <select id="lb-district-select" onchange="_lbOnDistrictSelect(this.value)"
-            style="font-family:inherit;font-size:12px;font-weight:700;padding:6px 10px;border-radius:20px;border:1.5px solid var(--border2);background:#fff;color:var(--text3);cursor:pointer;">
+            style="font-family:inherit;font-size:12px;font-weight:700;padding:7px 12px;border-radius:20px;border:1.5px solid var(--border2);background:#fff;color:var(--text3);cursor:pointer;">
             <option value="all">🗺️ అన్ని జిల్లాలు</option>
             <option value="__mine__" style="display:none;">📍 నా జిల్లా</option>
             <optgroup label="Telangana">
@@ -12783,6 +12819,9 @@
     </div>
 
     <!-- ═══ HOME REVIEWS SECTION ═══ -->
+    <div style="max-width:700px;margin:0 auto;padding:0 20px;">
+      <div style="height:1px;background:linear-gradient(90deg,transparent,var(--border2),transparent);margin-bottom:36px;"></div>
+    </div>
     <style>
       @keyframes revMarquee { 0% { transform: translateX(0); } 100% { transform: translateX(-50%); } }
       .rev-marquee-wrap { overflow: hidden; -webkit-mask-image: linear-gradient(90deg, transparent, #000 4%, #000 96%, transparent); mask-image: linear-gradient(90deg, transparent, #000 4%, #000 96%, transparent); }
@@ -12824,14 +12863,15 @@
       </div>
       <div style="display:flex;justify-content:center;gap:10px;flex-wrap:wrap;margin-bottom:12px;">
         <button onclick="goBadges()"
-          style="color:#F59E0B;background:rgba(245,158,11,.1);border:1px solid rgba(245,158,11,.2);padding:4px 11px;border-radius:20px;font-size:11.5px;font-weight:700;cursor:pointer;font-family:inherit;">🏅
+          style="color:rgba(255,255,255,.85);background:rgba(255,255,255,.08);border:1px solid rgba(255,255,255,.16);padding:4px 11px;border-radius:20px;font-size:11.5px;font-weight:700;cursor:pointer;font-family:inherit;">🏅
           Badges</button>
         <button onclick="goDaily()"
-          style="color:#8B5CF6;background:rgba(139,92,246,.1);border:1px solid rgba(139,92,246,.2);padding:4px 11px;border-radius:20px;font-size:11.5px;font-weight:700;cursor:pointer;font-family:inherit;">⚡
+          style="color:rgba(255,255,255,.85);background:rgba(255,255,255,.08);border:1px solid rgba(255,255,255,.16);padding:4px 11px;border-radius:20px;font-size:11.5px;font-weight:700;cursor:pointer;font-family:inherit;">⚡
           Daily</button>
         <button onclick="goReferral()"
-          style="color:#EC4899;background:rgba(236,72,153,.1);border:1px solid rgba(236,72,153,.2);padding:4px 11px;border-radius:20px;font-size:11.5px;font-weight:700;cursor:pointer;font-family:inherit;">🎁
+          style="color:rgba(255,255,255,.85);background:rgba(255,255,255,.08);border:1px solid rgba(255,255,255,.16);padding:4px 11px;border-radius:20px;font-size:11.5px;font-weight:700;cursor:pointer;font-family:inherit;">🎁
           Refer</button>
+        <span style="width:1px;background:rgba(255,255,255,.15);margin:2px 0;"></span>
         <a href="https://www.youtube.com/@AnilEduTechYT" target="_blank"
           style="color:#FF0000;text-decoration:none;font-size:11.5px;font-weight:700;display:flex;align-items:center;gap:4px;background:rgba(255,0,0,.1);border:1px solid rgba(255,0,0,.2);padding:4px 11px;border-radius:20px;">▶️
           YouTube</a>
@@ -12844,11 +12884,12 @@
         <a href="https://t.me/AnilEduTechYt" target="_blank"
           style="color:#29B6F6;text-decoration:none;font-size:11.5px;font-weight:700;display:flex;align-items:center;gap:4px;background:rgba(41,182,246,.1);border:1px solid rgba(41,182,246,.2);padding:4px 11px;border-radius:20px;">✈️
           Telegram</a>
+        <span style="width:1px;background:rgba(255,255,255,.15);margin:2px 0;"></span>
         <a href="about.html"
-          style="color:#10C980;text-decoration:none;background:rgba(16,201,128,.1);border:1px solid rgba(16,201,128,.2);padding:4px 11px;border-radius:20px;font-size:11.5px;font-weight:700;">ℹ️
+          style="color:rgba(255,255,255,.85);text-decoration:none;background:rgba(255,255,255,.08);border:1px solid rgba(255,255,255,.16);padding:4px 11px;border-radius:20px;font-size:11.5px;font-weight:700;">ℹ️
           About Us</a>
         <a href="contact.html"
-          style="color:#A855F7;text-decoration:none;background:rgba(168,85,247,.1);border:1px solid rgba(168,85,247,.2);padding:4px 11px;border-radius:20px;font-size:11.5px;font-weight:700;">📞
+          style="color:rgba(255,255,255,.85);text-decoration:none;background:rgba(255,255,255,.08);border:1px solid rgba(255,255,255,.16);padding:4px 11px;border-radius:20px;font-size:11.5px;font-weight:700;">📞
           Contact</a>
       </div>
       <div
@@ -20343,7 +20384,7 @@ More exams: https://aniledutech.in
       const el = document.getElementById('leaderboard-list');
       if (!el) return;
 
-      if (!silent) el.innerHTML = `<div class="lb-empty"><span class="lb-empty-icon">⏳</span>Supabase నుండి Loading...</div>`;
+      if (!silent) el.innerHTML = _skelLbCards(4);
 
       const localScores = JSON.parse(_ls.getItem('ae_scores') || '[]');
       const sbScores = await _fetchLbFromSupabase(100);
@@ -20459,7 +20500,7 @@ More exams: https://aniledutech.in
       if (commentEl) commentEl.value = '';
       const listEl = document.getElementById('rev-list');
       const summaryEl = document.getElementById('rev-summary');
-      if (listEl) listEl.innerHTML = '<div style="text-align:center;padding:16px;color:var(--text3);font-size:13px">⏳ Loading reviews...</div>';
+      if (listEl) listEl.innerHTML = _skelRevCards(2);
       try {
         const res = await fetch(SB_URL + '/rest/v1/' + REV_TABLE + '?select=*&exam_id=eq.' + encodeURIComponent(examId) + '&order=created_at.desc', { headers: SB_HEADERS });
         const rows = res.ok ? await res.json() : [];
@@ -20486,8 +20527,56 @@ More exams: https://aniledutech.in
       return new Date(ts).toLocaleDateString('te-IN', { day: '2-digit', month: 'short', year: 'numeric' });
     }
 
+    // ── SKELETON LOADERS ──
+    function _skelLbCards(n) {
+      let out = '';
+      for (let i = 0; i < n; i++) {
+        out += `<div class="skel-lb-card">
+          <div class="skel-block" style="width:44px;height:44px;border-radius:12px;flex-shrink:0;"></div>
+          <div style="flex:1;min-width:0;">
+            <div class="skel-block" style="width:${55 - i * 6}%;height:14px;margin-bottom:8px;"></div>
+            <div class="skel-block" style="width:70%;height:11px;"></div>
+          </div>
+          <div style="flex-shrink:0;text-align:right;">
+            <div class="skel-block" style="width:44px;height:18px;margin-bottom:6px;margin-left:auto;"></div>
+            <div class="skel-block" style="width:60px;height:10px;margin-left:auto;"></div>
+          </div>
+        </div>`;
+      }
+      return `<div class="lb-list">${out}</div>`;
+    }
+    function _skelRevCards(n) {
+      let out = '';
+      for (let i = 0; i < n; i++) {
+        out += `<div class="skel-rev-card">
+          <div style="display:flex;align-items:center;gap:8px;margin-bottom:8px;">
+            <div class="skel-block" style="width:30px;height:30px;border-radius:50%;flex-shrink:0;"></div>
+            <div style="flex:1;">
+              <div class="skel-block" style="width:60%;height:12px;margin-bottom:6px;"></div>
+              <div class="skel-block" style="width:40%;height:10px;"></div>
+            </div>
+          </div>
+          <div class="skel-block" style="width:100%;height:10px;margin-bottom:5px;"></div>
+          <div class="skel-block" style="width:80%;height:10px;"></div>
+        </div>`;
+      }
+      return `<div style="display:flex;flex-wrap:wrap;gap:10px;padding:0 16px;max-width:700px;margin:0 auto;">${out}</div>`;
+    }
+
     // ── HOME PAGE REVIEWS ──
+    function _updateHeroTrustBadge(avg, count) {
+      const wrap = document.getElementById('hero-trust-badge');
+      const starsEl = document.getElementById('hero-trust-stars');
+      const textEl = document.getElementById('hero-trust-text');
+      if (!wrap || !count) return;
+      const full = Math.round(avg);
+      if (starsEl) starsEl.textContent = '★★★★★☆☆☆☆☆'.slice(5 - full, 10 - full);
+      if (textEl) textEl.textContent = avg + ' · ' + count + ' Student Reviews';
+      wrap.style.display = 'flex';
+    }
     async function _renderHomeReviews() {
+      const listEl0 = document.getElementById('home-rev-list');
+      if (listEl0 && !listEl0.innerHTML.trim()) listEl0.innerHTML = _skelRevCards(3);
       const listEl = document.getElementById('home-rev-list');
       const summaryEl = document.getElementById('home-rev-summary');
       if (!listEl) return;
@@ -20501,6 +20590,7 @@ More exams: https://aniledutech.in
         }
         const avg = (rows.reduce((s, r) => s + (r.rating || 0), 0) / rows.length).toFixed(1);
         if (summaryEl) summaryEl.textContent = avg + ' ★ · ' + rows.length + ' reviews';
+        _updateHeroTrustBadge(avg, rows.length);
         // Show up to 10 on home, duplicated once for a seamless marquee loop
         const display = rows.slice(0, 10);
         const cardHtml = display.map(r => {
@@ -20508,7 +20598,7 @@ More exams: https://aniledutech.in
           const initials = (r.user_name || 'A').trim().split(/\s+/).map(w => w[0]).slice(0, 2).join('').toUpperCase();
           const [c1, c2] = _revColor(r.user_name);
           const dateStr = _revDate(r.created_at);
-          return '<div class="rev-marquee-card" style="background:linear-gradient(180deg,' + c1 + '14,var(--surface) 40%);border:1.5px solid ' + c1 + '55;border-left:4px solid ' + c1 + ';border-radius:14px;padding:12px 14px;">' +
+          return '<div class="rev-marquee-card" style="background:linear-gradient(180deg,' + c1 + '14,var(--surface) 40%);border:1.5px solid ' + c1 + '55;border-left:4px solid ' + c1 + ';border-radius:16px;padding:12px 14px;">' +
             '<div style="display:flex;align-items:center;gap:8px;margin-bottom:6px;">' +
             '<div style="width:30px;height:30px;border-radius:50%;background:linear-gradient(135deg,' + c1 + ',' + c2 + ');display:flex;align-items:center;justify-content:center;font-weight:900;font-size:11px;color:#fff;flex-shrink:0;">' + initials + '</div>' +
             '<div><div style="font-size:12.5px;font-weight:800;color:var(--text);">' + escHtml(r.user_name || 'Anonymous') + '</div>' +
@@ -20544,7 +20634,7 @@ More exams: https://aniledutech.in
         const initials = (r.user_name || 'A').trim().split(/\s+/).map(function (w) { return w[0]; }).slice(0, 2).join('').toUpperCase();
         const c = _revColor(r.user_name); const c1 = c[0], c2 = c[1];
         const dateStr = _revDate(r.created_at);
-        return '<div style="background:linear-gradient(180deg,' + c1 + '14,var(--surface) 40%);border:1.5px solid ' + c1 + '55;border-left:4px solid ' + c1 + ';border-radius:12px;padding:10px 14px;margin-bottom:8px;">' +
+        return '<div style="background:linear-gradient(180deg,' + c1 + '14,var(--surface) 40%);border:1.5px solid ' + c1 + '55;border-left:4px solid ' + c1 + ';border-radius:16px;padding:10px 14px;margin-bottom:8px;">' +
           '<div style="display:flex;align-items:center;gap:8px;margin-bottom:4px;">' +
           '<div style="width:26px;height:26px;border-radius:50%;background:linear-gradient(135deg,' + c1 + ',' + c2 + ');display:flex;align-items:center;justify-content:center;font-weight:800;font-size:10px;color:#fff;flex-shrink:0;">' + escHtml(initials) + '</div>' +
           '<div style="font-size:13px;font-weight:800;color:var(--text);">' + escHtml(r.user_name || 'Anonymous') + '</div>' +
@@ -20634,7 +20724,7 @@ More exams: https://aniledutech.in
       // Load existing reviews preview
       const listEl = document.getElementById('fb-rev-list');
       const summaryEl = document.getElementById('fb-rev-summary');
-      if (listEl) listEl.innerHTML = '<div style="text-align:center;padding:12px;color:var(--text3);font-size:13px;">⏳ Loading...</div>';
+      if (listEl) listEl.innerHTML = _skelRevCards(2);
       try {
         const res = await fetch(SB_URL + '/rest/v1/' + REV_TABLE + '?select=*&exam_id=eq.' + encodeURIComponent(examId) + '&order=created_at.desc&limit=5', { headers: SB_HEADERS });
         const rows = res.ok ? await res.json() : [];
@@ -20658,7 +20748,7 @@ More exams: https://aniledutech.in
         const initials = (r.user_name || 'A').trim().split(/\s+/).map(function (w) { return w[0]; }).slice(0, 2).join('').toUpperCase();
         const c = _revColor(r.user_name); const c1 = c[0], c2 = c[1];
         const dateStr = _revDate(r.created_at);
-        return '<div style="background:linear-gradient(180deg,' + c1 + '14,var(--surface) 40%);border:1.5px solid ' + c1 + '55;border-left:4px solid ' + c1 + ';border-radius:12px;padding:10px 14px;margin-bottom:8px;">' +
+        return '<div style="background:linear-gradient(180deg,' + c1 + '14,var(--surface) 40%);border:1.5px solid ' + c1 + '55;border-left:4px solid ' + c1 + ';border-radius:16px;padding:10px 14px;margin-bottom:8px;">' +
           '<div style="display:flex;align-items:center;gap:8px;margin-bottom:4px;">' +
           '<div style="width:26px;height:26px;border-radius:50%;background:linear-gradient(135deg,' + c1 + ',' + c2 + ');display:flex;align-items:center;justify-content:center;font-weight:800;font-size:10px;color:#fff;flex-shrink:0;">' + escHtml(initials) + '</div>' +
           '<div style="font-size:13px;font-weight:800;color:var(--text);">' + escHtml(r.user_name || 'Anonymous') + '</div>' +
@@ -34142,6 +34232,43 @@ Rules:
   .ae-wa-btn:active { transform: scale(.93); }
   body.exam-active .ae-wa-btn { display: none; }
 
+  /* Floating "Start Exam" CTA pill */
+  .ae-cta-fab {
+    display: flex;
+    align-items: center;
+    gap: 7px;
+    padding: 12px 20px;
+    border-radius: 30px;
+    border: none;
+    cursor: pointer;
+    background: linear-gradient(135deg, var(--primary), #0d47a1);
+    box-shadow: 0 6px 22px rgba(26, 115, 232, .45);
+    color: #fff;
+    font-family: inherit;
+    font-size: 14px;
+    font-weight: 800;
+    white-space: nowrap;
+    opacity: 0;
+    pointer-events: none;
+    transform: translateY(14px) scale(.94);
+    transition: opacity .3s, transform .3s, box-shadow .2s;
+  }
+  .ae-cta-fab.visible {
+    opacity: 1;
+    pointer-events: auto;
+    transform: translateY(0) scale(1);
+  }
+  .ae-cta-fab:hover {
+    box-shadow: 0 9px 28px rgba(26, 115, 232, .6);
+    transform: translateY(-2px);
+  }
+  .ae-cta-fab:active { transform: scale(.95); }
+  body.exam-active .ae-cta-fab { display: none; }
+
+  @media (max-width: 480px) {
+    .ae-cta-fab { padding: 10px 16px; font-size: 13px; }
+  }
+
   @media (max-width: 480px) {
     .ae-wa-btn { width: 46px; height: 46px; }
     .ae-wa-btn svg { width: 22px; height: 22px; }
@@ -34175,16 +34302,23 @@ Rules:
   </a>
 </div>
 
+<!-- Floating "Start Exam" CTA (bottom-left, home page only, appears after scrolling past hero) -->
+<button class="ae-cta-fab" id="aeCtaFab" onclick="goExams()" style="position:fixed;bottom:24px;left:18px;z-index:99999;" title="Exam Start చేయండి">
+  🚀 <span>Exam Start చేయండి</span>
+</button>
+
 <script>
-  // Scroll to Top button visibility
+  // Scroll to Top button + Start Exam FAB visibility
   (function () {
     var topBtn = document.getElementById('aeTopBtn');
-    if (!topBtn) return;
+    var ctaFab = document.getElementById('aeCtaFab');
     var onScroll = function () {
-      if (window.scrollY > 300) {
-        topBtn.classList.add('visible');
-      } else {
-        topBtn.classList.remove('visible');
+      var past = window.scrollY > 300;
+      if (topBtn) topBtn.classList.toggle('visible', past);
+      if (ctaFab) {
+        var homePage = document.getElementById('page-home');
+        var onHome = homePage && homePage.classList.contains('active');
+        ctaFab.classList.toggle('visible', past && onHome);
       }
     };
     window.addEventListener('scroll', onScroll, { passive: true });

@@ -12374,48 +12374,7 @@
         <div class="ae-carousel-track">
           <div class="ae-carousel" id="ae-carousel">
 
-            <!-- Slide 1: Mobile App -->
-            <div class="ae-slide ae-slide-app">
-              <div class="ae-slide-dots-bg"></div>
-              <div class="ae-slide-counter" id="ae-counter">1 / 7</div>
-              <div class="ae-slide-content">
-                <div class="ae-slide-tag">🚀 Coming Soon</div>
-                <div class="ae-slide-title">Anil EduTech<br><span>Mobile App</span></div>
-                <div class="ae-slide-desc">Android &amp; iOS లో అందుబాటులోకి వస్తోంది!<br>Offline exams · Push
-                  notifications · Dark mode</div>
-                <div class="ae-app-badges">
-                  <div class="ae-app-badge">
-                    <span style="font-size:18px">🤖</span>
-                    <div>
-                      <div style="font-size:9px;opacity:.75;font-weight:700">Coming on</div>
-                      <div style="font-size:13px;font-weight:900">Android</div>
-                    </div>
-                  </div>
-                  <div class="ae-app-badge">
-                    <span style="font-size:18px">🍎</span>
-                    <div>
-                      <div style="font-size:9px;opacity:.75;font-weight:700">Coming on</div>
-                      <div style="font-size:13px;font-weight:900">iOS</div>
-                    </div>
-                  </div>
-                </div>
-              </div>
-              <div class="ae-slide-phone">
-                <div class="ae-phone-mock">
-                  <div class="ae-phone-screen">
-                    <div style="font-size:26px;margin-bottom:5px">🎓</div>
-                    <div style="font-size:10.5px;font-weight:900;color:#1A73E8;line-height:1.2">Anil<br>EduTech</div>
-                    <div style="font-size:8.5px;color:#888;margin-top:5px;line-height:1.5">Tests · Results<br>Progress
-                    </div>
-                    <div
-                      style="margin-top:8px;background:linear-gradient(135deg,#1A73E8,#0EA5E9);color:#fff;border-radius:8px;padding:5px 8px;font-size:8.5px;font-weight:900">
-                      Start →</div>
-                  </div>
-                </div>
-              </div>
-            </div>
-
-            <!-- Slide 2: Free Mock Tests -->
+            <!-- Slide 1: Free Mock Tests -->
             <div class="ae-slide ae-slide-exam">
               <div class="ae-slide-dots-bg"></div>
               <div class="ae-slide-content">
@@ -12582,6 +12541,47 @@
                 <div
                   style="background:rgba(255,140,0,.18);border:1.5px solid rgba(255,140,0,.4);border-radius:12px;padding:10px 14px;color:#FFD700;font-size:12px;font-weight:700;">
                   🎁 Special Rewards</div>
+              </div>
+            </div>
+
+            <!-- Slide 7: Mobile App (moved to last — not the first thing new visitors should see) -->
+            <div class="ae-slide ae-slide-app">
+              <div class="ae-slide-dots-bg"></div>
+              <div class="ae-slide-counter" id="ae-counter">1 / 7</div>
+              <div class="ae-slide-content">
+                <div class="ae-slide-tag">🚀 Coming Soon</div>
+                <div class="ae-slide-title">Anil EduTech<br><span>Mobile App</span></div>
+                <div class="ae-slide-desc">Android &amp; iOS లో అందుబాటులోకి వస్తోంది!<br>Offline exams · Push
+                  notifications · Dark mode</div>
+                <div class="ae-app-badges">
+                  <div class="ae-app-badge">
+                    <span style="font-size:18px">🤖</span>
+                    <div>
+                      <div style="font-size:9px;opacity:.75;font-weight:700">Coming on</div>
+                      <div style="font-size:13px;font-weight:900">Android</div>
+                    </div>
+                  </div>
+                  <div class="ae-app-badge">
+                    <span style="font-size:18px">🍎</span>
+                    <div>
+                      <div style="font-size:9px;opacity:.75;font-weight:700">Coming on</div>
+                      <div style="font-size:13px;font-weight:900">iOS</div>
+                    </div>
+                  </div>
+                </div>
+              </div>
+              <div class="ae-slide-phone">
+                <div class="ae-phone-mock">
+                  <div class="ae-phone-screen">
+                    <div style="font-size:26px;margin-bottom:5px">🎓</div>
+                    <div style="font-size:10.5px;font-weight:900;color:#1A73E8;line-height:1.2">Anil<br>EduTech</div>
+                    <div style="font-size:8.5px;color:#888;margin-top:5px;line-height:1.5">Tests · Results<br>Progress
+                    </div>
+                    <div
+                      style="margin-top:8px;background:linear-gradient(135deg,#1A73E8,#0EA5E9);color:#fff;border-radius:8px;padding:5px 8px;font-size:8.5px;font-weight:900">
+                      Start →</div>
+                  </div>
+                </div>
               </div>
             </div>
 
@@ -20964,20 +20964,32 @@ More exams: https://aniledutech.in
         if (subEl) subEl.textContent = subCount > 999 ? (subCount / 1000).toFixed(1) + 'K' : subCount;
       });
 
-      // Viewers — unique users who attempted any exam (real data)
-      const scores = JSON.parse(_ls.getItem('ae_scores') || '[]');
-      const uniqueViewers = new Set(scores.map(s => s.gmail || s.name)).size;
+      // Viewers & Active Now — unique users site-wide (real data from Supabase, not just this device)
+      // BUG FIX: previously read only local browser storage (ae_scores), so every new
+      // visitor saw near-zero stats regardless of actual site-wide activity.
       const viewEl = document.getElementById('stat-viewers');
-      if (viewEl) viewEl.textContent = uniqueViewers > 999 ? (uniqueViewers / 1000).toFixed(1) + 'K' : uniqueViewers;
-
-      // Active Now — unique users who attempted exam in last 24 hours (real data only)
-      const now = Date.now();
-      const activeUsers = new Set(
-        scores.filter(s => s.ts && (now - s.ts) < 86400000).map(s => s.gmail || s.name)
-      );
-      const activeCount = activeUsers.size;
       const activeEl = document.getElementById('stat-active');
-      if (activeEl) activeEl.textContent = activeCount; // real only, no fake
+      _fetchLbFromSupabase(500).then(sbScores => {
+        const localScores = JSON.parse(_ls.getItem('ae_scores') || '[]');
+        let allScores = sbScores;
+        if (!allScores.length) allScores = localScores; // offline/local fallback
+
+        const uniqueViewers = new Set(allScores.map(s => s.gmail || s.name)).size;
+        if (viewEl) viewEl.textContent = uniqueViewers > 999 ? (uniqueViewers / 1000).toFixed(1) + 'K' : uniqueViewers;
+
+        const now = Date.now();
+        const activeUsers = new Set(
+          allScores.filter(s => s.ts && (now - s.ts) < 86400000).map(s => s.gmail || s.name)
+        );
+        if (activeEl) activeEl.textContent = activeUsers.size;
+      }).catch(() => {
+        const scores = JSON.parse(_ls.getItem('ae_scores') || '[]');
+        const uniqueViewers = new Set(scores.map(s => s.gmail || s.name)).size;
+        if (viewEl) viewEl.textContent = uniqueViewers;
+        const now = Date.now();
+        const activeCount = new Set(scores.filter(s => s.ts && (now - s.ts) < 86400000).map(s => s.gmail || s.name)).size;
+        if (activeEl) activeEl.textContent = activeCount;
+      });
 
       // Exams count — always show at least DEFAULT sample exams
       const examEl = document.getElementById('stat-e');

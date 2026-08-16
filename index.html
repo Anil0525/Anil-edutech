@@ -9847,6 +9847,96 @@
       }
     }
 
+    /* ── LAPTOP / DESKTOP / TV — split layout: image panel left, form right (matches reference) ── */
+    @media (min-width: 820px) {
+      .sub-box {
+        flex-direction: row;
+        width: 760px;
+        max-width: 90vw;
+        min-height: 560px;
+        border-radius: 28px;
+      }
+
+      .sub-banner {
+        width: 320px;
+        height: auto;
+        flex-shrink: 0;
+        padding: 30px 28px;
+      }
+
+      .sub-banner-logo {
+        font-size: 18px;
+      }
+
+      .sub-banner-tagline {
+        font-size: 14.5px;
+        line-height: 1.5;
+      }
+
+      .sub-banner-dots {
+        left: 28px;
+        right: auto;
+        bottom: 28px;
+      }
+
+      .sub-banner-dots span {
+        width: 6px;
+        height: 6px;
+      }
+
+      .sub-banner-dots span.active {
+        width: 22px;
+      }
+
+      .sub-body {
+        flex: 1;
+        padding: 48px 60px;
+        justify-content: center;
+        max-width: 420px;
+        margin: 0 auto;
+      }
+
+      .sub-panel-title {
+        font-size: 27px;
+      }
+
+      .sub-panel-sub {
+        font-size: 13px;
+        margin-bottom: 22px;
+      }
+
+      .sub-field {
+        margin-bottom: 14px;
+      }
+
+      .sub-field input,
+      .sub-field select {
+        padding: 14px 16px;
+        font-size: 14px;
+      }
+
+      .sub-btn {
+        padding: 15px;
+        font-size: 14.5px;
+      }
+
+      .sub-social-btn {
+        padding: 13px 10px;
+        font-size: 13px;
+      }
+    }
+
+    /* ── Very large screens (TV / big monitors) — keep card comfortably sized, don't stretch ── */
+    @media (min-width: 1400px) {
+      .sub-box {
+        width: 820px;
+      }
+
+      .sub-banner {
+        width: 350px;
+      }
+    }
+
 
     .lang-toggle-wrap {
       display: flex;

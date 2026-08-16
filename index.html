@@ -20247,14 +20247,16 @@ More exams: https://aniledutech.in
         const isMe = _myName && s.name === _myName;
         const rankLabel = globalIdx === 0 ? '🥇 1st' : globalIdx === 1 ? '🥈 2nd' : globalIdx === 2 ? '🥉 3rd' : `#${globalIdx + 1}`;
         const waShareMsg = encodeURIComponent(`🏆 *Anil EduTech Leaderboard*\n\n${rankLabel} Rank సాధించాను!\n📝 ${s.examName || 'Exam'}\n✅ Score: ${s.correct}/${s.total} (${s.pct}%)\n\n📚 మీరు కూడా try చేయండి → https://aniledutech.in`);
-        return `<div class="lb-card ${isTop ? cardCls[globalIdx] : ''}" style="${isMe ? 'border:2px solid var(--primary);background:rgba(26,115,232,.07);' : ''}">
-      ${isTop ? `<div class="lb-rank">${medals[globalIdx]}</div>` : `<div class="lb-rank-num">${globalIdx + 1}</div>`}
+        const [rc1, rc2] = _revColor(s.name);
+        const rankNumHtml = `<div class="lb-rank-num" style="background:linear-gradient(135deg,${rc1},${rc2});color:#fff;border-radius:10px;width:32px;height:32px;">${globalIdx + 1}</div>`;
+        return `<div class="lb-card ${isTop ? cardCls[globalIdx] : ''}" style="${isTop ? '' : `border-left:4px solid ${rc1};`}${isMe ? 'border:2px solid var(--primary);background:rgba(26,115,232,.07);' : ''}">
+      ${isTop ? `<div class="lb-rank">${medals[globalIdx]}</div>` : rankNumHtml}
       <div class="lb-info">
         <div class="lb-name">${escHtml(s.name)}${isMe ? ' <span style="font-size:10px;background:var(--primary);color:#fff;padding:1px 6px;border-radius:8px;font-weight:800;">You</span>' : ''}</div>
         <div class="lb-meta">📝 ${escHtml(s.examName)} &nbsp;·&nbsp; 📅 ${s.date || ''}</div>
       </div>
       <div class="lb-score-wrap" style="align-items:flex-end;">
-        <div class="lb-pct">${s.pct}%</div>
+        <div class="lb-pct" style="${isTop ? '' : `color:${rc1};`}">${s.pct}%</div>
         <div class="lb-score-small">${s.correct} / ${s.total} correct</div>
         ${isMe ? `<button onclick="window.open('https://wa.me/?text=${waShareMsg}','_blank')" style="margin-top:4px;padding:3px 8px;background:linear-gradient(135deg,#25D366,#128C7E);color:#fff;border:none;border-radius:8px;font-size:9px;font-weight:800;cursor:pointer;white-space:nowrap;">📤 Share</button>` : ''}
       </div>

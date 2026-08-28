@@ -14097,6 +14097,10 @@
           <div class="q-counter" id="q-counter">Q 1 / 10</div>
           <div class="exam-running-sub-inline" id="exam-running-sub"></div>
           <div class="q-text" id="q-text"></div>
+          <button id="q-doubt-btn" onclick="_openQDoubt()"
+            style="display:inline-flex;align-items:center;gap:6px;background:var(--bg);border:1.5px solid var(--border2);border-radius:20px;padding:6px 12px;font-family:inherit;font-size:12px;font-weight:800;color:var(--primary);cursor:pointer;margin:2px 0 10px">
+            💬 Doubt Discussion <span id="q-doubt-count" style="background:var(--primary);color:#fff;border-radius:10px;padding:1px 7px;font-size:10.5px;display:none">0</span>
+          </button>
           <div class="options-list" id="options-list"></div>
         </div>
 
@@ -15108,6 +15112,35 @@
       </div>
     </div>
   </div>
+
+  <!-- QUESTION DOUBT DISCUSSION MODAL -->
+  <div id="q-doubt-modal"
+    style="display:none;position:fixed;inset:0;background:rgba(0,0,0,.65);z-index:9200;align-items:center;justify-content:center;padding:12px">
+    <div
+      style="background:var(--card);border-radius:20px;padding:18px;width:100%;max-width:480px;max-height:85vh;display:flex;flex-direction:column;box-shadow:0 20px 60px rgba(0,0,0,.5)">
+      <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:6px">
+        <div style="font-size:15px;font-weight:900;color:var(--text)">💬 Doubt Discussion</div>
+        <button onclick="_closeQDoubt()"
+          style="background:var(--bg);border:1.5px solid var(--border2);border-radius:8px;padding:4px 10px;font-size:16px;cursor:pointer;color:var(--text2)">✕</button>
+      </div>
+      <div id="q-doubt-qtext" style="font-size:12px;color:var(--text2);line-height:1.4;margin-bottom:10px;padding:8px 10px;background:var(--bg);border-radius:10px;max-height:60px;overflow-y:auto"></div>
+      <div id="q-doubt-list"
+        style="flex:1;overflow-y:auto;display:flex;flex-direction:column;gap:10px;margin-bottom:12px;min-height:80px">
+      </div>
+      <div id="q-doubt-name-wrap" style="margin-bottom:8px">
+        <input id="q-doubt-name" type="text" placeholder="మీ పేరు" maxlength="40"
+          style="width:100%;padding:10px 12px;border-radius:10px;border:1.5px solid var(--border2);background:var(--bg);color:var(--text);font-family:inherit;font-size:13px;box-sizing:border-box">
+      </div>
+      <div style="display:flex;gap:8px;align-items:flex-end">
+        <textarea id="q-doubt-text" placeholder="మీ doubt / అభిప్రాయం రాయండి..." rows="2" maxlength="500"
+          style="flex:1;padding:10px 12px;border-radius:10px;border:1.5px solid var(--border2);background:var(--bg);color:var(--text);font-family:inherit;font-size:13px;resize:none;box-sizing:border-box"></textarea>
+        <button id="q-doubt-post-btn" onclick="_postQDoubt()"
+          style="background:linear-gradient(135deg,#f57c00,#ff9800);color:#fff;border:none;border-radius:10px;padding:11px 16px;font-weight:800;font-size:13px;cursor:pointer;font-family:inherit;white-space:nowrap">పోస్ట్
+          ➤</button>
+      </div>
+    </div>
+  </div>
+
 
   <!-- CONTEST PAGE -->
   <div id="page-contest" class="page">
@@ -19641,6 +19674,7 @@ More exams: https://aniledutech.in
       if (btnNext) btnNext.disabled = false;
       if (btnSub) btnSub.style.display = '';
       renderDots();
+      _refreshQDoubtCount();
     }
 
     /* ---- SECTION TABS ---- */
@@ -23386,11 +23420,16 @@ Rules:
       return 'AET' + raw.slice(0, 4) + Math.abs(_hashStr(u.gmail) % 100).toString().padStart(2, '0');
     }
 
-    // BUG FIX: Properly apply pending referral with per-user tracking and reward grant
-    function _applyPendingReferral(user) {
+    // BUG FIX: referral counts used to live in the REFERRED user's localStorage
+    // (keyed by the referrer's code) — the referrer's own device could never see
+    // it, and premium was granted to whoever was logged in at signup time
+    // (usually the new user, not the referrer). Now tracked in Supabase
+    // `ae_referrals`, credited to the code owner, and rewards are redeemed
+    // on-demand by the referrer via the Coins Wallet (see _redeemCoins below).
+    async function _applyPendingReferral(user) {
       try {
         const pendingRef = _ls.getItem('ae_pending_ref');
-        if (!pendingRef) return;
+        if (!pendingRef || !user || !user.gmail) return;
 
         // Don't let users refer themselves
         const myCode = _getReferralCode(user);
@@ -23399,72 +23438,105 @@ Rules:
           return;
         }
 
-        // Check if this user already used a referral
-        const myUsedKey = 'ae_ref_used_' + (user.gmail || user.name).replace(/[^a-z0-9]/gi, '_');
-        if (_ls.getItem(myUsedKey)) {
+        // Check if this gmail already has a referral credit recorded (Supabase — cross-device safe)
+        const existRes = await fetch(`${SB_URL}/rest/v1/ae_referrals?referred_gmail=eq.${encodeURIComponent(user.gmail)}&select=id`, { headers: SB_HEADERS });
+        const existData = existRes.ok ? await existRes.json() : [];
+        if (Array.isArray(existData) && existData.length > 0) {
           _ls.removeItem('ae_pending_ref');
           return;
         }
 
-        // Mark referral as used for this user (per-user, not global)
-        _ls.setItem(myUsedKey, '1');
+        await sbInsert('ae_referrals', {
+          ref_code: pendingRef,
+          referred_gmail: user.gmail,
+          referred_name: user.name || user.gmail,
+          created_at: new Date().toISOString()
+        });
+
         _ls.removeItem('ae_pending_ref');
-
-        // Per-referrer tracking: store count keyed by referral code
-        const refCountKey = 'ae_refcount_' + pendingRef;
-        const newCount = (parseInt(_ls.getItem(refCountKey) || '0')) + 1;
-        _ls.setItem(refCountKey, newCount.toString());
-
-        // Track referral list
-        const listKey = 'ae_reflist_' + pendingRef;
-        const list = JSON.parse(_ls.getItem(listKey) || '[]');
-        list.push({ name: user.name, gmail: user.gmail, date: new Date().toISOString().slice(0, 10) });
-        _ls.setItem(listKey, JSON.stringify(list));
-
-        // BUG FIX: Actually grant rewards when thresholds are reached
-        const tiers = [
-          { count: 1, reward: 'First Referral Badge' },
-          { count: 3, reward: '3 Bonus Daily Challenges' },
-          { count: 5, reward: 'Premium FREE 30 Days' },
-          { count: 10, reward: 'Premium FREE 90 Days' },
-          { count: 20, reward: 'Lifetime Premium' },
-        ];
-        const reached = tiers.filter(t => newCount >= t.count);
-        if (reached.length) {
-          const top = reached[reached.length - 1];
-          // Grant premium for 5+ referrals
-          if (newCount >= 5) {
-            const refUser = getCurrentUser();
-            if (refUser && refUser.gmail) {
-              refUser.isPremium = true;
-              refUser.premiumPlan = 'referral';
-              refUser.premiumSince = new Date().toISOString();
-              setCurrentUser(refUser);
-              _ls.setItem('ae_referral_premium', newCount >= 20 ? 'lifetime' : (newCount >= 10 ? '90days' : '30days'));
-              // BUG FIX: Save referral premium to Supabase so it persists after logout
-              const premKey = 'premium_gmail_' + refUser.gmail.replace(/[@.]/g, '_');
-              const premVal = JSON.stringify({ gmail: refUser.gmail, since: refUser.premiumSince, plan: 'referral' });
-              sbUpsert('ae_settings', { key: premKey, value: premVal, updated_at: new Date().toISOString() }).catch(e => console.warn('referral premium sb:', e));
-              sbSubUpsert({ name: refUser.name, gmail: refUser.gmail, is_premium: true, premium_since: refUser.premiumSince, status: 'approved' }).catch(e => console.warn('referral sbSubUpsert:', e));
-              toast('🎉 ' + top.reward + ' — Premium activated!', 'success');
-            }
-          }
-        }
-
-        setTimeout(() => toast('🎉 Referral tracked! Thank you for joining via referral!', 'success'), 1000);
-      } catch (e) { }
+        setTimeout(() => toast('🎉 Referral తీసుకున్నారు! Referrer కి 10 Coins credit అయ్యాయి.', 'success'), 1000);
+      } catch (e) { console.warn('referral apply:', e); }
     }
 
-    // Update _renderReferral to show per-user referral count
+    // ── Coins wallet: 10 coins per successful referral, minus redeemed coins ──
+    const REF_COIN_PER_REFERRAL = 10;
+    async function _getReferralWallet(u) {
+      if (!u || !u.gmail) return { code: null, referrals: 0, earnedCoins: 0, spentCoins: 0, coins: 0, refList: [] };
+      const code = _getReferralCode(u);
+      let refList = [];
+      let spentCoins = 0;
+      try {
+        const refRes = await fetch(`${SB_URL}/rest/v1/ae_referrals?ref_code=eq.${encodeURIComponent(code)}&select=referred_name,referred_gmail,created_at&order=created_at.desc`, { headers: SB_HEADERS });
+        refList = refRes.ok ? await refRes.json() : [];
+      } catch (e) { }
+      try {
+        const redRes = await fetch(`${SB_URL}/rest/v1/ae_referral_redemptions?gmail=eq.${encodeURIComponent(u.gmail)}&status=in.(pending,approved)&select=coins`, { headers: SB_HEADERS });
+        const redData = redRes.ok ? await redRes.json() : [];
+        spentCoins = Array.isArray(redData) ? redData.reduce((s, r) => s + (r.coins || 0), 0) : 0;
+      } catch (e) { }
+      const referrals = Array.isArray(refList) ? refList.length : 0;
+      const earnedCoins = referrals * REF_COIN_PER_REFERRAL;
+      if (u.gmail) _ls.setItem('ae_my_referral_count_cache', String(referrals)); // sync cache for badge checks
+      return { code, referrals, earnedCoins, spentCoins, coins: earnedCoins - spentCoins, refList: refList || [] };
+    }
+    // Sync cached referral count (updated whenever the wallet/referral page loads) — used by badge checks that can't await
     function _getMyReferralCount(u) {
       if (!u) return 0;
-      const code = _getReferralCode(u);
-      return parseInt(_ls.getItem('ae_refcount_' + code) || '0');
+      return parseInt(_ls.getItem('ae_my_referral_count_cache') || '0');
     }
-    function _getMyReferralList(u) {
-      if (!u) return [];
-      const code = _getReferralCode(u);
-      try { return JSON.parse(_ls.getItem('ae_reflist_' + code) || '[]'); } catch (e) { return []; }
+
+    // ── Redeem catalog ──
+    const REF_REDEEM_CATALOG = [
+      { key: 'premium7', label: '7 Days Premium', coins: 50, type: 'premium', days: 7, icon: '⭐' },
+      { key: 'premium30', label: '30 Days Premium', coins: 150, type: 'premium', days: 30, icon: '👑' },
+      { key: 'premium90', label: '90 Days Premium', coins: 400, type: 'premium', days: 90, icon: '💎' },
+      { key: 'lifetime', label: 'Lifetime Premium', coins: 1000, type: 'premium', days: null, icon: '🚀' },
+      { key: 'cash50', label: '₹50 Cash (UPI)', coins: 100, type: 'cash', amount: 50, icon: '💵' },
+      { key: 'cash100', label: '₹100 Cash (UPI)', coins: 180, type: 'cash', amount: 100, icon: '💰' },
+    ];
+
+    async function _redeemCoins(key) {
+      const u = getCurrentUser();
+      if (!u) { toast('ముందు login చేయండి', 'warn'); return; }
+      const item = REF_REDEEM_CATALOG.find(r => r.key === key);
+      if (!item) return;
+
+      const wallet = await _getReferralWallet(u);
+      if (wallet.coins < item.coins) {
+        toast(`❌ Coins సరిపోవు! ఇంకా ${item.coins - wallet.coins} coins కావాలి.`, 'error');
+        return;
+      }
+
+      try {
+        if (item.type === 'premium') {
+          const days = item.days;
+          const expiry = days ? new Date(Date.now() + days * 24 * 60 * 60 * 1000).toISOString() : null;
+          u.isPremium = true;
+          u.premiumPlan = 'referral';
+          u.premiumSince = new Date().toISOString();
+          if (expiry) u.premiumExpiry = expiry;
+          setCurrentUser(u);
+          const premKey = 'premium_gmail_' + u.gmail.replace(/[@.]/g, '_');
+          const premVal = JSON.stringify({ gmail: u.gmail, since: u.premiumSince, expiry, plan: 'referral' });
+          await sbUpsert('ae_settings', { key: premKey, value: premVal, updated_at: new Date().toISOString() }).catch(e => console.warn('referral premium sb:', e));
+          await sbSubUpsert({ name: u.name, gmail: u.gmail, is_premium: true, premium_since: u.premiumSince, status: 'approved' }).catch(e => console.warn('referral sbSubUpsert:', e));
+          await sbInsert('ae_referral_redemptions', {
+            gmail: u.gmail, name: u.name || u.gmail, coins: item.coins, reward: item.label, status: 'approved', created_at: new Date().toISOString()
+          });
+          toast(`🎉 ${item.label} activated!`, 'success');
+        } else {
+          await sbInsert('ae_referral_redemptions', {
+            gmail: u.gmail, name: u.name || u.gmail, coins: item.coins, reward: item.label, status: 'pending', created_at: new Date().toISOString()
+          });
+          toast(`✅ ${item.label} request పంపబడింది. Admin approve చేసిన తర్వాత UPI కి పంపబడుతుంది.`, 'success');
+          const waMsg = encodeURIComponent('💰 Cash Redemption Request!\nName: ' + (u.name || u.gmail) + '\nGmail: ' + u.gmail + '\nReward: ' + item.label + '\nCoins used: ' + item.coins);
+          setTimeout(() => { window.open('https://wa.me/916309535287?text=' + waMsg, '_blank'); }, 1000);
+        }
+      } catch (e) {
+        toast('❌ Error వచ్చింది. మళ్ళీ try చేయండి.', 'error');
+        return;
+      }
+      _renderReferral();
     }
 
     function _hashStr(s) {
@@ -23478,7 +23550,7 @@ Rules:
       _renderReferral();
     }
 
-    function _renderReferral() {
+    async function _renderReferral() {
       const u = getCurrentUser();
       const el = document.getElementById('referral-content');
       if (!el) return;
@@ -23486,63 +23558,42 @@ Rules:
         el.innerHTML = `<div class="prog-empty"><span class="prog-empty-icon">🔐</span>Login చేసి Referral code పొందండి.<br><br><button class="btn-primary" onclick="openSubModal(goReferral)">Login చేయండి →</button></div>`;
         return;
       }
-      const code = _getReferralCode(u);
-      const refs = _getMyReferralCount(u);
-      const refList = _getMyReferralList(u);
+      el.innerHTML = '<div style="text-align:center;padding:40px;color:var(--text3)"><div style="font-size:32px">⏳</div><div style="font-size:13px;font-weight:700;margin-top:8px">Wallet load అవుతోంది...</div></div>';
+
+      const wallet = await _getReferralWallet(u);
+      const code = wallet.code;
       const shareUrl = (window.location.href.split('?')[0]).replace(/#.*/, '') + '?ref=' + code;
       const waMsg = '🎓 *Anil EduTech* — Free Mock Tests!\n\nHello! నేను TSPSC, SSC, Banking exams కోసం ఈ portal use చేస్తున్నాను. మీరు కూడా join చేయండి!\n\n🔗 ' + shareUrl + '\n\n✅ 100% Free | 📝 Daily Challenges | 🏆 Leaderboard';
 
-      // Reward tiers — UPGRADED
-      const tiers = [
-        { count: 1, reward: '🎯 First Referral Badge', color: '#1A73E8', desc: 'మీ first friend join అయ్యాడు!' },
-        { count: 3, reward: '⭐ 3 Bonus Daily Challenges', color: '#F59E0B', desc: 'Extra practice questions unlock' },
-        { count: 5, reward: '👑 Premium FREE 30 Days', color: '#8B5CF6', desc: 'Full premium access — free!' },
-        { count: 10, reward: '💎 Premium FREE 90 Days', color: '#EC4899', desc: '3 నెలలు premium — మీరే winner!' },
-        { count: 20, reward: '🚀 Lifetime Premium', color: '#10B981', desc: '20 friends = Lifetime access!' },
-      ];
-
-      const unlocked = tiers.filter(t => refs >= t.count).length;
-      const nextTier = tiers.find(t => refs < t.count);
-      const nextNeeded = nextTier ? (nextTier.count - refs) : 0;
-
-      // Build tier rows (BUG FIX: no nested template literals)
-      let tierRows = '';
-      tiers.forEach(function (t) {
-        const done = refs >= t.count;
-        const prog = Math.min(Math.round(refs / t.count * 100), 100);
-        const badgeBg = done ? t.color + '22' : 'var(--bg)';
-        const badgeClr = done ? t.color : 'var(--text3)';
-        const badgeTxt = done ? '✓ Unlocked' : (refs + '/' + t.count);
-        const titleClr = done ? t.color : 'var(--text2)';
-        tierRows += '<div style="margin-bottom:16px;padding:12px;background:var(--bg);border-radius:12px;border:1.5px solid ' + (done ? t.color + '44' : 'var(--border)') + ';">'
-          + '<div style="display:flex;justify-content:space-between;align-items:flex-start;margin-bottom:4px;gap:8px;">'
-          + '<div>'
-          + '<div style="font-size:13px;font-weight:800;color:' + titleClr + ';">' + t.reward + '</div>'
-          + '<div style="font-size:11px;color:var(--text3);font-weight:600;margin-top:1px;">' + t.desc + '</div>'
-          + '</div>'
-          + '<span style="flex-shrink:0;font-size:10px;font-weight:800;padding:3px 10px;border-radius:20px;background:' + badgeBg + ';color:' + badgeClr + ';">' + badgeTxt + '</span>'
-          + '</div>'
-          + '<div style="height:5px;background:var(--border);border-radius:3px;overflow:hidden;margin-top:8px;">'
-          + '<div style="height:100%;width:' + prog + '%;background:' + t.color + ';border-radius:3px;transition:width 1.2s;"></div>'
-          + '</div>'
-          + '</div>';
-      });
-
       // Build referral list
       let listRows = '';
-      if (refList.length) {
-        refList.slice(0, 8).forEach(function (r) {
+      if (wallet.refList.length) {
+        wallet.refList.slice(0, 8).forEach(function (r) {
+          const dateStr = (r.created_at || '').slice(0, 10);
           listRows += '<div style="display:flex;align-items:center;justify-content:space-between;padding:8px 0;border-bottom:1px solid var(--border);">'
             + '<div style="display:flex;align-items:center;gap:10px;">'
-            + '<div style="width:32px;height:32px;border-radius:50%;background:linear-gradient(135deg,#EC4899,#8B5CF6);display:flex;align-items:center;justify-content:center;font-size:13px;font-weight:900;color:#fff;">' + (r.name || '?').charAt(0).toUpperCase() + '</div>'
-            + '<div><div style="font-size:13px;font-weight:800;color:var(--text);">' + (r.name || 'Friend') + '</div><div style="font-size:11px;color:var(--text3);">' + (r.date || '') + '</div></div>'
+            + '<div style="width:32px;height:32px;border-radius:50%;background:linear-gradient(135deg,#EC4899,#8B5CF6);display:flex;align-items:center;justify-content:center;font-size:13px;font-weight:900;color:#fff;">' + (r.referred_name || '?').charAt(0).toUpperCase() + '</div>'
+            + '<div><div style="font-size:13px;font-weight:800;color:var(--text);">' + (r.referred_name || 'Friend') + '</div><div style="font-size:11px;color:var(--text3);">' + dateStr + '</div></div>'
             + '</div>'
-            + '<span style="font-size:11px;font-weight:800;color:#10B981;background:rgba(16,185,129,.1);padding:3px 9px;border-radius:20px;">✓ Joined</span>'
+            + '<span style="font-size:11px;font-weight:800;color:#10B981;background:rgba(16,185,129,.1);padding:3px 9px;border-radius:20px;">+' + REF_COIN_PER_REFERRAL + ' 🪙</span>'
             + '</div>';
         });
       } else {
         listRows = '<div style="text-align:center;padding:20px;color:var(--text3);font-size:13px;">ఇంకా ఎవరూ join అవ్వలేదు.<br>Share చేయండి!</div>';
       }
+
+      // Build redeem catalog rows
+      let redeemRows = '';
+      REF_REDEEM_CATALOG.forEach(function (item) {
+        const can = wallet.coins >= item.coins;
+        redeemRows += '<div style="display:flex;align-items:center;justify-content:space-between;gap:10px;padding:12px;background:var(--bg);border-radius:12px;border:1.5px solid ' + (can ? 'var(--primary)44' : 'var(--border)') + ';margin-bottom:10px;">'
+          + '<div style="display:flex;align-items:center;gap:10px;">'
+          + '<div style="font-size:22px;">' + item.icon + '</div>'
+          + '<div><div style="font-size:13px;font-weight:800;color:var(--text);">' + item.label + '</div><div style="font-size:11px;color:var(--text3);font-weight:700;">' + item.coins + ' 🪙</div></div>'
+          + '</div>'
+          + '<button ' + (can ? 'onclick="_redeemCoins(\'' + item.key + '\')"' : 'disabled') + ' style="padding:8px 14px;border-radius:10px;border:none;font-family:inherit;font-size:12px;font-weight:800;cursor:' + (can ? 'pointer' : 'not-allowed') + ';background:' + (can ? 'linear-gradient(135deg,#EC4899,#8B5CF6)' : 'var(--border)') + ';color:' + (can ? '#fff' : 'var(--text3)') + ';">' + (can ? 'Redeem' : 'Locked') + '</button>'
+          + '</div>';
+      });
 
       el.innerHTML =
         // Hero card
@@ -23550,7 +23601,7 @@ Rules:
         + '<div style="position:absolute;top:-30px;right:-30px;width:120px;height:120px;border-radius:50%;background:rgba(255,255,255,.08);"></div>'
         + '<div style="font-size:11px;font-weight:800;opacity:.75;letter-spacing:1.5px;text-transform:uppercase;margin-bottom:8px;">మీ Referral Code</div>'
         + '<div style="font-size:40px;font-weight:900;letter-spacing:5px;margin-bottom:6px;font-family:monospace;">' + code + '</div>'
-        + '<div style="font-size:12px;opacity:.75;margin-bottom:18px;">20 మంది friends join చేస్తే → Lifetime Premium FREE! 🚀</div>'
+        + '<div style="font-size:12px;opacity:.75;margin-bottom:18px;">ప్రతి friend join అయితే → ' + REF_COIN_PER_REFERRAL + ' Coins! 🪙</div>'
         + '<div style="display:flex;gap:8px;justify-content:center;flex-wrap:wrap;">'
         + '<button onclick="_copyRefCode(\'' + code + '\')" style="padding:10px 16px;background:rgba(255,255,255,.22);color:#fff;border:1.5px solid rgba(255,255,255,.4);border-radius:10px;font-family:inherit;font-size:12px;font-weight:800;cursor:pointer;">📋 Code Copy</button>'
         + '<button onclick="_shareRefWA(\'' + encodeURIComponent(waMsg) + '\')" style="padding:10px 16px;background:#25D366;color:#fff;border:none;border-radius:10px;font-family:inherit;font-size:12px;font-weight:800;cursor:pointer;">📤 WhatsApp</button>'
@@ -23558,41 +23609,41 @@ Rules:
         + '</div>'
         + '</div>'
 
-        // Stats row
+        // Coins wallet stats row
         + '<div style="display:grid;grid-template-columns:repeat(3,1fr);gap:10px;margin-bottom:18px;">'
         + '<div style="background:var(--card);border:2px solid var(--border);border-radius:14px;padding:14px;text-align:center;">'
-        + '<div style="font-size:30px;font-weight:900;color:#EC4899;line-height:1;">' + refs + '</div>'
+        + '<div style="font-size:30px;font-weight:900;color:#F59E0B;line-height:1;">' + wallet.coins + ' 🪙</div>'
+        + '<div style="font-size:11px;color:var(--text2);font-weight:700;margin-top:4px;">Coins Balance</div>'
+        + '</div>'
+        + '<div style="background:var(--card);border:2px solid var(--border);border-radius:14px;padding:14px;text-align:center;">'
+        + '<div style="font-size:30px;font-weight:900;color:#EC4899;line-height:1;">' + wallet.referrals + '</div>'
         + '<div style="font-size:11px;color:var(--text2);font-weight:700;margin-top:4px;">Total Referrals</div>'
         + '</div>'
         + '<div style="background:var(--card);border:2px solid var(--border);border-radius:14px;padding:14px;text-align:center;">'
-        + '<div style="font-size:30px;font-weight:900;color:#8B5CF6;line-height:1;">' + unlocked + '/5</div>'
-        + '<div style="font-size:11px;color:var(--text2);font-weight:700;margin-top:4px;">Rewards Unlocked</div>'
-        + '</div>'
-        + '<div style="background:var(--card);border:2px solid var(--border);border-radius:14px;padding:14px;text-align:center;">'
-        + '<div style="font-size:30px;font-weight:900;color:#10B981;line-height:1;">' + (nextNeeded || '🎉') + '</div>'
-        + '<div style="font-size:11px;color:var(--text2);font-weight:700;margin-top:4px;">' + (nextNeeded ? 'Next Reward కి' : 'All Unlocked!') + '</div>'
+        + '<div style="font-size:30px;font-weight:900;color:#8B5CF6;line-height:1;">' + wallet.earnedCoins + '</div>'
+        + '<div style="font-size:11px;color:var(--text2);font-weight:700;margin-top:4px;">Lifetime Earned</div>'
         + '</div>'
         + '</div>'
 
-        // Reward tiers
+        // Redeem catalog
         + '<div style="background:var(--card);border:2px solid var(--border);border-radius:var(--radius);padding:18px;margin-bottom:18px;">'
-        + '<div style="font-size:14px;font-weight:900;color:var(--text);margin-bottom:14px;">🎁 Reward Tiers</div>'
-        + tierRows
+        + '<div style="font-size:14px;font-weight:900;color:var(--text);margin-bottom:14px;">🎁 Redeem Coins</div>'
+        + redeemRows
         + '</div>'
 
         // Referral list
         + '<div style="background:var(--card);border:2px solid var(--border);border-radius:var(--radius);padding:18px;margin-bottom:18px;">'
-        + '<div style="font-size:14px;font-weight:900;color:var(--text);margin-bottom:14px;">👥 Joined via your link (' + refList.length + ')</div>'
+        + '<div style="font-size:14px;font-weight:900;color:var(--text);margin-bottom:14px;">👥 Joined via your link (' + wallet.refList.length + ')</div>'
         + listRows
         + '</div>'
 
         // Enter friend's code
         + '<div style="background:var(--card);border:2px solid var(--border);border-radius:var(--radius);padding:18px;">'
         + '<div style="font-size:14px;font-weight:900;color:var(--text);margin-bottom:6px;">🤝 Friend\'s Code Enter చేయండి</div>'
-        + '<div style="font-size:12px;color:var(--text2);font-weight:600;margin-bottom:12px;">మీ friend refer చేస్తే వారికి reward వస్తుంది</div>'
+        + '<div style="font-size:12px;color:var(--text2);font-weight:600;margin-bottom:12px;">మీ friend refer చేస్తే వారికి 10 Coins వస్తాయి</div>'
         + '<div style="display:flex;gap:10px;">'
         + '<input id="ref-code-input" type="text" placeholder="AET1234" maxlength="9" style="flex:1;padding:11px 14px;border:2px solid var(--border);border-radius:10px;font-family:inherit;font-size:15px;font-weight:800;letter-spacing:2px;text-transform:uppercase;background:var(--bg);color:var(--text);outline:none;" oninput="this.value=this.value.toUpperCase()" onfocus="this.style.borderColor=\'var(--primary)\'" onblur="this.style.borderColor=\'var(--border)\'">'
-        + '<button onclick="_applyRefCode()" style="padding:11px 18px;background:linear-gradient(135deg,#EC4899,#8B5CF6);color:#fff;border:none;border-radius:10px;font-family:inherit;font-size:14px;font-weight:800;cursor:pointer;white-space:nowrap;">Apply ✓</button>'
+        + '<button onclick="_applyRefCode()" id="ref-apply-btn" style="padding:11px 18px;background:linear-gradient(135deg,#EC4899,#8B5CF6);color:#fff;border:none;border-radius:10px;font-family:inherit;font-size:14px;font-weight:800;cursor:pointer;white-space:nowrap;">Apply ✓</button>'
         + '</div>'
         + '</div>';
     }
@@ -23606,21 +23657,39 @@ Rules:
     function _shareRefWA(encodedMsg) {
       window.open('https://wa.me/?text=' + encodedMsg, '_blank');
     }
-    function _applyRefCode() {
+    async function _applyRefCode() {
+      const u = getCurrentUser();
+      if (!u || !u.gmail) { toast('ముందు login చేయండి', 'warn'); return; }
       const code = (document.getElementById('ref-code-input')?.value || '').trim().toUpperCase();
       if (code.length < 7) { toast('❌ Valid code enter చేయండి', 'error'); return; }
-      const used = JSON.parse(_ls.getItem('ae_used_ref_codes') || '[]');
-      if (used.includes(code)) { toast('⚠️ ఈ code ముందే use చేశారు', 'warn'); return; }
-      // Credit the referrer (in real app this would be server-side)
-      // Here we store it and simulate
-      used.push(code);
-      _ls.setItem('ae_used_ref_codes', JSON.stringify(used));
-      // Simulate: increment referral count for code owner (local demo)
-      const rc = parseInt(_ls.getItem('ae_referral_count') || '0') + 1;
-      _ls.setItem('ae_referral_count', rc.toString());
-      toast('🎉 Referral applied! Thank you for joining via referral!', 'success');
-      document.getElementById('ref-code-input').value = '';
-      setTimeout(_renderReferral, 800);
+      const myCode = _getReferralCode(u);
+      if (code === myCode) { toast('❌ మీ own code use చేయలేరు', 'error'); return; }
+
+      const btn = document.getElementById('ref-apply-btn');
+      if (btn) { btn.disabled = true; btn.textContent = '⏳...'; }
+
+      try {
+        // Cross-device safe check: has this gmail already claimed a referral?
+        const existRes = await fetch(`${SB_URL}/rest/v1/ae_referrals?referred_gmail=eq.${encodeURIComponent(u.gmail)}&select=id`, { headers: SB_HEADERS });
+        const existData = existRes.ok ? await existRes.json() : [];
+        if (Array.isArray(existData) && existData.length > 0) {
+          toast('⚠️ మీరు ఇప్పటికే ఒక referral code వాడారు', 'warn');
+          if (btn) { btn.disabled = false; btn.textContent = 'Apply ✓'; }
+          return;
+        }
+        await sbInsert('ae_referrals', {
+          ref_code: code,
+          referred_gmail: u.gmail,
+          referred_name: u.name || u.gmail,
+          created_at: new Date().toISOString()
+        });
+        toast('🎉 Referral applied! Referrer కి 10 Coins credit అయ్యాయి.', 'success');
+        document.getElementById('ref-code-input').value = '';
+        _renderReferral();
+      } catch (e) {
+        toast('❌ Error వచ్చింది. మళ్ళీ try చేయండి.', 'error');
+        if (btn) { btn.disabled = false; btn.textContent = 'Apply ✓'; }
+      }
     }
 
 
@@ -30910,6 +30979,143 @@ Rules:
       if (btn) btn.disabled = false;
     }
   }
+
+  // ── Per-question Doubt Discussion ──
+  let _qDoubtKey = null;      // "examId_questionId"
+  let _qDoubtCache = [];
+  const _qDoubtCountCache = {}; // key -> count, avoids refetching per render
+
+  function _curDoubtKey() {
+    const q = exam.questions && exam.questions[exam.idx];
+    const examId = exam.current && exam.current.id;
+    if (!q || examId == null) return null;
+    return examId + '_' + q.id;
+  }
+
+  // Called from renderQ() to show/refresh the badge count for the visible question
+  async function _refreshQDoubtCount() {
+    const key = _curDoubtKey();
+    const badge = document.getElementById('q-doubt-count');
+    if (!key || !badge) { if (badge) badge.style.display = 'none'; return; }
+    if (_qDoubtCountCache[key] != null) {
+      const c = _qDoubtCountCache[key];
+      badge.style.display = c > 0 ? 'inline-block' : 'none';
+      badge.textContent = c;
+      return;
+    }
+    badge.style.display = 'none';
+    try {
+      const res = await fetch(`${SB_URL}/rest/v1/ae_question_doubts?doubt_key=eq.${encodeURIComponent(key)}&select=id`, { headers: SB_HEADERS });
+      const data = res.ok ? await res.json() : [];
+      const c = Array.isArray(data) ? data.length : 0;
+      _qDoubtCountCache[key] = c;
+      // Only update UI if user hasn't already moved to a different question
+      if (_curDoubtKey() === key) {
+        badge.style.display = c > 0 ? 'inline-block' : 'none';
+        badge.textContent = c;
+      }
+    } catch (e) { }
+  }
+
+  async function _openQDoubt() {
+    const key = _curDoubtKey();
+    if (!key) return;
+    _qDoubtKey = key;
+    const q = exam.questions[exam.idx];
+
+    const modal = document.getElementById('q-doubt-modal');
+    if (modal) modal.style.display = 'flex';
+    document.getElementById('q-doubt-qtext').textContent = q.q;
+
+    const listEl = document.getElementById('q-doubt-list');
+    if (listEl) listEl.innerHTML = `<div style="text-align:center;color:var(--text3);padding:20px;font-size:13px">Loading...</div>`;
+
+    const u = getCurrentUser();
+    const nameInput = document.getElementById('q-doubt-name');
+    const nameWrap = document.getElementById('q-doubt-name-wrap');
+    if (u && u.name) {
+      if (nameInput) nameInput.value = u.name;
+      if (nameWrap) nameWrap.style.display = 'none';
+    } else {
+      if (nameInput) nameInput.value = localStorage.getItem('ae_job_comment_name') || '';
+      if (nameWrap) nameWrap.style.display = '';
+    }
+    const textInput = document.getElementById('q-doubt-text');
+    if (textInput) textInput.value = '';
+
+    try {
+      const res = await fetch(`${SB_URL}/rest/v1/ae_question_doubts?doubt_key=eq.${encodeURIComponent(key)}&order=created_at.desc&limit=100`, { headers: SB_HEADERS });
+      _qDoubtCache = res.ok ? await res.json() : [];
+    } catch (e) {
+      _qDoubtCache = [];
+    }
+    _qDoubtCountCache[key] = _qDoubtCache.length;
+    _renderQDoubtList();
+  }
+
+  function _renderQDoubtList() {
+    const listEl = document.getElementById('q-doubt-list');
+    if (!listEl) return;
+    if (!_qDoubtCache.length) {
+      listEl.innerHTML = `<div style="text-align:center;color:var(--text3);padding:20px;font-size:13px">ఇంకా doubts లేవు.<br>మీ doubt మీరే post చేయండి! 💬</div>`;
+      return;
+    }
+    listEl.innerHTML = _qDoubtCache.map(c => `
+    <div style="background:var(--bg);border-radius:10px;padding:10px 12px">
+      <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:4px;gap:8px">
+        <span style="font-size:12.5px;font-weight:800;color:var(--text);overflow:hidden;text-overflow:ellipsis;white-space:nowrap">👤 ${escHtml(c.name)}</span>
+        <span style="font-size:10.5px;color:var(--text3);flex-shrink:0">${_jobTimeAgo(c.created_at)}</span>
+      </div>
+      <div style="font-size:12.5px;color:var(--text2);line-height:1.5;white-space:pre-wrap;word-break:break-word">${escHtml(c.comment)}</div>
+    </div>
+  `).join('');
+  }
+
+  function _closeQDoubt() {
+    const modal = document.getElementById('q-doubt-modal');
+    if (modal) modal.style.display = 'none';
+    _qDoubtKey = null;
+  }
+
+  async function _postQDoubt() {
+    const key = _qDoubtKey;
+    if (!key) return;
+    const u = getCurrentUser();
+    const nameInput = document.getElementById('q-doubt-name');
+    const textInput = document.getElementById('q-doubt-text');
+    let name = (u && u.name) ? u.name : (nameInput?.value || '').trim();
+    const comment = (textInput?.value || '').trim();
+    if (!name) { toast('మీ పేరు enter చేయండి!', 'warn'); return; }
+    if (!comment) { toast('మీ doubt రాయండి!', 'warn'); return; }
+    if (!u || !u.name) { try { localStorage.setItem('ae_job_comment_name', name); } catch (e) { } }
+
+    const btn = document.getElementById('q-doubt-post-btn');
+    if (btn) btn.disabled = true;
+    const payload = { doubt_key: key, name, comment, created_at: new Date().toISOString() };
+    try {
+      await fetch(`${SB_URL}/rest/v1/ae_question_doubts`, {
+        method: 'POST', headers: SB_HEADERS, body: JSON.stringify([payload])
+      });
+      _qDoubtCache.unshift(payload);
+      _renderQDoubtList();
+      if (textInput) textInput.value = '';
+      _qDoubtCountCache[key] = (_qDoubtCountCache[key] || 0) + 1;
+      const badge = document.getElementById('q-doubt-count');
+      if (badge && _curDoubtKey() === key) {
+        badge.style.display = 'inline-block';
+        badge.textContent = _qDoubtCountCache[key];
+      }
+      toast('✅ Doubt posted!', 'success');
+    } catch (e) {
+      toast('Error! మళ్ళీ try చేయండి.', 'error');
+    } finally {
+      if (btn) btn.disabled = false;
+    }
+  }
+
+  document.getElementById('q-doubt-modal')?.addEventListener('click', function (e) {
+    if (e.target === this) _closeQDoubt();
+  });
 
   function switchCATab(tab) {
     _caCurrentTab = tab;

@@ -1,0 +1,8 @@
+[{
+      "relation": ["delegate_permission/common.handle_all_urls"],
+      "target": {
+        "namespace": "android_app",
+        "package_name": "in.aniledutech.twa",
+        "sha256_cert_fingerprints": ["97:70:5B:DD:50:AB:F8:96:94:2A:7A:06:EB:A1:B6:91:53:E4:BF:96:78:69:AE:2A:3F:92:CC:0A:CA:68:7B:32"]
+      }
+    }]

@@ -15130,7 +15130,7 @@
           <div style="background:rgba(255,255,255,.1);border-radius:10px;padding:12px;text-align:center">
             <div style="font-size:22px;margin-bottom:6px">1️⃣</div>
             <div style="font-weight:800">Entry Fee Pay చేయండి</div>
-            <div style="color:rgba(255,255,255,.7);margin-top:4px">UPI / Razorpay తో</div>
+            <div style="color:rgba(255,255,255,.7);margin-top:4px">Razorpay Secure Checkout తో</div>
           </div>
           <div style="background:rgba(255,255,255,.1);border-radius:10px;padding:12px;text-align:center">
             <div style="font-size:22px;margin-bottom:6px">2️⃣</div>
@@ -15195,14 +15195,12 @@
           </div>
         </div>
 
-        <!-- Right: QR + UPI -->
-        <div style="background:var(--bg);border-radius:12px;padding:12px;text-align:center">
-          <div style="font-size:11px;font-weight:800;color:var(--text2);margin-bottom:8px">📱 Pay చేయండి</div>
-          <img id="cem-qr" src="" alt="QR"
-            style="width:100px;height:100px;border-radius:8px;border:2px solid var(--border2);display:block;margin:0 auto 6px">
-          <div style="font-size:10px;color:var(--text3);margin-bottom:2px">UPI ID:</div>
-          <div style="font-size:11px;font-weight:800;color:var(--primary);user-select:all" id="cem-upi">sekhar70932@ybl
-          </div>
+        <!-- Right: Razorpay -->
+        <div style="background:var(--bg);border-radius:12px;padding:12px;text-align:center;display:flex;flex-direction:column;align-items:center;justify-content:center">
+          <div style="font-size:30px;margin-bottom:6px">🔒</div>
+          <div style="font-size:11px;font-weight:800;color:var(--text2);margin-bottom:4px">Secure Payment</div>
+          <div style="font-size:11px;font-weight:800;color:var(--primary)">via Razorpay</div>
+          <div style="font-size:9px;color:var(--text3);margin-top:4px">UPI / Card / Net Banking</div>
         </div>
       </div>
 
@@ -15224,17 +15222,13 @@
         </div>
       </div>
 
-      <!-- UTR input -->
-      <input id="cem-utr" class="edit-box" placeholder="UTR Number enter చేయండి (12+ digits, e.g. 123456789012)"
-        style="width:100%;box-sizing:border-box;margin-bottom:10px">
-
       <!-- Buttons -->
       <div style="display:flex;gap:8px">
         <button onclick="closeContestModal()"
           style="flex:1;background:var(--bg);color:var(--text2);border:1.5px solid var(--border2);border-radius:10px;padding:10px;font-family:inherit;font-size:13px;font-weight:700;cursor:pointer">Cancel</button>
-        <button onclick="submitContestEntry()" id="cem-submit-btn"
-          style="flex:2;background:linear-gradient(135deg,#f57c00,#ff9800);color:#fff;border:none;border-radius:10px;padding:10px;font-family:inherit;font-size:13px;font-weight:800;cursor:pointer">✅
-          Submit Entry</button>
+        <button onclick="payContestEntry()" id="cem-submit-btn"
+          style="flex:2;background:linear-gradient(135deg,#f57c00,#ff9800);color:#fff;border:none;border-radius:10px;padding:10px;font-family:inherit;font-size:13px;font-weight:800;cursor:pointer">🔒
+          Pay & Join</button>
       </div>
       <div id="cem-msg" style="margin-top:8px;font-size:12px;font-weight:700;text-align:center;min-height:16px"></div>
     </div>
@@ -33074,15 +33068,9 @@ Rules:
     document.getElementById('cem-p3').textContent = '₹' + Math.round((c.prize_pool || 0) * ((c.prize_p3 || 20) / 100));
     document.getElementById('cem-fee-disp').textContent = '₹' + c.entry_fee;
     document.getElementById('cem-maxp').textContent = c.max_participants > 0 ? c.max_participants : '∞';
-    document.getElementById('cem-utr').value = '';
     document.getElementById('cem-msg').textContent = '';
-
-    // QR code (use UPI QR)
-    const upiId = 'sekhar70932@ybl';
-    const upiAmt = c.entry_fee;
-    const upiStr = `upi://pay?pa=${upiId}&pn=AnilEduTech&am=${upiAmt}&cu=INR&tn=Contest:${encodeURIComponent(c.title)}`;
-    document.getElementById('cem-upi').textContent = upiId;
-    document.getElementById('cem-qr').src = `https://api.qrserver.com/v1/create-qr-code/?size=140x140&data=${encodeURIComponent(upiStr)}`;
+    const btn0 = document.getElementById('cem-submit-btn');
+    btn0.disabled = false; btn0.textContent = '🔒 Pay & Join';
 
     // Joined count
     fetch(`${SB_URL}/rest/v1/ae_contest_entries?contest_id=eq.${c.id}&status=eq.approved&select=id`, { headers: SB_HEADERS })
@@ -33099,78 +33087,146 @@ Rules:
     _activeContest = null;
   }
 
-  // ── Submit contest entry ──
-  async function submitContestEntry() {
+  // ── Pay contest entry fee via Razorpay ──
+  async function payContestEntry() {
     const u = getCurrentUser();
     if (!u || !_activeContest) return;
-    const utr = document.getElementById('cem-utr').value.trim().toUpperCase();
-    if (!utr) {
-      document.getElementById('cem-msg').innerHTML = '<span style="color:var(--error)">UTR number enter చేయండి!</span>'; return;
-    }
-    // UTR validation: 12-22 alphanumeric characters only
-    if (!/^[A-Z0-9]{12,22}$/.test(utr)) {
-      document.getElementById('cem-msg').innerHTML = '<span style="color:var(--error)">⚠️ Valid UTR number enter చేయండి! (12-22 digits/letters, e.g. 123456789012)</span>'; return;
-    }
-
+    const c = _activeContest;
     const btn = document.getElementById('cem-submit-btn');
-    btn.disabled = true; btn.textContent = '⏳ Submitting...';
+    btn.disabled = true; btn.textContent = '⏳ Checking...';
 
     try {
-      // Check 1: Same user already joined this contest
-      const dupRes = await fetch(`${SB_URL}/rest/v1/ae_contest_entries?contest_id=eq.${_activeContest.id}&gmail=eq.${encodeURIComponent(u.gmail)}&select=id`, { headers: SB_HEADERS });
+      // Same user already joined this contest?
+      const dupRes = await fetch(`${SB_URL}/rest/v1/ae_contest_entries?contest_id=eq.${c.id}&gmail=eq.${encodeURIComponent(u.gmail)}&select=id`, { headers: SB_HEADERS });
       const dupData = await dupRes.json();
       if (Array.isArray(dupData) && dupData.length > 0) {
         document.getElementById('cem-msg').innerHTML = '<span style="color:var(--amber)">⚠ మీరు ఈ contest లో already join చేశారు!</span>';
-        btn.disabled = false; btn.textContent = '✅ Entry Submit చేయండి';
+        btn.disabled = false; btn.textContent = '🔒 Pay & Join';
         return;
       }
+    } catch (e) {
+      document.getElementById('cem-msg').innerHTML = '<span style="color:var(--error)">Error వచ్చింది. మళ్ళీ try చేయండి.</span>';
+      btn.disabled = false; btn.textContent = '🔒 Pay & Join';
+      return;
+    }
 
-      // Check 2: UTR already used anywhere (cross-contest duplicate)
-      const utrRes = await fetch(`${SB_URL}/rest/v1/ae_contest_entries?utr=eq.${encodeURIComponent(utr)}&select=id,contest_id`, { headers: SB_HEADERS });
-      const utrData = await utrRes.json();
-      if (Array.isArray(utrData) && utrData.length > 0) {
-        document.getElementById('cem-msg').innerHTML = '<span style="color:var(--error)">❌ ఈ UTR number already use అయింది! మీరు pay చేసిన UTR enter చేయండి.</span>';
-        btn.disabled = false; btn.textContent = '✅ Entry Submit చేయండి';
+    // ── Step 1: Edge Function నుండి order_id తీసుకో ──
+    btn.textContent = '⏳ Payment initializing...';
+    let order_id = null;
+    try {
+      const res = await fetch(`${SB_URL}/functions/v1/create-razorpay-order`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json', 'Authorization': 'Bearer ' + SB_KEY },
+        body: JSON.stringify({
+          amount: c.entry_fee,
+          plan: 'contest_entry',
+          contest_id: c.id,
+          gmail: u.gmail,
+          name: u.name,
+        }),
+      });
+      const data = await res.json();
+      if (!res.ok || !data.order_id) {
+        document.getElementById('cem-msg').innerHTML = '<span style="color:var(--error)">❌ Order create failed: ' + (data.error || 'Try again') + '</span>';
+        btn.disabled = false; btn.textContent = '🔒 Pay & Join';
         return;
       }
+      order_id = data.order_id;
+    } catch (e) {
+      document.getElementById('cem-msg').innerHTML = '<span style="color:var(--error)">❌ Network error. Internet check చేయండి.</span>';
+      btn.disabled = false; btn.textContent = '🔒 Pay & Join';
+      return;
+    }
 
-      // Check 3: UTR already used in ae_payments table (other payments)
-      const payRes = await fetch(`${SB_URL}/rest/v1/ae_payments?utr=eq.${encodeURIComponent(utr)}&select=id`, { headers: SB_HEADERS });
-      const payData = await payRes.json();
-      if (Array.isArray(payData) && payData.length > 0) {
-        document.getElementById('cem-msg').innerHTML = '<span style="color:var(--error)">❌ ఈ UTR number already వేరే payment కి use అయింది! Correct UTR enter చేయండి.</span>';
-        btn.disabled = false; btn.textContent = '✅ Entry Submit చేయండి';
-        return;
+    // ── Step 2: Razorpay Checkout open చేయి ──
+    const options = {
+      key: RZP_KEY,
+      amount: c.entry_fee * 100, // paise
+      currency: 'INR',
+      order_id: order_id,
+      name: 'Anil EduTech',
+      description: 'Contest Entry: ' + c.title,
+      prefill: { name: u.name || '', email: u.gmail || '' },
+      theme: { color: '#f57c00' },
+      handler: async function (response) {
+        document.getElementById('cem-msg').innerHTML = '⏳ Verifying payment...';
+        try {
+          const vRes = await fetch(`${SB_URL}/functions/v1/verify-razorpay-payment`, {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json', 'Authorization': 'Bearer ' + SB_KEY },
+            body: JSON.stringify({
+              razorpay_order_id: response.razorpay_order_id,
+              razorpay_payment_id: response.razorpay_payment_id,
+              razorpay_signature: response.razorpay_signature,
+            }),
+          });
+          const vData = await vRes.json();
+          if (!vRes.ok || !vData.success) {
+            document.getElementById('cem-msg').innerHTML = '<span style="color:var(--error)">❌ Payment verification failed. Support కి contact చేయండి.</span>';
+            btn.disabled = false; btn.textContent = '🔒 Pay & Join';
+            return;
+          }
+        } catch (e) {
+          document.getElementById('cem-msg').innerHTML = '<span style="color:var(--error)">❌ Verification error: ' + e.message + '</span>';
+          btn.disabled = false; btn.textContent = '🔒 Pay & Join';
+          return;
+        }
+        await _saveContestEntryAfterPayment(response.razorpay_payment_id, u, c);
+      },
+      modal: {
+        ondismiss: function () {
+          document.getElementById('cem-msg').innerHTML = '<span style="color:var(--amber)">Payment cancelled</span>';
+          btn.disabled = false; btn.textContent = '🔒 Pay & Join';
+        }
       }
+    };
 
-      // Save entry
+    _loadRazorpay(function () {
+      try {
+        const rzp = new Razorpay(options);
+        rzp.on('payment.failed', function (resp) {
+          document.getElementById('cem-msg').innerHTML = '<span style="color:var(--error)">❌ Payment failed: ' + (resp.error.description || 'Try again') + '</span>';
+          btn.disabled = false; btn.textContent = '🔒 Pay & Join';
+        });
+        rzp.open();
+        btn.textContent = '⏳ Waiting for payment...';
+      } catch (e) {
+        document.getElementById('cem-msg').innerHTML = '<span style="color:var(--error)">❌ Razorpay load error. Internet check చేయండి.</span>';
+        btn.disabled = false; btn.textContent = '🔒 Pay & Join';
+      }
+    });
+  }
+
+  // ── Save entry after Razorpay payment verified ──
+  async function _saveContestEntryAfterPayment(paymentId, u, c) {
+    const btn = document.getElementById('cem-submit-btn');
+    try {
       const entryRes = await fetch(`${SB_URL}/rest/v1/ae_contest_entries`, {
         method: 'POST',
         headers: { ...SB_HEADERS, 'Prefer': 'return=minimal' },
         body: JSON.stringify({
-          contest_id: _activeContest.id,
+          contest_id: c.id,
           gmail: u.gmail,
           name: u.name || u.gmail,
-          utr: utr,
-          status: 'pending',
+          utr: paymentId,
+          status: 'approved',
           created_at: new Date().toISOString()
         })
       });
-
       const entryText = await entryRes.text();
       console.log('Entry save:', entryRes.status, entryText);
       if (entryRes.ok || entryRes.status === 201) {
-        document.getElementById('cem-msg').innerHTML = '<span style="color:#4CAF50">✅ Entry submit అయింది! Admin approve చేసిన తర్వాత quiz unlock అవుతుంది.</span>';
-        btn.textContent = '✅ Submitted!';
-        const waMsg = encodeURIComponent('🏆 New Contest Entry!\nContest: ' + _activeContest.title + '\nName: ' + (u.name || u.gmail) + '\nUTR: ' + utr + '\nFee: ₹' + _activeContest.entry_fee);
+        document.getElementById('cem-msg').innerHTML = '<span style="color:#4CAF50">✅ Payment success! మీరు contest లో join అయ్యారు. ఇప్పుడు quiz start చేయవచ్చు.</span>';
+        btn.textContent = '✅ Joined!';
+        const waMsg = encodeURIComponent('🏆 New Contest Entry (Razorpay)!\nContest: ' + c.title + '\nName: ' + (u.name || u.gmail) + '\nPayment ID: ' + paymentId + '\nFee: ₹' + c.entry_fee);
         setTimeout(() => { window.open('https://wa.me/916309535287?text=' + waMsg, '_blank'); }, 1000);
       } else {
-        document.getElementById('cem-msg').innerHTML = '<span style="color:var(--error)">Error ' + entryRes.status + ': ' + entryText.slice(0, 100) + '</span>';
-        btn.disabled = false; btn.textContent = '✅ Entry Submit చేయండి';
+        document.getElementById('cem-msg').innerHTML = '<span style="color:var(--error)">Payment అయింది కానీ entry save error ' + entryRes.status + '. Support కి contact చేయండి — Payment ID: ' + paymentId + '</span>';
+        btn.disabled = false; btn.textContent = '🔒 Pay & Join';
       }
     } catch (e) {
-      document.getElementById('cem-msg').innerHTML = '<span style="color:var(--error)">Error వచ్చింది. మళ్ళీ try చేయండి.</span>';
-      btn.disabled = false; btn.textContent = '✅ Entry Submit చేయండి';
+      document.getElementById('cem-msg').innerHTML = '<span style="color:var(--error)">Payment అయింది కానీ entry save error. Support కి contact చేయండి — Payment ID: ' + paymentId + '</span>';
+      btn.disabled = false; btn.textContent = '🔒 Pay & Join';
     }
   }
 

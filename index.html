@@ -15743,7 +15743,7 @@
           gsAPI({ action: 'savePending', data: value });
         } else if (key === 'ae_sub_approved') {
           gsAPI({ action: 'saveApproved', data: value });
-        } else if (['ae_admin_pw', 'ae_theme', 'ae_lang', 'groq_api_key', 'ae_emailjs_config', 'ae_admin_email', 'ae_pw_resets', 'ae_payment_config', 'ae_payment_records', 'ae_admin_uname', 'ae_admin_recovery'].includes(key)) {
+        } else if (['ae_admin_pw', 'ae_theme', 'ae_lang', 'groq_api_key', 'ae_emailjs_config', 'ae_admin_email', 'ae_pw_resets', 'ae_payment_config', 'ae_payment_records', 'ae_admin_uname', 'ae_admin_recovery', 'ae_free_access'].includes(key)) {
           gsAPI({ action: 'setSetting', key, value: value || '' });
         }
       } catch (e) { /* silent */ }
@@ -15756,7 +15756,7 @@
         Promise.race([promise, new Promise((_, r) => setTimeout(() => r(new Error('timeout')), ms))]);
 
       try {
-        const SETTING_KEYS = ['ae_admin_pw', 'ae_theme', 'ae_lang', 'groq_api_key', 'ae_emailjs_config', 'ae_admin_email', 'ae_pw_resets', 'ae_payment_config', 'ae_payment_records', 'ae_admin_uname', 'ae_admin_recovery'];
+        const SETTING_KEYS = ['ae_admin_pw', 'ae_theme', 'ae_lang', 'groq_api_key', 'ae_emailjs_config', 'ae_admin_email', 'ae_pw_resets', 'ae_payment_config', 'ae_payment_records', 'ae_admin_uname', 'ae_admin_recovery', 'ae_free_access'];
 
         // Try Supabase first (fast)
         let dbRows = null, settingsRows = null;
@@ -18914,6 +18914,7 @@ More exams: https://aniledutech.in
         // Persist merged folders (ensures new sub-folders saved to Supabase/localStorage)
         saveMockFolders(getMockFolders());
         renderAdminTable();
+        if (typeof _renderFreeAccessControl === 'function') _renderFreeAccessControl();
       }
 
       const _pageAdminEl = document.getElementById('page-admin');
@@ -19130,7 +19131,7 @@ More exams: https://aniledutech.in
       const bmked = isBookmarked(e.id);
       const saved = _getSavedProgress(e.id);
       const hasResume = !!(saved && Object.keys(saved.answers || {}).length > 0);
-      const isLocked = !!(e.isPremium || e.isLocked), u2 = getCurrentUser(), userIsPremium = !!(u2 && u2.isPremium);
+      const isLocked = !isFreeAccessActive() && !!(e.isPremium || e.isLocked), u2 = getCurrentUser(), userIsPremium = !!(u2 && u2.isPremium);
       const catColor = _catColors[e.cat] || 'linear-gradient(135deg,#6366f1,#8b5cf6)';
       const catEmoji = _catEmoji[e.cat] || '📝';
       const btnLabel = isLocked && !userIsPremium ? '🔒 Unlock' : hasResume ? '▶ Resume' : qc === 0 ? 'No Qs' : 'Start →';
@@ -19266,7 +19267,7 @@ More exams: https://aniledutech.in
       const rev = _revCache[String(examId)];
       const u = getCurrentUser();
       const isPrem = !!(u && u.isPremium);
-      const isLocked = !!(e.isPremium || e.isLocked);
+      const isLocked = !isFreeAccessActive() && !!(e.isPremium || e.isLocked);
 
       // Remove old modal
       document.getElementById('exam-info-modal')?.remove();
@@ -19405,7 +19406,7 @@ More exams: https://aniledutech.in
 
       // Check exam-level lock
       const _cuSE = getCurrentUser();
-      const _cuIsPrem = !!(_cuSE && _cuSE.isPremium);
+      const _cuIsPrem = !!(_cuSE && _cuSE.isPremium) || isFreeAccessActive();
       if ((e.isPremium || e.isLocked) && !_cuIsPrem) { _showPremiumLockModal(e.name); return; }
 
       // Check folder-level lock (prevents bypass from Exams page)
@@ -21754,6 +21755,7 @@ Rules:
     function renderExamsManageTable() {
       const tbody = document.getElementById('exams-manage-table');
       if (!tbody) return;
+      _renderFreeAccessControl();
       if (!DB.exams.length) { tbody.innerHTML = '<tr><td colspan="9" style="text-align:center;color:var(--text3);padding:20px">Exams లేవు</td></tr>'; _renderAEPagination(0); return; }
 
       const totalPages = Math.ceil(DB.exams.length / _AE_PER);
@@ -21828,6 +21830,65 @@ Rules:
   </div>`;
     }
     function toggleExamLock(id) { const e = DB.exams.find(x => x.id === id); if (!e) return; e.isPremium = !e.isPremium; sbSaveExam(e); saveDB(); renderExamsManageTable(); filterExams(); toast(e.isPremium ? `🔒 "${e.name}" — Premium Only!` : `🔓 "${e.name}" — Free!`, e.isPremium ? 'warn' : 'success'); }
+
+    // ── TEMPORARY FREE ACCESS (admin: unlock ALL exams for N days, auto re-lock) ──
+    function _getFreeAccessCfg() {
+      try { return JSON.parse(_ls.getItem('ae_free_access') || 'null') || { until: 0 }; }
+      catch (e) { return { until: 0 }; }
+    }
+    function isFreeAccessActive() {
+      return Date.now() < (_getFreeAccessCfg().until || 0);
+    }
+    function startFreeAccessDays(days) {
+      days = parseFloat(days);
+      if (!days || days <= 0) { toast('❌ Days సరిగ్గా enter చేయండి', 'error'); return; }
+      const until = Date.now() + Math.round(days * 24 * 60 * 60 * 1000);
+      _ls.setItem('ae_free_access', JSON.stringify({ until, days, startedAt: Date.now() }));
+      toast(`🎉 అన్ని Exams ఇప్పుడు ${days} రోజులు FREE! Auto గా తిరిగి లాక్ అవుతాయి.`, 'success');
+      renderExamsManageTable(); filterExams();
+      if (typeof renderExamCards === 'function' && window._lastExamList) renderExamCards(window._lastExamList);
+    }
+    function endFreeAccessNow() {
+      if (!isFreeAccessActive()) return;
+      if (!confirm('Free Access ఇప్పుడే end చేయాలా? Premium exams వెంటనే మళ్ళీ లాక్ అవుతాయి.')) return;
+      _ls.setItem('ae_free_access', JSON.stringify({ until: 0 }));
+      toast('🔒 Free Access ended. Exams normal గా లాక్ అయ్యాయి.', 'info');
+      renderExamsManageTable(); filterExams();
+      if (typeof renderExamCards === 'function' && window._lastExamList) renderExamCards(window._lastExamList);
+    }
+    function _freeAccessBadgeHtml() {
+      const cfg = _getFreeAccessCfg();
+      const active = Date.now() < (cfg.until || 0);
+      if (active) {
+        const msLeft = cfg.until - Date.now();
+        const h = Math.floor(msLeft / 3600000), d = Math.floor(h / 24), hh = h % 24;
+        const left = d > 0 ? `${d}d ${hh}h` : `${hh}h`;
+        return `<div id="fa-status-box" style="display:flex;align-items:center;gap:10px;flex-wrap:wrap;background:rgba(16,185,129,.1);border:1.5px solid var(--teal);border-radius:12px;padding:10px 14px;margin-bottom:12px;">
+        <span style="font-size:13px;font-weight:900;color:var(--teal);">🎉 FREE ACCESS ACTIVE — ${left} మిగిలింది</span>
+        <button class="edit-btn" style="background:linear-gradient(135deg,#ef4444,#dc2626);font-size:11px;margin-left:auto;" onclick="endFreeAccessNow()">⏹ End Now</button>
+      </div>`;
+      }
+      return `<div id="fa-status-box" style="display:flex;align-items:center;gap:8px;flex-wrap:wrap;background:var(--bg);border:1.5px solid var(--border2);border-radius:12px;padding:10px 14px;margin-bottom:12px;">
+        <span style="font-size:12px;font-weight:800;color:var(--text2);">⏰ Temporary Free Access:</span>
+        <input id="fa-days-input" type="number" min="0.5" step="0.5" value="2" style="width:60px;padding:5px 8px;border-radius:8px;border:1.5px solid var(--border2);background:var(--card);color:var(--text);font-family:inherit;font-size:12px;">
+        <span style="font-size:11px;color:var(--text3);">days</span>
+        <button class="edit-btn" style="background:linear-gradient(135deg,#10b981,#059669);font-size:11px;" onclick="startFreeAccessDays(document.getElementById('fa-days-input').value)">🔓 Unlock All Exams</button>
+      </div>`;
+    }
+    function _renderFreeAccessControl() {
+      let box = document.getElementById('fa-control-wrap');
+      if (!box) {
+        const anchor = document.getElementById('admin-logged-label');
+        if (!anchor) return;
+        box = document.createElement('div');
+        box.id = 'fa-control-wrap';
+        box.style.cssText = 'margin:10px 16px;';
+        anchor.insertAdjacentElement('afterend', box);
+      }
+      box.innerHTML = _freeAccessBadgeHtml();
+    }
+    // Live countdown refresh while admin panel is open
+    setInterval(() => { if (document.getElementById('fa-status-box')) _renderFreeAccessControl(); }, 60000);
 
     // Bulk: First N exams (by ID order) free, rest premium
     async function bulkSetFreeLimit(freeCount) {
@@ -22244,9 +22305,9 @@ Rules:
       const folder = folders.find(f => f.id === folderId);
       if (!folder) return;
 
-      // Block locked folders — but allow premium users through
+      // Block locked folders — but allow premium users through (or temp free access)
       const _curUser = getCurrentUser();
-      const _userIsPremium = !!(_curUser && _curUser.isPremium);
+      const _userIsPremium = !!(_curUser && _curUser.isPremium) || isFreeAccessActive();
       if (folder.locked && !_userIsPremium) {
         toast('🔒 ఈ folder locked గా ఉంది. Premium తీసుకోండి!', 'warn');
         return;
@@ -22284,7 +22345,7 @@ Rules:
              </div>`
             }
         <div style="padding:10px 12px 10px;">
-          ${sf.locked ? '<span style="position:absolute;top:6px;right:6px;background:#ef444499;color:#fff;font-size:9px;font-weight:800;padding:2px 6px;border-radius:20px;">🔒</span>' : ''}
+          ${sf.locked && !isFreeAccessActive() ? '<span style="position:absolute;top:6px;right:6px;background:#ef444499;color:#fff;font-size:9px;font-weight:800;padding:2px 6px;border-radius:20px;">🔒</span>' : ''}
           ${sf.isPremium ? '<span style="position:absolute;top:6px;left:6px;background:linear-gradient(135deg,#f59e0b,#d97706);color:#fff;font-size:9px;font-weight:800;padding:2px 6px;border-radius:20px;">⭐</span>' : ''}
           <div style="display:flex;align-items:center;gap:6px;margin-bottom:4px;">
             ${!hasBanner ? '' : `<span style="font-size:18px;">${sf.icon}</span>`}
@@ -22323,9 +22384,9 @@ Rules:
       const folder = folders.find(f => f.id === folderId);
       if (!folder) return;
 
-      // Block locked sub-folders (also block if parent folder is locked) — but allow premium users
+      // Block locked sub-folders (also block if parent folder is locked) — but allow premium users (or temp free access)
       const _cu = getCurrentUser();
-      const _isPrem = !!(_cu && _cu.isPremium);
+      const _isPrem = !!(_cu && _cu.isPremium) || isFreeAccessActive();
       if (folder.locked && !_isPrem) {
         toast('🔒 ఈ folder locked గా ఉంది. Premium తీసుకోండి!', 'warn');
         return;
@@ -22365,7 +22426,7 @@ Rules:
         : 'ఇంకా tests add చేయలేదు';
 
       const lockBadge = document.getElementById('mock-folder-lock-badge');
-      lockBadge.style.display = folder.locked ? 'inline-block' : 'none';
+      lockBadge.style.display = (folder.locked && !isFreeAccessActive()) ? 'inline-block' : 'none';
 
       const listEl = document.getElementById('mock-folder-exams-list');
       if (!tests.length) {

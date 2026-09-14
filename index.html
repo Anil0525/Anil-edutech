@@ -15332,6 +15332,9 @@
     // ── SUPABASE CONFIG ──
     const SB_URL = 'https://vlfytciwahjokmyxmrav.supabase.co';
     const SB_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InZsZnl0Y2l3YWhqb2tteXhtcmF2Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzgzMDczODUsImV4cCI6MjA5Mzg4MzM4NX0.JFbaIG7aIRpMGhXpSAm6qEDtuobh0uTAKYIvMFnjmQE';
+    // New-format publishable key — the Edge Functions gateway rejects the
+    // legacy JWT anon key above (INVALID_API_KEY), so it needs this one instead.
+    const SB_PUBLISHABLE_KEY = 'sb_publishable_2gZ2Viu85Zpgla1bYU9MGA_5_F-DPJB';
     const SB_HEADERS = {
       'Content-Type': 'application/json',
       'apikey': SB_KEY,
@@ -17733,8 +17736,8 @@ More exams: https://aniledutech.in
           method: 'POST',
           headers: {
             'Content-Type': 'application/json',
-            'apikey': SB_KEY,
-            'Authorization': 'Bearer ' + SB_KEY
+            'apikey': SB_PUBLISHABLE_KEY,
+            'Authorization': 'Bearer ' + SB_PUBLISHABLE_KEY
           },
           body: JSON.stringify({ email, redirectTo })
         });

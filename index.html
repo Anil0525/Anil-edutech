@@ -17722,6 +17722,23 @@ More exams: https://aniledutech.in
       } catch (e) { return { error: true, error_description: 'Network error. Internet connection చెక్ చేయండి.' }; }
     }
 
+    // Calls a Supabase Edge Function (service-role side) that generates the
+    // real recovery link without sending Supabase's own email — we deliver
+    // that link ourselves via the already-configured EmailJS setup, since
+    // Supabase's default mail (no custom SMTP) was unreliable / rate-limited.
+    async function sbGenerateResetLink(email) {
+      try {
+        const redirectTo = window.location.origin + window.location.pathname;
+        const r = await fetch(`${SB_URL}/functions/v1/generate-reset-link`, {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json', 'Authorization': 'Bearer ' + SB_KEY },
+          body: JSON.stringify({ email, redirectTo })
+        });
+        const j = await r.json().catch(() => ({}));
+        return { ok: r.ok, ...j };
+      } catch (e) { return { ok: false, networkError: true }; }
+    }
+
     // ── LOGIN BRUTE FORCE PROTECTION ──
     // Persist lockout across page refreshes via localStorage
     function _loadAttempts(key) {
@@ -18055,11 +18072,25 @@ More exams: https://aniledutech.in
       }
       if (okEl) okEl.textContent = '⏳ Sending...';
 
-      const res = await sbResetPassword(gmail);
-      if (res && res.error) {
-        if (errEl) errEl.textContent = '❌ ' + (res.error_description || 'Failed. Try again.');
-        if (okEl) okEl.textContent = '';
-        return;
+      // Primary path: generate the real recovery link server-side (Edge
+      // Function, service-role key never exposed to the browser) and email
+      // it via EmailJS — avoids depending on Supabase's own mail sender.
+      const linkRes = await sbGenerateResetLink(gmail);
+      if (linkRes.ok) {
+        if (linkRes.link) {
+          await sendEmailNotification('reset_link', { gmail, resetLink: linkRes.link });
+        }
+        // ok:true with no link just means the account wasn't found — same
+        // message is shown either way so we don't leak which emails are registered.
+      } else {
+        // Edge Function not deployed yet / network issue — fall back to
+        // Supabase's built-in reset email so the flow doesn't fully break.
+        const res = await sbResetPassword(gmail);
+        if (res && res.error) {
+          if (errEl) errEl.textContent = '❌ ' + (res.error_description || 'Failed. Try again.');
+          if (okEl) okEl.textContent = '';
+          return;
+        }
       }
       if (okEl) okEl.textContent = '✅ Password reset link మీ Gmail కి పంపాము! Spam/Promotions folder కూడా చెక్ చేయండి.';
     }
@@ -25485,6 +25516,19 @@ Rules:
        <div class="warn-msg">⚠️ Admin Panel → Subscribers లో వెళ్ళి reset చేయండి</div>
        <a href="https://aniledutech.in" class="cta-btn">🔓 Reset చేయండి</a>`,
           'This is an automated security notification.'
+        );
+
+      } else if (type === 'reset_link') {
+        to = data.gmail;
+        subject = '🔑 మీ Password Reset Link — Anil EduTech';
+        htmlBody = _buildEmailHTML(
+          'linear-gradient(135deg,#f59e0b,#ea580c)',
+          '🔑', 'Password Reset Link',
+          `<div class="greeting">నమస్కారం 👋</div>
+       <p style="color:#475569;font-size:14px;margin-bottom:4px">మీ Anil EduTech account కోసం password reset request వచ్చింది. కింద button click చేసి కొత్త password set చేయండి.</p>
+       <a href="${data.resetLink}" class="cta-btn">🔓 Password Reset చేయండి</a>
+       <div class="warn-msg" style="margin-top:20px">⚠️ ఈ link కొద్ది సమయం మాత్రమే valid. మీరు ఈ request చేయకపోతే, ఈ email ignore చేయండి.</div>`,
+          'This is an automated security email.'
         );
 
       } else if (type === 'login') {

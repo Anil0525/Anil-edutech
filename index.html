@@ -14590,6 +14590,39 @@
           </div>
         </div>
 
+        <!-- NEW PASSWORD PANEL (after clicking email reset link) -->
+        <div class="sub-panel" id="subpanel-newpw">
+          <div class="sub-panel-title">కొత్త Password Set చేయండి</div>
+          <div class="sub-panel-sub">Reset link ద్వారా వచ్చారు. కొత్త password enter చేయండి.</div>
+          <div class="sub-field">
+            <input type="password" id="newpw-pw1" placeholder="కొత్త Password" autocomplete="new-password"
+              onkeydown="if(event.key==='Enter') document.getElementById('newpw-pw2').focus()">
+            <button type="button" class="sub-field-eye" onclick="toggleFieldVis('newpw-pw1',this)">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"
+                stroke-linejoin="round">
+                <path
+                  d="M17.94 17.94A10.07 10.07 0 0 1 12 20c-7 0-11-8-11-8a18.45 18.45 0 0 1 5.06-5.94M9.9 4.24A9.12 9.12 0 0 1 12 4c7 0 11 8 11 8a18.5 18.5 0 0 1-2.16 3.19m-6.72-1.07a3 3 0 1 1-4.24-4.24" />
+                <line x1="1" y1="1" x2="23" y2="23" />
+              </svg>
+            </button>
+          </div>
+          <div class="sub-field">
+            <input type="password" id="newpw-pw2" placeholder="కొత్త Password మళ్ళీ Enter చేయండి" autocomplete="new-password"
+              onkeydown="if(event.key==='Enter') doSetNewPassword()">
+            <button type="button" class="sub-field-eye" onclick="toggleFieldVis('newpw-pw2',this)">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"
+                stroke-linejoin="round">
+                <path
+                  d="M17.94 17.94A10.07 10.07 0 0 1 12 20c-7 0-11-8-11-8a18.45 18.45 0 0 1 5.06-5.94M9.9 4.24A9.12 9.12 0 0 1 12 4c7 0 11 8 11 8a18.5 18.5 0 0 1-2.16 3.19m-6.72-1.07a3 3 0 1 1-4.24-4.24" />
+                <line x1="1" y1="1" x2="23" y2="23" />
+              </svg>
+            </button>
+          </div>
+          <button class="sub-btn" onclick="doSetNewPassword()">✅ Password Update చేయండి</button>
+          <span class="sub-err" id="newpw-err"></span>
+          <span class="sub-ok" id="newpw-ok"></span>
+        </div>
+
       </div>
     </div>
   </div>
@@ -17606,6 +17639,9 @@ More exams: https://aniledutech.in
       setTimeout(() => document.getElementById('login-gmail').focus(), 100);
     }
     let _afterLogin = null;
+    // Holds the Supabase recovery access_token between the email-link redirect
+    // and doSetNewPassword() actually submitting the new password.
+    let _recoveryToken = null;
 
     function closeSubModal() {
       document.getElementById('sub-overlay').classList.remove('show');
@@ -17887,10 +17923,29 @@ More exams: https://aniledutech.in
       const params = new URLSearchParams(hash.replace('#', '?').replace('#', '&'));
       const accessToken = params.get('access_token');
       const refreshToken = params.get('refresh_token');
+      const linkType = params.get('type');
       if (!accessToken) return;
 
       // Clear hash from URL
       history.replaceState(null, '', window.location.pathname);
+
+      // BUG FIX: Supabase sends #access_token=...&type=recovery when the user
+      // clicks the "Forgot Password" email link. Previously this fell through
+      // to the normal login flow below, which just logged the user in and
+      // showed the website — so "reset password" never actually let anyone
+      // set a new password. Now we intercept recovery links and show the
+      // "set new password" panel instead.
+      if (linkType === 'recovery') {
+        _recoveryToken = accessToken;
+        document.getElementById('sub-overlay').classList.add('show');
+        switchSubTab('newpw');
+        const p1 = document.getElementById('newpw-pw1'), p2 = document.getElementById('newpw-pw2');
+        if (p1) p1.value = ''; if (p2) p2.value = '';
+        const errEl = document.getElementById('newpw-err'), okEl = document.getElementById('newpw-ok');
+        if (errEl) errEl.textContent = ''; if (okEl) okEl.textContent = '';
+        setTimeout(() => p1 && p1.focus(), 100);
+        return;
+      }
 
       // Fetch user info from Supabase
       fetch(`${SB_URL}/auth/v1/user`, {
@@ -18007,6 +18062,58 @@ More exams: https://aniledutech.in
         return;
       }
       if (okEl) okEl.textContent = '✅ Password reset link మీ Gmail కి పంపాము! Spam/Promotions folder కూడా చెక్ చేయండి.';
+    }
+
+    // ── SET NEW PASSWORD (after clicking email reset link) ──
+    async function doSetNewPassword() {
+      const pw1 = document.getElementById('newpw-pw1')?.value || '';
+      const pw2 = document.getElementById('newpw-pw2')?.value || '';
+      const errEl = document.getElementById('newpw-err');
+      const okEl = document.getElementById('newpw-ok');
+      if (errEl) errEl.textContent = '';
+      if (okEl) okEl.textContent = '';
+
+      if (!_recoveryToken) {
+        if (errEl) errEl.textContent = '❌ Reset link expired. మళ్ళీ "Forgot Password" try చేయండి.';
+        return;
+      }
+      if (pw1.length < 6) {
+        if (errEl) errEl.textContent = '❌ Password కనీసం 6 characters ఉండాలి.';
+        return;
+      }
+      if (pw1 !== pw2) {
+        if (errEl) errEl.textContent = '❌ రెండు passwords match కాలేదు.';
+        return;
+      }
+
+      if (okEl) okEl.textContent = '⏳ Updating...';
+      try {
+        const r = await fetch(`${SB_URL}/auth/v1/user`, {
+          method: 'PUT',
+          headers: {
+            'Content-Type': 'application/json',
+            'apikey': SB_KEY,
+            'Authorization': 'Bearer ' + _recoveryToken
+          },
+          body: JSON.stringify({ password: pw1 })
+        });
+        const res = await r.json();
+        if (!r.ok || res.error) {
+          if (okEl) okEl.textContent = '';
+          if (errEl) errEl.textContent = '❌ ' + (res.error_description || res.msg || 'Failed. మళ్ళీ try చేయండి.');
+          return;
+        }
+        _recoveryToken = null;
+        if (okEl) okEl.textContent = '';
+        toast('✅ Password మార్చబడింది! ఇప్పుడు Login చేయండి.', 'success');
+        switchSubTab('login');
+        document.getElementById('newpw-pw1').value = '';
+        document.getElementById('newpw-pw2').value = '';
+        if (res.email) document.getElementById('login-gmail').value = res.email;
+      } catch (e) {
+        if (okEl) okEl.textContent = '';
+        if (errEl) errEl.textContent = '❌ Network error. Internet connection చెక్ చేయండి.';
+      }
     }
 
     // ADMIN — render subscribers

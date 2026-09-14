@@ -18083,12 +18083,23 @@ More exams: https://aniledutech.in
       // Function, service-role key never exposed to the browser) and email
       // it via EmailJS — avoids depending on Supabase's own mail sender.
       const linkRes = await sbGenerateResetLink(gmail);
+      // TEMP DEBUG (remove once confirmed working): show exactly what
+      // happened on-screen so we don't need DevTools to diagnose.
+      console.log('[forgot-pw debug] linkRes:', linkRes);
       if (linkRes.ok) {
         if (linkRes.link) {
-          await sendEmailNotification('reset_link', { gmail, resetLink: linkRes.link });
+          const sendRes = await sendEmailNotification('reset_link', { gmail, resetLink: linkRes.link });
+          console.log('[forgot-pw debug] sendRes:', sendRes);
+          if (!sendRes.ok) {
+            if (errEl) errEl.textContent = '❌ DEBUG: EmailJS failed — ' + sendRes.reason;
+            if (okEl) okEl.textContent = '';
+            return;
+          }
+        } else {
+          if (errEl) errEl.textContent = '❌ DEBUG: link generate avvaledu (account ledu leda edge function/redirect config lో సమస్య).';
+          if (okEl) okEl.textContent = '';
+          return;
         }
-        // ok:true with no link just means the account wasn't found — same
-        // message is shown either way so we don't leak which emails are registered.
       } else {
         // Edge Function not deployed yet / network issue — fall back to
         // Supabase's built-in reset email so the flow doesn't fully break.
@@ -25356,7 +25367,7 @@ Rules:
 
     async function sendEmailNotification(type, data) {
       const cfg = getEmailJSConfig();
-      if (!cfg || !cfg.serviceId || !cfg.templateId || !cfg.publicKey) return;
+      if (!cfg || !cfg.serviceId || !cfg.templateId || !cfg.publicKey) return { ok: false, reason: 'EmailJS config missing' };
 
       const adminGmail = (getAdminEmail && getAdminEmail()) || '';
       const now = new Date().toLocaleString('en-IN', { dateStyle: 'medium', timeStyle: 'short' });
@@ -25554,7 +25565,7 @@ Rules:
           'This is an automated login notification.'
         );
       } else {
-        return;
+        return { ok: false, reason: 'unknown type: ' + type };
       }
 
       try {
@@ -25565,7 +25576,11 @@ Rules:
           html_message: htmlBody,
           from_name: 'Anil EduTech'
         }, cfg.publicKey);
-      } catch (e) { console.warn('EmailJS error:', e); }
+        return { ok: true };
+      } catch (e) {
+        console.warn('EmailJS error:', e);
+        return { ok: false, reason: (e && (e.text || e.message)) || 'EmailJS send failed' };
+      }
     }
 
     async function testEmailJS() {

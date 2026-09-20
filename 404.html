@@ -1,41 +1,8 @@
 <!DOCTYPE html>
-<html lang="te">
-<head>
-<meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Anil EduTech</title>
-<script>
-var path = window.location.pathname;
-
-// These paths have real static folders — add trailing slash so GitHub Pages serves them
-var staticPaths = ['/exams', '/mock-tests', '/syllabus', '/videos', '/jobs', '/current-affairs', '/daily-challenge', '/progress', '/support'];
-
-if (staticPaths.indexOf(path) !== -1) {
-  // Redirect to folder with trailing slash → GitHub Pages serves index.html
-  window.location.replace(path + '/');
-} else {
-  // Unknown path → go to main app
-  var pageMap = {
-    '/mock-tests': 'mock-folders',
-    '/current-affairs': 'current-affairs',
-    '/syllabus': 'syllabus',
-    '/videos': 'videos',
-    '/jobs': 'jobs',
-    '/daily-challenge': 'daily',
-    '/progress': 'progress',
-    '/support': 'support',
-    '/referral': 'referral',
-    '/badges': 'badges',
-    '/profile': 'profile',
-    '/contest': 'contest',
-  };
-  var targetPage = pageMap[path];
-  if (targetPage) sessionStorage.setItem('ae_goto_page', targetPage);
-  window.location.replace('/');
-}
-</script>
-</head>
-<body>
-<p style="font-family:sans-serif;text-align:center;margin-top:100px;color:#666;">Loading Anil EduTech...</p>
-</body>
-</html>
+<html lang="te"><head><meta charset="UTF-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Page not found | Anil EduTech</title><meta name="robots" content="noindex">
+<style>body{margin:0;font-family:system-ui,'Noto Sans Telugu',sans-serif;background:#F0F4FF;color:#0F1B3D;display:flex;min-height:100vh;align-items:center;justify-content:center;text-align:center;padding:20px}
+.b{max-width:460px}h1{font-size:26px;margin:0 0 8px}p{color:#3B4A6B;line-height:1.7}a{display:inline-block;margin:6px;padding:11px 18px;border-radius:12px;background:#1A73E8;color:#fff;text-decoration:none;font-weight:800}a.g{background:#fff;color:#1A73E8;border:1.5px solid #C8D6FF}</style></head>
+<body><div class="b"><div style="font-size:54px">🧭</div><h1>ఈ page దొరకలేదు</h1>
+<p>మీరు వెతుకుతున్న page లేదు లేదా move అయింది. Home కి వెళ్లి mock tests లేదా study guides చూడండి.</p>
+<a href="/">🏠 Home</a><a class="g" href="/study-hub.html">📚 Study Hub</a></div></body></html>

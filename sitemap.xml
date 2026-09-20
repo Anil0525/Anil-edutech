@@ -1,190 +1,29 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9"
-        xmlns:xhtml="http://www.w3.org/1999/xhtml">
-
-  <!-- Homepage -->
-  <url>
-    <loc>https://aniledutech.in/</loc>
-    <lastmod>2026-06-20</lastmod>
-    <changefreq>daily</changefreq>
-    <priority>1.0</priority>
-  </url>
-
-  <!-- Static / Policy Pages -->
-  <url>
-    <loc>https://aniledutech.in/about.html</loc>
-    <lastmod>2026-06-20</lastmod>
-    <changefreq>monthly</changefreq>
-    <priority>0.6</priority>
-  </url>
-
-  <url>
-    <loc>https://aniledutech.in/contact.html</loc>
-    <lastmod>2026-06-20</lastmod>
-    <changefreq>monthly</changefreq>
-    <priority>0.6</priority>
-  </url>
-
-  <url>
-    <loc>https://aniledutech.in/privacy-policy.html</loc>
-    <lastmod>2026-06-20</lastmod>
-    <changefreq>yearly</changefreq>
-    <priority>0.3</priority>
-  </url>
-
-  <url>
-    <loc>https://aniledutech.in/disclaimer.html</loc>
-    <lastmod>2026-06-20</lastmod>
-    <changefreq>yearly</changefreq>
-    <priority>0.3</priority>
-  </url>
-
-  <!-- Study Guide Pages -->
-  <url>
-    <loc>https://aniledutech.in/tspsc-groups-guide.html</loc>
-    <lastmod>2026-06-20</lastmod>
-    <changefreq>monthly</changefreq>
-    <priority>0.8</priority>
-  </url>
-
-  <url>
-    <loc>https://aniledutech.in/appsc-groups-guide.html</loc>
-    <lastmod>2026-07-04</lastmod>
-    <changefreq>monthly</changefreq>
-    <priority>0.8</priority>
-  </url>
-
-  <url>
-    <loc>https://aniledutech.in/tspsc-group1-syllabus.html</loc>
-    <lastmod>2026-06-20</lastmod>
-    <changefreq>monthly</changefreq>
-    <priority>0.8</priority>
-  </url>
-
-  <url>
-    <loc>https://aniledutech.in/ssc-cgl-guide.html</loc>
-    <lastmod>2026-06-20</lastmod>
-    <changefreq>monthly</changefreq>
-    <priority>0.8</priority>
-  </url>
-
-  <url>
-    <loc>https://aniledutech.in/ssc-chsl-guide.html</loc>
-    <lastmod>2026-06-20</lastmod>
-    <changefreq>monthly</changefreq>
-    <priority>0.8</priority>
-  </url>
-
-  <url>
-    <loc>https://aniledutech.in/banking-exam-guide.html</loc>
-    <lastmod>2026-06-20</lastmod>
-    <changefreq>monthly</changefreq>
-    <priority>0.8</priority>
-  </url>
-
-  <url>
-    <loc>https://aniledutech.in/ibps-po-guide.html</loc>
-    <lastmod>2026-06-20</lastmod>
-    <changefreq>monthly</changefreq>
-    <priority>0.8</priority>
-  </url>
-
-  <url>
-    <loc>https://aniledutech.in/rrb-ntpc-guide.html</loc>
-    <lastmod>2026-06-20</lastmod>
-    <changefreq>monthly</changefreq>
-    <priority>0.8</priority>
-  </url>
-
-  <url>
-    <loc>https://aniledutech.in/gk-guide.html</loc>
-    <lastmod>2026-06-20</lastmod>
-    <changefreq>monthly</changefreq>
-    <priority>0.8</priority>
-  </url>
-
-  <url>
-    <loc>https://aniledutech.in/speed-maths-guide.html</loc>
-    <lastmod>2026-06-20</lastmod>
-    <changefreq>monthly</changefreq>
-    <priority>0.7</priority>
-  </url>
-
-  <url>
-    <loc>https://aniledutech.in/english-grammar-guide.html</loc>
-    <lastmod>2026-06-20</lastmod>
-    <changefreq>monthly</changefreq>
-    <priority>0.7</priority>
-  </url>
-
-  <url>
-    <loc>https://aniledutech.in/reasoning-tricks-guide.html</loc>
-    <lastmod>2026-06-20</lastmod>
-    <changefreq>monthly</changefreq>
-    <priority>0.7</priority>
-  </url>
-
-  <url>
-    <loc>https://aniledutech.in/telangana-history-guide.html</loc>
-    <lastmod>2026-06-20</lastmod>
-    <changefreq>monthly</changefreq>
-    <priority>0.7</priority>
-  </url>
-
-  <url>
-    <loc>https://aniledutech.in/ap-history-guide.html</loc>
-    <lastmod>2026-06-20</lastmod>
-    <changefreq>monthly</changefreq>
-    <priority>0.7</priority>
-  </url>
-
-  <url>
-    <loc>https://aniledutech.in/polity-guide.html</loc>
-    <lastmod>2026-06-20</lastmod>
-    <changefreq>monthly</changefreq>
-    <priority>0.7</priority>
-  </url>
-
-  <url>
-    <loc>https://aniledutech.in/computer-awareness-guide.html</loc>
-    <lastmod>2026-06-20</lastmod>
-    <changefreq>monthly</changefreq>
-    <priority>0.7</priority>
-  </url>
-
-  <url>
-    <loc>https://aniledutech.in/economy-guide.html</loc>
-    <lastmod>2026-06-20</lastmod>
-    <changefreq>monthly</changefreq>
-    <priority>0.7</priority>
-  </url>
-
-  <url>
-    <loc>https://aniledutech.in/science-guide.html</loc>
-    <lastmod>2026-06-20</lastmod>
-    <changefreq>monthly</changefreq>
-    <priority>0.7</priority>
-  </url>
-
-  <url>
-    <loc>https://aniledutech.in/current-affairs-strategy.html</loc>
-    <lastmod>2026-06-20</lastmod>
-    <changefreq>weekly</changefreq>
-    <priority>0.7</priority>
-  </url>
-
-  <url>
-    <loc>https://aniledutech.in/time-management-guide.html</loc>
-    <lastmod>2026-06-20</lastmod>
-    <changefreq>monthly</changefreq>
-    <priority>0.6</priority>
-  </url>
-
-  <url>
-    <loc>https://aniledutech.in/study-plan-guide.html</loc>
-    <lastmod>2026-06-20</lastmod>
-    <changefreq>monthly</changefreq>
-    <priority>0.6</priority>
-  </url>
-
+<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">
+  <url><loc>https://aniledutech.in/</loc><priority>1.0</priority></url>
+  <url><loc>https://aniledutech.in/about.html</loc><priority>0.7</priority></url>
+  <url><loc>https://aniledutech.in/ap-history-guide.html</loc><priority>0.7</priority></url>
+  <url><loc>https://aniledutech.in/banking-exam-guide.html</loc><priority>0.7</priority></url>
+  <url><loc>https://aniledutech.in/computer-awareness-guide.html</loc><priority>0.7</priority></url>
+  <url><loc>https://aniledutech.in/contact.html</loc><priority>0.7</priority></url>
+  <url><loc>https://aniledutech.in/current-affairs-strategy.html</loc><priority>0.7</priority></url>
+  <url><loc>https://aniledutech.in/disclaimer.html</loc><priority>0.7</priority></url>
+  <url><loc>https://aniledutech.in/economy-guide.html</loc><priority>0.7</priority></url>
+  <url><loc>https://aniledutech.in/english-grammar-guide.html</loc><priority>0.7</priority></url>
+  <url><loc>https://aniledutech.in/gk-guide.html</loc><priority>0.7</priority></url>
+  <url><loc>https://aniledutech.in/ibps-po-guide.html</loc><priority>0.7</priority></url>
+  <url><loc>https://aniledutech.in/polity-guide.html</loc><priority>0.7</priority></url>
+  <url><loc>https://aniledutech.in/privacy-policy.html</loc><priority>0.7</priority></url>
+  <url><loc>https://aniledutech.in/reasoning-tricks-guide.html</loc><priority>0.7</priority></url>
+  <url><loc>https://aniledutech.in/rrb-ntpc-guide.html</loc><priority>0.7</priority></url>
+  <url><loc>https://aniledutech.in/science-guide.html</loc><priority>0.7</priority></url>
+  <url><loc>https://aniledutech.in/speed-maths-guide.html</loc><priority>0.7</priority></url>
+  <url><loc>https://aniledutech.in/ssc-cgl-guide.html</loc><priority>0.7</priority></url>
+  <url><loc>https://aniledutech.in/ssc-chsl-guide.html</loc><priority>0.7</priority></url>
+  <url><loc>https://aniledutech.in/study-hub.html</loc><priority>0.7</priority></url>
+  <url><loc>https://aniledutech.in/study-plan-guide.html</loc><priority>0.7</priority></url>
+  <url><loc>https://aniledutech.in/telangana-history-guide.html</loc><priority>0.7</priority></url>
+  <url><loc>https://aniledutech.in/time-management-guide.html</loc><priority>0.7</priority></url>
+  <url><loc>https://aniledutech.in/tspsc-group1-syllabus.html</loc><priority>0.7</priority></url>
+  <url><loc>https://aniledutech.in/tspsc-groups-guide.html</loc><priority>0.7</priority></url>
 </urlset>

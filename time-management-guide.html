@@ -3,254 +3,169 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Time Management in Competitive Exams | Anil EduTech</title>
-<meta name="description" content="Exam లో time manage చేయడం ఎలా? — Speed, accuracy, question selection strategy.">
-<meta name="keywords" content="time management competitive exam Telugu, exam strategy time management, how to manage time in exam">
+<meta name="theme-color" content="#1A73E8">
+<title>Time Management in Competitive Exams — Practical Guide | Anil EduTech</title>
+<meta name="description" content="Exam లో time manage చేయడం ఎలా? ప్రతి ప్రశ్నకి సగటు సమయం, 3-pass method, negative marking లెక్క, timed drills మరియు mock analysis తెలుగులో.">
+
 <meta name="robots" content="index, follow">
-<meta name="author" content="Anil EduTech">
-<meta property="og:title" content="Time Management in Competitive Exams | Anil EduTech">
-<meta property="og:description" content="Exam లో time manage చేయడం ఎలా? — Speed, accuracy, question selection strategy.">
-<meta property="og:type" content="article">
-<meta property="og:url" content="https://www.aniledutech.in/time-management-guide.html">
 <link rel="canonical" href="https://aniledutech.in/time-management-guide.html">
-<link rel="preconnect" href="https://fonts.googleapis.com">
-<link href="https://fonts.googleapis.com/css2?family=Noto+Sans+Telugu:wght@400;600;700;900&family=Inter:wght@400;600;700;800&display=swap" rel="stylesheet">
 <style>
   :root {
-    --primary: #A855F7;
-    --bg: #0A0F1E;
-    --card: #111827;
-    --text: #E8F0FF;
-    --text2: #94A3B8;
-    --border: rgba(255,255,255,0.08);
+    --bg:#0A0F2C;--bg2:#0D1A3A;--card:#111827;--border:rgba(79,142,255,0.18);
+    --primary:#4F8EFF;--purple:#A855F7;--cyan:#06B6D4;--green:#00B894;
+    --text:#E8F0FF;--text2:#94A3B8;--text3:#64748B;
   }
-  * { margin:0; padding:0; box-sizing:border-box; }
-  body { background: var(--bg); color: var(--text); font-family: 'Inter', 'Noto Sans Telugu', sans-serif; line-height: 1.7; }
-
-  /* NAV */
-  nav { background: #0D1117; border-bottom: 2px solid var(--primary); padding: 0 20px; display: flex; align-items: center; justify-content: space-between; height: 56px; position: sticky; top: 0; z-index: 100; }
-  .nav-logo { display: flex; align-items: center; gap: 10px; text-decoration: none; }
-  .nav-logo-box { width: 36px; height: 36px; background: linear-gradient(135deg, #4F8EFF, #A855F7); border-radius: 10px; display: flex; align-items: center; justify-content: center; font-weight: 900; font-size: 16px; color: #fff; }
-  .nav-logo-text { font-weight: 800; font-size: 15px; color: #E8F0FF; }
-  .nav-links { display: flex; gap: 6px; }
-  .nav-link { color: #94A3B8; text-decoration: none; font-size: 13px; font-weight: 600; padding: 6px 12px; border-radius: 8px; transition: all 0.2s; }
-  .nav-link:hover { background: rgba(255,255,255,0.07); color: #E8F0FF; }
-  .nav-home-btn { background: var(--primary); color: #fff; border: none; border-radius: 10px; padding: 7px 16px; font-size: 13px; font-weight: 700; cursor: pointer; text-decoration: none; }
-
-  /* HERO */
-  .blog-hero { background: linear-gradient(135deg, #0D1117 0%, #111827 100%); border-bottom: 1px solid var(--border); padding: 48px 20px 36px; text-align: center; position: relative; overflow: hidden; }
-  .blog-hero::before { content:''; position:absolute; top:-60px; left:50%; transform:translateX(-50%); width:500px; height:300px; background: radial-gradient(ellipse, #A855F722 0%, transparent 70%); pointer-events:none; }
-  .blog-hero-cat { display: inline-block; background: #A855F722; border: 1px solid #A855F744; color: var(--primary); border-radius: 20px; padding: 4px 14px; font-size: 12px; font-weight: 700; margin-bottom: 16px; letter-spacing: 0.5px; text-transform: uppercase; }
-  .blog-hero-emoji { font-size: 56px; margin-bottom: 16px; display: block; }
-  .blog-hero h1 { font-size: clamp(22px, 5vw, 36px); font-weight: 900; color: #fff; margin-bottom: 14px; line-height: 1.3; }
-  .blog-hero p { font-size: 15px; color: #94A3B8; max-width: 600px; margin: 0 auto 20px; }
-  .blog-meta { display: flex; align-items: center; justify-content: center; gap: 16px; flex-wrap: wrap; }
-  .blog-meta-item { font-size: 12px; color: #64748B; display: flex; align-items: center; gap: 5px; }
-
-  /* CONTENT */
-  .blog-wrap { max-width: 800px; margin: 0 auto; padding: 40px 20px 60px; }
-  .blog-toc { background: var(--card); border: 1px solid var(--border); border-left: 3px solid var(--primary); border-radius: 14px; padding: 20px 24px; margin-bottom: 36px; }
-  .blog-toc h3 { font-size: 13px; font-weight: 800; color: var(--text2); text-transform: uppercase; letter-spacing: 1px; margin-bottom: 12px; }
-  .blog-toc ol { padding-left: 18px; }
-  .blog-toc li { margin-bottom: 8px; }
-  .blog-toc a { color: var(--primary); text-decoration: none; font-size: 14px; font-weight: 600; }
-  .blog-toc a:hover { text-decoration: underline; }
-
-  .blog-section { margin-bottom: 40px; }
-  .blog-section h2 { font-size: 20px; font-weight: 800; color: #fff; margin-bottom: 14px; padding-bottom: 10px; border-bottom: 2px solid #A855F733; display: flex; align-items: center; gap: 8px; }
-  .blog-section h3 { font-size: 16px; font-weight: 700; color: #C8D8FF; margin: 20px 0 10px; }
-  .blog-section p { font-size: 15px; color: #94A3B8; margin-bottom: 14px; line-height: 1.8; }
-  .blog-section ul, .blog-section ol { padding-left: 20px; margin-bottom: 14px; }
-  .blog-section li { font-size: 15px; color: #94A3B8; margin-bottom: 8px; line-height: 1.7; }
-  .blog-section strong { color: #C8D8FF; }
-
-  /* INFO BOX */
-  .info-box { background: #A855F711; border: 1px solid #A855F733; border-radius: 12px; padding: 16px 20px; margin: 20px 0; }
-  .info-box-title { font-size: 13px; font-weight: 800; color: var(--primary); margin-bottom: 8px; text-transform: uppercase; letter-spacing: 0.5px; }
-  .info-box p { margin: 0; font-size: 14px; }
-
-  /* TABLE */
-  .blog-table { width: 100%; border-collapse: collapse; margin: 20px 0; border-radius: 10px; overflow: hidden; }
-  .blog-table th { background: #A855F722; color: var(--primary); font-size: 12px; font-weight: 800; text-transform: uppercase; letter-spacing: 0.8px; padding: 12px 14px; text-align: left; }
-  .blog-table td { padding: 11px 14px; font-size: 14px; color: #94A3B8; border-bottom: 1px solid var(--border); }
-  .blog-table tr:last-child td { border-bottom: none; }
-  .blog-table tr:hover td { background: rgba(255,255,255,0.03); }
-
-  /* CTA */
-  .blog-cta { background: linear-gradient(135deg, #A855F722, #A855F711); border: 1px solid #A855F744; border-radius: 16px; padding: 28px 24px; text-align: center; margin-top: 48px; }
-  .blog-cta h3 { font-size: 18px; font-weight: 800; color: #fff; margin-bottom: 10px; }
-  .blog-cta p { font-size: 14px; color: #94A3B8; margin-bottom: 20px; }
-  .blog-cta a { display: inline-block; background: var(--primary); color: #fff; border-radius: 10px; padding: 12px 28px; font-size: 14px; font-weight: 700; text-decoration: none; transition: opacity 0.2s; }
-  .blog-cta a:hover { opacity: 0.85; }
-
-  /* MORE BLOGS */
-  .more-blogs { margin-top: 48px; padding-top: 32px; border-top: 1px solid var(--border); }
-  .more-blogs h3 { font-size: 16px; font-weight: 800; color: #fff; margin-bottom: 18px; }
-  .more-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 12px; }
-  .more-card { background: var(--card); border: 1px solid var(--border); border-radius: 12px; padding: 14px; text-decoration: none; transition: border-color 0.2s; }
-  .more-card:hover { border-color: var(--primary); }
-  .more-card-emoji { font-size: 22px; margin-bottom: 6px; }
-  .more-card-title { font-size: 13px; font-weight: 700; color: #E8F0FF; margin-bottom: 3px; }
-  .more-card-sub { font-size: 11px; color: #64748B; }
-
-  /* FOOTER */
-  footer { background: #0D1117; border-top: 1px solid var(--border); padding: 24px 20px; text-align: center; }
-  .footer-links { display: flex; justify-content: center; gap: 20px; margin-bottom: 12px; flex-wrap: wrap; }
-  .footer-links a { color: #64748B; text-decoration: none; font-size: 13px; font-weight: 600; }
-  .footer-links a:hover { color: var(--primary); }
-  .footer-copy { font-size: 12px; color: #374151; }
-
-  @media(max-width: 600px) {
-    .nav-links { display: none; }
-    .blog-hero { padding: 32px 16px 24px; }
-  }
+  *{margin:0;padding:0;box-sizing:border-box;}
+  body{background:var(--bg);color:var(--text);font-family:'Segoe UI',system-ui,sans-serif;line-height:1.8;}
+  .topbar{height:4px;background:linear-gradient(90deg,#4F8EFF,#A855F7,#06B6D4);}
+  header{background:var(--bg2);border-bottom:1px solid var(--border);padding:16px 24px;display:flex;align-items:center;gap:16px;}
+  .logo-box{width:44px;height:44px;background:linear-gradient(135deg,#4F8EFF,#A855F7);border-radius:12px;display:flex;align-items:center;justify-content:center;font-size:20px;font-weight:900;color:#fff;text-decoration:none;}
+  .site-name{font-size:18px;font-weight:800;}
+  .site-tagline{font-size:11px;color:var(--purple);letter-spacing:1.5px;text-transform:uppercase;}
+  nav{margin-left:auto;display:flex;gap:12px;flex-wrap:wrap;}
+  nav a{color:var(--text2);text-decoration:none;font-size:13px;font-weight:600;padding:6px 14px;border-radius:8px;border:1px solid var(--border);transition:all 0.2s;}
+  nav a:hover{color:var(--primary);border-color:var(--primary);}
+  .article-hero{background:linear-gradient(135deg,#0A0F2C,#0D1F5C,#0A1A10);padding:50px 24px 40px;text-align:center;}
+  .category-tag{display:inline-block;padding:5px 14px;border-radius:20px;background:rgba(79,142,255,0.12);border:1px solid rgba(79,142,255,0.3);font-size:11px;color:var(--primary);letter-spacing:2px;text-transform:uppercase;margin-bottom:16px;}
+  .article-hero h1{font-size:clamp(24px,4vw,40px);font-weight:900;margin-bottom:14px;background:linear-gradient(90deg,#fff,#4F8EFF);-webkit-background-clip:text;-webkit-text-fill-color:transparent;}
+  .article-meta{font-size:13px;color:var(--text3);display:flex;gap:20px;justify-content:center;flex-wrap:wrap;}
+  .article-meta span{display:flex;align-items:center;gap:6px;}
+  .layout{max-width:900px;margin:0 auto;padding:40px 24px 80px;display:grid;grid-template-columns:1fr 280px;gap:32px;}
+  @media(max-width:720px){.layout{grid-template-columns:1fr;}}
+  .article-body h2{font-size:22px;font-weight:800;margin:36px 0 14px;color:var(--primary);}
+  .article-body h3{font-size:17px;font-weight:700;margin:24px 0 10px;color:#C084FC;}
+  .article-body p{font-size:15px;color:var(--text2);margin-bottom:16px;}
+  .article-body ul,.article-body ol{padding-left:22px;margin-bottom:16px;}
+  .article-body li{font-size:15px;color:var(--text2);margin-bottom:8px;}
+  .highlight-box{background:rgba(79,142,255,0.08);border-left:3px solid var(--primary);padding:16px 20px;border-radius:0 10px 10px 0;margin:20px 0;}
+  .highlight-box p{margin:0;font-size:14px;}
+  table{width:100%;border-collapse:collapse;margin:20px 0;font-size:14px;}
+  th{background:rgba(79,142,255,0.15);color:var(--primary);padding:10px 14px;text-align:left;font-weight:700;}
+  td{padding:10px 14px;border-bottom:1px solid var(--border);color:var(--text2);}
+  tr:hover td{background:rgba(79,142,255,0.04);}
+  .sidebar-card{background:var(--card);border:1px solid var(--border);border-radius:14px;padding:20px;margin-bottom:20px;}
+  .sidebar-card h3{font-size:14px;font-weight:800;color:var(--primary);margin-bottom:14px;}
+  .sidebar-card ul{list-style:none;padding:0;}
+  .sidebar-card li{font-size:13px;color:var(--text2);padding:8px 0;border-bottom:1px solid var(--border);}
+  .sidebar-card li:last-child{border-bottom:none;}
+  .sidebar-card li a{color:var(--text2);text-decoration:none;}
+  .sidebar-card li a:hover{color:var(--primary);}
+  .cta-btn{display:block;text-align:center;padding:12px;background:linear-gradient(90deg,#4F8EFF,#A855F7);border-radius:10px;color:#fff;text-decoration:none;font-weight:800;font-size:14px;margin-top:10px;}
+  footer{text-align:center;padding:32px 24px;border-top:1px solid var(--border);color:var(--text3);font-size:12px;}
+  footer a{color:var(--primary);text-decoration:none;}
 </style>
+<script type="application/ld+json">{"@context": "https://schema.org", "@graph": [{"@type": "Article", "headline": "Time Management in Competitive Exams", "description": "Exam లో time manage చేయడం ఎలా? ప్రతి ప్రశ్నకి సగటు సమయం, 3-pass method, negative marking లెక్క, timed drills మరియు mock analysis తెలుగులో.", "mainEntityOfPage": "https://aniledutech.in/time-management-guide.html", "inLanguage": "te-IN", "dateModified": "2026-09-20", "author": {"@type": "Organization", "name": "Anil EduTech", "url": "https://aniledutech.in/"}, "publisher": {"@type": "Organization", "name": "Anil EduTech", "url": "https://aniledutech.in/"}}, {"@type": "BreadcrumbList", "itemListElement": [{"@type": "ListItem", "position": 1, "name": "Home", "item": "https://aniledutech.in/"}, {"@type": "ListItem", "position": 2, "name": "Time Management in Competitive Exams", "item": "https://aniledutech.in/time-management-guide.html"}]}]}</script>
 </head>
 <body>
+<div class="topbar"></div>
+<header>
+  <a href="index.html" class="logo-box">A</a>
+  <div><div class="site-name">Anil EduTech</div><div class="site-tagline">Online Exam Portal</div></div>
+  <nav>
+    <a href="index.html">🏠 Home</a>
+    <a href="about.html">About</a>
+    <a href="contact.html">Contact</a>
+  </nav>
+</header>
 
-<nav>
-  <a href="index.html" class="nav-logo">
-    <div class="nav-logo-box">A</div>
-    <span class="nav-logo-text">Anil EduTech</span>
-  </a>
-  <div class="nav-links">
-    <a href="index.html" class="nav-link">🏠 Home</a>
-    <a href="index.html#categories-section" class="nav-link">📝 Exams</a>
-    <a href="index.html" class="nav-link">📚 Guides</a>
-  </div>
-  <a href="index.html" class="nav-home-btn">🚀 Free Tests</a>
-</nav>
-
-<div class="blog-hero">
-  <div class="blog-hero-cat">Strategy</div>
-  <span class="blog-hero-emoji">⏰</span>
+<div class="article-hero">
+  <div class="category-tag">✦ Strategy</div>
   <h1>Time Management in Competitive Exams</h1>
-  <p>Exam లో time manage చేయడం ఎలా? — Speed, accuracy, question selection strategy.</p>
-  <div class="blog-meta">
-    <span class="blog-meta-item">📅 2026 Updated</span>
-    <span class="blog-meta-item">👤 Anil EduTech Team</span>
-    <span class="blog-meta-item">⏱ 8 min read</span>
-    <span class="blog-meta-item">🆓 Free Guide</span>
-  </div>
+  <div class="article-meta"><span>📅 Updated: September 2026</span><span>⏱ 10 min read</span><span>✍️ Anil EduTech</span></div>
 </div>
 
-<div class="blog-wrap">
+<div class="layout">
+  <article class="article-body">
+    <h2>Exam లో సమయమే ఒక resource</h2>
+    <p>చాలామంది విద్యార్థులు జ్ఞానం ఉన్నా, సమయం సరిగా వాడుకోకపోవడం వల్ల marks కోల్పోతారు. ఈ guide లో exam సమయాన్ని లెక్కలతో ఎలా పంచుకోవాలో, ఏ ప్రశ్న వదిలేయాలో, ఎలా practice చేయాలో చూద్దాం.</p>
 
-  <div class="blog-toc">
-    <h3>📋 విషయ సూచిక</h3>
+    <h2>ప్రతి ప్రశ్నకి ఎంత సమయం?</h2>
+    <p>సగటు సమయం = మొత్తం సమయం ÷ ప్రశ్నల సంఖ్య.</p>
+    <table>
+      <tr><th>Exam</th><th>ప్రశ్నలు</th><th>సమయం</th><th>సగటు / ప్రశ్న</th></tr>
+      <tr><td>SSC CGL Tier-1</td><td>100</td><td>60 నిమిషాలు</td><td>36 సెకన్లు</td></tr>
+      <tr><td>IBPS PO Prelims — Quant</td><td>35</td><td>20 నిమిషాలు (sectional)</td><td>సుమారు 34 సెకన్లు</td></tr>
+      <tr><td>IBPS PO Prelims — English</td><td>30</td><td>20 నిమిషాలు (sectional)</td><td>40 సెకన్లు</td></tr>
+      <tr><td>RRB NTPC CBT-1</td><td>100</td><td>90 నిమిషాలు</td><td>54 సెకన్లు</td></tr>
+      <tr><td>TSPSC Group-1 Prelims</td><td>150</td><td>150 నిమిషాలు</td><td>60 సెకన్లు</td></tr>
+    </table>
+    <p>ఇవి సగటులు మాత్రమే. GK ప్రశ్నలు 10 సెకన్లలో పూర్తవుతాయి, Quant ప్రశ్నలకు 60–90 సెకన్లు పట్టవచ్చు. అందుకే విభాగాల మధ్య సమయాన్ని తెలివిగా పంచాలి. (Pattern ప్రతి notification లో మారవచ్చు — సరిచూసుకోండి.)</p>
+
+    <h2>3-Pass Method</h2>
     <ol>
-      <li><a href="#s1">Overview</a></li>
-      <li><a href="#s2">Key Topics</a></li>
-      <li><a href="#s3">Preparation Strategy</a></li>
-      <li><a href="#s4">Important Points</a></li>
+      <li><strong>Pass 1 (సుమారు 60–65% సమయం):</strong> తెలిసిన మరియు సులభమైన ప్రశ్నలన్నీ చేయండి. కష్టంగా అనిపించినవి "mark for review" చేసి ముందుకు వెళ్ళండి.</li>
+      <li><strong>Pass 2 (సుమారు 25–30%):</strong> మధ్యస్థ కష్టతరమైన ప్రశ్నలు — అక్కడ options ని తొలగించి ప్రయత్నించండి.</li>
+      <li><strong>Pass 3 (చివరి 5–10%):</strong> మిగిలిన ప్రశ్నలపై educated guess లేదా వదిలేయడం.</li>
     </ol>
-  </div>
 
-  <div class="blog-section" id="s1">
-    <h2>⏰ Time Management in Competitive Exams — Overview</h2>
-    <p>ఈ guide లో మీకు Time Management in Competitive Exams గురించి అన్ని important information అందిస్తాం. Competitive exams లో succeed అవ్వాలంటే ఈ topic ని thoroughly understand చేసుకోవాలి.</p>
-    <p>Anil EduTech మీ preparation journey లో best partner. Free mock tests, study materials, current affairs — అన్నీ ఒకే platform లో అందుబాటులో ఉన్నాయి.</p>
-    <div class="info-box">
-      <div class="info-box-title">💡 Important</div>
-      <p>ఈ topic నుండి exams లో average 10-15 questions వస్తాయి. Thorough preparation తో మంచి marks తెచ్చుకోవచ్చు.</p>
-    </div>
-  </div>
+    <h2>15-సెకన్ల నియమం</h2>
+    <p>ఒక ప్రశ్నను చదివి 15 సెకన్లలో దాన్ని ఎలా చేయాలో తెలియకపోతే, mark చేసి తర్వాతి ప్రశ్నకు వెళ్ళండి. ఒక ప్రశ్నకు 2 నిమిషాలు ఖర్చు చేస్తే అదే సమయంలో 3–4 సులభమైన ప్రశ్నలు చేయవచ్చు.</p>
 
-  <div class="blog-section" id="s2">
-    <h2>📚 Key Topics to Study</h2>
+    <h2>Pace checkpoints</h2>
+    <p>సమయంలో 25% గడిచేసరికి సుమారు 25% ప్రశ్నలు పూర్తవ్వాలి — ఇది ఒక సాధారణ మార్గదర్శకం. ఉదాహరణకు 60 నిమిషాల పరీక్షలో 15వ నిమిషానికి సుమారు 25 ప్రశ్నలు చూసి ఉండాలి. వెనుకబడితే సులభమైన ప్రశ్నలకు ప్రాధాన్యత ఇవ్వండి.</p>
+
+    <h2>Negative marking ఉన్నప్పుడు లెక్క</h2>
+    <p>సరైన answer కి +1, తప్పుకి −0.25 అయితే, options లో ఒకటి తొలగించగలిగినప్పుడు (సరైన అవకాశం 1/3) expected marks = 1×(1/3) − 0.25×(2/3) = 0.33 − 0.17 = <strong>+0.17</strong>. అంటే కొంత అవగాహన ఉన్న ప్రశ్నలలో guess చేయడం లాభదాయకం; ఏమీ తెలియకపోతే చాలా సమయం వృథా చేయకండి.</p>
+
+    <h2>ఏ order లో చేయాలి?</h2>
     <ul>
-      <li><strong>Foundation Topics:</strong> Basic concepts అర్థం చేసుకోండి. NCERT books మొదలుపెట్టండి.</li>
-      <li><strong>Advanced Topics:</strong> Previous year papers లో frequently asked topics focus చేయండి.</li>
-      <li><strong>Current Developments:</strong> Latest updates follow చేయండి.</li>
-      <li><strong>Practice Questions:</strong> Anil EduTech mock tests regularly ఇవ్వండి.</li>
-      <li><strong>Revision:</strong> Notes రాసి regularly revise చేయండి.</li>
+      <li>మీ బలమైన విభాగం మొదట చేయండి — ఇది confidence మరియు marks ఇస్తుంది.</li>
+      <li>GK వంటి వేగవంతమైన విభాగాలను త్వరగా పూర్తి చేసి, సమయం మిగిలిస్తే Quant కి ఇవ్వండి.</li>
+      <li>Sectional time ఉన్న exams (ఉదా: IBPS Prelims) లో ఆ విభాగ సమయం ముగిసేలోపు ముందుకు వెళ్ళండి; వెనక్కి రాలేరు.</li>
     </ul>
-    <table class="blog-table">
-      <thead><tr><th>Topic</th><th>Weightage</th><th>Difficulty</th></tr></thead>
-      <tbody>
-        <tr><td>Basic Concepts</td><td>30%</td><td>Easy-Medium</td></tr>
-        <tr><td>Application Based</td><td>40%</td><td>Medium</td></tr>
-        <tr><td>Advanced Topics</td><td>30%</td><td>Medium-Hard</td></tr>
-      </tbody>
+
+    <h2>Timed practice drills</h2>
+    <table>
+      <tr><th>Drill</th><th>ఎలా</th></tr>
+      <tr><td>10-in-6</td><td>10 Quant ప్రశ్నలు 6 నిమిషాల్లో. ప్రతి వారం సమయాన్ని 30 సెకన్లు తగ్గించండి.</td></tr>
+      <tr><td>Section sprint</td><td>ఒక విభాగం మాత్రమే అసలు సమయం కంటే 10% తక్కువ సమయంలో.</td></tr>
+      <tr><td>Full mock</td><td>అసలు exam లాగే, విరామం లేకుండా. వారానికి కనీసం 1–2.</td></tr>
     </table>
-  </div>
 
-  <div class="blog-section" id="s3">
-    <h2>🎯 Preparation Strategy</h2>
-    <h3>Week 1-4: Foundation</h3>
+    <h2>Mock తర్వాత time analysis</h2>
+    <ol>
+      <li>ప్రతి విభాగానికి ఎంత సమయం పట్టిందో రాయండి.</li>
+      <li>అత్యధిక సమయం తీసుకున్న 5 ప్రశ్నలను గుర్తించండి — వాటిలో ఎన్ని సరైనవి? సరైనవి కాకపోతే అవి "time sinks".</li>
+      <li>తప్పు ప్రశ్నలను కారణంతో వర్గీకరించండి: concept / calculation / తొందరపాటు / సమయం లేక.</li>
+      <li>తప్పులను 🧠 Revise notebook లో చేర్చండి.</li>
+    </ol>
+
+    <h2>రోజువారీ study సమయ నిర్వహణ</h2>
     <ul>
-      <li>Basic concepts study చేయండి</li>
-      <li>NCERT / standard reference books చదవండి</li>
-      <li>Notes రాయండి</li>
+      <li><strong>25 నిమిషాలు చదువు + 5 నిమిషాలు విరామం</strong> (Pomodoro పద్ధతి) — 4 రౌండ్ల తర్వాత 20 నిమిషాల విరామం.</li>
+      <li>ముందురోజు రాత్రే రేపటి 3 ముఖ్య పనులు రాసుకోండి.</li>
+      <li>ఫోన్ / సోషల్ మీడియా చదువు సమయంలో దూరంగా ఉంచండి.</li>
     </ul>
-    <h3>Week 5-8: Practice</h3>
+
+    <h2>Exam రోజు చివరి 5 నిమిషాల నియమాలు</h2>
     <ul>
-      <li>Previous year questions solve చేయండి</li>
-      <li>Topic-wise mock tests ఇవ్వండి</li>
-      <li>Weak areas identify చేయండి</li>
+      <li>Marked ప్రశ్నలన్నీ ఒకసారి చూడండి; అనుమానం ఉన్నవాటిలో options తొలగించి answer ఇవ్వండి.</li>
+      <li>ఖాళీగా వదిలేసిన ప్రశ్నలు ఉంటే, negative marking ని బట్టి educated guess నిర్ణయించండి.</li>
+      <li>చివరి నిమిషంలో సరైన answers ని మార్చకండి — స్పష్టమైన కారణం ఉంటేనే మార్చండి.</li>
     </ul>
-    <h3>Week 9-12: Revision</h3>
-    <ul>
-      <li>Notes revise చేయండి</li>
-      <li>Full mock tests ఇవ్వండి</li>
-      <li>Final polishing</li>
-    </ul>
-    <div class="info-box">
-      <div class="info-box-title">🔥 Pro Strategy</div>
-      <p>Mock tests తర్వాత mistakes analyze చేయండి. Same mistake repeat అవ్వకుండా ఉండటమే real improvement!</p>
-    </div>
-  </div>
 
-  <div class="blog-section" id="s4">
-    <h2>💡 Important Points to Remember</h2>
-    <ul>
-      <li>Daily consistency చాలా important — ఒకే రోజు 10 గంటలు కాదు, రోజూ 6 గంటలు చదవండి.</li>
-      <li>Mock tests తప్పనిసరిగా ఇవ్వండి — actual exam experience కి అవసరం.</li>
-      <li>Current affairs miss అవ్వకండి — monthly digest read చేయండి.</li>
-      <li>Health maintain చేయండి — proper sleep, exercise, nutrition అవసరం.</li>
-      <li>Positive attitude maintain చేయండి — preparation లో ups and downs normal.</li>
-    </ul>
-    <table class="blog-table">
-      <thead><tr><th>Do's</th><th>Don'ts</th></tr></thead>
-      <tbody>
-        <tr><td>Regular practice</td><td>Over-studying single subject</td></tr>
-        <tr><td>Mock tests analyze చేయండి</td><td>Results ignore చేయకండి</td></tr>
-        <tr><td>Short notes రాయండి</td><td>Only reading, no writing</td></tr>
-        <tr><td>Negative marking care</td><td>Blind guessing</td></tr>
-      </tbody>
-    </table>
-  </div>
+    <h2>తరచుగా అడిగే ప్రశ్నలు</h2>
+    <h3>Speed ముందా, accuracy ముందా?</h3>
+    <p>ముందు accuracy, తర్వాత speed. Accuracy తగ్గకుండా speed పెంచడమే లక్ష్యం.</p>
+    <h3>ఒక ప్రశ్న ఎంతసేపు వరకు ప్రయత్నించాలి?</h3>
+    <p>సగటు సమయానికి 1.5 రెట్లు దాటితే వదిలేసి తర్వాత వచ్చే ఆలోచన మంచిది.</p>
 
-
-  <div class="blog-cta">
-    <h3>🚀 Practice తో Perfect అవ్వండి!</h3>
-    <p>Anil EduTech లో 500+ Free Mock Tests అందుబాటులో ఉన్నాయి. ఇప్పుడే practice start చేయండి!</p>
-    <a href="index.html">Free Mock Test ఇవ్వండి →</a>
-  </div>
-
-  <div class="more-blogs">
-    <h3>📚 మరిన్ని Study Guides</h3>
-    <div class="more-grid">
-      <a href="tspsc-groups-guide.html" class="more-card"><div class="more-card-emoji">🏛️</div><div class="more-card-title">TSPSC Groups</div><div class="more-card-sub">Complete Guide</div></a>
-      <a href="ssc-cgl-guide.html" class="more-card"><div class="more-card-emoji">📋</div><div class="more-card-title">SSC CGL Guide</div><div class="more-card-sub">Tier 1 & 2</div></a>
-      <a href="banking-exam-guide.html" class="more-card"><div class="more-card-emoji">🏦</div><div class="more-card-title">Banking Exams</div><div class="more-card-sub">SBI, IBPS, RBI</div></a>
-      <a href="gk-guide.html" class="more-card"><div class="more-card-emoji">🌍</div><div class="more-card-title">GK Study Guide</div><div class="more-card-sub">History, Polity</div></a>
-      <a href="speed-maths-guide.html" class="more-card"><div class="more-card-emoji">⚡</div><div class="more-card-title">Speed Maths</div><div class="more-card-sub">Tricks & Shortcuts</div></a>
-      <a href="reasoning-tricks-guide.html" class="more-card"><div class="more-card-emoji">🧠</div><div class="more-card-title">Reasoning</div><div class="more-card-sub">Logical Tricks</div></a>
-    </div>
-  </div>
+    <a href="index.html" class="cta-btn">🚀 Start Free Mock Test →</a>
+  </article>
+  <aside>
+    <div class="sidebar-card"><h3>📚 More Study Guides</h3><ul>
+      <li><a href="study-hub.html">▸ 📚 Study Hub</a></li>
+      <li><a href="tspsc-groups-guide.html">▸ TSPSC Groups Guide</a></li>
+      <li><a href="ssc-cgl-guide.html">▸ SSC CGL Guide</a></li>
+      <li><a href="speed-maths-guide.html">▸ Speed Maths Tricks</a></li>
+    </ul></div>
+    <div class="sidebar-card"><h3>🎯 Quick Facts</h3><ul><li>⏱ SSC CGL: 36 sec / question</li><li>🔁 3-pass method</li><li>📝 Mock తర్వాత time analysis</li></ul></div>
+  </aside>
 </div>
 
 <footer>
-  <div class="footer-links">
-    <a href="index.html">Home</a>
-    <a href="about.html">About Us</a>
-    <a href="privacy-policy.html">Privacy Policy</a>
-    <a href="contact.html">Contact</a>
-    <a href="disclaimer.html">Disclaimer</a>
-  </div>
-  <div class="footer-copy">© 2026 Anil EduTech. All rights reserved. | www.aniledutech.in</div>
+  <p>© 2026 Anil EduTech. All Rights Reserved. |
+  <a href="index.html">Home</a> · <a href="about.html">About</a> · <a href="contact.html">Contact</a> · <a href="privacy-policy.html">Privacy Policy</a></p>
 </footer>
-
 </body>
 </html>

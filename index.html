@@ -178,42 +178,50 @@
       "mainEntity": [
         {
           "@type": "Question",
-          "name": "Anil EduTech lo mock tests free ga unaya?",
+          "name": "Anil EduTech లో mock tests ఉచితమా?",
           "acceptedAnswer": {
             "@type": "Answer",
-            "text": "Avunu, Anil EduTech lo anni mock tests 100% free. Registration avasaram ledu — direct ga practice cheyyavachu."
+            "text": "అవును. Free Test కేటగిరీలోని పరీక్షలు ఉచితం — Register చేసి Login అయితే చాలు. అదనంగా కొన్ని Premium exams (నెలకు ₹99) ఐచ్ఛికంగా అందుబాటులో ఉన్నాయి; అవి తీసుకోకపోయినా free tests అన్నీ వాడుకోవచ్చు."
           }
         },
         {
           "@type": "Question",
-          "name": "TSPSC preparation kosam Anil EduTech ela help avutundi?",
+          "name": "తెలుగు మీడియం విద్యార్థులకు ఏ పరీక్షలకు practice ఉంది?",
           "acceptedAnswer": {
             "@type": "Answer",
-            "text": "Anil EduTech lo TSPSC Group 1, 2, 3, 4 kosam Telugu medium lo 500+ questions, leaderboard, progress tracking mattu certificates unnayi."
+            "text": "TSPSC Group 1, 2, 3, 4, APPSC, SSC (CGL, CHSL, MTS), Banking (IBPS, SBI), RRB (NTPC, Group D) మరియు GK/Current Affairs పరీక్షలకు mock tests ఉన్నాయి. చాలా పరీక్షల్లో ప్రశ్నలను తెలుగు లేదా English లో చదివే option ఉంటుంది."
           }
         },
         {
           "@type": "Question",
-          "name": "Telugu medium lo online mock tests ela practice cheyyali?",
+          "name": "SSC CGL Tier-1 exam pattern ఏమిటి?",
           "acceptedAnswer": {
             "@type": "Answer",
-            "text": "Anil EduTech ki visit cheyandi — Telugu lo TSPSC, GK mattu banking tests select chesi practice cheyyavachu. Bilingual (Telugu + English) support undi."
+            "text": "SSC CGL Tier-1 లో 100 ప్రశ్నలు, 200 marks, 60 నిమిషాలు ఉంటాయి. Reasoning, General Awareness, Quantitative Aptitude, English — ఒక్కో section కి 25 ప్రశ్నలు. సరైన answer కి +2, తప్పు answer కి −0.50 marks. ప్రతి notification లో మార్పులు ఉండవచ్చు కాబట్టి official notification చూడండి."
           }
         },
         {
           "@type": "Question",
-          "name": "APPSC mock tests Anil EduTech lo unnaya?",
+          "name": "Negative marking ఉందా?",
           "acceptedAnswer": {
             "@type": "Answer",
-            "text": "Avunu, Anil EduTech lo APPSC, TSPSC, SSC, Banking anni exams ki free mock tests unnay. Daily challenge tho ప్రతి రోజు practice cheyyavachu."
+            "text": "అది పరీక్షను బట్టి మారుతుంది. ప్రతి mock test ప్రారంభానికి ముందు కనిపించే instructions పేజీలో ఆ exam యొక్క marking scheme (సరైన answer కి marks, తప్పు answer కి తగ్గే marks) స్పష్టంగా ఇస్తాం."
           }
         },
         {
           "@type": "Question",
-          "name": "Daily quiz ante emiti?",
+          "name": "Mistake Notebook (🧠 Revise) అంటే ఏమిటి?",
           "acceptedAnswer": {
             "@type": "Answer",
-            "text": "Anil EduTech Daily Challenge lo ప్రతి రోజు 10 questions untay — 10 minutes lo complete cheyyali. Streak maintain cheste special badges earn avutayi."
+            "text": "Exam లో మీరు తప్పు చేసిన ప్రశ్నలు ఈ notebook లో automatic గా save అవుతాయి. Leitner పద్ధతిలో 1, 3, 7, 14, 30 రోజుల gap తో వాటిని మళ్ళీ practice చేయవచ్చు. సరిగ్గా చేస్తే ప్రశ్న తర్వాతి box కి వెళ్తుంది, తప్పు చేస్తే మళ్ళీ మొదటి box కి వస్తుంది. ఈ notebook మీ device లోనే save అవుతుంది."
+          }
+        },
+        {
+          "@type": "Question",
+          "name": "Daily Challenge ఎందుకు చేయాలి?",
+          "acceptedAnswer": {
+            "@type": "Answer",
+            "text": "రోజూ ఒక చిన్న quiz చేయడం వల్ల practice కొనసాగుతుంది. వరుసగా రోజులు పూర్తి చేస్తే streak పెరుగుతుంది, badges వస్తాయి. చిన్న కానీ regular practice, అప్పుడప్పుడు చేసే పెద్ద practice కంటే memory కి ఎక్కువ ఉపయోగం."
           }
         }
       ]
@@ -11281,7 +11289,76 @@
         overflow-y: auto !important;
       }
     }
-  </style>
+  /* ===== Mistake Notebook ===== */
+#page-mistakes .section { max-width: 760px; margin: 0 auto; }
+.mn-stats { display: grid; grid-template-columns: repeat(3, 1fr); gap: 10px; margin-bottom: 14px; }
+.mn-stat { background: var(--card); border: 1.5px solid var(--border2); border-radius: 14px; padding: 14px 8px; text-align: center; }
+.mn-stat-n { font-size: 28px; font-weight: 900; line-height: 1.1; }
+.mn-stat-l { font-size: 11.5px; font-weight: 700; color: var(--text2); margin-top: 4px; }
+.mn-chips { display: flex; gap: 8px; flex-wrap: wrap; margin-bottom: 12px; }
+.mn-chip { border: 1.5px solid var(--border2); background: var(--card); color: var(--text2); border-radius: 20px; padding: 6px 14px; font-family: inherit; font-size: 12.5px; font-weight: 700; cursor: pointer; }
+.mn-chip.on { background: var(--primary); border-color: var(--primary); color: #fff; }
+.mn-actions { display: flex; gap: 10px; flex-wrap: wrap; margin-bottom: 14px; align-items: center; }
+.mn-btn { background: var(--primary); color: #fff; border: none; border-radius: 11px; padding: 10px 18px; font-family: inherit; font-size: 14px; font-weight: 800; cursor: pointer; }
+.mn-btn.mn-big { padding: 13px 22px; font-size: 15px; }
+.mn-btn.mn-sm { padding: 6px 12px; font-size: 12px; }
+.mn-btn.mn-ghost { background: var(--card); color: var(--text); border: 1.5px solid var(--border2); }
+.mn-nodue { font-weight: 800; color: var(--text2); padding: 10px 4px; }
+.mn-card { background: var(--card); border: 1.5px solid var(--border2); border-radius: 16px; padding: 16px; margin-bottom: 14px; }
+.mn-h { font-size: 14px; font-weight: 800; color: var(--text); margin-bottom: 10px; }
+.mn-hint { font-size: 12px; color: var(--text3); margin-top: 10px; line-height: 1.5; }
+.mn-bars { display: grid; grid-template-columns: repeat(5, 1fr); gap: 8px; align-items: end; }
+.mn-bar { text-align: center; }
+.mn-bar-n { font-size: 13px; font-weight: 800; color: var(--text); }
+.mn-bar-col { height: 70px; background: var(--bg); border-radius: 8px; display: flex; align-items: flex-end; overflow: hidden; margin: 4px 0; }
+.mn-bar-col > div { width: 100%; min-height: 3px; border-radius: 8px 8px 0 0; transition: height .4s; }
+.mn-bar-l { font-size: 11px; font-weight: 700; color: var(--text2); }
+.mn-row { padding: 10px 0; border-top: 1px solid var(--border2); }
+.mn-row:first-of-type { border-top: none; }
+.mn-row-q { font-size: 13.5px; font-weight: 600; color: var(--text); line-height: 1.45; }
+.mn-row-m { display: flex; gap: 10px; align-items: center; flex-wrap: wrap; font-size: 11.5px; color: var(--text3); margin-top: 6px; }
+.mn-pill { font-weight: 800; padding: 2px 9px; border-radius: 10px; }
+.mn-x { margin-left: auto; background: none; border: none; color: var(--text3); font-size: 15px; cursor: pointer; padding: 2px 6px; }
+.mn-x:hover { color: var(--red); }
+.mn-empty { text-align: center; padding: 44px 20px; color: var(--text2); font-weight: 600; font-size: 14px; line-height: 1.6; }
+.mn-top { display: flex; justify-content: space-between; align-items: center; font-weight: 800; color: var(--text2); margin-bottom: 8px; }
+.mn-prog { height: 6px; background: var(--border2); border-radius: 6px; overflow: hidden; margin-bottom: 14px; }
+.mn-prog > div { height: 100%; background: var(--primary); transition: width .3s; }
+.mn-q { font-size: 16px; font-weight: 700; color: var(--text); line-height: 1.55; margin-bottom: 12px; }
+.mn-opts { display: flex; flex-direction: column; gap: 9px; }
+.mn-opt { display: flex; gap: 10px; align-items: flex-start; text-align: left; background: var(--bg); border: 1.5px solid var(--border2); color: var(--text); border-radius: 12px; padding: 11px 12px; font-family: inherit; font-size: 14.5px; font-weight: 600; cursor: pointer; }
+.mn-opt:disabled { cursor: default; }
+.mn-opt-l { flex: 0 0 26px; height: 26px; border-radius: 50%; background: var(--primary-soft); color: var(--primary); display: flex; align-items: center; justify-content: center; font-weight: 800; font-size: 12.5px; }
+.mn-opt.ok { border-color: #00C896; background: rgba(0, 200, 150, .12); }
+.mn-opt.bad { border-color: var(--red); background: var(--red-soft); }
+.mn-fb { margin: 14px 0 12px; padding: 12px 14px; border-radius: 12px; font-size: 14px; line-height: 1.55; color: var(--text); }
+.mn-fb.ok { background: rgba(0, 200, 150, .12); }
+.mn-fb.bad { background: var(--red-soft); }
+.mn-exp { margin-top: 8px; color: var(--text2); font-size: 13.5px; }
+.mn-banner { display: flex; align-items: center; justify-content: space-between; gap: 12px; flex-wrap: wrap; background: var(--primary-soft); border: 1.5px solid var(--primary); border-radius: 14px; padding: 12px 14px; margin-bottom: 14px; }
+.mn-banner-t { font-size: 13.5px; font-weight: 700; color: var(--text); }
+#mn-nav-badge { display: none; background: var(--red); color: #fff; font-size: 10px; font-weight: 800; border-radius: 10px; padding: 1px 6px; margin-left: 4px; vertical-align: middle; }
+
+/* ===== Home editorial content ===== */
+.hx-wrap { max-width: 900px; margin: 8px auto 28px; padding: 0 16px; }
+.hx-card { background: var(--card); border: 1.5px solid var(--border2); border-radius: 16px; padding: 20px; margin-bottom: 16px; color: var(--text); }
+.hx-card h2 { font-size: 18px; font-weight: 900; margin: 0 0 12px; color: var(--text); line-height: 1.4; }
+.hx-card p { font-size: 14.5px; line-height: 1.8; color: var(--text2); margin: 0 0 10px; }
+.hx-card a { color: var(--primary); font-weight: 700; }
+.hx-steps, .hx-list { margin: 8px 0 0; padding-left: 22px; }
+.hx-steps li, .hx-list li { font-size: 14.5px; line-height: 1.8; color: var(--text2); margin-bottom: 10px; }
+.hx-steps strong, .hx-list strong { color: var(--text); }
+.hx-tbl-wrap { overflow-x: auto; -webkit-overflow-scrolling: touch; margin: 8px 0 12px; border: 1px solid var(--border2); border-radius: 12px; }
+.hx-tbl { width: 100%; border-collapse: collapse; min-width: 560px; font-size: 13.5px; }
+.hx-tbl th { background: var(--primary-soft); color: var(--text); text-align: left; padding: 10px 12px; font-weight: 800; white-space: nowrap; }
+.hx-tbl td { padding: 10px 12px; border-top: 1px solid var(--border2); color: var(--text2); }
+.hx-tbl td:first-child { font-weight: 800; color: var(--text); white-space: nowrap; }
+.hx-note { font-size: 13px !important; color: var(--text3) !important; }
+.hx-faq { border-top: 1px solid var(--border2); padding: 12px 0; }
+.hx-faq:first-of-type { border-top: none; }
+.hx-faq summary { cursor: pointer; font-weight: 800; font-size: 14.5px; color: var(--text); line-height: 1.6; }
+.hx-faq p { margin: 8px 0 0; }
+</style>
 
   <!-- ADSENSE_SCRIPT_2 — duplicate removed, enable only after approval -->
   <!-- Chart.js for Progress Dashboard -->
@@ -11911,6 +11988,7 @@
       <button class="nav-btn" id="nav-home" onclick="goHome();closeMenu()">🏠 <span>హోమ్</span></button>
       <button class="nav-btn" id="nav-exams" onclick="goExams();closeMenu()">📝 <span>పరీక్షలు</span></button>
       <button class="nav-btn" id="nav-progress" onclick="goProgress();closeMenu()">📊 <span>Progress</span></button>
+      <button class="nav-btn" id="nav-mistakes" onclick="goMistakes();closeMenu()">🧠 <span>Revise</span><span id="mn-nav-badge"></span></button>
       <button class="nav-btn" id="nav-videos" onclick="goVideos();closeMenu()">🎥 <span>Videos</span></button>
       <button class="nav-btn" id="nav-support" onclick="goSupport();closeMenu()">🆘 <span>Support</span></button>
       <button class="nav-btn" id="nav-admin" onclick="goAdmin();closeMenu()">⚙️ <span>Admin</span></button>
@@ -12696,46 +12774,6 @@
               </div>
             </div>
 
-            <!-- Slide 7: Mobile App (moved to last — not the first thing new visitors should see) -->
-            <div class="ae-slide ae-slide-app">
-              <div class="ae-slide-dots-bg"></div>
-              <div class="ae-slide-counter" id="ae-counter">1 / 7</div>
-              <div class="ae-slide-content">
-                <div class="ae-slide-tag">🚀 Coming Soon</div>
-                <div class="ae-slide-title">Anil EduTech<br><span>Mobile App</span></div>
-                <div class="ae-slide-desc">Android &amp; iOS లో అందుబాటులోకి వస్తోంది!<br>Offline exams · Push
-                  notifications · Dark mode</div>
-                <div class="ae-app-badges">
-                  <div class="ae-app-badge">
-                    <span style="font-size:18px">🤖</span>
-                    <div>
-                      <div style="font-size:9px;opacity:.75;font-weight:700">Coming on</div>
-                      <div style="font-size:13px;font-weight:900">Android</div>
-                    </div>
-                  </div>
-                  <div class="ae-app-badge">
-                    <span style="font-size:18px">🍎</span>
-                    <div>
-                      <div style="font-size:9px;opacity:.75;font-weight:700">Coming on</div>
-                      <div style="font-size:13px;font-weight:900">iOS</div>
-                    </div>
-                  </div>
-                </div>
-              </div>
-              <div class="ae-slide-phone">
-                <div class="ae-phone-mock">
-                  <div class="ae-phone-screen">
-                    <div style="font-size:26px;margin-bottom:5px">🎓</div>
-                    <div style="font-size:10.5px;font-weight:900;color:#1A73E8;line-height:1.2">Anil<br>EduTech</div>
-                    <div style="font-size:8.5px;color:#888;margin-top:5px;line-height:1.5">Tests · Results<br>Progress
-                    </div>
-                    <div
-                      style="margin-top:8px;background:linear-gradient(135deg,#1A73E8,#0EA5E9);color:#fff;border-radius:8px;padding:5px 8px;font-size:8.5px;font-weight:900">
-                      Start →</div>
-                  </div>
-                </div>
-              </div>
-            </div>
 
           </div><!-- /.ae-carousel -->
         </div><!-- /.ae-carousel-track -->
@@ -12749,7 +12787,6 @@
             <button class="ae-dot" onclick="goSlide(3)"></button>
             <button class="ae-dot" onclick="goSlide(4)"></button>
             <button class="ae-dot" onclick="goSlide(5)"></button>
-            <button class="ae-dot" onclick="goSlide(6)"></button>
           </div>
           <div class="ae-car-progress">
             <div class="ae-car-progress-fill" id="ae-progress-fill"></div>
@@ -12851,6 +12888,54 @@
       </div>
       <div id="home-rev-list"></div>
     </div>
+
+
+    <!-- ===== EDITORIAL CONTENT: study method, exam patterns, FAQ (publisher content for crawlers & readers) ===== -->
+    <section class="hx-wrap" id="home-study-method" aria-labelledby="hx-h2-a">
+      <div class="hx-card">
+        <h2 id="hx-h2-a">📖 పరీక్షలకు ఎలా ప్రిపేర్ అవ్వాలి? — Anil EduTech Study Method</h2>
+        <p>Competitive exams లో success రావాలంటే ఎక్కువ గంటలు చదవడం కంటే స్మార్ట్‌గా practice చేయడం ముఖ్యం. ఈ 4-step method తో Anil EduTech లోని mock tests ని పూర్తిగా ఉపయోగించుకోండి.</p>
+        <ol class="hx-steps">
+          <li><strong>ముందు exam pattern &amp; syllabus తెలుసుకోండి.</strong> ప్రతి exam కి ప్రశ్నల సంఖ్య, marks, time, negative marking వేరుగా ఉంటాయి. Syllabus పేజీ మరియు Study Guides చదివి, ఏ subject కి ఎంత weightage ఉందో గమనించండి.</li>
+          <li><strong>Baseline mock test రాయండి.</strong> Preparation మొదట్లోనే ఒక full-length mock test రాయండి. Score కంటే ముఖ్యమైనవి: ఏ section లో ఎక్కువ time పోయింది, ఏ topics లో తప్పులు వచ్చాయి అనేవి.</li>
+          <li><strong>తప్పులను విశ్లేషించండి.</strong> Result పేజీలోని Answer Review చూడండి. ప్రతి తప్పుకి కారణం గుర్తించండి — concept తెలియకపోవడమా, తొందరపాటా, లేక time సరిపోకపోవడమా? తప్పు చేసిన ప్రశ్నలు Mistake Notebook (🧠 Revise) లో automatic గా save అవుతాయి.</li>
+          <li><strong>Spaced revision చేయండి.</strong> Notebook లోని ప్రశ్నలను 1, 3, 7, 14, 30 రోజుల gap తో మళ్ళీ practice చేయండి. వారానికి 2–3 full mocks, రోజూ ఒక Daily Challenge చేస్తే improvement స్పష్టంగా కనిపిస్తుంది.</li>
+        </ol>
+      </div>
+
+      <div class="hx-card" id="home-exam-patterns">
+        <h2>📊 Exam Pattern at a Glance</h2>
+        <p>ప్రధాన పరీక్షల ప్రాథమిక pattern ఒక చూపులో:</p>
+        <div class="hx-tbl-wrap">
+          <table class="hx-tbl">
+            <thead><tr><th>Exam</th><th>Stage / Paper</th><th>Questions</th><th>Marks</th><th>Time</th><th>Negative marking</th></tr></thead>
+            <tbody><tr><td>SSC CGL</td><td>Tier-1</td><td>100</td><td>200</td><td>60 min</td><td>−0.50</td></tr><tr><td>SSC CHSL</td><td>Tier-1</td><td>100</td><td>200</td><td>60 min</td><td>−0.50</td></tr><tr><td>IBPS PO</td><td>Prelims</td><td>100</td><td>100</td><td>60 min</td><td>−0.25</td></tr><tr><td>IBPS Clerk</td><td>Prelims</td><td>100</td><td>100</td><td>60 min</td><td>−0.25</td></tr><tr><td>RRB NTPC</td><td>CBT-1</td><td>100</td><td>100</td><td>90 min</td><td>−1/3</td></tr><tr><td>TSPSC Group-1</td><td>Prelims (General Studies &amp; Mental Ability)</td><td>150</td><td>150</td><td>150 min</td><td>Notification చూడండి</td></tr><tr><td>TSPSC Group-2</td><td>4 papers (ఒక్కో paper కి)</td><td>150</td><td>150</td><td>150 min</td><td>Notification చూడండి</td></tr><tr><td>TSPSC Group-3</td><td>3 papers (ఒక్కో paper కి)</td><td>150</td><td>150</td><td>150 min</td><td>Notification చూడండి</td></tr><tr><td>TSPSC Group-4</td><td>2 papers (ఒక్కో paper కి)</td><td>150</td><td>150</td><td>150 min</td><td>Notification చూడండి</td></tr></tbody>
+          </table>
+        </div>
+        <p class="hx-note">గమనిక: Pattern ప్రతి notification లో మారవచ్చు. Exam కి ముందు తప్పకుండా official notification (tgpsc.gov.in, ssc.gov.in, ibps.in) చూసి నిర్ధారించుకోండి. వివరాల కోసం <a href="tspsc-groups-guide.html">TSPSC Guide</a>, <a href="ssc-cgl-guide.html">SSC CGL Guide</a>, <a href="banking-exam-guide.html">Banking Guide</a>, <a href="rrb-ntpc-guide.html">RRB NTPC Guide</a> చదవండి.</p>
+      </div>
+
+      <div class="hx-card">
+        <h2>✅ Mock Test తర్వాత Analysis Checklist</h2>
+        <ul class="hx-list">
+          <li><strong>Accuracy ముందు, speed తర్వాత:</strong> attempt చేసిన ప్రశ్నల్లో ఎన్ని సరైనవో చూడండి. Accuracy స్థిరంగా ఉన్నాకే speed పెంచండి.</li>
+          <li><strong>Section-wise time:</strong> ఏ section కి ఎంత సమయం పట్టిందో గమనించండి. ఒక్క ప్రశ్నకి ఎక్కువ సమయం ఇవ్వకండి.</li>
+          <li><strong>Guess చేసే ముందు ఆలోచించండి:</strong> negative marking ఉన్న exams లో రెండు options మధ్య అనుమానం ఉంటేనే guess చేయండి, పూర్తిగా తెలియకపోతే skip చేయడం మంచిది.</li>
+          <li><strong>Weak topics జాబితా:</strong> My Progress పేజీలోని subject-wise analysis చూసి, తక్కువ score వచ్చిన topics ని వారం ప్లాన్ లో చేర్చండి.</li>
+          <li><strong>అదే exam మళ్ళీ రాయండి:</strong> revision తర్వాత అదే mock ని మళ్ళీ రాసి, score మరియు తప్పులు ఎంత తగ్గాయో పోల్చండి.</li>
+        </ul>
+      </div>
+
+      <div class="hx-card" id="home-faq">
+        <h2>❓ తరచుగా అడిగే ప్రశ్నలు</h2>
+        <details class="hx-faq"><summary>Anil EduTech లో mock tests ఉచితమా?</summary><p>అవును. Free Test కేటగిరీలోని పరీక్షలు ఉచితం — Register చేసి Login అయితే చాలు. అదనంగా కొన్ని Premium exams (నెలకు ₹99) ఐచ్ఛికంగా అందుబాటులో ఉన్నాయి; అవి తీసుకోకపోయినా free tests అన్నీ వాడుకోవచ్చు.</p></details><details class="hx-faq"><summary>తెలుగు మీడియం విద్యార్థులకు ఏ పరీక్షలకు practice ఉంది?</summary><p>TSPSC Group 1, 2, 3, 4, APPSC, SSC (CGL, CHSL, MTS), Banking (IBPS, SBI), RRB (NTPC, Group D) మరియు GK/Current Affairs పరీక్షలకు mock tests ఉన్నాయి. చాలా పరీక్షల్లో ప్రశ్నలను తెలుగు లేదా English లో చదివే option ఉంటుంది.</p></details><details class="hx-faq"><summary>SSC CGL Tier-1 exam pattern ఏమిటి?</summary><p>SSC CGL Tier-1 లో 100 ప్రశ్నలు, 200 marks, 60 నిమిషాలు ఉంటాయి. Reasoning, General Awareness, Quantitative Aptitude, English — ఒక్కో section కి 25 ప్రశ్నలు. సరైన answer కి +2, తప్పు answer కి −0.50 marks. ప్రతి notification లో మార్పులు ఉండవచ్చు కాబట్టి official notification చూడండి.</p></details><details class="hx-faq"><summary>Negative marking ఉందా?</summary><p>అది పరీక్షను బట్టి మారుతుంది. ప్రతి mock test ప్రారంభానికి ముందు కనిపించే instructions పేజీలో ఆ exam యొక్క marking scheme (సరైన answer కి marks, తప్పు answer కి తగ్గే marks) స్పష్టంగా ఇస్తాం.</p></details><details class="hx-faq"><summary>Mistake Notebook (🧠 Revise) అంటే ఏమిటి?</summary><p>Exam లో మీరు తప్పు చేసిన ప్రశ్నలు ఈ notebook లో automatic గా save అవుతాయి. Leitner పద్ధతిలో 1, 3, 7, 14, 30 రోజుల gap తో వాటిని మళ్ళీ practice చేయవచ్చు. సరిగ్గా చేస్తే ప్రశ్న తర్వాతి box కి వెళ్తుంది, తప్పు చేస్తే మళ్ళీ మొదటి box కి వస్తుంది. ఈ notebook మీ device లోనే save అవుతుంది.</p></details><details class="hx-faq"><summary>Daily Challenge ఎందుకు చేయాలి?</summary><p>రోజూ ఒక చిన్న quiz చేయడం వల్ల practice కొనసాగుతుంది. వరుసగా రోజులు పూర్తి చేస్తే streak పెరుగుతుంది, badges వస్తాయి. చిన్న కానీ regular practice, అప్పుడప్పుడు చేసే పెద్ద practice కంటే memory కి ఎక్కువ ఉపయోగం.</p></details>
+      </div>
+
+      <div class="hx-card">
+        <h2>ℹ️ Anil EduTech గురించి</h2>
+        <p>Anil EduTech అనేది తెలుగు మీడియం aspirants కోసం Anil నిర్వహిస్తున్న exam practice platform. మా లక్ష్యం: TSPSC, APPSC, SSC, Banking, RRB పరీక్షలకు సరళమైన, timed mock tests మరియు స్పష్టమైన study guides అందించడం. ఏదైనా ప్రశ్నలో తప్పు కనిపించినా, లేదా సూచనలు ఉన్నా <a href="contact.html">Contact</a> పేజీ ద్వారా తెలియజేయండి. మరిన్ని వివరాలకు <a href="about.html">About Us</a> మరియు <a href="disclaimer.html">Disclaimer</a> చూడండి.</p>
+      </div>
+    </section>
 
     <!-- ═══ AdSense: Footer Banner — approval వచ్చాక enable చేయండి ═══
   <div style="text-align:center;padding:14px 16px 6px;border-top:1px solid var(--border);background:var(--surface);">
@@ -14733,7 +14818,7 @@
       <div id="videos-empty" style="display:none;text-align:center;padding:48px;color:var(--text3)">
         <div style="font-size:48px;margin-bottom:12px">🎥</div>
         <div style="font-weight:700;font-size:15px">Videos ఇంకా add చేయలేదు</div>
-        <div style="font-size:13px;margin-top:6px">Admin panel లో Videos tab లో add చేయండి</div>
+        <div style="font-size:13px;margin-top:6px">కొత్త videos కోసం YouTube channel ని చూడండి</div>
       </div>
     </div>
     <footer>
@@ -15306,6 +15391,15 @@
     </div>
   </div>
 
+
+  <!-- MISTAKE NOTEBOOK PAGE -->
+  <div id="page-mistakes" class="page">
+    <div class="section">
+      <div class="section-title" id="mn-title">🧠 Mistake Notebook</div>
+      <div class="section-sub" id="mn-sub"></div>
+      <div id="mistakes-content"></div>
+    </div>
+  </div>
 
   <div id="page-admin" class="page"></div>
   <!-- admin content lazy-loaded from admin-content.html -->
@@ -20194,6 +20288,8 @@ More exams: https://aniledutech.in
 
       // Store result temporarily
       exam._result = { correct, wrong, skip, pct, total: qs.length, score, maxScore, qmark: _qmark, nmark: _nmark };
+      // Mistake Notebook: auto-save wrong answers for spaced revision
+      try { window._mnLastSaved = (typeof _mnRecord === 'function') ? _mnRecord(qs, exam.answers, { examId: exam.current?.id, name: exam.current?.name }) : 0; } catch (e) { window._mnLastSaved = 0; }
 
       // Show name entry modal
       const trophy = pct >= 90 ? '🏆' : pct >= 75 ? '🥇' : pct >= 60 ? '🥈' : pct >= 40 ? '💪' : '📚';
@@ -20430,6 +20526,7 @@ More exams: https://aniledutech.in
         document.getElementById('answer-review').innerHTML = cards + pagination;
       }
       _renderArPage();
+      try { if (typeof _mnResultBanner === 'function') _mnResultBanner(window._mnLastSaved || 0); } catch (e) { }
 
       // Challenge comparison — if user arrived via a friend's challenge link for THIS exam
       if (window._incomingChallenge && window._incomingChallenge.examId === (exam.current?.id || '')) {
@@ -35021,6 +35118,285 @@ Rules:
     window.addEventListener('scroll', onScroll, { passive: true });
     onScroll(); // initial check
   })();
+</script>
+<script>
+/* ===== MISTAKE NOTEBOOK + SPACED REVISION (Leitner boxes) ===== */
+(function () {
+  'use strict';
+  var DAY = 86400000;
+  var INT = [0, 1, 3, 7, 14, 30]; // days until next review, by box 1..5
+  var MEM = {};
+  var S = { mode: 'home', filter: '', queue: [], i: 0, right: 0, wrong: 0, picked: -1, kind: 'due' };
+
+  var T = {
+    title: { te: '🧠 తప్పుల నోట్‌బుక్', en: '🧠 Mistake Notebook' },
+    sub: { te: 'Exams లో తప్పు చేసిన ప్రశ్నలు ఇక్కడ auto-save అవుతాయి — spaced repetition తో మళ్ళీ మళ్ళీ revise చేసి గుర్తుపెట్టుకోండి!', en: 'Questions you got wrong are saved here automatically — revise them with spaced repetition until they stick.' },
+    due: { te: 'ఈరోజు Revise', en: 'Due today' },
+    inbook: { te: 'Notebook లో', en: 'In notebook' },
+    mastered: { te: 'Mastered', en: 'Mastered' },
+    boxes: { te: 'Leitner Boxes (1 → 5)', en: 'Leitner boxes (1 → 5)' },
+    boxhint: { te: 'సరైన answer → తర్వాతి box (gap పెరుగుతుంది: 1, 3, 7, 14, 30 రోజులు). తప్పు → మళ్ళీ Box 1.', en: 'Correct → next box (gaps grow: 1, 3, 7, 14, 30 days). Wrong → back to Box 1.' },
+    start: { te: '▶ Revision మొదలుపెట్టు', en: '▶ Start revision' },
+    practice: { te: '🔁 అన్నీ practice చేయి', en: '🔁 Practice all' },
+    nodue: { te: '🎉 ఈరోజు revise చేయాల్సినవి ఏమీ లేవు!', en: '🎉 Nothing due today!' },
+    empty: { te: 'ఇంకా తప్పులు ఏమీ save కాలేదు. ఒక Mock Test రాయండి — తప్పు answers ఇక్కడ automatic గా చేరతాయి.', en: 'No mistakes saved yet. Take a mock test — wrong answers land here automatically.' },
+    takeTest: { te: '📝 Mock Test రాయండి', en: '📝 Take a mock test' },
+    all: { te: 'అన్నీ', en: 'All' },
+    list: { te: 'మీ Notebook', en: 'Your notebook' },
+    clear: { te: '🗑 అన్నీ తొలగించు', en: '🗑 Clear all' },
+    clearQ: { te: 'Notebook లో ఉన్న అన్ని ప్రశ్నలు తొలగించాలా?', en: 'Remove all questions from the notebook?' },
+    correct: { te: '✅ సరైన సమాధానం!', en: '✅ Correct!' },
+    wrong: { te: '❌ తప్పు', en: '❌ Wrong' },
+    rightAns: { te: 'సరైన సమాధానం', en: 'Correct answer' },
+    exp: { te: '💡 వివరణ', en: '💡 Explanation' },
+    next: { te: 'తర్వాత →', en: 'Next →' },
+    finish: { te: 'ముగించు ✓', en: 'Finish ✓' },
+    exit: { te: '✕ బయటకు', en: '✕ Exit' },
+    done: { te: '🎯 Revision పూర్తి!', en: '🎯 Revision complete!' },
+    scoreLbl: { te: 'సరైనవి', en: 'correct' },
+    back: { te: '← Notebook కి', en: '← Back to notebook' },
+    more: { te: '▶ ఇంకా Revise చేయి', en: '▶ Revise more' },
+    savedN: { te: 'తప్పు ప్రశ్నలు Mistake Notebook లో save అయ్యాయి', en: 'wrong questions saved to your Mistake Notebook' },
+    revNow: { te: 'Revise చేయి →', en: 'Revise now →' },
+    box: { te: 'Box', en: 'Box' },
+    times: { te: 'సార్లు తప్పు', en: 'wrong' },
+    mast: { te: 'Mastered 🏆', en: 'Mastered 🏆' },
+    dueNow: { te: 'ఇప్పుడు', en: 'due now' },
+    inDays: { te: 'రోజుల్లో', en: 'in' },
+    days: { te: 'రోజులు', en: 'd' },
+    localNote: { te: 'ఈ notebook ఈ device లోనే save అవుతుంది.', en: 'This notebook is stored on this device.' }
+  };
+  function lang() { try { return (typeof _uiLang !== 'undefined' && _uiLang === 'te') ? 'te' : 'en'; } catch (e) { return 'en'; } }
+  function t(k) { var o = T[k]; return o ? (o[lang()] || o.en) : k; }
+  function esc(s) {
+    if (typeof escHtml === 'function') return escHtml(s == null ? '' : String(s));
+    return String(s == null ? '' : s).replace(/[&<>"']/g, function (c) { return { '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[c]; });
+  }
+  function uid() { try { var u = getCurrentUser(); return (u && u.gmail) ? String(u.gmail).toLowerCase() : 'guest'; } catch (e) { return 'guest'; } }
+  function key() { return 'ae_mistakes_v1_' + uid(); }
+  // NOTE: raw localStorage on purpose (not _ls) so notebook data is never pushed to the shared cloud settings table.
+  function load() {
+    try { var r = localStorage.getItem(key()); if (r) { var o = JSON.parse(r); if (o && typeof o === 'object') return o; } } catch (e) { }
+    return MEM[key()] || {};
+  }
+  function save(d) { MEM[key()] = d; try { localStorage.setItem(key(), JSON.stringify(d)); } catch (e) { } }
+  function norm(v) {
+    if (v === undefined || v === null || v === '') return null;
+    if (typeof v === 'number') return String.fromCharCode(65 + v);
+    if (typeof v === 'string' && !isNaN(v) && v !== '') return String.fromCharCode(65 + parseInt(v, 10));
+    return String(v).toUpperCase();
+  }
+  function prune(d) {
+    var ks = Object.keys(d);
+    if (ks.length <= 400) return;
+    ks.sort(function (a, b) {
+      var x = d[a], y = d[b];
+      if (!!x.mastered !== !!y.mastered) return x.mastered ? -1 : 1;
+      return (x.last || 0) - (y.last || 0);
+    });
+    for (var i = 0; i < ks.length - 400; i++) delete d[ks[i]];
+  }
+  function stats() {
+    var d = load(), now = Date.now(), s = { total: 0, due: 0, mastered: 0, box: [0, 0, 0, 0, 0, 0], secs: {} };
+    Object.keys(d).forEach(function (k) {
+      var it = d[k]; s.total++;
+      if (it.mastered) { s.mastered++; return; }
+      s.box[it.box || 1]++;
+      if ((it.due || 0) <= now) s.due++;
+      s.secs[it.sec || 'ga'] = 1;
+    });
+    return s;
+  }
+  function badge() {
+    var el = document.getElementById('mn-nav-badge'); if (!el) return;
+    var n = stats().due;
+    el.textContent = n > 99 ? '99+' : String(n);
+    el.style.display = n > 0 ? 'inline-block' : 'none';
+  }
+
+  /* ---- record wrong answers after an exam ---- */
+  window._mnRecord = function (qs, answers, meta) {
+    var d = load(), now = Date.now(), n = 0;
+    (qs || []).forEach(function (q) {
+      var a = answers ? answers[q.id] : null; if (!a) return;
+      var my = norm(a), ok = norm(q.ans);
+      if (!my || !ok || my === ok || !q.opts) return;
+      var k = (q.examId || (meta && meta.examId) || 'x') + ':' + q.id;
+      var it = d[k];
+      if (it) { it.box = 1; it.due = now; it.wrong = (it.wrong || 0) + 1; it.mastered = false; it.last = now; }
+      else d[k] = { k: k, q: q.q, opts: q.opts.slice(0, 6), ans: ok, exp: q.explanation || '', sec: q.section || 'ga', img: q.image || null, exam: (meta && meta.name) || '', box: 1, due: now, wrong: 1, added: now, last: now, mastered: false };
+      n++;
+    });
+    if (n) { prune(d); save(d); }
+    badge();
+    return n;
+  };
+
+  window._mnResultBanner = function (n) {
+    var old = document.getElementById('mn-result-banner'); if (old) old.remove();
+    if (!n) return;
+    var host = document.getElementById('answer-review'); if (!host || !host.parentNode) return;
+    var div = document.createElement('div');
+    div.id = 'mn-result-banner';
+    div.className = 'mn-banner';
+    div.innerHTML = '<div class="mn-banner-t">🧠 <b>' + n + '</b> ' + esc(t('savedN')) + '</div><button class="mn-btn" onclick="goMistakes()">' + esc(t('revNow')) + '</button>';
+    host.parentNode.insertBefore(div, host);
+  };
+
+  /* ---- page ---- */
+  window.goMistakes = function () {
+    try { if (typeof stopTimer === 'function') stopTimer(); } catch (e) { }
+    S.mode = 'home';
+    showPage('mistakes');
+    render();
+  };
+
+  function box(n) {
+    var c = ['#E53E3E', '#F59E0B', '#EAB308', '#3B82F6', '#00C896'][n - 1];
+    return c;
+  }
+  function render() {
+    var el = document.getElementById('mistakes-content'); if (!el) return;
+    var ti = document.getElementById('mn-title'), su = document.getElementById('mn-sub');
+    if (ti) ti.textContent = t('title');
+    if (su) su.textContent = t('sub');
+    badge();
+    if (S.mode === 'quiz') return renderQuiz(el);
+    if (S.mode === 'summary') return renderSummary(el);
+    renderHome(el);
+  }
+
+  function renderHome(el) {
+    var d = load(), s = stats(), now = Date.now();
+    if (!s.total) {
+      el.innerHTML = '<div class="mn-empty"><div style="font-size:54px;margin-bottom:10px">📓</div><div>' + esc(t('empty')) + '</div><button class="mn-btn" style="margin-top:16px" onclick="goExams()">' + esc(t('takeTest')) + '</button></div>';
+      return;
+    }
+    var secNames = { reasoning: 'Reasoning', arithmetic: 'Arithmetic', ga: 'GA', english: 'English', science: 'Science' };
+    var chips = '';
+    var secKeys = Object.keys(s.secs);
+    if (secKeys.length > 1) {
+      chips = '<div class="mn-chips"><button class="mn-chip' + (!S.filter ? ' on' : '') + '" onclick="_mnFilter(\'\')">' + esc(t('all')) + '</button>' +
+        secKeys.map(function (k) { return '<button class="mn-chip' + (S.filter === k ? ' on' : '') + '" onclick="_mnFilter(\'' + k + '\')">' + esc(secNames[k] || k) + '</button>'; }).join('') + '</div>';
+    }
+    var maxBox = Math.max(1, s.box[1], s.box[2], s.box[3], s.box[4], s.box[5]);
+    var bars = [1, 2, 3, 4, 5].map(function (b) {
+      return '<div class="mn-bar"><div class="mn-bar-n">' + s.box[b] + '</div><div class="mn-bar-col"><div style="height:' + Math.round(s.box[b] / maxBox * 100) + '%;background:' + box(b) + '"></div></div><div class="mn-bar-l">' + esc(t('box')) + ' ' + b + '</div></div>';
+    }).join('');
+    var dueInFilter = Object.keys(d).filter(function (k) { var it = d[k]; return !it.mastered && it.due <= now && (!S.filter || it.sec === S.filter); }).length;
+    var startBtn = dueInFilter
+      ? '<button class="mn-btn mn-big" onclick="_mnStart(\'due\')">' + esc(t('start')) + ' (' + dueInFilter + ')</button>'
+      : '<div class="mn-nodue">' + esc(t('nodue')) + '</div>';
+    var items = Object.keys(d).map(function (k) { return d[k]; })
+      .filter(function (it) { return !S.filter || it.sec === S.filter; })
+      .sort(function (a, b) { return (a.mastered ? 1 : 0) - (b.mastered ? 1 : 0) || (a.due || 0) - (b.due || 0); }).slice(0, 40);
+    var rows = items.map(function (it) {
+      var when = it.mastered ? t('mast') : ((it.due || 0) <= now ? t('dueNow') : (lang() === 'te' ? Math.ceil((it.due - now) / DAY) + ' ' + t('days') + ' ' + t('inDays') : t('inDays') + ' ' + Math.ceil((it.due - now) / DAY) + t('days')));
+      return '<div class="mn-row"><div class="mn-row-q">' + esc(String(it.q || '').slice(0, 110)) + '</div><div class="mn-row-m">' +
+        '<span class="mn-pill" style="background:' + box(it.box || 1) + '22;color:' + box(it.box || 1) + '">' + esc(t('box')) + ' ' + (it.box || 1) + '</span>' +
+        '<span>' + esc(when) + '</span><span>❌ ' + (it.wrong || 1) + ' ' + esc(t('times')) + '</span>' +
+        '<button class="mn-x" title="Remove" data-k="' + esc(it.k) + '" onclick="_mnDel(this.dataset.k)">✕</button></div></div>';
+    }).join('');
+    el.innerHTML =
+      '<div class="mn-stats">' +
+      '<div class="mn-stat"><div class="mn-stat-n" style="color:var(--red)">' + s.due + '</div><div class="mn-stat-l">' + esc(t('due')) + '</div></div>' +
+      '<div class="mn-stat"><div class="mn-stat-n" style="color:var(--primary)">' + s.total + '</div><div class="mn-stat-l">' + esc(t('inbook')) + '</div></div>' +
+      '<div class="mn-stat"><div class="mn-stat-n" style="color:#00C896">' + s.mastered + '</div><div class="mn-stat-l">' + esc(t('mastered')) + '</div></div></div>' +
+      chips +
+      '<div class="mn-actions">' + startBtn + '<button class="mn-btn mn-ghost" onclick="_mnStart(\'all\')">' + esc(t('practice')) + '</button></div>' +
+      '<div class="mn-card"><div class="mn-h">' + esc(t('boxes')) + '</div><div class="mn-bars">' + bars + '</div><div class="mn-hint">' + esc(t('boxhint')) + '</div></div>' +
+      '<div class="mn-card"><div class="mn-h">' + esc(t('list')) + '</div>' + rows +
+      '<div style="display:flex;justify-content:space-between;align-items:center;margin-top:12px;gap:8px;flex-wrap:wrap"><span class="mn-hint" style="margin:0">' + esc(t('localNote')) + '</span><button class="mn-btn mn-ghost mn-sm" onclick="_mnClear()">' + esc(t('clear')) + '</button></div></div>';
+  }
+
+  window._mnFilter = function (k) { S.filter = k || ''; render(); };
+  window._mnDel = function (k) { var d = load(); delete d[k]; save(d); render(); };
+  window._mnClear = function () { if (!confirm(t('clearQ'))) return; save({}); S.filter = ''; render(); };
+  window._mnExit = function () { S.mode = 'home'; render(); };
+
+  function shuffle(a) { for (var i = a.length - 1; i > 0; i--) { var j = Math.floor(Math.random() * (i + 1)); var x = a[i]; a[i] = a[j]; a[j] = x; } return a; }
+  window._mnStart = function (kind) {
+    var d = load(), now = Date.now();
+    var ks = Object.keys(d).filter(function (k) {
+      var it = d[k];
+      if (it.mastered) return false;
+      if (S.filter && it.sec !== S.filter) return false;
+      return kind === 'due' ? (it.due || 0) <= now : true;
+    });
+    if (!ks.length) { if (typeof toast === 'function') toast(t('nodue'), 'info'); return; }
+    S.queue = shuffle(ks).slice(0, 20); S.i = 0; S.right = 0; S.wrong = 0; S.picked = -1; S.kind = kind; S.mode = 'quiz';
+    render(); window.scrollTo({ top: 0, behavior: 'smooth' });
+  };
+
+  function renderQuiz(el) {
+    var d = load(), it = d[S.queue[S.i]];
+    if (!it) { // deleted meanwhile
+      S.i++; if (S.i >= S.queue.length) { S.mode = 'summary'; return render(); }
+      return renderQuiz(el);
+    }
+    var total = S.queue.length, pct = Math.round(S.i / total * 100), answered = S.picked >= 0;
+    var ansIdx = it.ans ? it.ans.charCodeAt(0) - 65 : -1;
+    var opts = (it.opts || []).map(function (o, i) {
+      var cls = 'mn-opt';
+      if (answered) { if (i === ansIdx) cls += ' ok'; else if (i === S.picked) cls += ' bad'; }
+      return '<button class="' + cls + '" ' + (answered ? 'disabled' : 'onclick="_mnPick(' + i + ')"') + '><span class="mn-opt-l">' + String.fromCharCode(65 + i) + '</span><span>' + esc(o) + '</span></button>';
+    }).join('');
+    var fb = '';
+    if (answered) {
+      var ok = S.picked === ansIdx;
+      fb = '<div class="mn-fb ' + (ok ? 'ok' : 'bad') + '"><b>' + esc(ok ? t('correct') : t('wrong')) + '</b>' +
+        (ok ? '' : '<div>' + esc(t('rightAns')) + ': <b>' + it.ans + '</b></div>') +
+        (it.exp ? '<div class="mn-exp"><b>' + esc(t('exp')) + ':</b> ' + esc(it.exp) + '</div>' : '') + '</div>' +
+        '<button class="mn-btn mn-big" onclick="_mnNext()">' + esc(S.i + 1 >= total ? t('finish') : t('next')) + '</button>';
+    }
+    el.innerHTML =
+      '<div class="mn-top"><span>' + (S.i + 1) + ' / ' + total + '</span><button class="mn-btn mn-ghost mn-sm" onclick="_mnExit()">' + esc(t('exit')) + '</button></div>' +
+      '<div class="mn-prog"><div style="width:' + pct + '%"></div></div>' +
+      '<div class="mn-card"><div class="mn-q">' + esc(it.q) + '</div>' +
+      (it.img ? '<img src="' + esc(it.img) + '" alt="" style="max-width:100%;border-radius:10px;margin:8px 0" onerror="this.remove()">' : '') +
+      '<div class="mn-opts">' + opts + '</div>' + fb + '</div>';
+  }
+
+  window._mnPick = function (i) {
+    if (S.picked >= 0) return;
+    var d = load(), it = d[S.queue[S.i]]; if (!it) return;
+    var ok = i === (it.ans ? it.ans.charCodeAt(0) - 65 : -1), now = Date.now();
+    S.picked = i;
+    if (ok) {
+      S.right++;
+      if (S.kind === 'due') { // only scheduled revision moves the card forward
+        it.box = (it.box || 1) + 1;
+        if (it.box > 5) { it.mastered = true; it.box = 5; it.due = 0; }
+        else it.due = now + INT[it.box] * DAY;
+      }
+    } else {
+      S.wrong++; it.box = 1; it.due = now; it.wrong = (it.wrong || 0) + 1; it.mastered = false;
+    }
+    it.last = now; save(d); render();
+  };
+  window._mnNext = function () {
+    S.picked = -1; S.i++;
+    if (S.i >= S.queue.length) S.mode = 'summary';
+    render(); window.scrollTo({ top: 0, behavior: 'smooth' });
+  };
+
+  function renderSummary(el) {
+    var total = S.right + S.wrong, pct = total ? Math.round(S.right / total * 100) : 0, s = stats();
+    var emo = pct >= 80 ? '🏆' : pct >= 50 ? '💪' : '📚';
+    el.innerHTML = '<div class="mn-card" style="text-align:center;padding:28px 18px"><div style="font-size:54px">' + emo + '</div>' +
+      '<div class="mn-h" style="font-size:20px;margin:8px 0">' + esc(t('done')) + '</div>' +
+      '<div style="font-size:34px;font-weight:900;color:var(--primary)">' + S.right + ' / ' + total + '</div>' +
+      '<div class="mn-hint">' + pct + '% ' + esc(t('scoreLbl')) + '</div>' +
+      '<div class="mn-actions" style="justify-content:center;margin-top:16px">' +
+      (s.due ? '<button class="mn-btn mn-big" onclick="_mnStart(\'due\')">' + esc(t('more')) + ' (' + s.due + ')</button>' : '') +
+      '<button class="mn-btn mn-ghost" onclick="_mnExit()">' + esc(t('back')) + '</button></div></div>';
+  }
+
+  document.addEventListener('ae-page-changed', badge);
+  if (document.readyState === 'loading') document.addEventListener('DOMContentLoaded', function () { setTimeout(badge, 600); });
+  else setTimeout(badge, 600);
+})();
+
 </script>
 </body>
 </html>

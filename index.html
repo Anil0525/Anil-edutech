@@ -2400,7 +2400,7 @@
     .hero {
       position: relative;
       overflow: hidden;
-      padding: 32px 20px 28px;
+      padding: 32px 20px 44px;
       text-align: center;
       background: linear-gradient(135deg, #0A1628 0%, #1A3A6B 30%, #1A73E8 65%, #00B4D8 100%);
     }
@@ -2502,30 +2502,30 @@
       background: linear-gradient(135deg, #1A73E8 0%, #0EA5E9 100%);
       color: #fff;
       border: none;
-      padding: 15px 32px;
+      padding: 17px 40px;
       border-radius: var(--radius);
       font-family: inherit;
-      font-size: 15px;
+      font-size: 16.5px;
       font-weight: 800;
       cursor: pointer;
       transition: all .25s;
-      box-shadow: 0 6px 28px rgba(26, 115, 232, .45);
+      box-shadow: 0 8px 32px rgba(26, 115, 232, .55);
       letter-spacing: -.1px;
     }
 
     .btn-primary:hover {
       transform: translateY(-2px);
-      box-shadow: 0 10px 36px rgba(26, 115, 232, .6);
+      box-shadow: 0 12px 40px rgba(26, 115, 232, .7);
     }
 
     .btn-outline {
-      background: rgba(255, 255, 255, .1);
-      color: #fff;
-      border: 1.5px solid rgba(255, 255, 255, .25);
-      padding: 14px 28px;
+      background: rgba(255, 255, 255, .08);
+      color: rgba(255, 255, 255, .92);
+      border: 1.5px solid rgba(255, 255, 255, .22);
+      padding: 12px 22px;
       border-radius: var(--radius);
       font-family: inherit;
-      font-size: 15px;
+      font-size: 13.5px;
       font-weight: 700;
       cursor: pointer;
       transition: all .25s;
@@ -2536,6 +2536,27 @@
       background: rgba(255, 255, 255, .18);
       border-color: rgba(255, 255, 255, .45);
       transform: translateY(-2px);
+    }
+
+    .btn-tertiary {
+      background: transparent;
+      color: rgba(255, 255, 255, .72);
+      border: none;
+      padding: 10px 14px;
+      border-radius: var(--radius);
+      font-family: inherit;
+      font-size: 12.5px;
+      font-weight: 600;
+      cursor: pointer;
+      transition: all .2s;
+      text-decoration: underline;
+      text-decoration-color: rgba(255, 255, 255, .3);
+      text-underline-offset: 3px;
+    }
+
+    .btn-tertiary:hover {
+      color: #fff;
+      text-decoration-color: rgba(255, 255, 255, .6);
     }
 
     .stats-row {
@@ -6664,93 +6685,93 @@
 
 
     .cat-card[data-cat="daily-ca"] {
-      --cat-color: #e53935;
-      --cat-bg: rgba(229, 57, 53, .06);
+      --cat-color: #B6342B;
+      --cat-bg: rgba(182,52,43, .06);
     }
 
     .cat-card[data-cat="monthly-ca"] {
-      --cat-color: #8e24aa;
-      --cat-bg: rgba(142, 36, 170, .06);
+      --cat-color: #B6622B;
+      --cat-bg: rgba(182,98,43, .06);
     }
 
     .cat-card[data-cat="live-test"] {
-      --cat-color: #e53935;
-      --cat-bg: rgba(229, 57, 53, .06);
+      --cat-color: #B62B50;
+      --cat-bg: rgba(182,43,80, .06);
     }
 
     .cat-card[data-cat="free-test"] {
-      --cat-color: #2e7d32;
-      --cat-bg: rgba(46, 125, 50, .06);
+      --cat-color: #50B62B;
+      --cat-bg: rgba(80,182,43, .06);
     }
 
     .cat-card[data-cat="mock-test"] {
-      --cat-color: #1565c0;
-      --cat-bg: rgba(21, 101, 192, .06);
+      --cat-color: #2B67B6;
+      --cat-bg: rgba(43,103,182, .06);
     }
 
     .cat-card[data-cat="quiz"] {
-      --cat-color: #f57c00;
-      --cat-bg: rgba(245, 124, 0, .06);
+      --cat-color: #B6912B;
+      --cat-bg: rgba(182,145,43, .06);
     }
 
     .cat-card[data-cat="pyq"] {
-      --cat-color: #6a1b9a;
-      --cat-bg: rgba(106, 27, 154, .06);
+      --cat-color: #622BB6;
+      --cat-bg: rgba(98,43,182, .06);
     }
 
     .cat-card[data-cat="ebook"] {
-      --cat-color: #00838f;
-      --cat-bg: rgba(0, 131, 143, .06);
+      --cat-color: #2BB6A8;
+      --cat-bg: rgba(43,182,168, .06);
     }
 
     .cat-card[data-cat="videos"] {
-      --cat-color: #c62828;
-      --cat-bg: rgba(198, 40, 40, .06);
+      --cat-color: #B62B7E;
+      --cat-bg: rgba(182,43,126, .06);
     }
 
     .cat-card[data-cat="bookstore"] {
-      --cat-color: #4e342e;
-      --cat-bg: rgba(78, 52, 46, .06);
+      --cat-color: #B6792B;
+      --cat-bg: rgba(182,121,43, .06);
     }
 
     .cat-card[data-cat="rrb"] {
-      --cat-color: #1a237e;
-      --cat-bg: rgba(26, 35, 126, .06);
+      --cat-color: #2B39B6;
+      --cat-bg: rgba(43,57,182, .06);
     }
 
     .cat-card[data-cat="tspsc"] {
-      --cat-color: #1B2D5E;
-      --cat-bg: rgba(27, 45, 94, .06);
+      --cat-color: #2B95B6;
+      --cat-bg: rgba(43,149,182, .06);
     }
 
     .cat-card[data-cat="ssc"] {
-      --cat-color: #E8640A;
-      --cat-bg: rgba(232, 100, 10, .06);
+      --cat-color: #ACB62B;
+      --cat-bg: rgba(172,182,43, .06);
     }
 
     .cat-card[data-cat="bank"] {
-      --cat-color: #0A7C3E;
-      --cat-bg: rgba(10, 124, 62, .06);
+      --cat-color: #2BB634;
+      --cat-bg: rgba(43,182,52, .06);
     }
 
     .cat-card[data-cat="gk"] {
-      --cat-color: #7B3FA0;
-      --cat-bg: rgba(123, 63, 160, .06);
+      --cat-color: #912BB6;
+      --cat-bg: rgba(145,43,182, .06);
     }
 
     .cat-card[data-cat="math"] {
-      --cat-color: #C0292C;
-      --cat-bg: rgba(192, 41, 44, .06);
+      --cat-color: #B64B2B;
+      --cat-bg: rgba(182,75,43, .06);
     }
 
     .cat-card[data-cat="all"] {
-      --cat-color: #0A6E8C;
-      --cat-bg: rgba(10, 110, 140, .06);
+      --cat-color: #2BACB6;
+      --cat-bg: rgba(43,172,182, .06);
     }
 
     .cat-card[data-cat="syllabus"] {
-      --cat-color: #5B21B6;
-      --cat-bg: rgba(91, 33, 182, .06);
+      --cat-color: #4B2BB6;
+      --cat-bg: rgba(75,43,182, .06);
     }
 
     /* ── SYLLABUS PAGE ── */
@@ -8506,7 +8527,7 @@
 
       /* HERO */
       .hero {
-        padding: 20px 16px 20px !important;
+        padding: 20px 16px 34px !important;
       }
 
       .hero h1 {
@@ -9020,7 +9041,7 @@
 
       /* ── HERO ── */
       .hero {
-        padding: 18px 14px 18px !important;
+        padding: 18px 14px 32px !important;
       }
 
       .hero-badge {
@@ -12026,9 +12047,9 @@
       <div class="hero-shape"></div>
       <div class="hero-inner">
         <div class="hero-badge">🎓 Anil EduTech — India's Free Exam Portal</div>
-        <div id="hero-trust-badge" style="display:none;align-items:center;gap:6px;justify-content:center;margin:8px 0 0;font-size:13px;font-weight:800;color:#F5B731;">
+        <div id="hero-trust-badge" style="display:none;align-items:center;gap:7px;justify-content:center;margin:10px 0 0;padding:6px 16px;background:rgba(255,255,255,.1);border:1px solid rgba(245,183,49,.35);border-radius:999px;backdrop-filter:blur(8px);font-size:13.5px;font-weight:800;color:#F5B731;width:fit-content;margin-left:auto;margin-right:auto;">
           <span id="hero-trust-stars">★★★★★</span>
-          <span id="hero-trust-text" style="color:var(--text2);font-weight:700;"></span>
+          <span id="hero-trust-text" style="color:rgba(255,255,255,.9);font-weight:700;"></span>
         </div>
         <h1>స్మార్ట్‌గా చదవండి.<br><span>High Score సాధించండి!</span></h1>
         <p>TSPSC · SSC · Banking · RRB · GK — అన్ని రకాల competitive exams కి<br>100% Free Mock Tests. మీ success మా
@@ -12043,7 +12064,7 @@
         <div class="hero-actions">
           <button class="btn-primary" onclick="goExams()">🚀 Exams Start చేయండి</button>
           <button class="btn-outline" onclick="openYT()">▶ YouTube Subscribe</button>
-          <button class="btn-outline" onclick="requestNotifications()" title="Daily reminders">🔔 Notify Me</button>
+          <button class="btn-tertiary" onclick="requestNotifications()" title="Daily reminders">🔔 Notify Me</button>
 
         </div>
         <div class="stats-row">
@@ -12068,11 +12089,33 @@
     </div>
 
 
-    <div class="section" style="max-width:820px;margin:0 auto 28px;padding:0 20px;">
-      <div style="font-size:14px;line-height:1.9;color:var(--text2);">
-        <p style="margin:0 0 12px;"><strong style="color:var(--text);">Anil EduTech</strong> అనేది తెలుగు మీడియం విద్యార్థుల కోసం ప్రత్యేకంగా రూపొందించిన ఒక free competitive exam preparation platform. TSPSC (Group 1, 2, 3, 4), APPSC, SSC (CGL, CHSL, MTS), Banking (IBPS, SBI, RBI), RRB (NTPC, Group D) మరియు జనరల్ నాలెడ్జ్ పరీక్షలు రాయాలనుకునే విద్యార్థులకు ఇది ఒక పూర్తి practice hub.</p>
-        <p style="margin:0 0 12px;">ప్రతి exam category కి real exam pattern ఆధారంగా mock tests రూపొందించబడ్డాయి — negative marking, sectional timing, bilingual (Telugu/English) question support తో సహా. ఉదాహరణకు SSC CGL Tier-1 కి 4 sections (Reasoning, General Awareness, Quantitative Aptitude, English) — ఒక్కోటి 25 questions చొప్పున, 60 నిమిషాల్లో పూర్తి చేయాల్సి ఉంటుంది; RRB NTPC, IBPS Clerk, SBI Clerk లాంటి బ్యాంకింగ్ పరీక్షలకు కూడా అదే విధంగా అధికారిక సిలబస్ ప్రకారం ప్రశ్నలు ఉంటాయి.</p>
-        <p style="margin:0;">Mock tests తో పాటు, ప్రతి exam category కి సంబంధించిన <a href="tspsc-groups-guide.html" style="color:var(--primary);font-weight:700;">వివరణాత్మక study guides</a> (సిలబస్ బ్రేక్‌డౌన్, ప్రిపరేషన్ స్ట్రాటజీ, ముఖ్యమైన టాపిక్స్) కూడా అందుబాటులో ఉన్నాయి — కింద "Study Guides" సెక్షన్ లో చూడవచ్చు. ఇవన్నీ 100% ఉచితం; leaderboard, daily streaks, certificates ద్వారా విద్యార్థులు తమ progress ట్రాక్ చేసుకోవచ్చు.</p>
+    <div class="section" style="max-width:900px;margin:28px auto 28px;padding:0 20px;">
+      <div style="background:var(--card);border:1px solid var(--border);border-radius:var(--radius);box-shadow:var(--shadow-sm);padding:24px 22px;">
+        <h2 style="margin:0 0 10px;font-size:19px;font-weight:800;color:var(--text);">Anil EduTech గురించి</h2>
+        <p style="margin:0 0 18px;font-size:14.5px;line-height:1.85;color:var(--text2);">తెలుగు మీడియం విద్యార్థుల కోసం ప్రత్యేకంగా రూపొందించిన <strong style="color:var(--text);">100% free</strong> competitive exam prep platform. TSPSC (Group 1,2,3,4), APPSC, SSC (CGL, CHSL, MTS), Banking (IBPS, SBI, RBI), RRB (NTPC, Group D) మరియు జనరల్ నాలెడ్జ్ పరీక్షలకు ఇది మీ పూర్తి practice hub.</p>
+        <div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(220px,1fr));gap:16px;">
+          <div style="display:flex;gap:12px;align-items:flex-start;">
+            <div style="flex:0 0 auto;width:38px;height:38px;border-radius:10px;background:var(--primary-soft);display:flex;align-items:center;justify-content:center;font-size:18px;">🎯</div>
+            <div>
+              <div style="font-weight:700;font-size:14px;color:var(--text);margin-bottom:3px;">Real Exam Pattern Mock Tests</div>
+              <div style="font-size:13px;line-height:1.7;color:var(--text3);">Negative marking, sectional timing, bilingual (Telugu/English) support తో — SSC CGL Tier-1 (4 sections × 25 questions, 60 నిమిషాలు), RRB NTPC, IBPS/SBI Clerk లాంటి అధికారిక సిలబస్ ప్రకారం.</div>
+            </div>
+          </div>
+          <div style="display:flex;gap:12px;align-items:flex-start;">
+            <div style="flex:0 0 auto;width:38px;height:38px;border-radius:10px;background:var(--teal-soft);display:flex;align-items:center;justify-content:center;font-size:18px;">📖</div>
+            <div>
+              <div style="font-weight:700;font-size:14px;color:var(--text);margin-bottom:3px;">వివరణాత్మక Study Guides</div>
+              <div style="font-size:13px;line-height:1.7;color:var(--text3);">ప్రతి exam category కి సిలబస్ బ్రేక్‌డౌన్, ప్రిపరేషన్ స్ట్రాటజీ, ముఖ్యమైన టాపిక్స్ — <a href="tspsc-groups-guide.html" style="color:var(--primary);font-weight:700;">ఇక్కడ చూడండి</a> లేదా కింద "Study Guides" సెక్షన్‌లో.</div>
+            </div>
+          </div>
+          <div style="display:flex;gap:12px;align-items:flex-start;">
+            <div style="flex:0 0 auto;width:38px;height:38px;border-radius:10px;background:var(--amber-soft);display:flex;align-items:center;justify-content:center;font-size:18px;">🏆</div>
+            <div>
+              <div style="font-weight:700;font-size:14px;color:var(--text);margin-bottom:3px;">Track Your Progress</div>
+              <div style="font-size:13px;line-height:1.7;color:var(--text3);">Leaderboard, daily streaks, certificates ద్వారా మీ progress ఎప్పటికప్పుడు ట్రాక్ చేసుకోవచ్చు — ఇవన్నీ 100% ఉచితం.</div>
+            </div>
+          </div>
+        </div>
       </div>
     </div>
 
@@ -12189,7 +12232,7 @@
     </div>
 
     <!-- STUDY GUIDES SECTION -->
-    <div style="padding:24px 16px 8px; max-width:860px; margin:0 auto;">
+    <div style="padding:24px 16px 8px; max-width:860px; margin:0 auto; border-top:1px solid var(--border); margin-top:12px;">
       <div style="display:flex; align-items:center; justify-content:space-between; margin-bottom:4px;">
         <div class="section-title" style="margin-bottom:0;">📚 Study Guides</div>
         <span id="sg-count-badge"
@@ -12729,7 +12772,7 @@
       </div>
 
 
-      <div class="lb-header" style="margin-top:0">
+      <div class="lb-header" style="margin-top:24px;padding-top:24px;border-top:1px solid var(--border);">
         <div>
           <div class="section-title">🏆 Top Scorers &nbsp;<span id="lb-live-dot"
               style="display:inline-block;width:9px;height:9px;background:#06B96B;border-radius:50%;animation:lb-pulse 1.8s infinite;vertical-align:middle;margin-left:2px;"

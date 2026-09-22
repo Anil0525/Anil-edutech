@@ -18064,20 +18064,16 @@ More exams: https://aniledutech.in
       // Function, service-role key never exposed to the browser) and email
       // it via EmailJS — avoids depending on Supabase's own mail sender.
       const linkRes = await sbGenerateResetLink(gmail);
-      // TEMP DEBUG (remove once confirmed working): show exactly what
-      // happened on-screen so we don't need DevTools to diagnose.
-      console.log('[forgot-pw debug] linkRes:', linkRes);
       if (linkRes.ok) {
         if (linkRes.link) {
           const sendRes = await sendEmailNotification('reset_link', { gmail, resetLink: linkRes.link });
-          console.log('[forgot-pw debug] sendRes:', sendRes);
           if (!sendRes.ok) {
-            if (errEl) errEl.textContent = '❌ DEBUG: EmailJS failed — ' + sendRes.reason;
+            if (errEl) errEl.textContent = '❌ Email పంపడంలో సమస్య వచ్చింది. దయచేసి కొద్దిసేపు తర్వాత try చేయండి.';
             if (okEl) okEl.textContent = '';
             return;
           }
         } else {
-          if (errEl) errEl.textContent = '❌ DEBUG: link generate avvaledu (account ledu leda edge function/redirect config lో సమస్య).';
+          if (errEl) errEl.textContent = '❌ Password reset link create avvaledu. దయచేసి కొద్దిసేపు తర్వాత try చేయండి లేదా support ni contact చేయండి.';
           if (okEl) okEl.textContent = '';
           return;
         }
@@ -24789,6 +24785,11 @@ Rules:
       }).catch(() => { });
       // _loadDBFromSupabase runs async; UI updates after data loads
       _loadDBFromSupabase().then(ok => {
+        // ok === false → Supabase unreachable AND no offline cache found,
+        // so the homepage is showing the built-in sample exams, not real data.
+        if (!ok && typeof toast === 'function') {
+          toast('⚠️ Connection issue — sample exams చూపిస్తున్నాం. Refresh చేయండి.', 'warning', 5000);
+        }
         updateStats();
         renderLeaderboard();
         filterExams();

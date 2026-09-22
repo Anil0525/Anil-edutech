@@ -3,254 +3,191 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Computer Awareness for Banking Exams 2026 | Anil EduTech</title>
-<meta name="description" content="Banking exams కోసం Computer Awareness — Hardware, Software, Internet, MS Office basics.">
-<meta name="keywords" content="computer awareness banking exam, computer knowledge IBPS, computer GK Telugu">
+<meta name="theme-color" content="#1A73E8">
+<title>Computer Awareness for Banking Exams (Telugu) — IBPS, SBI | Anil EduTech</title>
+<meta name="description" content="Banking పరీక్షల కోసం Computer Awareness: హార్డ్‌వేర్, మెమరీ, సంఖ్యా వ్యవస్థలు, MS Office షార్ట్‌కట్లు, నెట్‌వర్కింగ్, సైబర్ భద్రత — తెలుగులో practice ప్రశ్నలతో.">
+
 <meta name="robots" content="index, follow">
-<meta name="author" content="Anil EduTech">
-<meta property="og:title" content="Computer Awareness for Banking Exams 2026 | Anil EduTech">
-<meta property="og:description" content="Banking exams కోసం Computer Awareness — Hardware, Software, Internet, MS Office basics.">
-<meta property="og:type" content="article">
-<meta property="og:url" content="https://www.aniledutech.in/computer-awareness-guide.html">
 <link rel="canonical" href="https://aniledutech.in/computer-awareness-guide.html">
-<link rel="preconnect" href="https://fonts.googleapis.com">
-<link href="https://fonts.googleapis.com/css2?family=Noto+Sans+Telugu:wght@400;600;700;900&family=Inter:wght@400;600;700;800&display=swap" rel="stylesheet">
 <style>
   :root {
-    --primary: #4F8EFF;
-    --bg: #0A0F1E;
-    --card: #111827;
-    --text: #E8F0FF;
-    --text2: #94A3B8;
-    --border: rgba(255,255,255,0.08);
+    --bg:#0A0F2C;--bg2:#0D1A3A;--card:#111827;--border:rgba(79,142,255,0.18);
+    --primary:#4F8EFF;--purple:#A855F7;--cyan:#06B6D4;--green:#00B894;
+    --text:#E8F0FF;--text2:#94A3B8;--text3:#64748B;
   }
-  * { margin:0; padding:0; box-sizing:border-box; }
-  body { background: var(--bg); color: var(--text); font-family: 'Inter', 'Noto Sans Telugu', sans-serif; line-height: 1.7; }
-
-  /* NAV */
-  nav { background: #0D1117; border-bottom: 2px solid var(--primary); padding: 0 20px; display: flex; align-items: center; justify-content: space-between; height: 56px; position: sticky; top: 0; z-index: 100; }
-  .nav-logo { display: flex; align-items: center; gap: 10px; text-decoration: none; }
-  .nav-logo-box { width: 36px; height: 36px; background: linear-gradient(135deg, #4F8EFF, #A855F7); border-radius: 10px; display: flex; align-items: center; justify-content: center; font-weight: 900; font-size: 16px; color: #fff; }
-  .nav-logo-text { font-weight: 800; font-size: 15px; color: #E8F0FF; }
-  .nav-links { display: flex; gap: 6px; }
-  .nav-link { color: #94A3B8; text-decoration: none; font-size: 13px; font-weight: 600; padding: 6px 12px; border-radius: 8px; transition: all 0.2s; }
-  .nav-link:hover { background: rgba(255,255,255,0.07); color: #E8F0FF; }
-  .nav-home-btn { background: var(--primary); color: #fff; border: none; border-radius: 10px; padding: 7px 16px; font-size: 13px; font-weight: 700; cursor: pointer; text-decoration: none; }
-
-  /* HERO */
-  .blog-hero { background: linear-gradient(135deg, #0D1117 0%, #111827 100%); border-bottom: 1px solid var(--border); padding: 48px 20px 36px; text-align: center; position: relative; overflow: hidden; }
-  .blog-hero::before { content:''; position:absolute; top:-60px; left:50%; transform:translateX(-50%); width:500px; height:300px; background: radial-gradient(ellipse, #4F8EFF22 0%, transparent 70%); pointer-events:none; }
-  .blog-hero-cat { display: inline-block; background: #4F8EFF22; border: 1px solid #4F8EFF44; color: var(--primary); border-radius: 20px; padding: 4px 14px; font-size: 12px; font-weight: 700; margin-bottom: 16px; letter-spacing: 0.5px; text-transform: uppercase; }
-  .blog-hero-emoji { font-size: 56px; margin-bottom: 16px; display: block; }
-  .blog-hero h1 { font-size: clamp(22px, 5vw, 36px); font-weight: 900; color: #fff; margin-bottom: 14px; line-height: 1.3; }
-  .blog-hero p { font-size: 15px; color: #94A3B8; max-width: 600px; margin: 0 auto 20px; }
-  .blog-meta { display: flex; align-items: center; justify-content: center; gap: 16px; flex-wrap: wrap; }
-  .blog-meta-item { font-size: 12px; color: #64748B; display: flex; align-items: center; gap: 5px; }
-
-  /* CONTENT */
-  .blog-wrap { max-width: 800px; margin: 0 auto; padding: 40px 20px 60px; }
-  .blog-toc { background: var(--card); border: 1px solid var(--border); border-left: 3px solid var(--primary); border-radius: 14px; padding: 20px 24px; margin-bottom: 36px; }
-  .blog-toc h3 { font-size: 13px; font-weight: 800; color: var(--text2); text-transform: uppercase; letter-spacing: 1px; margin-bottom: 12px; }
-  .blog-toc ol { padding-left: 18px; }
-  .blog-toc li { margin-bottom: 8px; }
-  .blog-toc a { color: var(--primary); text-decoration: none; font-size: 14px; font-weight: 600; }
-  .blog-toc a:hover { text-decoration: underline; }
-
-  .blog-section { margin-bottom: 40px; }
-  .blog-section h2 { font-size: 20px; font-weight: 800; color: #fff; margin-bottom: 14px; padding-bottom: 10px; border-bottom: 2px solid #4F8EFF33; display: flex; align-items: center; gap: 8px; }
-  .blog-section h3 { font-size: 16px; font-weight: 700; color: #C8D8FF; margin: 20px 0 10px; }
-  .blog-section p { font-size: 15px; color: #94A3B8; margin-bottom: 14px; line-height: 1.8; }
-  .blog-section ul, .blog-section ol { padding-left: 20px; margin-bottom: 14px; }
-  .blog-section li { font-size: 15px; color: #94A3B8; margin-bottom: 8px; line-height: 1.7; }
-  .blog-section strong { color: #C8D8FF; }
-
-  /* INFO BOX */
-  .info-box { background: #4F8EFF11; border: 1px solid #4F8EFF33; border-radius: 12px; padding: 16px 20px; margin: 20px 0; }
-  .info-box-title { font-size: 13px; font-weight: 800; color: var(--primary); margin-bottom: 8px; text-transform: uppercase; letter-spacing: 0.5px; }
-  .info-box p { margin: 0; font-size: 14px; }
-
-  /* TABLE */
-  .blog-table { width: 100%; border-collapse: collapse; margin: 20px 0; border-radius: 10px; overflow: hidden; }
-  .blog-table th { background: #4F8EFF22; color: var(--primary); font-size: 12px; font-weight: 800; text-transform: uppercase; letter-spacing: 0.8px; padding: 12px 14px; text-align: left; }
-  .blog-table td { padding: 11px 14px; font-size: 14px; color: #94A3B8; border-bottom: 1px solid var(--border); }
-  .blog-table tr:last-child td { border-bottom: none; }
-  .blog-table tr:hover td { background: rgba(255,255,255,0.03); }
-
-  /* CTA */
-  .blog-cta { background: linear-gradient(135deg, #4F8EFF22, #4F8EFF11); border: 1px solid #4F8EFF44; border-radius: 16px; padding: 28px 24px; text-align: center; margin-top: 48px; }
-  .blog-cta h3 { font-size: 18px; font-weight: 800; color: #fff; margin-bottom: 10px; }
-  .blog-cta p { font-size: 14px; color: #94A3B8; margin-bottom: 20px; }
-  .blog-cta a { display: inline-block; background: var(--primary); color: #fff; border-radius: 10px; padding: 12px 28px; font-size: 14px; font-weight: 700; text-decoration: none; transition: opacity 0.2s; }
-  .blog-cta a:hover { opacity: 0.85; }
-
-  /* MORE BLOGS */
-  .more-blogs { margin-top: 48px; padding-top: 32px; border-top: 1px solid var(--border); }
-  .more-blogs h3 { font-size: 16px; font-weight: 800; color: #fff; margin-bottom: 18px; }
-  .more-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 12px; }
-  .more-card { background: var(--card); border: 1px solid var(--border); border-radius: 12px; padding: 14px; text-decoration: none; transition: border-color 0.2s; }
-  .more-card:hover { border-color: var(--primary); }
-  .more-card-emoji { font-size: 22px; margin-bottom: 6px; }
-  .more-card-title { font-size: 13px; font-weight: 700; color: #E8F0FF; margin-bottom: 3px; }
-  .more-card-sub { font-size: 11px; color: #64748B; }
-
-  /* FOOTER */
-  footer { background: #0D1117; border-top: 1px solid var(--border); padding: 24px 20px; text-align: center; }
-  .footer-links { display: flex; justify-content: center; gap: 20px; margin-bottom: 12px; flex-wrap: wrap; }
-  .footer-links a { color: #64748B; text-decoration: none; font-size: 13px; font-weight: 600; }
-  .footer-links a:hover { color: var(--primary); }
-  .footer-copy { font-size: 12px; color: #374151; }
-
-  @media(max-width: 600px) {
-    .nav-links { display: none; }
-    .blog-hero { padding: 32px 16px 24px; }
-  }
+  *{margin:0;padding:0;box-sizing:border-box;}
+  body{background:var(--bg);color:var(--text);font-family:'Segoe UI',system-ui,sans-serif;line-height:1.8;}
+  .topbar{height:4px;background:linear-gradient(90deg,#4F8EFF,#A855F7,#06B6D4);}
+  header{background:var(--bg2);border-bottom:1px solid var(--border);padding:16px 24px;display:flex;align-items:center;gap:16px;}
+  .logo-box{width:44px;height:44px;background:linear-gradient(135deg,#4F8EFF,#A855F7);border-radius:12px;display:flex;align-items:center;justify-content:center;font-size:20px;font-weight:900;color:#fff;text-decoration:none;}
+  .site-name{font-size:18px;font-weight:800;}
+  .site-tagline{font-size:11px;color:var(--purple);letter-spacing:1.5px;text-transform:uppercase;}
+  nav{margin-left:auto;display:flex;gap:12px;flex-wrap:wrap;}
+  nav a{color:var(--text2);text-decoration:none;font-size:13px;font-weight:600;padding:6px 14px;border-radius:8px;border:1px solid var(--border);transition:all 0.2s;}
+  nav a:hover{color:var(--primary);border-color:var(--primary);}
+  .article-hero{background:linear-gradient(135deg,#0A0F2C,#0D1F5C,#0A1A10);padding:50px 24px 40px;text-align:center;}
+  .category-tag{display:inline-block;padding:5px 14px;border-radius:20px;background:rgba(79,142,255,0.12);border:1px solid rgba(79,142,255,0.3);font-size:11px;color:var(--primary);letter-spacing:2px;text-transform:uppercase;margin-bottom:16px;}
+  .article-hero h1{font-size:clamp(24px,4vw,40px);font-weight:900;margin-bottom:14px;background:linear-gradient(90deg,#fff,#4F8EFF);-webkit-background-clip:text;-webkit-text-fill-color:transparent;}
+  .article-meta{font-size:13px;color:var(--text3);display:flex;gap:20px;justify-content:center;flex-wrap:wrap;}
+  .article-meta span{display:flex;align-items:center;gap:6px;}
+  .layout{max-width:900px;margin:0 auto;padding:40px 24px 80px;display:grid;grid-template-columns:1fr 280px;gap:32px;}
+  @media(max-width:720px){.layout{grid-template-columns:1fr;}}
+  .article-body h2{font-size:22px;font-weight:800;margin:36px 0 14px;color:var(--primary);}
+  .article-body h3{font-size:17px;font-weight:700;margin:24px 0 10px;color:#C084FC;}
+  .article-body p{font-size:15px;color:var(--text2);margin-bottom:16px;}
+  .article-body ul,.article-body ol{padding-left:22px;margin-bottom:16px;}
+  .article-body li{font-size:15px;color:var(--text2);margin-bottom:8px;}
+  .highlight-box{background:rgba(79,142,255,0.08);border-left:3px solid var(--primary);padding:16px 20px;border-radius:0 10px 10px 0;margin:20px 0;}
+  .highlight-box p{margin:0;font-size:14px;}
+  table{width:100%;border-collapse:collapse;margin:20px 0;font-size:14px;}
+  th{background:rgba(79,142,255,0.15);color:var(--primary);padding:10px 14px;text-align:left;font-weight:700;}
+  td{padding:10px 14px;border-bottom:1px solid var(--border);color:var(--text2);}
+  tr:hover td{background:rgba(79,142,255,0.04);}
+  .sidebar-card{background:var(--card);border:1px solid var(--border);border-radius:14px;padding:20px;margin-bottom:20px;}
+  .sidebar-card h3{font-size:14px;font-weight:800;color:var(--primary);margin-bottom:14px;}
+  .sidebar-card ul{list-style:none;padding:0;}
+  .sidebar-card li{font-size:13px;color:var(--text2);padding:8px 0;border-bottom:1px solid var(--border);}
+  .sidebar-card li:last-child{border-bottom:none;}
+  .sidebar-card li a{color:var(--text2);text-decoration:none;}
+  .sidebar-card li a:hover{color:var(--primary);}
+  .cta-btn{display:block;text-align:center;padding:12px;background:linear-gradient(90deg,#4F8EFF,#A855F7);border-radius:10px;color:#fff;text-decoration:none;font-weight:800;font-size:14px;margin-top:10px;}
+  footer{text-align:center;padding:32px 24px;border-top:1px solid var(--border);color:var(--text3);font-size:12px;}
+  footer a{color:var(--primary);text-decoration:none;}
 </style>
+<script type="application/ld+json">{"@context": "https://schema.org", "@graph": [{"@type": "Article", "headline": "Computer Awareness for Banking Exams 2026", "description": "Banking పరీక్షల కోసం Computer Awareness: హార్డ్‌వేర్, మెమరీ, సంఖ్యా వ్యవస్థలు, MS Office షార్ట్‌కట్లు, నెట్‌వర్కింగ్, సైబర్ భద్రత — తెలుగులో practice ప్రశ్నలతో.", "mainEntityOfPage": "https://aniledutech.in/computer-awareness-guide.html", "inLanguage": "te-IN", "dateModified": "2026-09-20", "author": {"@type": "Organization", "name": "Anil EduTech", "url": "https://aniledutech.in/"}, "publisher": {"@type": "Organization", "name": "Anil EduTech", "url": "https://aniledutech.in/"}}, {"@type": "BreadcrumbList", "itemListElement": [{"@type": "ListItem", "position": 1, "name": "Home", "item": "https://aniledutech.in/"}, {"@type": "ListItem", "position": 2, "name": "Computer Awareness for Banking Exams 2026", "item": "https://aniledutech.in/computer-awareness-guide.html"}]}]}</script>
 </head>
 <body>
+<div class="topbar"></div>
+<header>
+  <a href="index.html" class="logo-box">A</a>
+  <div><div class="site-name">Anil EduTech</div><div class="site-tagline">Online Exam Portal</div></div>
+  <nav>
+    <a href="index.html">🏠 Home</a>
+    <a href="about.html">About</a>
+    <a href="contact.html">Contact</a>
+  </nav>
+</header>
 
-<nav>
-  <a href="index.html" class="nav-logo">
-    <div class="nav-logo-box">A</div>
-    <span class="nav-logo-text">Anil EduTech</span>
-  </a>
-  <div class="nav-links">
-    <a href="index.html" class="nav-link">🏠 Home</a>
-    <a href="index.html#categories-section" class="nav-link">📝 Exams</a>
-    <a href="index.html" class="nav-link">📚 Guides</a>
-  </div>
-  <a href="index.html" class="nav-home-btn">🚀 Free Tests</a>
-</nav>
-
-<div class="blog-hero">
-  <div class="blog-hero-cat">Computer</div>
-  <span class="blog-hero-emoji">💻</span>
+<div class="article-hero">
+  <div class="category-tag">✦ Banking</div>
   <h1>Computer Awareness for Banking Exams 2026</h1>
-  <p>Banking exams కోసం Computer Awareness — Hardware, Software, Internet, MS Office basics.</p>
-  <div class="blog-meta">
-    <span class="blog-meta-item">📅 2026 Updated</span>
-    <span class="blog-meta-item">👤 Anil EduTech Team</span>
-    <span class="blog-meta-item">⏱ 8 min read</span>
-    <span class="blog-meta-item">🆓 Free Guide</span>
-  </div>
+  <div class="article-meta"><span>📅 Updated: September 2026</span><span>⏱ 10 min read</span><span>✍️ Anil EduTech</span></div>
 </div>
 
-<div class="blog-wrap">
+<div class="layout">
+  <article class="article-body">
+    <h2>Banking exams లో Computer Awareness</h2>
+    <p>IBPS PO/Clerk, SBI PO/Clerk, RBI పరీక్షలలో Computer Aptitude / Knowledge ప్రశ్నలు వస్తాయి (IBPS/SBI PO Mains లో Reasoning &amp; Computer Aptitude విభాగం). ఇవి చాలావరకు ప్రాథమిక స్థాయి ప్రశ్నలు; నిర్దిష్ట టాపిక్స్ సరిగా చదివితే వేగంగా marks వస్తాయి.</p>
 
-  <div class="blog-toc">
-    <h3>📋 విషయ సూచిక</h3>
+    <h2>1. కంప్యూటర్ తరాలు (Generations)</h2>
+    <table>
+      <tr><th>తరం</th><th>సాంకేతికత</th></tr>
+      <tr><td>1వ</td><td>Vacuum tubes</td></tr>
+      <tr><td>2వ</td><td>Transistors</td></tr>
+      <tr><td>3వ</td><td>Integrated Circuits (IC)</td></tr>
+      <tr><td>4వ</td><td>Microprocessor (VLSI)</td></tr>
+      <tr><td>5వ</td><td>Artificial Intelligence పై ఆధారిత</td></tr>
+    </table>
+
+    <h2>2. హార్డ్‌వేర్ ప్రాథమికాలు</h2>
+    <ul>
+      <li><strong>CPU భాగాలు:</strong> ALU (గణిత, తార్కిక ప్రక్రియలు), Control Unit, Registers.</li>
+      <li><strong>Input devices:</strong> Keyboard, Mouse, Scanner, Microphone. <strong>Output devices:</strong> Monitor, Printer, Speaker.</li>
+      <li><strong>Banking సంబంధిత:</strong> MICR — చెక్కులపై అక్షరాల గుర్తింపు; OMR — mark-sense పత్రాల గుర్తింపు.</li>
+    </ul>
+
+    <h2>3. మెమరీ</h2>
+    <table>
+      <tr><th>రకం</th><th>లక్షణం</th></tr>
+      <tr><td>RAM</td><td>Volatile — పవర్ ఆగితే డేటా పోతుంది; తాత్కాలిక నిల్వ</td></tr>
+      <tr><td>ROM</td><td>Non-volatile — శాశ్వతంగా నిల్వ; boot సూచనలు</td></tr>
+      <tr><td>Cache</td><td>అత్యంత వేగవంతమైన చిన్న మెమరీ; CPU కి దగ్గరగా</td></tr>
+    </table>
+    <p><strong>కొలమానాలు:</strong> 1 Byte = 8 bits; 1 KB = 1024 Bytes; 1 MB = 1024 KB; 1 GB = 1024 MB; 1 TB = 1024 GB.</p>
+
+    <h2>4. సంఖ్యా వ్యవస్థలు</h2>
+    <p>Binary (ఆధారం 2), Octal (8), Decimal (10), Hexadecimal (16). ఉదాహరణ: దశాంశ సంఖ్య 13 = 8 + 4 + 1 = Binary <strong>1101</strong>.</p>
+
+    <h2>5. సాఫ్ట్‌వేర్</h2>
+    <ul>
+      <li><strong>System software:</strong> Operating System (Windows, Linux, Android), Utility programs, Device drivers.</li>
+      <li><strong>Application software:</strong> MS Word, Excel, PowerPoint, browsers.</li>
+      <li><strong>Compiler vs Interpreter:</strong> Compiler మొత్తం ప్రోగ్రామ్ ను ఒకేసారి అనువదిస్తుంది; Interpreter లైన్ బై లైన్.</li>
+    </ul>
+
+    <h2>6. MS Office షార్ట్‌కట్లు</h2>
+    <table>
+      <tr><th>షార్ట్‌కట్</th><th>పని</th></tr>
+      <tr><td>Ctrl + C / X / V</td><td>Copy / Cut / Paste</td></tr>
+      <tr><td>Ctrl + Z / Y</td><td>Undo / Redo</td></tr>
+      <tr><td>Ctrl + S</td><td>Save</td></tr>
+      <tr><td>Ctrl + P</td><td>Print</td></tr>
+      <tr><td>Ctrl + A</td><td>Select all</td></tr>
+      <tr><td>Ctrl + B / I / U</td><td>Bold / Italic / Underline</td></tr>
+      <tr><td>F12</td><td>Save As (Word)</td></tr>
+      <tr><td>F7</td><td>Spelling &amp; grammar check (Word)</td></tr>
+      <tr><td>F5</td><td>Slide show ప్రారంభం (PowerPoint)</td></tr>
+    </table>
+    <p><strong>Excel ఫంక్షన్లు:</strong> =SUM(A1:A5) మొత్తం; =AVERAGE() సగటు; =MAX() / =MIN() గరిష్ట / కనిష్ట విలువ; =COUNT() సంఖ్యల లెక్క; =IF(షరతు, నిజమైతే, తప్పైతే).</p>
+
+    <h2>7. నెట్‌వర్కింగ్ మరియు ఇంటర్నెట్</h2>
+    <ul>
+      <li><strong>నెట్‌వర్క్ రకాలు:</strong> LAN (చిన్న ప్రాంతం), MAN (నగరం), WAN (విశాల ప్రాంతం).</li>
+      <li><strong>Topologies:</strong> Bus, Star, Ring, Mesh.</li>
+      <li><strong>Protocols:</strong> HTTP/HTTPS (వెబ్), FTP (ఫైల్ బదిలీ), SMTP (ఈమెయిల్ పంపడం), POP3/IMAP (ఈమెయిల్ స్వీకరించడం), TCP/IP.</li>
+      <li><strong>IP address:</strong> నెట్‌వర్క్ లో ప్రతి పరికరానికి ప్రత్యేక చిరునామా. <strong>URL:</strong> వెబ్ పేజీ చిరునామా.</li>
+    </ul>
+
+    <h2>8. సైబర్ భద్రత</h2>
+    <ul>
+      <li><strong>Virus:</strong> ఇతర ఫైళ్లకు అంటుకుని వ్యాపించే హానికర ప్రోగ్రామ్. <strong>Worm:</strong> స్వయంగా నెట్‌వర్క్ లో వ్యాపిస్తుంది. <strong>Trojan:</strong> ఉపయోగకరమైనదిగా కనిపించే హానికర సాఫ్ట్‌వేర్.</li>
+      <li><strong>Phishing:</strong> నకిలీ ఈమెయిల్/వెబ్‌సైట్ ద్వారా పాస్‌వర్డ్, OTP, కార్డ్ వివరాలు దొంగిలించడం.</li>
+      <li><strong>Firewall:</strong> అనధికార ట్రాఫిక్ ను నియంత్రించే భద్రతా వ్యవస్థ. <strong>Antivirus:</strong> హానికర ప్రోగ్రామ్ లను గుర్తించి తొలగిస్తుంది.</li>
+      <li>బ్యాంక్ ఎప్పుడూ OTP, PIN, CVV ను ఫోన్/ఈమెయిల్ లో అడగదు — ఇది exams లో మరియు నిజ జీవితంలో ముఖ్యం.</li>
+    </ul>
+
+    <h2>9. బ్యాంకింగ్ టెక్నాలజీ</h2>
+    <ul>
+      <li><strong>CBS (Core Banking Solution):</strong> బ్రాంచ్ లన్నింటినీ కేంద్రీకృత డేటాబేస్ తో అనుసంధానం చేసే వ్యవస్థ.</li>
+      <li><strong>NEFT, RTGS, IMPS, UPI:</strong> ఎలక్ట్రానిక్ చెల్లింపు వ్యవస్థలు; UPI ని NPCI నిర్వహిస్తుంది.</li>
+      <li><strong>ATM, POS, Internet/Mobile Banking</strong> ప్రాథమిక భావనలు.</li>
+    </ul>
+
+    <h2>చదివే విధానం</h2>
     <ol>
-      <li><a href="#s1">Overview</a></li>
-      <li><a href="#s2">Key Topics</a></li>
-      <li><a href="#s3">Preparation Strategy</a></li>
-      <li><a href="#s4">Important Points</a></li>
+      <li>మొదటి వారం: హార్డ్‌వేర్, మెమరీ, సంఖ్యా వ్యవస్థలు.</li>
+      <li>రెండో వారం: MS Office షార్ట్‌కట్లు, Excel ఫంక్షన్లు.</li>
+      <li>మూడో వారం: నెట్‌వర్కింగ్, సైబర్ భద్రత, బ్యాంకింగ్ టెక్నాలజీ.</li>
+      <li>ప్రతి mock test లో తప్పు చేసిన ప్రశ్నలను 🧠 Revise notebook లో చేర్చండి.</li>
     </ol>
-  </div>
 
-  <div class="blog-section" id="s1">
-    <h2>💻 Computer Awareness for Banking Exams 2026 — Overview</h2>
-    <p>ఈ guide లో మీకు Computer Awareness for Banking Exams 2026 గురించి అన్ని important information అందిస్తాం. Competitive exams లో succeed అవ్వాలంటే ఈ topic ని thoroughly understand చేసుకోవాలి.</p>
-    <p>Anil EduTech మీ preparation journey లో best partner. Free mock tests, study materials, current affairs — అన్నీ ఒకే platform లో అందుబాటులో ఉన్నాయి.</p>
-    <div class="info-box">
-      <div class="info-box-title">💡 Important</div>
-      <p>ఈ topic నుండి exams లో average 10-15 questions వస్తాయి. Thorough preparation తో మంచి marks తెచ్చుకోవచ్చు.</p>
-    </div>
-  </div>
+    <h2>Practice ప్రశ్నలు (సమాధానాలతో)</h2>
+    <ol>
+      <li>Volatile memory ఏది? — <strong>RAM</strong></li>
+      <li>చెక్కుల ప్రాసెసింగ్ కు ఉపయోగించే టెక్నాలజీ? — <strong>MICR</strong></li>
+      <li>1 KB = ? Bytes — <strong>1024</strong></li>
+      <li>Undo చేయడానికి షార్ట్‌కట్? — <strong>Ctrl + Z</strong></li>
+      <li>ఈమెయిల్ పంపడానికి ఉపయోగించే protocol? — <strong>SMTP</strong></li>
+      <li>నకిలీ ఈమెయిల్ ద్వారా వివరాలు దొంగిలించే దాడి? — <strong>Phishing</strong></li>
+      <li>దశాంశ సంఖ్య 13 యొక్క Binary రూపం? — <strong>1101</strong></li>
+    </ol>
 
-  <div class="blog-section" id="s2">
-    <h2>📚 Key Topics to Study</h2>
-    <ul>
-      <li><strong>Foundation Topics:</strong> Basic concepts అర్థం చేసుకోండి. NCERT books మొదలుపెట్టండి.</li>
-      <li><strong>Advanced Topics:</strong> Previous year papers లో frequently asked topics focus చేయండి.</li>
-      <li><strong>Current Developments:</strong> Latest updates follow చేయండి.</li>
-      <li><strong>Practice Questions:</strong> Anil EduTech mock tests regularly ఇవ్వండి.</li>
-      <li><strong>Revision:</strong> Notes రాసి regularly revise చేయండి.</li>
-    </ul>
-    <table class="blog-table">
-      <thead><tr><th>Topic</th><th>Weightage</th><th>Difficulty</th></tr></thead>
-      <tbody>
-        <tr><td>Basic Concepts</td><td>30%</td><td>Easy-Medium</td></tr>
-        <tr><td>Application Based</td><td>40%</td><td>Medium</td></tr>
-        <tr><td>Advanced Topics</td><td>30%</td><td>Medium-Hard</td></tr>
-      </tbody>
-    </table>
-  </div>
-
-  <div class="blog-section" id="s3">
-    <h2>🎯 Preparation Strategy</h2>
-    <h3>Week 1-4: Foundation</h3>
-    <ul>
-      <li>Basic concepts study చేయండి</li>
-      <li>NCERT / standard reference books చదవండి</li>
-      <li>Notes రాయండి</li>
-    </ul>
-    <h3>Week 5-8: Practice</h3>
-    <ul>
-      <li>Previous year questions solve చేయండి</li>
-      <li>Topic-wise mock tests ఇవ్వండి</li>
-      <li>Weak areas identify చేయండి</li>
-    </ul>
-    <h3>Week 9-12: Revision</h3>
-    <ul>
-      <li>Notes revise చేయండి</li>
-      <li>Full mock tests ఇవ్వండి</li>
-      <li>Final polishing</li>
-    </ul>
-    <div class="info-box">
-      <div class="info-box-title">🔥 Pro Strategy</div>
-      <p>Mock tests తర్వాత mistakes analyze చేయండి. Same mistake repeat అవ్వకుండా ఉండటమే real improvement!</p>
-    </div>
-  </div>
-
-  <div class="blog-section" id="s4">
-    <h2>💡 Important Points to Remember</h2>
-    <ul>
-      <li>Daily consistency చాలా important — ఒకే రోజు 10 గంటలు కాదు, రోజూ 6 గంటలు చదవండి.</li>
-      <li>Mock tests తప్పనిసరిగా ఇవ్వండి — actual exam experience కి అవసరం.</li>
-      <li>Current affairs miss అవ్వకండి — monthly digest read చేయండి.</li>
-      <li>Health maintain చేయండి — proper sleep, exercise, nutrition అవసరం.</li>
-      <li>Positive attitude maintain చేయండి — preparation లో ups and downs normal.</li>
-    </ul>
-    <table class="blog-table">
-      <thead><tr><th>Do's</th><th>Don'ts</th></tr></thead>
-      <tbody>
-        <tr><td>Regular practice</td><td>Over-studying single subject</td></tr>
-        <tr><td>Mock tests analyze చేయండి</td><td>Results ignore చేయకండి</td></tr>
-        <tr><td>Short notes రాయండి</td><td>Only reading, no writing</td></tr>
-        <tr><td>Negative marking care</td><td>Blind guessing</td></tr>
-      </tbody>
-    </table>
-  </div>
-
-
-  <div class="blog-cta">
-    <h3>🚀 Practice తో Perfect అవ్వండి!</h3>
-    <p>Anil EduTech లో 500+ Free Mock Tests అందుబాటులో ఉన్నాయి. ఇప్పుడే practice start చేయండి!</p>
-    <a href="index.html">Free Mock Test ఇవ్వండి →</a>
-  </div>
-
-  <div class="more-blogs">
-    <h3>📚 మరిన్ని Study Guides</h3>
-    <div class="more-grid">
-      <a href="tspsc-groups-guide.html" class="more-card"><div class="more-card-emoji">🏛️</div><div class="more-card-title">TSPSC Groups</div><div class="more-card-sub">Complete Guide</div></a>
-      <a href="ssc-cgl-guide.html" class="more-card"><div class="more-card-emoji">📋</div><div class="more-card-title">SSC CGL Guide</div><div class="more-card-sub">Tier 1 & 2</div></a>
-      <a href="banking-exam-guide.html" class="more-card"><div class="more-card-emoji">🏦</div><div class="more-card-title">Banking Exams</div><div class="more-card-sub">SBI, IBPS, RBI</div></a>
-      <a href="gk-guide.html" class="more-card"><div class="more-card-emoji">🌍</div><div class="more-card-title">GK Study Guide</div><div class="more-card-sub">History, Polity</div></a>
-      <a href="speed-maths-guide.html" class="more-card"><div class="more-card-emoji">⚡</div><div class="more-card-title">Speed Maths</div><div class="more-card-sub">Tricks & Shortcuts</div></a>
-      <a href="reasoning-tricks-guide.html" class="more-card"><div class="more-card-emoji">🧠</div><div class="more-card-title">Reasoning</div><div class="more-card-sub">Logical Tricks</div></a>
-    </div>
-  </div>
+    <a href="index.html" class="cta-btn">🚀 Start Free Mock Test →</a>
+  </article>
+  <aside>
+    <div class="sidebar-card"><h3>📚 More Study Guides</h3><ul>
+      <li><a href="study-hub.html">▸ 📚 Study Hub</a></li>
+      <li><a href="tspsc-groups-guide.html">▸ TSPSC Groups Guide</a></li>
+      <li><a href="ssc-cgl-guide.html">▸ SSC CGL Guide</a></li>
+      <li><a href="speed-maths-guide.html">▸ Speed Maths Tricks</a></li>
+    </ul></div>
+    <div class="sidebar-card"><h3>🎯 Quick Facts</h3><ul><li>💻 Computer Aptitude: Mains లో ఉంటుంది</li><li>⌨️ షార్ట్‌కట్లు నేర్చుకోండి</li><li>🔐 సైబర్ భద్రత</li></ul></div>
+  </aside>
 </div>
 
 <footer>
-  <div class="footer-links">
-    <a href="index.html">Home</a>
-    <a href="about.html">About Us</a>
-    <a href="privacy-policy.html">Privacy Policy</a>
-    <a href="contact.html">Contact</a>
-    <a href="disclaimer.html">Disclaimer</a>
-  </div>
-  <div class="footer-copy">© 2026 Anil EduTech. All rights reserved. | www.aniledutech.in</div>
+  <p>© 2026 Anil EduTech. All Rights Reserved. |
+  <a href="index.html">Home</a> · <a href="about.html">About</a> · <a href="contact.html">Contact</a> · <a href="privacy-policy.html">Privacy Policy</a></p>
 </footer>
-
 </body>
 </html>

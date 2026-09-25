@@ -2959,6 +2959,77 @@
       transform: translateY(-3px);
     }
 
+    /* Skeleton loading card — shown in place of .exam-card while the DB
+       is still loading, so the exams list never looks simply "empty". */
+    .exam-card-skel {
+      background: #fff;
+      border: 1.5px solid var(--border);
+      border-radius: 16px;
+      padding: 18px 20px 18px 22px;
+      display: flex;
+      align-items: center;
+      gap: 16px;
+      box-shadow: var(--shadow-sm);
+      overflow: hidden;
+      position: relative;
+    }
+
+    .exam-card-skel .sk-circle {
+      width: 42px;
+      height: 42px;
+      border-radius: 50%;
+      background: var(--bg2);
+      flex-shrink: 0;
+    }
+
+    .exam-card-skel .sk-lines {
+      flex: 1;
+      min-width: 0;
+      display: flex;
+      flex-direction: column;
+      gap: 8px;
+    }
+
+    .exam-card-skel .sk-line {
+      height: 11px;
+      border-radius: 6px;
+      background: var(--bg2);
+    }
+
+    .exam-card-skel .sk-line.sk-title {
+      width: 62%;
+      height: 13px;
+    }
+
+    .exam-card-skel .sk-line.sk-sub {
+      width: 40%;
+    }
+
+    .exam-card-skel::after {
+      content: '';
+      position: absolute;
+      top: 0;
+      left: -60%;
+      width: 60%;
+      height: 100%;
+      background: linear-gradient(90deg, transparent, rgba(255, 255, 255, .55), transparent);
+      animation: examSkelShimmer 1.4s ease-in-out infinite;
+    }
+
+    @keyframes examSkelShimmer {
+      0% {
+        left: -60%;
+      }
+
+      100% {
+        left: 110%;
+      }
+    }
+
+    [data-theme="dark"] .exam-card-skel::after {
+      background: linear-gradient(90deg, transparent, rgba(255, 255, 255, .08), transparent);
+    }
+
     .exam-info {
       flex: 1;
     }
@@ -13477,36 +13548,36 @@
           <button onclick="closeCatDrawer()"
             style="background:none;border:none;font-size:18px;cursor:pointer;color:var(--text3);line-height:1;">✕</button>
         </div>
-        <a href="/" class="tb-sb-item active" id="sb-all" onclick="event.preventDefault();goExams('');_setSbActive('sb-all');closeCatDrawer();history.pushState(null,'','/')">
+        <a href="/" class="tb-sb-item active" id="sb-all" onclick="event.preventDefault();goExams('');_setSbActive('sb-all');closeCatDrawer()">
           <span class="tb-sb-icon" style="background:linear-gradient(135deg,#6366f1,#8b5cf6)">🏠</span>All Exams
         </a>
-        <a href="/?exam=tspsc" class="tb-sb-item" id="sb-tspsc" onclick="event.preventDefault();goExams('TSPSC');_setSbActive('sb-tspsc');closeCatDrawer();history.pushState(null,'','/?exam=tspsc')">
+        <a href="/?exam=tspsc" class="tb-sb-item" id="sb-tspsc" onclick="event.preventDefault();goExams('TSPSC');_setSbActive('sb-tspsc');closeCatDrawer()">
           <span class="tb-sb-icon" style="background:linear-gradient(135deg,#1A73E8,#0ea5e9)">🏛️</span>TSPSC
         </a>
-        <a href="/?exam=ssc" class="tb-sb-item" id="sb-ssc" onclick="event.preventDefault();goExams('SSC');_setSbActive('sb-ssc');closeCatDrawer();history.pushState(null,'','/?exam=ssc')">
+        <a href="/?exam=ssc" class="tb-sb-item" id="sb-ssc" onclick="event.preventDefault();goExams('SSC');_setSbActive('sb-ssc');closeCatDrawer()">
           <span class="tb-sb-icon" style="background:linear-gradient(135deg,#10b981,#059669)">📋</span>SSC
         </a>
-        <a href="/?exam=rrb" class="tb-sb-item" id="sb-rrb" onclick="event.preventDefault();goExams('RRB');_setSbActive('sb-rrb');closeCatDrawer();history.pushState(null,'','/?exam=rrb')">
+        <a href="/?exam=rrb" class="tb-sb-item" id="sb-rrb" onclick="event.preventDefault();goExams('RRB');_setSbActive('sb-rrb');closeCatDrawer()">
           <span class="tb-sb-icon" style="background:linear-gradient(135deg,#0ea5e9,#0284c7)">🚂</span>RRB
         </a>
-        <a href="/?exam=banking" class="tb-sb-item" id="sb-bank" onclick="event.preventDefault();goExams('Banking');_setSbActive('sb-bank');closeCatDrawer();history.pushState(null,'','/?exam=banking')">
+        <a href="/?exam=banking" class="tb-sb-item" id="sb-bank" onclick="event.preventDefault();goExams('Banking');_setSbActive('sb-bank');closeCatDrawer()">
           <span class="tb-sb-icon" style="background:linear-gradient(135deg,#f59e0b,#d97706)">🏦</span>Banking
         </a>
-        <a href="/?exam=gk" class="tb-sb-item" id="sb-gk" onclick="event.preventDefault();goExams('GK');_setSbActive('sb-gk');closeCatDrawer();history.pushState(null,'','/?exam=gk')">
+        <a href="/?exam=gk" class="tb-sb-item" id="sb-gk" onclick="event.preventDefault();goExams('GK');_setSbActive('sb-gk');closeCatDrawer()">
           <span class="tb-sb-icon" style="background:linear-gradient(135deg,#ec4899,#db2777)">🌍</span>GK
         </a>
-        <a href="/?exam=mock-test" class="tb-sb-item" id="sb-mock" onclick="event.preventDefault();goExams('Mock Test');_setSbActive('sb-mock');closeCatDrawer();history.pushState(null,'','/?exam=mock-test')">
+        <a href="/?exam=mock-test" class="tb-sb-item" id="sb-mock" onclick="event.preventDefault();goExams('Mock Test');_setSbActive('sb-mock');closeCatDrawer()">
           <span class="tb-sb-icon" style="background:linear-gradient(135deg,#f97316,#ea580c)">📝</span>Mock Tests
         </a>
         <a href="/?exam=current-affairs" class="tb-sb-item" id="sb-ca"
-          onclick="event.preventDefault();goExams('Current Affairs');_setSbActive('sb-ca');closeCatDrawer();history.pushState(null,'','/?exam=current-affairs')">
+          onclick="event.preventDefault();goExams('Current Affairs');_setSbActive('sb-ca');closeCatDrawer()">
           <span class="tb-sb-icon" style="background:linear-gradient(135deg,#14b8a6,#0d9488)">📰</span>Current Affairs
         </a>
-        <a href="/?exam=live-test" class="tb-sb-item" id="sb-live" onclick="event.preventDefault();goExams('Live Test');_setSbActive('sb-live');closeCatDrawer();history.pushState(null,'','/?exam=live-test')">
+        <a href="/?exam=live-test" class="tb-sb-item" id="sb-live" onclick="event.preventDefault();goExams('Live Test');_setSbActive('sb-live');closeCatDrawer()">
           <span class="tb-sb-icon" style="background:linear-gradient(135deg,#ef4444,#dc2626)">🔴</span>Live Tests
         </a>
         <a href="/?exam=previous-papers" class="tb-sb-item" id="sb-pp"
-          onclick="event.preventDefault();goExams('Previous Papers');_setSbActive('sb-pp');closeCatDrawer();history.pushState(null,'','/?exam=previous-papers')">
+          onclick="event.preventDefault();goExams('Previous Papers');_setSbActive('sb-pp');closeCatDrawer()">
           <span class="tb-sb-icon" style="background:linear-gradient(135deg,#8b5cf6,#7c3aed)">📄</span>Previous Papers
         </a>
       </div>
@@ -13521,16 +13592,25 @@
         <div
           style="display:flex;align-items:center;justify-content:space-between;gap:12px;margin-bottom:12px;flex-wrap:wrap;">
           <div>
-            <div class="tb-cat-title">600+ Explore all Exams</div>
+            <div class="tb-cat-title" id="exams-count-title">600+ Explore all Exams</div>
             <div class="tb-cat-desc" id="exams-page-sub">Available exams చూపిస్తున్నాం</div>
           </div>
-          <div style="position:relative;flex-shrink:0;">
-            <span
-              style="position:absolute;left:10px;top:50%;transform:translateY(-50%);font-size:13px;color:var(--text3);">🔍</span>
-            <input id="exam-search" type="text" placeholder="Search exams..." oninput="filterExams()"
-              style="padding:8px 30px 8px 32px;border:1.5px solid var(--border2);border-radius:20px;font-size:12px;background:var(--bg);color:var(--text);outline:none;width:200px;font-family:inherit;">
-            <button id="search-clear" onclick="clearSearch()"
-              style="position:absolute;right:8px;top:50%;transform:translateY(-50%);background:none;border:none;cursor:pointer;font-size:12px;color:var(--text3);display:none;">✕</button>
+          <div style="display:flex;align-items:center;gap:8px;flex-shrink:0;flex-wrap:wrap;">
+            <select id="exam-sort" onchange="setExamSort(this.value)"
+              style="padding:8px 10px;border:1.5px solid var(--border2);border-radius:20px;font-size:12px;background:var(--bg);color:var(--text);outline:none;font-family:inherit;cursor:pointer;">
+              <option value="">Sort: Default</option>
+              <option value="newest">🆕 Newest</option>
+              <option value="popular">🔥 Most Popular</option>
+              <option value="diff">📊 Difficulty (Easy→Hard)</option>
+            </select>
+            <div style="position:relative;flex-shrink:0;">
+              <span
+                style="position:absolute;left:10px;top:50%;transform:translateY(-50%);font-size:13px;color:var(--text3);">🔍</span>
+              <input id="exam-search" type="text" placeholder="Search exams..." oninput="filterExams()"
+                style="padding:8px 30px 8px 32px;border:1.5px solid var(--border2);border-radius:20px;font-size:12px;background:var(--bg);color:var(--text);outline:none;width:200px;font-family:inherit;">
+              <button id="search-clear" onclick="clearSearch()"
+                style="position:absolute;right:8px;top:50%;transform:translateY(-50%);background:none;border:none;cursor:pointer;font-size:12px;color:var(--text3);display:none;">✕</button>
+            </div>
           </div>
         </div>
         <div style="border-top:1px solid var(--border2);margin-bottom:12px;"></div>
@@ -13577,7 +13657,7 @@
 
         <!-- ఎప్పుడూ HTML లో ఉండే SEO content — JS/DB లోడ్ ఆలస్యంతో సంబంధం లేకుండా Google కి వెంటనే కనిపిస్తుంది -->
         <div class="exam-categories-seo" style="margin-top:24px;padding-top:16px;border-top:1px solid var(--border2);font-size:13px;color:var(--text3);line-height:1.9;">
-          <p>Anil EduTech లో <strong>TSPSC Group 1, 2, 3, 4</strong>, <strong>SSC CGL / CHSL / MTS</strong>, <strong>Banking IBPS &amp; SBI PO/Clerk</strong>, <strong>RRB NTPC &amp; Group D</strong>, రోజువారీ <strong>GK Current Affairs</strong>, మరియు <strong>Previous Papers</strong> కోసం 600+ ఉచిత మాక్ టెస్ట్‌లు తెలుగులో అందుబాటులో ఉన్నాయి — Leaderboard, Certificates మరియు Daily Challenges తో పాటు 100% Free.</p>
+          <p>Anil EduTech లో <strong>TSPSC Group 1, 2, 3, 4</strong>, <strong>SSC CGL / CHSL / MTS</strong>, <strong>Banking IBPS &amp; SBI PO/Clerk</strong>, <strong>RRB NTPC &amp; Group D</strong>, రోజువారీ <strong>GK Current Affairs</strong>, మరియు <strong>Previous Papers</strong> కోసం <span id="exams-count-seo">600+</span> ఉచిత మాక్ టెస్ట్‌లు తెలుగులో అందుబాటులో ఉన్నాయి — Leaderboard, Certificates మరియు Daily Challenges తో పాటు 100% Free.</p>
         </div>
 
       </div><!-- /.tb-main -->
@@ -18658,6 +18738,12 @@ More exams: https://aniledutech.in
       return JSON.parse(JSON.stringify(DEFAULT_DB));
     })(); // fully populated synchronously from localStorage
 
+    // True until _loadDBFromSupabase() finishes (success or fallback) at
+    // least once. While true, an empty filtered exam list means "still
+    // loading", not "no exams here" — renderExamCards() shows skeleton
+    // cards instead of the empty-state message during this window.
+    let _dbLoading = true;
+
     /* ---- NAVIGATION ---- */
 
     // Page history stack for correct back navigation
@@ -18910,8 +18996,45 @@ More exams: https://aniledutech.in
       document.getElementById('topics-panel').style.display = 'none';
     }
 
+    // Per-category SEO map — used by goExams() so EVERY entry point (sidebar,
+    // home cat-cards, footer links, admin/premium buttons, initial ?exam=
+    // deep-link) updates title + meta description + canonical + URL the
+    // same way, immediately, instead of only on the delayed ?exam= handler.
+    const EXAM_SEO = {
+      '': { slug: '', title: 'Anil EduTech | TSPSC SSC Banking Free Mock Tests Telugu | తెలుగు మాక్ టెస్ట్', desc: 'Anil EduTech — TSPSC, SSC CGL/CHSL, Banking, APPSC, RRB పరీక్షలకు తెలుగులో Free Mock Tests. 500+ questions, leaderboard, certificates. 100% Free! తెలుగు మాక్ టెస్ట్ పోర్టల్.' },
+      'TSPSC': { slug: 'tspsc', title: 'TSPSC Mock Test Telugu | Anil EduTech — Free Online Tests', desc: 'TSPSC Group 1, 2, 3, 4 పరీక్షలకు ఉచిత మాక్ టెస్ట్‌లు తెలుగులో. ఇప్పుడే Anil EduTech లో practice చేయండి.' },
+      'APPSC': { slug: 'appsc', title: 'APPSC Mock Test Telugu | Anil EduTech — Free Online Tests', desc: 'APPSC పరీక్షలకు ఉచిత మాక్ టెస్ట్‌లు తెలుగులో. ఇప్పుడే Anil EduTech లో practice చేయండి.' },
+      'SSC': { slug: 'ssc', title: 'SSC CGL CHSL Mock Test Telugu | Anil EduTech — Free Online Tests', desc: 'SSC CGL, CHSL పరీక్షలకు ఉచిత మాక్ టెస్ట్‌లు తెలుగు మరియు ఇంగ్లీష్‌లో. ఇప్పుడే practice చేయండి.' },
+      'Banking': { slug: 'banking', title: 'Banking Mock Test Telugu | Anil EduTech — Free Online Tests', desc: 'IBPS, SBI, RBI Banking పరీక్షలకు ఉచిత మాక్ టెస్ట్‌లు తెలుగులో. ఇప్పుడే practice చేయండి.' },
+      'RRB': { slug: 'rrb', title: 'RRB NTPC Group D Mock Test Telugu | Anil EduTech — Free Online Tests', desc: 'RRB NTPC, Group D పరీక్షలకు ఉచిత మాక్ టెస్ట్‌లు తెలుగులో. ఇప్పుడే practice చేయండి.' },
+      'GK': { slug: 'gk', title: 'GK Daily Quiz Telugu | Anil EduTech — Free Online Tests', desc: 'తెలుగులో రోజువారీ GK క్విజ్‌లు — పోటీ పరీక్షలకు ఉచిత practice.' },
+      'Mock Test': { slug: 'mock-test', title: 'Free Mock Tests Telugu | Anil EduTech', desc: 'పోటీ పరీక్షలకు ఉచిత మాక్ టెస్ట్‌లు తెలుగులో — TSPSC, SSC, Banking, RRB, GK.' },
+      'Current Affairs': { slug: 'current-affairs', title: 'Current Affairs Telugu Quiz | Anil EduTech', desc: 'రోజువారీ Current Affairs క్విజ్‌లు తెలుగులో — ఉచితంగా practice చేయండి.' },
+      'Live Test': { slug: 'live-test', title: 'Live Mock Tests Telugu | Anil EduTech', desc: 'లైవ్ మాక్ టెస్ట్‌లలో పాల్గొని leaderboard లో మీ ర్యాంక్ చూడండి.' },
+      'Previous Papers': { slug: 'previous-papers', title: 'Previous Papers Telugu | Anil EduTech', desc: 'పోటీ పరీక్షల మునుపటి ప్రశ్నపత్రాలు తెలుగులో — ఉచితంగా practice చేయండి.' },
+    };
+    function _applyExamSeo(cat) {
+      const seo = EXAM_SEO[cat] || EXAM_SEO[''];
+      document.title = seo.title;
+      const metaDesc = document.querySelector('meta[name="description"]');
+      if (metaDesc) metaDesc.setAttribute('content', seo.desc);
+      const ogTitle = document.querySelector('meta[property="og:title"]');
+      if (ogTitle) ogTitle.setAttribute('content', seo.title);
+      const ogDesc = document.querySelector('meta[property="og:description"]');
+      if (ogDesc) ogDesc.setAttribute('content', seo.desc);
+      const canon = document.querySelector('link[rel="canonical"]');
+      const newUrl = seo.slug ? ('/?exam=' + seo.slug) : '/';
+      if (canon) canon.setAttribute('href', 'https://aniledutech.in' + newUrl);
+      try {
+        if (window.location.pathname + window.location.search !== newUrl) {
+          history.pushState(null, '', newUrl);
+        }
+      } catch (e) { }
+    }
+
     function goExams(cat) {
       stopTimer();
+      _applyExamSeo(cat || '');
       _examFilter = cat || '';
       _sscSubFilter = 'all';
       showPage('exams');
@@ -19428,10 +19551,20 @@ More exams: https://aniledutech.in
   </div>`;
     }
 
+    function _examSkeletonHtml(count) {
+      let html = '';
+      for (let i = 0; i < count; i++) {
+        html += '<div class="exam-card-skel"><div class="sk-circle"></div><div class="sk-lines"><div class="sk-line sk-title"></div><div class="sk-line sk-sub"></div></div></div>';
+      }
+      return html;
+    }
+
     function renderExamCards(list) {
       const el = document.getElementById('exams-list');
       if (!list.length) {
-        el.innerHTML = '<div class="empty-state">ఈ category లో exams లేవు. Admin లో add చేయండి.</div>';
+        el.innerHTML = _dbLoading
+          ? _examSkeletonHtml(6)
+          : '<div class="empty-state">ఈ category లో exams లేవు. Admin లో add చేయండి.</div>';
         return;
       }
 
@@ -22397,6 +22530,7 @@ Rules:
 
 
     let _examFilter = '';
+    let _examSort = ''; // '', 'newest', 'popular', 'diff'
     let _examSearch = '';
     let _sscSubFilter = 'all'; // 'all' | 'CGL' | 'CHSL' | 'MTS'
 
@@ -22949,7 +23083,24 @@ Rules:
     let _examPage = 0;
     const _EXAMS_PER_PAGE = 12;
 
+    // Keeps the "N+ Explore all Exams" heading (and the matching mention in
+    // the static SEO paragraph) truthful — driven by the real DB.exams.length
+    // instead of a hardcoded number. Rounds DOWN to the nearest 10 so the
+    // marketing "+" never overstates what's actually there, and does nothing
+    // until the real DB has loaded (so it never flashes "0+" mid-load).
+    function _updateExamCountTitle() {
+      if (_dbLoading || !DB.exams || !DB.exams.length) return;
+      const real = DB.exams.length;
+      const rounded = Math.floor(real / 10) * 10;
+      const shown = (rounded >= 10 ? rounded : real) + '+';
+      const titleEl = document.getElementById('exams-count-title');
+      if (titleEl) titleEl.textContent = shown + ' Explore all Exams';
+      const seoEl = document.getElementById('exams-count-seo');
+      if (seoEl) seoEl.textContent = shown;
+    }
+
     function filterExams() {
+      _updateExamCountTitle();
       const q = (document.getElementById('exam-search')?.value || '').toLowerCase();
       _examSearch = q;
       const clr = document.getElementById('search-clear');
@@ -22965,6 +23116,24 @@ Rules:
         (e.name || '').toLowerCase().includes(q) || (e.cat || '').toLowerCase().includes(q) || (e.diff || '').toLowerCase().includes(q)
       );
 
+      // Sort — copy first so we never mutate DB.exams / a filtered ref in place
+      const DIFF_ORDER = { Easy: 0, Medium: 1, Hard: 2 };
+      list = list.slice();
+      if (_examSort === 'newest') {
+        list.sort((a, b) => (b.id || 0) - (a.id || 0));
+      } else if (_examSort === 'popular') {
+        // Proxy for popularity: number of ratings on ae_exam_reviews (_revCache),
+        // already fetched for everyone via _loadAllReviewStats(). Exams with no
+        // reviews yet sort after ones that have them.
+        list.sort((a, b) => {
+          const ca = (_revCache[String(a.id)] && _revCache[String(a.id)].count) || 0;
+          const cb = (_revCache[String(b.id)] && _revCache[String(b.id)].count) || 0;
+          return cb - ca;
+        });
+      } else if (_examSort === 'diff') {
+        list.sort((a, b) => (DIFF_ORDER[a.diff] ?? 1) - (DIFF_ORDER[b.diff] ?? 1));
+      }
+
       // For PDF-only categories, show PDF cards; hide standard exam cards
       const PDF_ONLY_CATS = ['Previous Papers', 'Book Store', 'eBook', 'Syllabus'];
       const el = document.getElementById('exams-list');
@@ -22973,7 +23142,9 @@ Rules:
         const pdfHtml = renderPdfCards(_examFilter);
         const quizHtml = list.length ? list.map(_examCardHtml).join('') : '';
         if (!pdfHtml && !quizHtml) {
-          el.innerHTML = '<div class="empty-state">ఇంకా items add చేయలేదు. Admin → 📁 PDFs/Images లో add చేయండి.</div>';
+          el.innerHTML = _dbLoading
+            ? _examSkeletonHtml(6)
+            : '<div class="empty-state">ఇంకా items add చేయలేదు. Admin → 📁 PDFs/Images లో add చేయండి.</div>';
         } else {
           el.innerHTML = (pdfHtml || '') + (quizHtml ? '<div style="margin-top:10px;">' + quizHtml + '</div>' : '');
         }
@@ -22989,6 +23160,12 @@ Rules:
 
     function clearSearch() {
       document.getElementById('exam-search').value = '';
+      filterExams();
+    }
+
+    function setExamSort(val) {
+      _examSort = val || '';
+      _examPage = 0;
       filterExams();
     }
 
@@ -24838,6 +25015,7 @@ Rules:
         if (!ok && typeof toast === 'function') {
           toast('⚠️ Connection issue — sample exams చూపిస్తున్నాం. Refresh చేయండి.', 'warning', 5000);
         }
+        _dbLoading = false;
         updateStats();
         renderLeaderboard();
         filterExams();
@@ -24859,6 +25037,7 @@ Rules:
         } catch (e) {
           Object.assign(DB, JSON.parse(JSON.stringify(DEFAULT_DB)));
         }
+        _dbLoading = false;
         updateStats();
         renderLeaderboard();
         filterExams();
@@ -24893,7 +25072,10 @@ Rules:
           const catMap = { tspsc:'TSPSC', appsc:'APPSC', ssc:'SSC', banking:'Banking', rrb:'RRB', gk:'GK', math:'Math', maths:'Math', 'mock-test':'Mock Test', 'current-affairs':'Current Affairs', 'live-test':'Live Test', 'previous-papers':'Previous Papers' };
           const sbIdMap = { TSPSC:'sb-tspsc', SSC:'sb-ssc', RRB:'sb-rrb', Banking:'sb-bank', GK:'sb-gk', 'Mock Test':'sb-mock', 'Current Affairs':'sb-ca', 'Live Test':'sb-live', 'Previous Papers':'sb-pp' };
           const mappedCat = catMap[urlExam.toLowerCase()] || urlExam;
-          // Wait for DB to load, then go to exams page filtered
+          // Set title + meta description + canonical right away — SEO/tab
+          // title should never wait on the DB fetch.
+          if (typeof _applyExamSeo === 'function') _applyExamSeo(mappedCat);
+          // Wait for DB to load, then go to exams page and actually filter the list
           setTimeout(() => {
             if (typeof goExams === 'function') goExams(mappedCat);
             // Also update leaderboard category filter for consistency
@@ -24901,9 +25083,6 @@ Rules:
             document.querySelectorAll('.lb-cat-btn').forEach(b => b.classList.toggle('active', b.dataset.cat === mappedCat));
             // Highlight the matching sidebar item so direct/SEO landing looks correct
             if (sbIdMap[mappedCat] && typeof _setSbActive === 'function') _setSbActive(sbIdMap[mappedCat]);
-            // Set page title + meta description for SEO (works for all sidebar categories now)
-            const examTitles = { TSPSC:'TSPSC Mock Test Telugu', APPSC:'APPSC Mock Test Telugu', SSC:'SSC CGL CHSL Mock Test', Banking:'Banking Mock Test Telugu', RRB:'RRB NTPC Group D Mock Test', GK:'GK Daily Quiz Telugu', 'Mock Test':'Free Mock Tests Telugu', 'Current Affairs':'Current Affairs Telugu Quiz', 'Live Test':'Live Mock Tests Telugu', 'Previous Papers':'Previous Papers Telugu' };
-            if (examTitles[mappedCat]) document.title = `${examTitles[mappedCat]} | Anil EduTech — Free Online Tests`;
           }, 800);
         }
       } catch (e) { }

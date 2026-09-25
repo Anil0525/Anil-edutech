@@ -13477,38 +13477,38 @@
           <button onclick="closeCatDrawer()"
             style="background:none;border:none;font-size:18px;cursor:pointer;color:var(--text3);line-height:1;">✕</button>
         </div>
-        <button class="tb-sb-item active" id="sb-all" onclick="goExams('');_setSbActive('sb-all');closeCatDrawer()">
+        <a href="/" class="tb-sb-item active" id="sb-all" onclick="event.preventDefault();goExams('');_setSbActive('sb-all');closeCatDrawer();history.pushState(null,'','/')">
           <span class="tb-sb-icon" style="background:linear-gradient(135deg,#6366f1,#8b5cf6)">🏠</span>All Exams
-        </button>
-        <button class="tb-sb-item" id="sb-tspsc" onclick="goExams('TSPSC');_setSbActive('sb-tspsc');closeCatDrawer()">
+        </a>
+        <a href="/?exam=tspsc" class="tb-sb-item" id="sb-tspsc" onclick="event.preventDefault();goExams('TSPSC');_setSbActive('sb-tspsc');closeCatDrawer();history.pushState(null,'','/?exam=tspsc')">
           <span class="tb-sb-icon" style="background:linear-gradient(135deg,#1A73E8,#0ea5e9)">🏛️</span>TSPSC
-        </button>
-        <button class="tb-sb-item" id="sb-ssc" onclick="goExams('SSC');_setSbActive('sb-ssc');closeCatDrawer()">
+        </a>
+        <a href="/?exam=ssc" class="tb-sb-item" id="sb-ssc" onclick="event.preventDefault();goExams('SSC');_setSbActive('sb-ssc');closeCatDrawer();history.pushState(null,'','/?exam=ssc')">
           <span class="tb-sb-icon" style="background:linear-gradient(135deg,#10b981,#059669)">📋</span>SSC
-        </button>
-        <button class="tb-sb-item" id="sb-rrb" onclick="goExams('RRB');_setSbActive('sb-rrb');closeCatDrawer()">
+        </a>
+        <a href="/?exam=rrb" class="tb-sb-item" id="sb-rrb" onclick="event.preventDefault();goExams('RRB');_setSbActive('sb-rrb');closeCatDrawer();history.pushState(null,'','/?exam=rrb')">
           <span class="tb-sb-icon" style="background:linear-gradient(135deg,#0ea5e9,#0284c7)">🚂</span>RRB
-        </button>
-        <button class="tb-sb-item" id="sb-bank" onclick="goExams('Banking');_setSbActive('sb-bank');closeCatDrawer()">
+        </a>
+        <a href="/?exam=banking" class="tb-sb-item" id="sb-bank" onclick="event.preventDefault();goExams('Banking');_setSbActive('sb-bank');closeCatDrawer();history.pushState(null,'','/?exam=banking')">
           <span class="tb-sb-icon" style="background:linear-gradient(135deg,#f59e0b,#d97706)">🏦</span>Banking
-        </button>
-        <button class="tb-sb-item" id="sb-gk" onclick="goExams('GK');_setSbActive('sb-gk');closeCatDrawer()">
+        </a>
+        <a href="/?exam=gk" class="tb-sb-item" id="sb-gk" onclick="event.preventDefault();goExams('GK');_setSbActive('sb-gk');closeCatDrawer();history.pushState(null,'','/?exam=gk')">
           <span class="tb-sb-icon" style="background:linear-gradient(135deg,#ec4899,#db2777)">🌍</span>GK
-        </button>
-        <button class="tb-sb-item" id="sb-mock" onclick="goExams('Mock Test');_setSbActive('sb-mock');closeCatDrawer()">
+        </a>
+        <a href="/?exam=mock-test" class="tb-sb-item" id="sb-mock" onclick="event.preventDefault();goExams('Mock Test');_setSbActive('sb-mock');closeCatDrawer();history.pushState(null,'','/?exam=mock-test')">
           <span class="tb-sb-icon" style="background:linear-gradient(135deg,#f97316,#ea580c)">📝</span>Mock Tests
-        </button>
-        <button class="tb-sb-item" id="sb-ca"
-          onclick="goExams('Current Affairs');_setSbActive('sb-ca');closeCatDrawer()">
+        </a>
+        <a href="/?exam=current-affairs" class="tb-sb-item" id="sb-ca"
+          onclick="event.preventDefault();goExams('Current Affairs');_setSbActive('sb-ca');closeCatDrawer();history.pushState(null,'','/?exam=current-affairs')">
           <span class="tb-sb-icon" style="background:linear-gradient(135deg,#14b8a6,#0d9488)">📰</span>Current Affairs
-        </button>
-        <button class="tb-sb-item" id="sb-live" onclick="goExams('Live Test');_setSbActive('sb-live');closeCatDrawer()">
+        </a>
+        <a href="/?exam=live-test" class="tb-sb-item" id="sb-live" onclick="event.preventDefault();goExams('Live Test');_setSbActive('sb-live');closeCatDrawer();history.pushState(null,'','/?exam=live-test')">
           <span class="tb-sb-icon" style="background:linear-gradient(135deg,#ef4444,#dc2626)">🔴</span>Live Tests
-        </button>
-        <button class="tb-sb-item" id="sb-pp"
-          onclick="goExams('Previous Papers');_setSbActive('sb-pp');closeCatDrawer()">
+        </a>
+        <a href="/?exam=previous-papers" class="tb-sb-item" id="sb-pp"
+          onclick="event.preventDefault();goExams('Previous Papers');_setSbActive('sb-pp');closeCatDrawer();history.pushState(null,'','/?exam=previous-papers')">
           <span class="tb-sb-icon" style="background:linear-gradient(135deg,#8b5cf6,#7c3aed)">📄</span>Previous Papers
-        </button>
+        </a>
       </div>
 
       <!-- RIGHT MAIN -->
@@ -13574,6 +13574,11 @@
         <div class="section-title" id="exams-page-title" style="font-size:16px;font-weight:800;margin:12px 0 8px;">
         </div>
         <div class="exams-grid" id="exams-list"></div>
+
+        <!-- ఎప్పుడూ HTML లో ఉండే SEO content — JS/DB లోడ్ ఆలస్యంతో సంబంధం లేకుండా Google కి వెంటనే కనిపిస్తుంది -->
+        <div class="exam-categories-seo" style="margin-top:24px;padding-top:16px;border-top:1px solid var(--border2);font-size:13px;color:var(--text3);line-height:1.9;">
+          <p>Anil EduTech లో <strong>TSPSC Group 1, 2, 3, 4</strong>, <strong>SSC CGL / CHSL / MTS</strong>, <strong>Banking IBPS &amp; SBI PO/Clerk</strong>, <strong>RRB NTPC &amp; Group D</strong>, రోజువారీ <strong>GK Current Affairs</strong>, మరియు <strong>Previous Papers</strong> కోసం 600+ ఉచిత మాక్ టెస్ట్‌లు తెలుగులో అందుబాటులో ఉన్నాయి — Leaderboard, Certificates మరియు Daily Challenges తో పాటు 100% Free.</p>
+        </div>
 
       </div><!-- /.tb-main -->
     </div><!-- /.tb-layout -->
@@ -24885,7 +24890,8 @@ Rules:
       try {
         const urlExam = new URLSearchParams(window.location.search).get('exam');
         if (urlExam) {
-          const catMap = { tspsc:'TSPSC', appsc:'APPSC', ssc:'SSC', banking:'Banking', rrb:'RRB', gk:'GK', math:'Math', maths:'Math' };
+          const catMap = { tspsc:'TSPSC', appsc:'APPSC', ssc:'SSC', banking:'Banking', rrb:'RRB', gk:'GK', math:'Math', maths:'Math', 'mock-test':'Mock Test', 'current-affairs':'Current Affairs', 'live-test':'Live Test', 'previous-papers':'Previous Papers' };
+          const sbIdMap = { TSPSC:'sb-tspsc', SSC:'sb-ssc', RRB:'sb-rrb', Banking:'sb-bank', GK:'sb-gk', 'Mock Test':'sb-mock', 'Current Affairs':'sb-ca', 'Live Test':'sb-live', 'Previous Papers':'sb-pp' };
           const mappedCat = catMap[urlExam.toLowerCase()] || urlExam;
           // Wait for DB to load, then go to exams page filtered
           setTimeout(() => {
@@ -24893,8 +24899,10 @@ Rules:
             // Also update leaderboard category filter for consistency
             _lbCat = mappedCat;
             document.querySelectorAll('.lb-cat-btn').forEach(b => b.classList.toggle('active', b.dataset.cat === mappedCat));
-            // Set page title for SEO
-            const examTitles = { TSPSC:'TSPSC Mock Test Telugu', APPSC:'APPSC Mock Test Telugu', SSC:'SSC CGL CHSL Mock Test', Banking:'Banking Mock Test Telugu', RRB:'RRB NTPC Group D Mock Test', GK:'GK Daily Quiz Telugu' };
+            // Highlight the matching sidebar item so direct/SEO landing looks correct
+            if (sbIdMap[mappedCat] && typeof _setSbActive === 'function') _setSbActive(sbIdMap[mappedCat]);
+            // Set page title + meta description for SEO (works for all sidebar categories now)
+            const examTitles = { TSPSC:'TSPSC Mock Test Telugu', APPSC:'APPSC Mock Test Telugu', SSC:'SSC CGL CHSL Mock Test', Banking:'Banking Mock Test Telugu', RRB:'RRB NTPC Group D Mock Test', GK:'GK Daily Quiz Telugu', 'Mock Test':'Free Mock Tests Telugu', 'Current Affairs':'Current Affairs Telugu Quiz', 'Live Test':'Live Mock Tests Telugu', 'Previous Papers':'Previous Papers Telugu' };
             if (examTitles[mappedCat]) document.title = `${examTitles[mappedCat]} | Anil EduTech — Free Online Tests`;
           }, 800);
         }
@@ -29857,6 +29865,8 @@ Rules:
     font-family: inherit;
     transition: all .18s;
     position: relative;
+    text-decoration: none;
+    box-sizing: border-box;
   }
 
   .tb-sb-item:hover {

@@ -3380,6 +3380,12 @@
       background: #FFF5F5;
     }
 
+    .btn-mark-review.active {
+      background: #F5F3FF;
+      border-color: #A855F7;
+      color: #7C3AED;
+    }
+
     /* Prev / Next buttons */
     .btn-nav {
       background: #F8FAFF;
@@ -3603,6 +3609,15 @@
       background: #ECFDF5;
       border-color: #10B981;
       color: #059669;
+    }
+
+    .q-dot.review {
+      border-color: #A855F7;
+      box-shadow: 0 0 0 2px rgba(168, 85, 247, .35) inset;
+    }
+
+    .q-dot.review.answered {
+      background: linear-gradient(135deg, #ECFDF5, #F5F3FF);
     }
 
     .q-dot.current {
@@ -7225,6 +7240,10 @@
 
     .q-dot.answered {
       background: linear-gradient(135deg, rgba(6, 185, 107, .15), rgba(6, 185, 107, .05));
+    }
+
+    .q-dot.review {
+      box-shadow: 0 0 0 2px rgba(196, 130, 247, .4) inset !important;
     }
 
     .q-dot.current {
@@ -14221,7 +14240,10 @@
 
         <!-- Nav bar -->
         <div class="exam-nav-bar">
-          <button class="btn-mark-review" id="btn-clear-resp" onclick="clearCurrentAnswer()">✕ Clear</button>
+          <div style="display:flex;gap:8px;align-items:center;">
+            <button class="btn-mark-review" id="btn-clear-resp" onclick="clearCurrentAnswer()">✕ Clear</button>
+            <button class="btn-mark-review" id="btn-mark-review" onclick="toggleMarkReview()">🚩 Mark for Review</button>
+          </div>
           <div style="display:flex;gap:8px;align-items:center;">
             <button class="btn-nav" id="btn-prev" onclick="prevQ()">← Prev</button>
             <button class="btn-nav" id="btn-next" onclick="nextQ()">Next →</button>
@@ -14251,6 +14273,7 @@
           <div class="legend-item"><span class="legend-dot ld-current"></span>Current</div>
           <div class="legend-item"><span class="legend-dot ld-answered"></span>Done</div>
           <div class="legend-item"><span class="legend-dot ld-unanswered"></span>Pending</div>
+          <div class="legend-item"><span class="legend-dot" style="border:2px solid #A855F7;background:#fff"></span>🚩 Review</div>
         </div>
 
       </div>
@@ -19620,11 +19643,23 @@ More exams: https://aniledutech.in
         examId: exam.current.id,
         idx: exam.idx,
         answers: exam.answers,
+        review: exam.review || {},
         timeLeft: exam.timeLeft,
         ts: Date.now()
       };
       _ls.setItem(_examProgressKey(exam.current.id), JSON.stringify(data));
     }
+
+    // Save the latest answers/timer immediately if the user closes the tab,
+    // switches away, or the browser is killed mid-exam — the normal save
+    // only runs every ~30 timer ticks, so without this the last stretch of
+    // answers could be lost.
+    window.addEventListener('beforeunload', function () {
+      if (exam.current && exam.timerInterval) { try { _saveExamProgress(); } catch (e) { } }
+    });
+    document.addEventListener('visibilitychange', function () {
+      if (document.hidden && exam.current && exam.timerInterval) { try { _saveExamProgress(); } catch (e) { } }
+    });
 
     function _clearExamProgress() {
       if (exam.current) {
@@ -19959,7 +19994,9 @@ More exams: https://aniledutech.in
       exam.questions = qs;
       exam.idx = saved.idx || 0;
       exam.answers = saved.answers || {};
+      exam.review = saved.review || {};
       exam.timeLeft = Math.min(saved.timeLeft || e.time * 60, e.time * 60);
+      exam._alertedMin = exam.timeLeft > 59;
 
       _launchExamUI(e, qs);
       toast('▶ Exam resume చేయబడింది!', 'success');
@@ -20007,7 +20044,9 @@ More exams: https://aniledutech.in
       exam.questions = qs;
       exam.idx = 0;
       exam.answers = {};
+      exam.review = {};
       exam.timeLeft = (e.time || 60) * 60;
+      exam._alertedMin = false;
       // Propagate contest mode flag
       if (e._contestMode) exam.current._contestMode = true;
       _launchExamUI(e, qs);
@@ -20057,6 +20096,21 @@ More exams: https://aniledutech.in
       exam.timerInterval = null;
     }
 
+    // Audio/vibration cue so the last-minute warning isn't easy to miss —
+    // no external audio file needed, just a short Web Audio beep.
+    function _examBeep(freq, dur) {
+      try {
+        const ctx = window._aeAudioCtx || (window._aeAudioCtx = new (window.AudioContext || window.webkitAudioContext)());
+        const osc = ctx.createOscillator(), gain = ctx.createGain();
+        osc.type = 'sine'; osc.frequency.value = freq || 880;
+        gain.gain.setValueAtTime(0.15, ctx.currentTime);
+        gain.gain.exponentialRampToValueAtTime(0.001, ctx.currentTime + (dur || 0.25));
+        osc.connect(gain); gain.connect(ctx.destination);
+        osc.start(); osc.stop(ctx.currentTime + (dur || 0.25));
+      } catch (e) { /* audio not available — ignore */ }
+      if (navigator.vibrate) { try { navigator.vibrate(150); } catch (e) { } }
+    }
+
     function tick() {
       exam.timeLeft--;
       const m = Math.floor(exam.timeLeft / 60);
@@ -20072,7 +20126,22 @@ More exams: https://aniledutech.in
       if (mel) mel.textContent = timeStr;
       const pill = document.getElementById('mobile-timer-pill');
       if (pill) pill.className = 'mobile-timer-pill' + (exam.timeLeft < 60 ? ' warn' : '');
-      if (exam.timeLeft <= 0) { stopTimer(); _doSubmit(); }
+      // One-time "1 minute left" beep + vibrate — easy to miss a silent color change
+      if (exam.timeLeft === 59 && !exam._alertedMin) {
+        exam._alertedMin = true;
+        _examBeep(880, 0.3);
+        const lang = _uiLang || 'te';
+        if (typeof toast === 'function') toast(lang === 'te' ? '⏱ 1 నిమిషం మిగిలింది!' : '⏱ 1 minute left!', 'warn');
+      }
+      // Sharper pulse each of the final 5 seconds
+      if (exam.timeLeft > 0 && exam.timeLeft <= 5) { _examBeep(1200, 0.15); }
+      if (exam.timeLeft <= 0) {
+        stopTimer();
+        const lang = _uiLang || 'te';
+        const msg = lang === 'te' ? '⏰ సమయం అయిపోయింది! Exam auto-submit అవుతోంది...' : '⏰ Time is up! Auto-submitting your exam...';
+        if (typeof toast === 'function') toast(msg, 'warn'); else alert(msg);
+        setTimeout(_doSubmit, 1200);
+      }
     }
 
     /* ---- QUESTION RENDER ---- */
@@ -20146,6 +20215,7 @@ More exams: https://aniledutech.in
       if (btnNext) btnNext.disabled = false;
       if (btnSub) btnSub.style.display = '';
       renderDots();
+      _updateMarkReviewBtn();
       _refreshQDoubtCount();
     }
 
@@ -20235,8 +20305,11 @@ More exams: https://aniledutech.in
 
       // Always single block — all questions 1..N
       const allDots = qs.map((q, i) => {
-        const cls = i === exam.idx ? 'current' : exam.answers[q.id] ? 'answered' : '';
-        return `<button class="q-dot ${cls}" onclick="goToQ(${i})" title="Q${i + 1}">${i + 1}</button>`;
+        const marked = !!(exam.review && exam.review[q.id]);
+        let cls = exam.answers[q.id] ? 'answered' : '';
+        if (marked) cls += ' review';
+        if (i === exam.idx) cls += ' current';
+        return `<button class="q-dot ${cls}" onclick="goToQ(${i})" title="${marked ? 'Marked for review — ' : ''}Q${i + 1}">${i + 1}</button>`;
       }).join('');
 
       rightDots.innerHTML = `<div class="right-section-block">
@@ -20250,6 +20323,23 @@ More exams: https://aniledutech.in
     }
 
     function pick(L, qid) { exam.answers[qid] = L; renderQ(); }
+    function toggleMarkReview() {
+      const q = exam.questions[exam.idx];
+      if (!q) return;
+      exam.review = exam.review || {};
+      if (exam.review[q.id]) delete exam.review[q.id];
+      else exam.review[q.id] = true;
+      _updateMarkReviewBtn();
+      renderDots();
+    }
+    function _updateMarkReviewBtn() {
+      const q = exam.questions[exam.idx];
+      const btn = document.getElementById('btn-mark-review');
+      if (!btn || !q) return;
+      const marked = !!(exam.review && exam.review[q.id]);
+      btn.textContent = marked ? '🚩 Marked — Unmark' : '🚩 Mark for Review';
+      btn.classList.toggle('active', marked);
+    }
     function goToQ(i) { exam.idx = i; renderQ(); }
     function nextQ() {
       const qs = exam.questions;
@@ -20355,14 +20445,20 @@ More exams: https://aniledutech.in
       // Mistake Notebook: auto-save wrong answers for spaced revision
       try { window._mnLastSaved = (typeof _mnRecord === 'function') ? _mnRecord(qs, exam.answers, { examId: exam.current?.id, name: exam.current?.name }) : 0; } catch (e) { window._mnLastSaved = 0; }
 
-      // Show name entry modal
+      // Logged-in users already have a name on file — skip the manual
+      // "type your name" modal and save the score straight away.
+      const _u = getCurrentUser();
+      if (_u && _u.name) {
+        _finalizeScore(_u.name);
+        return;
+      }
+
+      // Guests (no account) still need to type a name for the leaderboard.
       const trophy = pct >= 90 ? '🏆' : pct >= 75 ? '🥇' : pct >= 60 ? '🥈' : pct >= 40 ? '💪' : '📚';
       document.getElementById('name-trophy').textContent = trophy;
       document.getElementById('name-preview-score').textContent =
         `${score % 1 === 0 ? score : score.toFixed(2)} / ${maxScore} \u00a0(${pct}%)`;
-      // Auto-fill name from logged user
-      const _u = getCurrentUser();
-      document.getElementById('name-input').value = _u ? _u.name : '';
+      document.getElementById('name-input').value = '';
       document.getElementById('name-overlay').classList.add('show');
       setTimeout(() => document.getElementById('name-input').focus(), 300);
     }
@@ -20381,6 +20477,13 @@ More exams: https://aniledutech.in
         }
         return;
       }
+      document.getElementById('name-overlay').classList.remove('show');
+      _finalizeScore(name);
+    }
+
+    // Shared save logic used both for the auto-save (logged-in users) and
+    // the manual "enter your name" flow (guests).
+    function _finalizeScore(name) {
       const scores = JSON.parse(_ls.getItem('ae_scores') || '[]');
       const examName = exam.current?.name || 'Exam';
       const { correct, wrong, skip, pct, total } = exam._result;
@@ -20413,7 +20516,7 @@ More exams: https://aniledutech.in
       sbSaveResult({ name, gmail: u?.gmail || '', examName, examId: exam.current?.id, examCat: exam.current?.cat || '', district: u?.district || '', correct, wrong, skip, total, pct, score: exam._result?.score ?? correct, maxScore: exam._result?.maxScore ?? total, answers: { ...exam.answers || {} }, ts: Date.now() });
       _saveExamResultBackup({ name, gmail: u?.gmail || '', examName, examId: exam.current?.id, examCat: exam.current?.cat || '', district: u?.district || '', correct, wrong, skip, total, pct, score: exam._result?.score ?? correct, maxScore: exam._result?.maxScore ?? total });
 
-      document.getElementById('name-overlay').classList.remove('show');
+      document.getElementById('name-overlay')?.classList.remove('show');
       toast(`🏅 ${name} — Leaderboard లో save అయింది!`, 'success');
       showResultPage();
       // Auto-generate certificate if 50%+
@@ -27929,16 +28032,15 @@ Rules:
       });
     })();
 
-    // Override _beginFreshExam to show overlay first
+    // Override _beginFreshExam to show overlay first.
+    // IMPORTANT: forward to the real _beginFreshExam instead of re-implementing
+    // a stripped-down copy here — the real one also does section auto-assign/
+    // sort, resets exam.review / exam._alertedMin, and propagates contest mode.
+    // (A hand-copied version here previously skipped all of that silently.)
     const _origBeginFreshExam = _beginFreshExam;
     _beginFreshExam = function (e, qs) {
       _showGovtExamLaunch(e, qs, function () {
-        exam.current = e;
-        exam.questions = qs;
-        exam.idx = 0;
-        exam.answers = {};
-        exam.timeLeft = (e.time || 60) * 60;
-        _launchExamUI(e, qs);
+        _origBeginFreshExam(e, qs);
       });
     };
 

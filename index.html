@@ -520,12 +520,23 @@
     }
 
 
+    /* ══════════════════════════════════════════════════════════════
+       PRE-EXAM SCREEN — redesigned as a "hall ticket / admit card":
+       cream paper card, navy ink, a gold foil seal and dashed
+       perforation lines — the visual language every TSPSC/SSC/Banking
+       aspirant already recognises from their physical admit card.
+       ══════════════════════════════════════════════════════════════ */
     #ge-launch-overlay {
       display: none;
       position: fixed;
       inset: 0;
       z-index: 9999;
-      background: #0a1628;
+      background:
+        radial-gradient(ellipse 900px 550px at 50% 0%, rgba(26, 115, 232, .12), transparent 65%),
+        radial-gradient(circle, rgba(27, 42, 74, .05) 1px, transparent 1px),
+        radial-gradient(ellipse 1100px 750px at 50% 110%, rgba(201, 162, 39, .12), transparent 70%),
+        #EAF1FB;
+      background-size: auto, 26px 26px, auto, auto;
       flex-direction: column;
       align-items: center;
       justify-content: center;
@@ -537,19 +548,35 @@
       display: flex;
     }
 
-    /* ── INSTRUCTIONS SCREEN ── */
+    /* ── INSTRUCTIONS SCREEN — the "hall ticket" card ── */
     #ge-instructions {
       width: 100%;
       max-width: 700px;
-      background: #fff;
-      border-radius: 24px;
+      background: #FBF7EC;
+      border-radius: 16px;
       overflow: hidden;
-      box-shadow: 0 40px 100px rgba(0, 0, 0, .55);
+      box-shadow: 0 40px 110px rgba(0, 0, 0, .6), 0 0 0 1px rgba(201, 162, 39, .22);
       animation: geSlideUp .45s cubic-bezier(.2, .8, .2, 1);
+      position: relative;
+    }
+
+    /* Gold dashed frame inset, like a certificate border */
+    #ge-instructions::before {
+      content: '';
+      position: absolute;
+      inset: 7px;
+      border: 1.5px dashed rgba(201, 162, 39, .35);
+      border-radius: 10px;
+      pointer-events: none;
+      z-index: 2;
     }
 
     [data-theme="dark"] #ge-instructions {
-      background: #0F1623;
+      background: #1A1710;
+    }
+
+    [data-theme="dark"] #ge-instructions::before {
+      border-color: rgba(201, 162, 39, .28);
     }
 
     @keyframes geSlideUp {
@@ -564,10 +591,12 @@
       }
     }
 
-    /* Hero header with mesh gradient */
+    /* Blue "letterhead" header with a subtle security-print hairline texture */
     .ge-inst-header {
-      background: linear-gradient(135deg, #0A1628 0%, #1B2D5E 45%, #1A73E8 100%);
-      padding: 28px 28px 22px;
+      background:
+        repeating-linear-gradient(135deg, rgba(255, 255, 255, .06) 0px, rgba(255, 255, 255, .06) 1px, transparent 1px, transparent 14px),
+        linear-gradient(120deg, #1A73E8 0%, #2E86F5 55%, #4FA3FF 100%);
+      padding: 26px 28px 20px;
       display: flex;
       align-items: center;
       gap: 18px;
@@ -575,41 +604,44 @@
       overflow: hidden;
     }
 
-    /* Decorative circles */
+    /* Decorative ring, echoing the seal emblem */
     .ge-inst-header::before {
       content: '';
       position: absolute;
-      top: -40px;
-      right: -40px;
-      width: 180px;
-      height: 180px;
+      top: -50px;
+      right: -50px;
+      width: 200px;
+      height: 200px;
       border-radius: 50%;
-      background: rgba(255, 255, 255, .05);
+      border: 1px solid rgba(255, 255, 255, .25);
+      background: radial-gradient(circle, rgba(255, 255, 255, .12), transparent 70%);
       pointer-events: none;
     }
 
+    /* Gold foil strip */
     .ge-inst-header::after {
       content: '';
       position: absolute;
       bottom: 0;
       left: 0;
       right: 0;
-      height: 4px;
-      background: linear-gradient(90deg, #FF6B35 0%, #FFC107 35%, #00B894 70%, #1A73E8 100%);
+      height: 3px;
+      background: linear-gradient(90deg, transparent, #E8CD7A 15%, #FFE9A8 50%, #E8CD7A 85%, transparent);
     }
 
+    /* Circular official seal */
     .ge-header-emblem {
       width: 56px;
       height: 56px;
       flex-shrink: 0;
-      background: rgba(255, 255, 255, .12);
-      border: 2px solid rgba(255, 255, 255, .25);
-      border-radius: 16px;
+      border-radius: 50%;
+      background: radial-gradient(circle at 35% 30%, #5FA8FF, #1A73E8);
+      border: 2px solid #FFE9A8;
       display: flex;
       align-items: center;
       justify-content: center;
-      font-size: 26px;
-      box-shadow: 0 8px 24px rgba(0, 0, 0, .2);
+      font-size: 24px;
+      box-shadow: 0 0 0 4px rgba(255, 233, 168, .25), 0 8px 22px rgba(26, 115, 232, .35);
     }
 
     .ge-header-text h2 {
@@ -622,31 +654,38 @@
 
     .ge-header-text p {
       font-size: 12px;
-      color: rgba(255, 255, 255, .65);
-      font-weight: 600;
+      color: rgba(255, 255, 255, .85);
+      font-weight: 700;
       margin-top: 4px;
+      letter-spacing: .2px;
     }
 
-    /* Stats badges row */
+    /* Stats — presented as a ticket stub, split by a dashed tear-line */
     .ge-exam-badge {
       margin-left: auto;
       flex-shrink: 0;
       display: flex;
-      gap: 10px;
+      border: 1px solid rgba(255, 255, 255, .18);
+      border-radius: 12px;
+      overflow: hidden;
     }
 
     .ge-stat-pill {
-      background: rgba(255, 255, 255, .12);
-      border: 1.5px solid rgba(255, 255, 255, .2);
-      border-radius: 14px;
-      padding: 10px 16px;
+      background: rgba(255, 255, 255, .05);
+      border: none;
+      border-right: 1px dashed rgba(255, 255, 255, .22);
+      border-radius: 0;
+      padding: 9px 18px;
       text-align: center;
       min-width: 72px;
-      backdrop-filter: blur(4px);
+    }
+
+    .ge-stat-pill:last-child {
+      border-right: none;
     }
 
     .ge-stat-pill .ge-badge-num {
-      font-size: 24px;
+      font-size: 22px;
       font-weight: 900;
       color: #fff;
       letter-spacing: -1px;
@@ -656,7 +695,7 @@
     .ge-stat-pill .ge-badge-lbl {
       font-size: 9px;
       font-weight: 800;
-      color: rgba(255, 255, 255, .65);
+      color: rgba(255, 255, 255, .55);
       text-transform: uppercase;
       letter-spacing: .8px;
       display: block;
@@ -665,7 +704,7 @@
 
     /* Body */
     .ge-inst-body {
-      padding: 20px 28px 4px;
+      padding: 22px 28px 4px;
       max-height: 52vh;
       overflow-y: auto;
     }
@@ -673,149 +712,162 @@
     .ge-inst-title {
       font-size: 11px;
       font-weight: 900;
-      color: #1B2D5E;
+      color: #1B2A4A;
       text-transform: uppercase;
       letter-spacing: 1.2px;
-      margin-bottom: 12px;
+      margin-bottom: 10px;
       display: flex;
       align-items: center;
       gap: 8px;
     }
 
     [data-theme="dark"] .ge-inst-title {
-      color: #7EB3FF;
+      color: #D9C489;
     }
 
     .ge-inst-title::after {
       content: '';
       flex: 1;
-      height: 2px;
-      background: var(--border);
-      border-radius: 1px;
+      border-top: 2px dashed rgba(27, 42, 74, .2);
     }
 
-    /* Rules — 2-column grid on wider screens */
+    [data-theme="dark"] .ge-inst-title::after {
+      border-top-color: rgba(201, 162, 39, .25);
+    }
+
+    /* Rules — a quiet list (dashed tear-lines), not a wall of colour cards */
     .ge-rules-list {
       list-style: none;
       display: grid;
       grid-template-columns: 1fr 1fr;
-      gap: 8px;
-      margin-bottom: 18px;
+      gap: 2px 20px;
+      margin-bottom: 16px;
     }
 
     .ge-rule-item {
       display: flex;
       align-items: flex-start;
       gap: 10px;
-      background: linear-gradient(135deg, #F5F8FF, #EEF4FF);
-      border: 1.5px solid #D6E4FF;
-      border-radius: 12px;
-      padding: 11px 13px;
+      background: transparent;
+      border: none;
+      border-bottom: 1px dashed rgba(27, 42, 74, .14);
+      border-radius: 0;
+      padding: 11px 0;
       font-size: 12.5px;
       font-weight: 600;
-      color: #2D3561;
+      color: #33415C;
       line-height: 1.5;
-      transition: transform .2s, box-shadow .2s;
-    }
-
-    .ge-rule-item:hover {
-      transform: translateY(-2px);
-      box-shadow: 0 6px 18px rgba(26, 115, 232, .1);
     }
 
     [data-theme="dark"] .ge-rule-item {
-      background: linear-gradient(135deg, #131C2E, #1A2438);
-      border-color: #2A3650;
       color: var(--text2);
+      border-bottom-color: rgba(201, 162, 39, .16);
     }
 
     .ge-rule-icon {
-      font-size: 18px;
+      width: 26px;
+      height: 26px;
+      border-radius: 50%;
+      background: rgba(27, 42, 74, .07);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 13px;
       flex-shrink: 0;
     }
 
+    [data-theme="dark"] .ge-rule-icon {
+      background: rgba(201, 162, 39, .12);
+    }
+
     .ge-rule-item.ge-rule-warn {
-      background: linear-gradient(135deg, #FFF5F0, #FFF0EB);
-      border-color: rgba(255, 107, 53, .35);
       grid-column: span 2;
+      border-bottom: none;
+      border-left: 3px solid #B3382C;
+      background: rgba(179, 56, 44, .05);
+      border-radius: 0 8px 8px 0;
+      padding: 11px 12px;
+      margin: 3px 0;
     }
 
     [data-theme="dark"] .ge-rule-item.ge-rule-warn {
-      background: linear-gradient(135deg, #1E120A, #231510);
+      background: rgba(179, 56, 44, .1);
     }
 
-    /* Marking scheme */
+    .ge-rule-item.ge-rule-warn .ge-rule-icon {
+      background: rgba(179, 56, 44, .14);
+    }
+
+    /* Marking scheme — round stamp badges, echoing the header seal */
     .ge-scoring-grid {
       display: grid;
       grid-template-columns: repeat(3, 1fr);
-      gap: 10px;
+      gap: 8px;
       margin-bottom: 18px;
+      padding-top: 4px;
     }
 
     .ge-score-box {
-      border-radius: 14px;
-      padding: 14px 10px;
+      border-radius: 10px;
+      padding: 8px 6px 4px;
       text-align: center;
-      transition: transform .2s;
-    }
-
-    .ge-score-box:hover {
-      transform: translateY(-3px);
-    }
-
-    .ge-score-box.correct {
-      background: linear-gradient(135deg, rgba(0, 184, 148, .12), rgba(0, 184, 148, .06));
-      border: 1.5px solid rgba(0, 184, 148, .35);
-    }
-
-    .ge-score-box.wrong {
-      background: linear-gradient(135deg, rgba(229, 62, 62, .12), rgba(229, 62, 62, .06));
-      border: 1.5px solid rgba(229, 62, 62, .35);
-    }
-
-    .ge-score-box.skip {
-      background: linear-gradient(135deg, rgba(255, 193, 7, .12), rgba(255, 193, 7, .06));
-      border: 1.5px solid rgba(255, 193, 7, .35);
+      background: transparent;
+      border: none;
     }
 
     .ge-score-num {
-      font-size: 26px;
+      width: 54px;
+      height: 54px;
+      border-radius: 50%;
+      margin: 0 auto 6px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 17px;
       font-weight: 900;
-      letter-spacing: -1px;
+      letter-spacing: -.5px;
+      border: 2.5px solid;
     }
 
     .ge-score-box.correct .ge-score-num {
-      color: #00B894;
+      border-color: #1F7A5C;
+      color: #1F7A5C;
+      background: rgba(31, 122, 92, .07);
     }
 
     .ge-score-box.wrong .ge-score-num {
-      color: #E53E3E;
+      border-color: #B3382C;
+      color: #B3382C;
+      background: rgba(179, 56, 44, .07);
     }
 
     .ge-score-box.skip .ge-score-num {
-      color: #B7791F;
+      border-color: #B8860B;
+      color: #8A6407;
+      background: rgba(184, 134, 11, .07);
     }
 
     .ge-score-lbl {
       font-size: 11px;
       font-weight: 700;
       color: var(--text3);
-      margin-top: 4px;
+      margin-top: 2px;
     }
 
-    /* Footer */
+    /* Footer — a perforated "tear here" line above the CTA */
     .ge-inst-footer {
       padding: 16px 28px 20px;
-      border-top: 2px solid var(--border);
+      border-top: 2px dashed rgba(27, 42, 74, .22);
       display: flex;
       align-items: center;
       gap: 14px;
-      background: #F8FAFE;
+      background: #F3EEDF;
       flex-wrap: wrap;
     }
 
     [data-theme="dark"] .ge-inst-footer {
-      background: #0A0F1A;
+      background: #171308;
+      border-top-color: rgba(201, 162, 39, .25);
     }
 
     .ge-agree-check {
@@ -824,26 +876,32 @@
       gap: 10px;
       font-size: 12.5px;
       font-weight: 700;
-      color: var(--text2);
+      color: #33415C;
       cursor: pointer;
       flex: 1;
       user-select: none;
+    }
+
+    [data-theme="dark"] .ge-agree-check {
+      color: var(--text2);
     }
 
     .ge-agree-check input[type=checkbox] {
       width: 18px;
       height: 18px;
       cursor: pointer;
-      accent-color: var(--primary);
+      accent-color: #1B2A4A;
       flex-shrink: 0;
     }
 
+    /* CTA — a confident "go" green, distinct from the app's usual blue,
+       so the one irreversible action on this screen reads unmistakably */
     #ge-start-btn {
       padding: 13px 32px;
-      background: linear-gradient(135deg, #1A73E8, #4F7CFF);
+      background: linear-gradient(135deg, #1F7A5C, #2FAE82);
       color: #fff;
       border: none;
-      border-radius: 14px;
+      border-radius: 12px;
       font-family: inherit;
       font-size: 15px;
       font-weight: 900;
@@ -851,7 +909,7 @@
       white-space: nowrap;
       transition: all .25s cubic-bezier(.34, 1.56, .64, 1);
       flex-shrink: 0;
-      box-shadow: 0 4px 18px rgba(26, 115, 232, .35);
+      box-shadow: 0 4px 18px rgba(31, 122, 92, .35);
       opacity: .45;
       pointer-events: none;
       letter-spacing: .2px;
@@ -864,7 +922,7 @@
 
     #ge-start-btn.ready:hover {
       transform: translateY(-3px) scale(1.04);
-      box-shadow: 0 10px 30px rgba(26, 115, 232, .55);
+      box-shadow: 0 10px 30px rgba(31, 122, 92, .5);
     }
 
     /* ── COUNTDOWN SCREEN ── */
@@ -3596,6 +3654,7 @@
       display: flex;
       align-items: center;
       justify-content: center;
+      position: relative;
     }
 
     .q-dot:hover {
@@ -3614,6 +3673,24 @@
     .q-dot.review {
       border-color: #A855F7;
       box-shadow: 0 0 0 2px rgba(168, 85, 247, .35) inset;
+    }
+
+    /* Small corner flag so "marked for review" reads clearly even at the
+       tiny 24px dot size used on mobile, where the legend is hidden. */
+    .q-dot.review::after {
+      content: '';
+      position: absolute;
+      top: -3px;
+      right: -3px;
+      width: 8px;
+      height: 8px;
+      border-radius: 50%;
+      background: #A855F7;
+      border: 1.5px solid #fff;
+    }
+
+    [data-theme="dark"] .q-dot.review::after {
+      border-color: var(--card2);
     }
 
     .q-dot.review.answered {
@@ -8813,9 +8890,13 @@
         gap: 8px !important;
         overflow-x: auto;
         flex-shrink: 0;
-        border-top: 1px solid #E2E8F0 !important;
+        border-top: none !important;
+        border-bottom: 1px solid #E2E8F0 !important;
         max-height: 100px;
         min-height: 90px;
+        /* Timer + question grid move above the question text so the
+           countdown stays visible without scrolling down past it. */
+        order: -1;
       }
 
       .exam-timer-card {
@@ -11293,6 +11374,21 @@
         padding: 8px 12px !important;
         gap: 6px !important;
         flex-wrap: wrap !important;
+      }
+
+      /* 5 buttons (Clear, Review, Prev, Next, Submit) don't fit on one
+         line on narrow phones — stack as two clean full-width rows
+         instead of squeezing/wrapping mid-button. */
+      @media (max-width: 420px) {
+        .exam-nav-bar {
+          flex-direction: column !important;
+          align-items: stretch !important;
+        }
+
+        .exam-nav-bar>div {
+          width: 100% !important;
+          justify-content: space-between !important;
+        }
       }
 
       .btn-nav,
@@ -14242,7 +14338,7 @@
         <div class="exam-nav-bar">
           <div style="display:flex;gap:8px;align-items:center;">
             <button class="btn-mark-review" id="btn-clear-resp" onclick="clearCurrentAnswer()">✕ Clear</button>
-            <button class="btn-mark-review" id="btn-mark-review" onclick="toggleMarkReview()">🚩 Mark for Review</button>
+            <button class="btn-mark-review" id="btn-mark-review" onclick="toggleMarkReview()">🚩 Review</button>
           </div>
           <div style="display:flex;gap:8px;align-items:center;">
             <button class="btn-nav" id="btn-prev" onclick="prevQ()">← Prev</button>
@@ -20337,7 +20433,7 @@ More exams: https://aniledutech.in
       const btn = document.getElementById('btn-mark-review');
       if (!btn || !q) return;
       const marked = !!(exam.review && exam.review[q.id]);
-      btn.textContent = marked ? '🚩 Marked — Unmark' : '🚩 Mark for Review';
+      btn.textContent = marked ? '🚩 Marked' : '🚩 Review';
       btn.classList.toggle('active', marked);
     }
     function goToQ(i) { exam.idx = i; renderQ(); }

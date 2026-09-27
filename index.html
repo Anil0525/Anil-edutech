@@ -3177,6 +3177,9 @@
       display: flex !important;
       flex-direction: column;
       height: 100vh;
+      /* dvh accounts for the mobile browser's address bar so nothing
+         (the Submit button, in particular) gets pushed below the fold */
+      height: 100dvh;
       overflow: hidden;
     }
 
@@ -6159,6 +6162,7 @@
       display: flex !important;
       flex-direction: column;
       height: 100vh;
+      height: 100dvh;
       overflow: hidden;
     }
 
@@ -11147,7 +11151,8 @@
     /* 5. Exam running screen mobile — right panel as bottom strip */
     @media (max-width: 640px) {
 
-      /* exam-right panel — horizontal scrollable strip at bottom */
+      /* exam-right panel — horizontal scrollable strip (now pinned to the
+         top of the exam screen — see order:-1 above) */
       .exam-right {
         width: 100% !important;
         min-width: unset !important;
@@ -11156,7 +11161,8 @@
         height: auto !important;
         min-height: unset !important;
         border-left: none !important;
-        border-top: 1px solid #E2E8F0 !important;
+        border-top: none !important;
+        border-bottom: 1px solid #E2E8F0 !important;
         overflow-x: auto !important;
         overflow-y: hidden !important;
         -webkit-overflow-scrolling: touch !important;

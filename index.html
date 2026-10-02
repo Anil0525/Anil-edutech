@@ -25285,27 +25285,6 @@ Rules:
       // ?challenge= param — friend challenge deep-link (check first, takes priority)
       _checkIncomingChallenge();
 
-      // ?premium=1 param — Premium plans deep-link (for email / WhatsApp buttons)
-      // e.g. https://aniledutech.in/?premium=1
-      // Logged in & not premium → pricing popup opens directly.
-      // Not logged in → login popup opens first, pricing opens right after login.
-      try {
-        const urlPremium = new URLSearchParams(window.__aeInitialSearch || window.location.search).get('premium');
-        if (urlPremium) {
-          setTimeout(() => {
-            try {
-              const _pu = (typeof getCurrentUser === 'function') ? getCurrentUser() : null;
-              if (_pu) {
-                if (typeof openPricing === 'function') openPricing();
-              } else if (typeof openSubModal === 'function') {
-                toast('⚠️ ముందు Login చేయండి — తర్వాత Premium plans కనిపిస్తాయి!', 'warn');
-                openSubModal(function () { setTimeout(function () { if (typeof openPricing === 'function') openPricing(); }, 600); });
-              }
-            } catch (e) { }
-          }, 1500);
-        }
-      } catch (e) { }
-
       // ?exam= param — auto-filter exam category for SEO deep-links
       // e.g. aniledutech.in/?exam=tspsc  or  ?exam=banking
       try {
@@ -35869,6 +35848,34 @@ Rules:
   else setTimeout(badge, 600);
 })();
 
+
+// ── ?premium=1 deep-link (email / WhatsApp "Premium" button) ──
+// Standalone: waits for loader + app to be ready, then opens Premium plans.
+// Logged out → login popup first, plans open right after login.
+// Already Premium → shows "already Premium" message.
+(function () {
+  var wantPremium = false;
+  try { wantPremium = !!new URLSearchParams(window.__aeInitialSearch || '').get('premium'); } catch (e) { }
+  if (!wantPremium) return;
+  var tries = 0, done = false;
+  var timer = setInterval(function () {
+    tries++;
+    if (done || tries > 60) { clearInterval(timer); return; }          // give up after ~30s
+    if (document.getElementById('_ae_loading')) return;                 // loader still showing
+    if (typeof openPricing !== 'function' || typeof getCurrentUser !== 'function') return;
+    done = true; clearInterval(timer);
+    setTimeout(function () {
+      try {
+        var u = getCurrentUser();
+        if (u) { openPricing(); }
+        else if (typeof openSubModal === 'function') {
+          if (typeof toast === 'function') toast('⚠️ ముందు Login చేయండి — తర్వాత Premium plans కనిపిస్తాయి!', 'warn');
+          openSubModal(function () { setTimeout(function () { openPricing(); }, 600); });
+        }
+      } catch (e) { console.warn('premium deep-link:', e); }
+    }, 800);
+  }, 500);
+})();
 </script>
 </body>
 </html>

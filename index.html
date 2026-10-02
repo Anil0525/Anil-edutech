@@ -17659,27 +17659,37 @@ More exams: https://aniledutech.in
     // Fires on app load and right after login. Never during an exam, never for brand-new
     // sign-ups (those get the mandatory prompt above).
     let _mobilePromptBusy = false;
-    async function _promptMobileForExisting() {
-      if (_mobilePromptBusy) return;
+    // opts.force = true → called right after a login: ignore the "Later" snooze and the
+    // "done" flag, so an account with no number saved is asked on every login until it saves one.
+    async function _promptMobileForExisting(opts) {
+      opts = opts || {};
+      const _skip = function (why) { try { console.log('[mobile-popup] not shown:', why); } catch (e) { } };
+      if (_mobilePromptBusy) return _skip('busy');
       _mobilePromptBusy = true;
       try {
         const u = getCurrentUser();
-        if (!u || !u.gmail) return;
-        if (document.getElementById('mobile-prompt-overlay')) return;
-        if (document.querySelector('#page-exam.active')) return;
-        if (document.getElementById('sub-overlay')?.classList.contains('show')) return;
-        if (_ls.getItem('ae_mobile_done_' + u.gmail) === '1') return;
-        const snooze = parseInt(_ls.getItem('ae_mobile_snooze') || '0', 10);
-        if (snooze && (Date.now() - snooze) < 2 * 24 * 60 * 60 * 1000) return;
-        const rows = await sbGet('ae_subscribers', `gmail=eq.${encodeURIComponent(u.gmail)}&limit=1`);
-        const rec = Array.isArray(rows) && rows[0];
-        if (!rec) return;
-        if (rec.mobile) { _ls.setItem('ae_mobile_done_' + u.gmail, '1'); return; }
+        if (!u || !u.gmail) return _skip('no logged-in user');
+        if (document.getElementById('mobile-prompt-overlay')) return _skip('already open');
+        if (document.querySelector('#page-exam.active')) return _skip('exam running');
+        if (document.getElementById('sub-overlay')?.classList.contains('show')) return _skip('login box still open');
+        if (!opts.force) {
+          if (_ls.getItem('ae_mobile_done_' + u.gmail) === '1') return _skip('number already saved (flag)');
+          const snooze = parseInt(_ls.getItem('ae_mobile_snooze') || '0', 10);
+          if (snooze && (Date.now() - snooze) < 2 * 24 * 60 * 60 * 1000) return _skip('snoozed (Later pressed)');
+        }
+        let rows = await sbGet('ae_subscribers', `gmail=eq.${encodeURIComponent(u.gmail)}&limit=1`);
+        let rec = Array.isArray(rows) && rows[0];
+        if (!rec) { // email saved with different capital letters?
+          rows = await sbGet('ae_subscribers', `gmail=ilike.${encodeURIComponent(u.gmail)}&limit=1`);
+          rec = Array.isArray(rows) && rows[0];
+        }
+        if (!rec) return _skip('no row for this email in ae_subscribers');
+        if (rec.mobile) { _ls.setItem('ae_mobile_done_' + u.gmail, '1'); return _skip('number already in database'); }
         const joined = rec.joined_at ? new Date(rec.joined_at).getTime() : 0;
         const isFresh = !!joined && (Date.now() - joined) < 15 * 60 * 1000; // brand-new sign-up
-        if (document.querySelector('#page-exam.active') || document.getElementById('mobile-prompt-overlay')) return;
-        _showMobilePrompt(u.gmail, { skippable: !isFresh });
-      } catch (e) { }
+        if (document.querySelector('#page-exam.active') || document.getElementById('mobile-prompt-overlay')) return _skip('exam/popup appeared meanwhile');
+        _showMobilePrompt(rec.gmail || u.gmail, { skippable: !isFresh });
+      } catch (e) { _skip('error: ' + (e && e.message)); }
       finally { _mobilePromptBusy = false; }
     }
     function _showMobilePrompt(gmail, opts) {
@@ -18154,7 +18164,7 @@ More exams: https://aniledutech.in
       // BUG FIX: Apply pending referral code if user came via referral link
       _applyPendingReferral(user);
       // WhatsApp number popup — right after login (no waiting)
-      if (typeof _promptMobileForExisting === 'function') _promptMobileForExisting();
+      if (typeof _promptMobileForExisting === 'function') _promptMobileForExisting({ force: true });
       if (_afterLogin) { _afterLogin(); _afterLogin = null; }
       // Start background premium check (activates instantly if admin grants)
       if (!user.isPremium) _startPremiumPolling();
@@ -18331,7 +18341,7 @@ More exams: https://aniledutech.in
         sendEmailNotification(isNewUser ? 'register' : 'login', { name, gmail });
         _applyPendingReferral(user);
         // WhatsApp number popup — right after login (no waiting)
-        if (typeof _promptMobileForExisting === 'function') _promptMobileForExisting();
+        if (typeof _promptMobileForExisting === 'function') _promptMobileForExisting({ force: true });
         if (_afterLogin) { _afterLogin(); _afterLogin = null; }
       }).catch(() => toast('Login error. Try again.', 'error'));
     })();
@@ -35898,7 +35908,7 @@ Rules:
     applyCachedPaymentConfig();
     openPricing();
     // WhatsApp-number popup right after login (it sits above the plans popup)
-    if (askNumber && typeof _promptMobileForExisting === 'function') { try { _promptMobileForExisting(); } catch (e) { } }
+    if (askNumber && typeof _promptMobileForExisting === 'function') { try { _promptMobileForExisting({ force: true }); } catch (e) { } }
   }
   window.__aeOpenPremiumFromLink = function () {
     if (done) return; done = true;

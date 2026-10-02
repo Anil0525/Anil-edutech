@@ -17684,6 +17684,7 @@ More exams: https://aniledutech.in
     }
     function _showMobilePrompt(gmail, opts) {
       opts = opts || {};
+      if (document.getElementById('mobile-prompt-overlay')) return; // never show two
       const ov = document.createElement('div');
       ov.id = 'mobile-prompt-overlay';
       ov.style.cssText = 'position:fixed;inset:0;z-index:100000;background:rgba(15,23,42,.65);display:flex;align-items:center;justify-content:center;padding:16px';
@@ -18152,6 +18153,8 @@ More exams: https://aniledutech.in
       sendEmailNotification('login', { name: user.name, gmail: user.gmail });
       // BUG FIX: Apply pending referral code if user came via referral link
       _applyPendingReferral(user);
+      // WhatsApp number popup — right after login (no waiting)
+      if (typeof _promptMobileForExisting === 'function') _promptMobileForExisting();
       if (_afterLogin) { _afterLogin(); _afterLogin = null; }
       // Start background premium check (activates instantly if admin grants)
       if (!user.isPremium) _startPremiumPolling();
@@ -18327,6 +18330,8 @@ More exams: https://aniledutech.in
         // New user → register email to admin; existing → login email
         sendEmailNotification(isNewUser ? 'register' : 'login', { name, gmail });
         _applyPendingReferral(user);
+        // WhatsApp number popup — right after login (no waiting)
+        if (typeof _promptMobileForExisting === 'function') _promptMobileForExisting();
         if (_afterLogin) { _afterLogin(); _afterLogin = null; }
       }).catch(() => toast('Login error. Try again.', 'error'));
     })();
@@ -19119,8 +19124,14 @@ More exams: https://aniledutech.in
     // Premium deep-link is only for email-button clicks: ?premium=1&src=email
     try {
       var _aeq = new URLSearchParams(window.__aeInitialSearch);
-      window.__aePremiumLink = !!_aeq.get('premium') && (_aeq.get('src') === 'email' || _aeq.get('utm_source') === 'email');
-    } catch (e) { window.__aePremiumLink = false; }
+      window.__aeFromEmailLink = !!_aeq.get('premium') && (_aeq.get('src') === 'email' || _aeq.get('utm_source') === 'email');
+    } catch (e) { window.__aeFromEmailLink = false; }
+    // Came back from Google login after tapping the email button? (flag saved when the link was opened)
+    try {
+      var _aePend = parseInt(localStorage.getItem('ae_pending_premium') || '0', 10);
+      window.__aePendingPremium = !window.__aeFromEmailLink && !!_aePend && (Date.now() - _aePend) < 10 * 60 * 1000;
+    } catch (e) { window.__aePendingPremium = false; }
+    window.__aePremiumLink = window.__aeFromEmailLink || window.__aePendingPremium;
     (function () {
       _safeHistoryReplace({ ae_page: 'home' });
       document.querySelectorAll('.page').forEach(p => p.classList.remove('active'));
@@ -35865,31 +35876,50 @@ Rules:
 
 // ── Premium email-button deep-link: https://aniledutech.in/?premium=1&src=email ──
 // Skips the loading screen and opens Premium plans immediately.
-// Logged out → login popup first, plans open right after login.
+// Logged out → login popup first; plans open right after login (WhatsApp-number popup
+// is shown immediately too). Works after Google login as well (flag survives the redirect).
 // Already Premium → shows "already Premium" message.
 (function () {
-  var wantPremium = false;
-  wantPremium = !!window.__aePremiumLink;   // only for ?premium=1&src=email
-  if (!wantPremium) return;
+  if (!window.__aePremiumLink) return;
   var done = false;
+  function applyCachedPaymentConfig() {
+    try {
+      var pcfg = JSON.parse(localStorage.getItem('ae_payment_config') || '{}');
+      if (pcfg.key) RZP_KEY = pcfg.key;
+      if (pcfg.monthly) PLAN_PRICES.monthly = pcfg.monthly;
+      if (pcfg.yearly) PLAN_PRICES.yearly = pcfg.yearly;
+      if (pcfg.enabled !== undefined) PAYMENT_ENABLED = pcfg.enabled;
+      if (pcfg.utr_enabled !== undefined) UTR_ENABLED = pcfg.utr_enabled;
+    } catch (e) { }
+  }
+  function clearFlag() { try { localStorage.removeItem('ae_pending_premium'); } catch (e) { } }
+  function showPlans(askNumber) {
+    clearFlag();
+    applyCachedPaymentConfig();
+    openPricing();
+    // WhatsApp-number popup right after login (it sits above the plans popup)
+    if (askNumber && typeof _promptMobileForExisting === 'function') { try { _promptMobileForExisting(); } catch (e) { } }
+  }
   window.__aeOpenPremiumFromLink = function () {
     if (done) return; done = true;
     try {
       if (typeof getCurrentUser !== 'function' || typeof openPricing !== 'function') return;
-      // Use last-saved payment config (prices / payments on-off) until fresh data arrives
-      try {
-        var pcfg = JSON.parse(localStorage.getItem('ae_payment_config') || '{}');
-        if (pcfg.key) RZP_KEY = pcfg.key;
-        if (pcfg.monthly) PLAN_PRICES.monthly = pcfg.monthly;
-        if (pcfg.yearly) PLAN_PRICES.yearly = pcfg.yearly;
-        if (pcfg.enabled !== undefined) PAYMENT_ENABLED = pcfg.enabled;
-        if (pcfg.utr_enabled !== undefined) UTR_ENABLED = pcfg.utr_enabled;
-      } catch (e) { }
-      var u = getCurrentUser();
-      if (u) { openPricing(); }
-      else if (typeof openSubModal === 'function') {
-        if (typeof toast === 'function') toast('⚠️ ముందు Login చేయండి — తర్వాత Premium plans కనిపిస్తాయి!', 'warn');
-        openSubModal(function () { setTimeout(function () { openPricing(); }, 400); });
+      if (window.__aeFromEmailLink) {
+        try { localStorage.setItem('ae_pending_premium', String(Date.now())); } catch (e) { }
+        var u = getCurrentUser();
+        if (u) { showPlans(false); }
+        else if (typeof openSubModal === 'function') {
+          if (typeof toast === 'function') toast('⚠️ ముందు Login చేయండి — తర్వాత Premium plans కనిపిస్తాయి!', 'warn');
+          openSubModal(function () { setTimeout(function () { showPlans(true); }, 300); });
+        }
+      } else {
+        // Returned from Google login: wait for the session to be ready, then open plans
+        var tries = 0, t = setInterval(function () {
+          tries++;
+          var u2 = getCurrentUser();
+          if (u2) { clearInterval(t); showPlans(false); }
+          else if (tries > 30) { clearInterval(t); }   // ~9s, give up (flag expires on its own)
+        }, 300);
       }
     } catch (e) { console.warn('premium deep-link:', e); }
   };

@@ -16065,7 +16065,16 @@
       function _done() {
         const elapsed = Date.now() - _startTime;
         const remaining = Math.max(0, MIN_SHOW - elapsed);
-        setTimeout(() => { _hideLoader(); _appInit(); }, remaining);
+        setTimeout(() => { _hideLoader(); _appInit(); if (typeof window.__aeOpenPremiumFromLink === 'function') window.__aeOpenPremiumFromLink(); if (typeof window.__aeRefreshPremiumPopup === 'function') window.__aeRefreshPremiumPopup(); }, remaining);
+      }
+
+      // Premium email-button link (?premium=1&src=email) → skip the loading screen entirely and open Premium plans right away.
+      // (App data keeps loading in the background; prices refresh once it is ready.)
+      if (window.__aePremiumLink) {
+        const _ov0 = document.getElementById('_ae_loading');
+        if (_ov0) { _ov0.classList.add('hide-loader'); _ov0.style.display = 'none'; setTimeout(() => { try { _ov0.remove(); } catch (e) { } }, 50); }
+        document.documentElement.classList.remove('loading-active');
+        if (typeof window.__aeOpenPremiumFromLink === 'function') window.__aeOpenPremiumFromLink();
       }
 
       const _timeout = new Promise(resolve => setTimeout(resolve, MAX_WAIT));
@@ -19107,6 +19116,11 @@ More exams: https://aniledutech.in
     // Remember the original query string (?premium=1 etc.) BEFORE the replaceState
     // below strips it — _appInit reads it later for deep-links.
     window.__aeInitialSearch = window.location.search || '';
+    // Premium deep-link is only for email-button clicks: ?premium=1&src=email
+    try {
+      var _aeq = new URLSearchParams(window.__aeInitialSearch);
+      window.__aePremiumLink = !!_aeq.get('premium') && (_aeq.get('src') === 'email' || _aeq.get('utm_source') === 'email');
+    } catch (e) { window.__aePremiumLink = false; }
     (function () {
       _safeHistoryReplace({ ae_page: 'home' });
       document.querySelectorAll('.page').forEach(p => p.classList.remove('active'));
@@ -35849,32 +35863,44 @@ Rules:
 })();
 
 
-// ── ?premium=1 deep-link (email / WhatsApp "Premium" button) ──
-// Standalone: waits for loader + app to be ready, then opens Premium plans.
+// ── Premium email-button deep-link: https://aniledutech.in/?premium=1&src=email ──
+// Skips the loading screen and opens Premium plans immediately.
 // Logged out → login popup first, plans open right after login.
 // Already Premium → shows "already Premium" message.
 (function () {
   var wantPremium = false;
-  try { wantPremium = !!new URLSearchParams(window.__aeInitialSearch || '').get('premium'); } catch (e) { }
+  wantPremium = !!window.__aePremiumLink;   // only for ?premium=1&src=email
   if (!wantPremium) return;
-  var tries = 0, done = false;
-  var timer = setInterval(function () {
-    tries++;
-    if (done || tries > 60) { clearInterval(timer); return; }          // give up after ~30s
-    if (document.getElementById('_ae_loading')) return;                 // loader still showing
-    if (typeof openPricing !== 'function' || typeof getCurrentUser !== 'function') return;
-    done = true; clearInterval(timer);
-    setTimeout(function () {
+  var done = false;
+  window.__aeOpenPremiumFromLink = function () {
+    if (done) return; done = true;
+    try {
+      if (typeof getCurrentUser !== 'function' || typeof openPricing !== 'function') return;
+      // Use last-saved payment config (prices / payments on-off) until fresh data arrives
       try {
-        var u = getCurrentUser();
-        if (u) { openPricing(); }
-        else if (typeof openSubModal === 'function') {
-          if (typeof toast === 'function') toast('⚠️ ముందు Login చేయండి — తర్వాత Premium plans కనిపిస్తాయి!', 'warn');
-          openSubModal(function () { setTimeout(function () { openPricing(); }, 600); });
-        }
-      } catch (e) { console.warn('premium deep-link:', e); }
-    }, 800);
-  }, 500);
+        var pcfg = JSON.parse(localStorage.getItem('ae_payment_config') || '{}');
+        if (pcfg.key) RZP_KEY = pcfg.key;
+        if (pcfg.monthly) PLAN_PRICES.monthly = pcfg.monthly;
+        if (pcfg.yearly) PLAN_PRICES.yearly = pcfg.yearly;
+        if (pcfg.enabled !== undefined) PAYMENT_ENABLED = pcfg.enabled;
+        if (pcfg.utr_enabled !== undefined) UTR_ENABLED = pcfg.utr_enabled;
+      } catch (e) { }
+      var u = getCurrentUser();
+      if (u) { openPricing(); }
+      else if (typeof openSubModal === 'function') {
+        if (typeof toast === 'function') toast('⚠️ ముందు Login చేయండి — తర్వాత Premium plans కనిపిస్తాయి!', 'warn');
+        openSubModal(function () { setTimeout(function () { openPricing(); }, 400); });
+      }
+    } catch (e) { console.warn('premium deep-link:', e); }
+  };
+  // After the app finishes loading, refresh prices in the popup if it is still open
+  window.__aeRefreshPremiumPopup = function () {
+    try {
+      var ov = document.getElementById('pricing-overlay');
+      var u = (typeof getCurrentUser === 'function') ? getCurrentUser() : null;
+      if (ov && ov.classList.contains('show') && u && !u.isPremium) openPricing();
+    } catch (e) { }
+  };
 })();
 </script>
 </body>

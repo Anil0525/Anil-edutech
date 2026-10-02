@@ -25282,6 +25282,27 @@ Rules:
       // ?challenge= param — friend challenge deep-link (check first, takes priority)
       _checkIncomingChallenge();
 
+      // ?premium=1 param — Premium plans deep-link (for email / WhatsApp buttons)
+      // e.g. https://aniledutech.in/?premium=1
+      // Logged in & not premium → pricing popup opens directly.
+      // Not logged in → login popup opens first, pricing opens right after login.
+      try {
+        const urlPremium = new URLSearchParams(window.location.search).get('premium');
+        if (urlPremium) {
+          setTimeout(() => {
+            try {
+              const _pu = (typeof getCurrentUser === 'function') ? getCurrentUser() : null;
+              if (_pu) {
+                if (typeof openPricing === 'function') openPricing();
+              } else if (typeof openSubModal === 'function') {
+                toast('⚠️ ముందు Login చేయండి — తర్వాత Premium plans కనిపిస్తాయి!', 'warn');
+                openSubModal(function () { setTimeout(function () { if (typeof openPricing === 'function') openPricing(); }, 600); });
+              }
+            } catch (e) { }
+          }, 1500);
+        }
+      } catch (e) { }
+
       // ?exam= param — auto-filter exam category for SEO deep-links
       // e.g. aniledutech.in/?exam=tspsc  or  ?exam=banking
       try {

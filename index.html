@@ -19104,6 +19104,9 @@ More exams: https://aniledutech.in
     });
 
     // Page load అయినప్పుడు always home కి reset చేయాలి
+    // Remember the original query string (?premium=1 etc.) BEFORE the replaceState
+    // below strips it — _appInit reads it later for deep-links.
+    window.__aeInitialSearch = window.location.search || '';
     (function () {
       _safeHistoryReplace({ ae_page: 'home' });
       document.querySelectorAll('.page').forEach(p => p.classList.remove('active'));
@@ -20951,7 +20954,7 @@ More exams: https://aniledutech.in
     // Handle incoming challenge link on page load: ?challenge=examId&cname=X&cscore=Y
     function _checkIncomingChallenge() {
       try {
-        const params = new URLSearchParams(window.location.search);
+        const params = new URLSearchParams(window.__aeInitialSearch || window.location.search);
         const cid = params.get('challenge');
         if (!cid) return;
         const cname = params.get('cname') || 'ఒక Friend';
@@ -25269,7 +25272,7 @@ Rules:
 
       // Referral code from URL ?ref=AET****
       try {
-        const urlRef = new URLSearchParams(window.location.search).get('ref');
+        const urlRef = new URLSearchParams(window.__aeInitialSearch || window.location.search).get('ref');
         if (urlRef) {
           const used = JSON.parse(_ls.getItem('ae_used_ref_codes') || '[]');
           if (!used.includes(urlRef)) {
@@ -25287,7 +25290,7 @@ Rules:
       // Logged in & not premium → pricing popup opens directly.
       // Not logged in → login popup opens first, pricing opens right after login.
       try {
-        const urlPremium = new URLSearchParams(window.location.search).get('premium');
+        const urlPremium = new URLSearchParams(window.__aeInitialSearch || window.location.search).get('premium');
         if (urlPremium) {
           setTimeout(() => {
             try {
@@ -25306,7 +25309,7 @@ Rules:
       // ?exam= param — auto-filter exam category for SEO deep-links
       // e.g. aniledutech.in/?exam=tspsc  or  ?exam=banking
       try {
-        const urlExam = new URLSearchParams(window.location.search).get('exam');
+        const urlExam = new URLSearchParams(window.__aeInitialSearch || window.location.search).get('exam');
         if (urlExam) {
           const catMap = { tspsc:'TSPSC', appsc:'APPSC', ssc:'SSC', banking:'Banking', rrb:'RRB', gk:'GK', math:'Math', maths:'Math', 'mock-test':'Mock Test', 'current-affairs':'Current Affairs', 'live-test':'Live Test', 'previous-papers':'Previous Papers' };
           const sbIdMap = { TSPSC:'sb-tspsc', SSC:'sb-ssc', RRB:'sb-rrb', Banking:'sb-bank', GK:'sb-gk', 'Mock Test':'sb-mock', 'Current Affairs':'sb-ca', 'Live Test':'sb-live', 'Previous Papers':'sb-pp' };

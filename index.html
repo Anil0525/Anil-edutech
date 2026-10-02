@@ -14737,6 +14737,10 @@
             <input type="email" id="reg-gmail" placeholder="Email">
           </div>
           <div class="sub-field">
+            <input type="tel" id="reg-mobile" placeholder="📱 WhatsApp Mobile Number (10 digits)" maxlength="15" inputmode="numeric" autocomplete="tel">
+            <div style="font-size:11px;color:var(--text3);margin-top:4px;line-height:1.4">WhatsApp లో important exam updates పంపడానికి మాత్రమే వాడతాం.</div>
+          </div>
+          <div class="sub-field">
             <select id="reg-district">
               <option value="">జిల్లా ఎంచుకోండి (District) — Optional</option>
               <optgroup label="Telangana">
@@ -17676,6 +17680,10 @@ More exams: https://aniledutech.in
         if (sub.district) {
           payload.district = sub.district;
         }
+        // Save WhatsApp mobile (10-digit) if provided — only set when given so it never gets wiped
+        if (sub.mobile) {
+          payload.mobile = sub.mobile;
+        }
         // Save Google profile photo, if వచ్చింది
         if (sub.avatarUrl || sub.avatar_url) {
           payload.avatar_url = sub.avatarUrl || sub.avatar_url;
@@ -17684,12 +17692,138 @@ More exams: https://aniledutech.in
         if (sub.loginProvider || sub.login_provider) {
           payload.login_provider = sub.loginProvider || sub.login_provider;
         }
-        await fetch(`${SB_URL}/rest/v1/ae_subscribers`, {
+        const _upRes = await fetch(`${SB_URL}/rest/v1/ae_subscribers`, {
           method: 'POST',
           headers: { ...SB_HEADERS, 'Prefer': 'resolution=merge-duplicates,return=minimal' },
           body: JSON.stringify(payload)
         });
+        // Safety net: if the `mobile` column isn't created in Supabase yet, the whole upsert
+        // would be rejected and the registration lost — retry once without mobile.
+        if (!_upRes.ok && payload.mobile) {
+          console.warn('ae_subscribers.mobile column missing? retrying without mobile');
+          delete payload.mobile;
+          await fetch(`${SB_URL}/rest/v1/ae_subscribers`, {
+            method: 'POST',
+            headers: { ...SB_HEADERS, 'Prefer': 'resolution=merge-duplicates,return=minimal' },
+            body: JSON.stringify(payload)
+          });
+        }
       } catch (e) { console.warn('sbSubUpsert failed:', e); }
+    }
+
+    // ── WhatsApp mobile helpers ──
+    // Accepts 9876543210 / +91 98765 43210 / 09876543210 → returns 10-digit string, or '' if invalid
+    function _normalizeMobile(raw) {
+      let d = String(raw || '').replace(/[^0-9]/g, '');
+      if (d.length === 12 && d.startsWith('91')) d = d.slice(2);
+      else if (d.length === 11 && d.startsWith('0')) d = d.slice(1);
+      return /^[6-9][0-9]{9}$/.test(d) ? d : '';
+    }
+    // PATCH only the mobile column (does not touch is_premium / status etc.)
+    async function sbSubSetMobile(gmail, mobile) {
+      try {
+        const r = await fetch(`${SB_URL}/rest/v1/ae_subscribers?gmail=eq.${encodeURIComponent(gmail)}`, {
+          method: 'PATCH',
+          headers: { ...SB_HEADERS, 'Prefer': 'return=minimal' },
+          body: JSON.stringify({ mobile, updated_at: new Date().toISOString() })
+        });
+        return r.ok;
+      } catch (e) { return false; }
+    }
+    // New Google sign-ups have no form to type a number in → ask once, right after first login.
+    // Only fires for accounts created in the last 15 minutes that have no mobile saved yet.
+    async function _promptMobileIfNeeded(gmail) {
+      try {
+        if (!gmail || document.getElementById('mobile-prompt-overlay')) return;
+        const rows = await sbGet('ae_subscribers', `gmail=eq.${encodeURIComponent(gmail)}&limit=1`);
+        const rec = Array.isArray(rows) && rows[0];
+        if (!rec || rec.mobile) return;
+        const joined = rec.joined_at ? new Date(rec.joined_at).getTime() : 0;
+        if (!joined || (Date.now() - joined) > 15 * 60 * 1000) return; // existing user — don't nag
+        _showMobilePrompt(gmail);
+      } catch (e) { }
+    }
+    // Already-registered users who never gave a number: skippable prompt, comes back after 2 days.
+    // Fires on app load and right after login. Never during an exam, never for brand-new
+    // sign-ups (those get the mandatory prompt above).
+    let _mobilePromptBusy = false;
+    async function _promptMobileForExisting() {
+      if (_mobilePromptBusy) return;
+      _mobilePromptBusy = true;
+      try {
+        const u = getCurrentUser();
+        if (!u || !u.gmail) return;
+        if (document.getElementById('mobile-prompt-overlay')) return;
+        if (document.querySelector('#page-exam.active')) return;
+        if (document.getElementById('sub-overlay')?.classList.contains('show')) return;
+        if (_ls.getItem('ae_mobile_done_' + u.gmail) === '1') return;
+        const snooze = parseInt(_ls.getItem('ae_mobile_snooze') || '0', 10);
+        if (snooze && (Date.now() - snooze) < 2 * 24 * 60 * 60 * 1000) return;
+        const rows = await sbGet('ae_subscribers', `gmail=eq.${encodeURIComponent(u.gmail)}&limit=1`);
+        const rec = Array.isArray(rows) && rows[0];
+        if (!rec) return;
+        if (rec.mobile) { _ls.setItem('ae_mobile_done_' + u.gmail, '1'); return; }
+        const joined = rec.joined_at ? new Date(rec.joined_at).getTime() : 0;
+        const isFresh = !!joined && (Date.now() - joined) < 15 * 60 * 1000; // brand-new sign-up
+        if (document.querySelector('#page-exam.active') || document.getElementById('mobile-prompt-overlay')) return;
+        _showMobilePrompt(u.gmail, { skippable: !isFresh });
+      } catch (e) { }
+      finally { _mobilePromptBusy = false; }
+    }
+    function _showMobilePrompt(gmail, opts) {
+      opts = opts || {};
+      const ov = document.createElement('div');
+      ov.id = 'mobile-prompt-overlay';
+      ov.style.cssText = 'position:fixed;inset:0;z-index:100000;background:rgba(15,23,42,.65);display:flex;align-items:center;justify-content:center;padding:16px';
+      ov.innerHTML =
+        '<div style="background:var(--card,#fff);color:var(--text,#0f172a);border-radius:18px;max-width:380px;width:100%;padding:22px;box-shadow:0 20px 60px rgba(0,0,0,.35)">' +
+          '<div style="font-size:18px;font-weight:900;margin-bottom:6px">📱 WhatsApp Number</div>' +
+          '<div style="font-size:13px;color:var(--text3,#64748b);line-height:1.5;margin-bottom:12px">Exam updates & important notifications WhatsApp లో పంపడానికి మీ mobile number ఇవ్వండి.</div>' +
+          '<input id="mp-input" type="tel" inputmode="numeric" maxlength="15" placeholder="10 digit mobile number" style="width:100%;box-sizing:border-box;padding:12px 14px;border:1.5px solid var(--border2,#e2e8f0);border-radius:10px;font-size:15px;background:var(--bg,#fff);color:var(--text,#0f172a)">' +
+          '<div id="mp-err" style="color:#ef4444;font-size:12px;min-height:16px;margin:6px 0"></div>' +
+          '<button id="mp-save" style="width:100%;padding:12px;border:none;border-radius:10px;background:linear-gradient(135deg,#10b981,#059669);color:#fff;font-size:14px;font-weight:900;cursor:pointer">✅ Save</button>' +
+          (opts.skippable ? '<button id="mp-later" style="width:100%;margin-top:8px;padding:10px;border:none;border-radius:10px;background:transparent;color:var(--text3,#64748b);font-size:13px;font-weight:700;cursor:pointer">తర్వాత (Later)</button>' : '') +
+        '</div>';
+      document.body.appendChild(ov);
+      const inp = ov.querySelector('#mp-input'), err = ov.querySelector('#mp-err'), btn = ov.querySelector('#mp-save');
+      setTimeout(() => inp.focus(), 100);
+      const save = async function () {
+        const m = _normalizeMobile(inp.value);
+        if (!m) { err.textContent = '❌ సరైన 10 digit mobile number enter చేయండి.'; return; }
+        btn.disabled = true; btn.textContent = '⏳ Saving...';
+        const ok = await sbSubSetMobile(gmail, m);
+        try {
+          const approved = getSubApproved();
+          const idx = approved.findIndex(x => x.gmail === gmail);
+          if (idx > -1) { approved[idx].mobile = m; saveSubApproved(approved); }
+        } catch (e) { }
+        if (!ok) {
+          btn.disabled = false; btn.textContent = '✅ Save';
+          err.textContent = '⚠ Save కాలేదు. Internet check చేసి మళ్ళీ try చేయండి.';
+          if (!ov.querySelector('#mp-later')) {
+            const lb = document.createElement('button');
+            lb.id = 'mp-later';
+            lb.textContent = 'తర్వాత (Later)';
+            lb.style.cssText = 'width:100%;margin-top:8px;padding:10px;border:none;border-radius:10px;background:transparent;color:var(--text3,#64748b);font-size:13px;font-weight:700;cursor:pointer';
+            lb.addEventListener('click', function () {
+              try { _ls.setItem('ae_mobile_snooze', String(Date.now())); } catch (e) { }
+              ov.remove();
+            });
+            btn.parentNode.appendChild(lb);
+          }
+          return;
+        }
+        try { _ls.setItem('ae_mobile_done_' + gmail, '1'); } catch (e) { }
+        ov.remove();
+        toast('✅ Mobile number saved!', 'success');
+      };
+      btn.addEventListener('click', save);
+      const laterBtn = ov.querySelector('#mp-later');
+      if (laterBtn) laterBtn.addEventListener('click', function () {
+        try { _ls.setItem('ae_mobile_snooze', String(Date.now())); } catch (e) { }
+        ov.remove();
+      });
+      inp.addEventListener('keydown', function (e) { if (e.key === 'Enter') save(); });
     }
 
     async function sbSubDelete(gmail) {
@@ -17751,6 +17885,7 @@ More exams: https://aniledutech.in
       if (u) {
         u._loginTime = Date.now();
         localStorage.setItem(SUB_SESSION_KEY, JSON.stringify(u));
+        if (u.gmail) setTimeout(() => { if (typeof _promptMobileForExisting === 'function') _promptMobileForExisting(); }, 5000);
         if (u.gmail) {
           sbLoadUserData(u.gmail).then(data => {
             if (!data) return;
@@ -17870,6 +18005,7 @@ More exams: https://aniledutech.in
       document.getElementById('login-pw').value = '';
       document.getElementById('reg-name').value = '';
       document.getElementById('reg-gmail').value = '';
+      if (document.getElementById('reg-mobile')) document.getElementById('reg-mobile').value = '';
       document.getElementById('reg-pw').value = '';
       document.getElementById('forgot-gmail').value = '';
       switchSubTab('login');
@@ -18115,6 +18251,7 @@ More exams: https://aniledutech.in
       const name = document.getElementById('reg-name').value.trim();
       const gmail = document.getElementById('reg-gmail').value.trim().toLowerCase();
       const district = document.getElementById('reg-district')?.value || '';
+      const mobile = _normalizeMobile(document.getElementById('reg-mobile')?.value);
       const pw = document.getElementById('reg-pw').value;
       const errEl = document.getElementById('reg-err');
       const okEl = document.getElementById('reg-ok');
@@ -18125,6 +18262,7 @@ More exams: https://aniledutech.in
       if (name.length > 50) { errEl.textContent = '❌ పేరు 50 characters మించకూడదు.'; return; }
       if (/<|>|script/i.test(name)) { errEl.textContent = '❌ పేరు లో special characters వాడకండి.'; return; }
       if (!isValidGmail(gmail)) { errEl.textContent = '❌ సరైన Gmail ID enter చేయండి.'; return; }
+      if (!mobile) { errEl.textContent = '❌ సరైన 10 digit WhatsApp mobile number enter చేయండి.'; return; }
       if (!pw || pw.length < 6) { errEl.textContent = '❌ Password min 6 characters ఉండాలి.'; return; }
       if (pw.length > 128) { errEl.textContent = '❌ Password చాలా పెద్దది.'; return; }
 
@@ -18145,10 +18283,10 @@ More exams: https://aniledutech.in
       // Also save to ae_sub_approved for backward compat
       const approved = getSubApproved();
       if (!approved.find(s => s.gmail === gmail)) {
-        approved.push({ name, gmail, district, date: new Date().toLocaleDateString('te-IN'), sbUserId: res.user?.id });
+        approved.push({ name, gmail, district, mobile, date: new Date().toLocaleDateString('te-IN'), sbUserId: res.user?.id });
         saveSubApproved(approved);
       }
-      await sbSubUpsert({ name, gmail, district, sbUserId: res.user?.id, status: 'approved', loginProvider: 'password' });
+      await sbSubUpsert({ name, gmail, district, mobile, sbUserId: res.user?.id, status: 'approved', loginProvider: 'password' });
 
       sendEmailNotification('register', { name, gmail });
       // BUG FIX: Apply pending referral on register
@@ -18159,6 +18297,7 @@ More exams: https://aniledutech.in
       document.getElementById('login-gmail').value = gmail;
       document.getElementById('reg-name').value = '';
       document.getElementById('reg-gmail').value = '';
+      if (document.getElementById('reg-mobile')) document.getElementById('reg-mobile').value = '';
       document.getElementById('reg-pw').value = '';
       if (document.getElementById('reg-district')) document.getElementById('reg-district').value = '';
     }
@@ -18223,7 +18362,7 @@ More exams: https://aniledutech.in
           approved.push({ name, gmail, date: new Date().toLocaleDateString('te-IN'), sbUserId: userData.id, avatarUrl, provider: 'google' });
           saveSubApproved(approved);
         }
-        sbSubUpsert({ name, gmail, sbUserId: userData.id, status: 'approved', avatarUrl, loginProvider: 'google' });
+        sbSubUpsert({ name, gmail, sbUserId: userData.id, status: 'approved', avatarUrl, loginProvider: 'google' }).then(() => setTimeout(() => _promptMobileIfNeeded(gmail), 1500));
         // BUG FIX: Google login users ఇంతకుముందు activity log లో track అయ్యేవారు కాదు
         // (password login మాత్రమే _logUserActivity call చేసేది) — ఇప్పుడు ఇద్దరికీ సమానంగా.
         _logUserActivity(name, gmail, 'login');
@@ -18458,7 +18597,7 @@ More exams: https://aniledutech.in
         return `<tr>
       <td>${globalIdx + 1}</td>
       <td style="font-weight:700;color:var(--text)">${photoHtml}${escHtml(s.name)} ${providerBadge}</td>
-      <td><span class="meta-pill pill-green">${escHtml(s.gmail)}</span></td>
+      <td><span class="meta-pill pill-green">${escHtml(s.gmail)}</span>${(s.mobile) ? `<div style="font-size:11px;margin-top:4px;color:var(--text2)">📱 ${escHtml(s.mobile)} <a href="https://wa.me/91${escHtml(s.mobile)}" target="_blank" rel="noopener" style="color:#16a34a;font-weight:800;text-decoration:none">💬</a></div>` : ''}</td>
       <td style="font-size:12px;color:var(--text3)">${escHtml(s.date || '')}</td>
       <td>${premBadge} ${premBtn}</td>
       <td>
@@ -25206,6 +25345,7 @@ Rules:
 
       // DB — Test Supabase then Load
       _testSupabaseConnection().then(() => { });
+      setTimeout(() => { if (typeof _promptMobileForExisting === 'function') _promptMobileForExisting(); }, 7000);
       // Load folders from Supabase first
       loadFoldersFromSupabase().then(sbFolders => {
         if (sbFolders && sbFolders.length) {
@@ -33042,7 +33182,7 @@ Rules:
   let _bellPollTimer = null;
 
   // Insert notification rows for target users (segment: 'all'|'premium'|'free')
-  async function createBellNotifications(title, message, segment, link) {
+  async function createBellNotifications(title, message, segment, link, customTargets) {
     try {
       let recipients = _notifRecipients;
       if (!recipients || !recipients.length) {
@@ -33050,7 +33190,8 @@ Rules:
         recipients = _notifRecipients;
       }
       let targets = recipients;
-      if (segment === 'premium') targets = recipients.filter(u => u.isPremium);
+      if (Array.isArray(customTargets)) targets = customTargets;
+      else if (segment === 'premium') targets = recipients.filter(u => u.isPremium);
       else if (segment === 'free') targets = recipients.filter(u => !u.isPremium);
       if (!targets.length) return 0;
 
@@ -33238,7 +33379,7 @@ Rules:
       if (Array.isArray(sbApproved)) {
         sbApproved.forEach(u => {
           if (u.gmail && u.name) {
-            users.push({ name: u.name, gmail: u.gmail, isPremium: u.is_premium || false });
+            users.push({ name: u.name, gmail: u.gmail, isPremium: u.is_premium || false, mobile: u.mobile || '' });
           }
         });
       }
@@ -33249,7 +33390,7 @@ Rules:
       const localApproved = getSubApproved ? getSubApproved() : [];
       localApproved.forEach(u => {
         if (!users.find(x => x.gmail === u.gmail) && u.gmail && u.name) {
-          users.push({ name: u.name, gmail: u.gmail, isPremium: u.isPremium || false });
+          users.push({ name: u.name, gmail: u.gmail, isPremium: u.isPremium || false, mobile: u.mobile || '' });
         }
       });
     } catch (e) { }
@@ -33259,10 +33400,12 @@ Rules:
     document.getElementById('notif-sent-count').textContent = 0;
     document.getElementById('notif-fail-count').textContent = 0;
     document.getElementById('notif-pending-count').textContent = '—';
+    _notifInitPicker();
   }
 
   function _getNotifAudience() {
     const val = document.querySelector('input[name="notif-audience"]:checked')?.value || 'all';
+    if (val === 'selected') return _notifRecipients.filter(u => _notifSelected.has(u.gmail));
     if (val === 'premium') return _notifRecipients.filter(u => u.isPremium);
     if (val === 'free') return _notifRecipients.filter(u => !u.isPremium);
     return _notifRecipients;
@@ -33313,17 +33456,20 @@ Rules:
       toast('❌ Settings లో EmailJS config set చేయండి!', 'warn'); return;
     }
 
+    const audienceVal = document.querySelector('input[name="notif-audience"]:checked')?.value || 'all';
     const targets = _getNotifAudience();
+    if (audienceVal === 'selected' && targets.length === 0) {
+      toast('⚠ కనీసం ఒక user ని select చేయండి!', 'warn'); return;
+    }
     if (targets.length === 0) {
       toast('⚠ Recipients లేరు. Users load అయ్యారా?', 'warn'); return;
     }
 
-    // Also create in-app bell notifications for the same audience
-    const audienceVal = document.querySelector('input[name="notif-audience"]:checked')?.value || 'all';
-    createBellNotifications(heading || subject, body, audienceVal, btnUrl);
-
     const confirmed = confirm(`📨 ${targets.length} users కి notification send చేయాలా?\n\nSubject: ${subject}`);
     if (!confirmed) return;
+
+    // Also create in-app bell notifications for the exact same recipients (only after confirm)
+    createBellNotifications(heading || subject, body, audienceVal, btnUrl, targets);
 
     // UI setup
     const sendBtn = document.getElementById('notif-send-btn');
@@ -33383,7 +33529,8 @@ Rules:
     // Done
     document.getElementById('notif-progress-label').textContent = `✅ Completed! ${sent} sent, ${failed} failed`;
     document.getElementById('notif-pending-count').textContent = 0;
-    if (sendBtn) { sendBtn.disabled = false; sendBtn.textContent = '📨 Send to All'; }
+    if (sendBtn) { sendBtn.disabled = false; }
+    _notifUpdateSendBtn();
 
     if (statusEl) {
       statusEl.style.display = '';
@@ -33429,6 +33576,8 @@ Rules:
     const progressWrap = document.getElementById('notif-progress-wrap');
     if (progressWrap) progressWrap.style.display = 'none';
     document.querySelector('input[name="notif-audience"][value="all"]').checked = true;
+    _notifSelected.clear();
+    _notifOnAudienceChange();
     document.getElementById('notif-sent-count').textContent = 0;
     document.getElementById('notif-fail-count').textContent = 0;
     document.getElementById('notif-pending-count').textContent = '—';
@@ -33439,6 +33588,132 @@ Rules:
 
 
 
+
+
+  // ══════════════════════════════════════════════════════════════════
+  //  👤 SELECTED USERS PICKER — Broadcast to specific users only
+  //  Injects a "Selected Users" radio + searchable checkbox list into
+  //  the existing Recipients section (no changes to All/Premium/Free).
+  // ══════════════════════════════════════════════════════════════════
+  let _notifSelected = new Set(); // gmails chosen in the picker
+
+  function _notifInitPicker() {
+    const radios = document.querySelectorAll('input[name="notif-audience"]');
+    if (!radios.length) return;
+
+    // 1. Add the "Selected Users" radio once (cloned from the last one so styling matches)
+    if (!document.querySelector('input[name="notif-audience"][value="selected"]')) {
+      const lastRadio = radios[radios.length - 1];
+      const lastLabel = lastRadio.closest('label') || lastRadio.parentElement;
+      const newLabel = lastLabel.cloneNode(true);
+      const inp = newLabel.querySelector('input');
+      inp.value = 'selected';
+      inp.checked = false;
+      inp.removeAttribute('checked');
+      inp.removeAttribute('id');
+      newLabel.removeAttribute('for');
+      newLabel.textContent = '';
+      newLabel.appendChild(inp);
+      const txt = document.createElement('span');
+      txt.textContent = '👤 Selected Users';
+      newLabel.appendChild(txt);
+      lastLabel.parentElement.insertBefore(newLabel, lastLabel.nextSibling);
+
+      // 2. Picker panel (hidden until "Selected Users" is chosen)
+      const picker = document.createElement('div');
+      picker.id = 'notif-picker';
+      picker.style.cssText = 'display:none;margin:12px 0 4px;padding:12px;border:1.5px solid rgba(124,58,237,.25);border-radius:12px;background:rgba(124,58,237,.04)';
+      picker.innerHTML =
+        '<div style="display:flex;gap:8px;flex-wrap:wrap;align-items:center;margin-bottom:8px">' +
+          '<input id="notif-picker-search" type="text" placeholder="🔍 Name / email తో search చేయండి..." autocomplete="off" ' +
+            'style="flex:1;min-width:180px;padding:8px 12px;border:1.5px solid var(--border2,#e2e8f0);border-radius:8px;font-size:13px;background:var(--bg,#fff);color:var(--text,#0f172a)">' +
+          '<button type="button" id="notif-picker-all" style="padding:7px 12px;border:none;border-radius:8px;background:var(--primary,#7c3aed);color:#fff;font-size:12px;font-weight:800;cursor:pointer">✔ Select visible</button>' +
+          '<button type="button" id="notif-picker-clear" style="padding:7px 12px;border:1.5px solid var(--border2,#e2e8f0);border-radius:8px;background:transparent;color:var(--text2,#475569);font-size:12px;font-weight:800;cursor:pointer">✖ Clear</button>' +
+        '</div>' +
+        '<div id="notif-picker-count" style="font-size:12px;font-weight:800;color:var(--primary,#7c3aed);margin-bottom:6px"></div>' +
+        '<div id="notif-picker-list" style="max-height:260px;overflow-y:auto;display:flex;flex-direction:column;gap:4px"></div>';
+      const row = lastLabel.parentElement;
+      row.parentElement.insertBefore(picker, row.nextSibling);
+
+      // 3. Wire events (once)
+      document.getElementById('notif-picker-search').addEventListener('input', _notifRenderPicker);
+      document.getElementById('notif-picker-all').addEventListener('click', function () {
+        _notifVisibleUsers().forEach(u => _notifSelected.add(u.gmail));
+        _notifRenderPicker();
+      });
+      document.getElementById('notif-picker-clear').addEventListener('click', function () {
+        _notifSelected.clear();
+        _notifRenderPicker();
+      });
+      document.getElementById('notif-picker-list').addEventListener('change', function (e) {
+        const cb = e.target;
+        if (!cb || !cb.matches('input[type="checkbox"][data-gmail]')) return;
+        if (cb.checked) _notifSelected.add(cb.dataset.gmail); else _notifSelected.delete(cb.dataset.gmail);
+        _notifUpdateCount();
+      });
+    }
+
+    // 4. Audience radio change → show/hide picker + update button label
+    document.querySelectorAll('input[name="notif-audience"]').forEach(r => {
+      if (r.dataset.notifBound) return;
+      r.dataset.notifBound = '1';
+      r.addEventListener('change', _notifOnAudienceChange);
+    });
+
+    // Drop selections of users that no longer exist, then draw
+    const valid = new Set(_notifRecipients.map(u => u.gmail));
+    _notifSelected.forEach(g => { if (!valid.has(g)) _notifSelected.delete(g); });
+    _notifRenderPicker();
+    _notifOnAudienceChange();
+  }
+
+  function _notifVisibleUsers() {
+    const q = (document.getElementById('notif-picker-search')?.value || '').trim().toLowerCase();
+    return _notifRecipients.filter(u =>
+      !q || (u.name || '').toLowerCase().includes(q) || (u.gmail || '').toLowerCase().includes(q) || (u.mobile || '').includes(q));
+  }
+
+  function _notifRenderPicker() {
+    const list = document.getElementById('notif-picker-list');
+    if (!list) return;
+    const users = _notifVisibleUsers();
+    if (!users.length) {
+      list.innerHTML = '<div style="padding:16px;text-align:center;color:var(--text3,#94a3b8);font-size:12px">Users దొరకలేదు</div>';
+    } else {
+      list.innerHTML = users.map(u => {
+        const g = escHtml(u.gmail || '');
+        const badge = u.isPremium
+          ? '<span style="margin-left:6px;font-size:10px;font-weight:800;color:#b45309;background:rgba(245,158,11,.15);padding:1px 6px;border-radius:6px">💎 Premium</span>'
+          : '';
+        return '<label style="display:flex;align-items:center;gap:8px;padding:6px 10px;border-radius:8px;cursor:pointer;background:var(--card,rgba(255,255,255,.6));border:1px solid var(--border2,#e2e8f0)">' +
+          '<input type="checkbox" data-gmail="' + g + '"' + (_notifSelected.has(u.gmail) ? ' checked' : '') + '>' +
+          '<span style="font-size:12px;color:var(--text,#0f172a)"><b>' + escHtml(u.name || '') + '</b>' + badge +
+          '<br><span style="color:var(--text3,#64748b)">' + g + (u.mobile ? ' · 📱 ' + escHtml(u.mobile) : '') + '</span></span></label>';
+      }).join('');
+    }
+    _notifUpdateCount();
+  }
+
+  function _notifUpdateCount() {
+    const el = document.getElementById('notif-picker-count');
+    if (el) el.textContent = '✅ ' + _notifSelected.size + ' / ' + _notifRecipients.length + ' users selected';
+    _notifUpdateSendBtn();
+  }
+
+  function _notifOnAudienceChange() {
+    const picker = document.getElementById('notif-picker');
+    const isSel = (document.querySelector('input[name="notif-audience"]:checked')?.value) === 'selected';
+    if (picker) picker.style.display = isSel ? '' : 'none';
+    if (isSel) _notifRenderPicker();
+    _notifUpdateSendBtn();
+  }
+
+  function _notifUpdateSendBtn() {
+    const btn = document.getElementById('notif-send-btn');
+    if (!btn || btn.disabled) return; // don't touch the label while a send is running
+    const isSel = (document.querySelector('input[name="notif-audience"]:checked')?.value) === 'selected';
+    btn.textContent = isSel ? '📨 Send to ' + _notifSelected.size + ' Selected' : '📨 Send to All';
+  }
 
   // ══════════════════════════════════════════════════════════════════
   // 🎠 CAROUSEL MANAGER — Admin Panel

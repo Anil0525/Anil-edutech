@@ -15876,7 +15876,9 @@
 
     // ── 🔒 SECURITY: private keys NEVER leave this device (no Supabase ae_settings / Google Sheets sync) ──
     // ae_settings is readable with the public anon key, so secrets/personal data must not be stored there.
-    const _PRIVATE_KEYS = ['ae_admin_pw', 'ae_admin_uname', 'ae_admin_recovery', 'ae_pw_resets', 'groq_api_key', 'ae_payment_records'];
+    const _PRIVATE_KEYS = ['ae_admin_pw', 'ae_admin_uname', 'ae_admin_recovery', 'ae_pw_resets', 'groq_api_key', 'ae_payment_records',
+      // per-device data (was leaking into the shared ae_settings table / being shared across ALL users)
+      '_ae_login_attempts', '_ae_admin_attempts', 'ae_local_db', 'ae_used_ref_codes', 'ae_referral_count', 'ae_my_referral_count_cache', 'ae_pending_ref', 'gnews_api_key'];
     // One-time cleanup of legacy dead secrets that older versions pulled into this browser
     ['ae_admin_pw', 'ae_admin_uname', 'ae_admin_recovery', 'ae_pw_resets'].forEach(function (k) { try { localStorage.removeItem(k); } catch (e) { } });
 

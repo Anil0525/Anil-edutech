@@ -32172,7 +32172,9 @@ Rules:
     const rec = window._pfPaymentRecord;
     if (!u) { toast('User info కనపడలేదు', 'error'); return; }
 
-    const planLabel = (u.premiumPlan === 'yearly') ? 'Yearly Premium — ₹499/yr' :
+    const _ePlan = u.premiumPlan || (rec && rec.plan) || 'monthly';
+    const planLabel = (_ePlan === 'yearly') ? 'Yearly Premium — ₹499/yr' :
+      (_ePlan === 'trial') ? 'Trial Premium — ₹1 (1 day)' :
       (u.premiumPlan === 'referral') ? 'Referral Reward (Free)' :
         (u.premiumPlan === 'manual') ? 'Admin Grant (Complimentary)' :
           'Monthly Premium — ₹99/mo';
@@ -32269,7 +32271,7 @@ Rules:
       'Hi ' + (u.name || 'User') + ',\n\n' +
       'Thank you for subscribing to Anil EduTech Premium!\n\n' +
       '--- Receipt Details ---\n' +
-      'Plan: ' + (u.premiumPlan === 'yearly' ? 'Yearly' : u.premiumPlan === 'referral' ? 'Referral' : 'Monthly') + '\n' +
+      'Plan: ' + (((u.premiumPlan || (rec && rec.plan)) === 'yearly') ? 'Yearly' : ((u.premiumPlan || (rec && rec.plan)) === 'trial') ? 'Trial' : u.premiumPlan === 'referral' ? 'Referral' : 'Monthly') + '\n' +
       'Amount Paid: ' + amount + '\n' +
       'Activated On: ' + sinceDate + '\n' +
       'Transaction ID: ' + txnId + '\n' +
@@ -32804,36 +32806,49 @@ Rules:
       if (u.isPremium) {
         subSection.style.display = 'block';
 
-        // Get payment record for this user
+        // Get payment record for this user — FIX: always pick the LATEST matching payment (local + Supabase)
+        const _recTs = r => r.ts || (r.created_at ? new Date(r.created_at).getTime() : 0) || 0;
         const allRecords = JSON.parse(_ls.getItem('ae_payment_records') || '[]');
-        const myRecord = allRecords.find(r => r.gmail === u.gmail && (r.status === 'paid' || r.status === 'Approved'));
-        const planLabel = (u.premiumPlan === 'yearly') ? 'Yearly Plan — ₹499/yr' :
-          (u.premiumPlan === 'referral') ? 'Referral Reward' :
-            (u.premiumPlan === 'manual') ? 'Admin Grant' :
-              'Monthly Plan — ₹99/mo';
-        const sinceDate = u.premiumSince
-          ? new Date(u.premiumSince).toLocaleDateString('en-IN', { day: '2-digit', month: 'short', year: 'numeric' })
-          : '—';
+        const candidates = allRecords
+          .filter(r => r.gmail === u.gmail && (r.status === 'paid' || r.status === 'Approved'))
+          .map(r => ({ ...r, _ts: _recTs(r) }));
 
-        // Fetch from Supabase if local record not found
-        let sbRecord = null;
+        // Fetch from Supabase and merge with local records
         try {
           const sbRes = await fetch(
-            SB_URL + '/rest/v1/ae_payments?gmail=eq.' + encodeURIComponent(u.gmail) + '&status=in.(paid,Approved)&order=created_at.desc&limit=1',
+            SB_URL + '/rest/v1/ae_payments?gmail=eq.' + encodeURIComponent(u.gmail) + '&status=in.(paid,Approved)&order=created_at.desc&limit=5',
             { headers: SB_HEADERS }
           );
           if (sbRes.ok) {
             const sbData = await sbRes.json();
-            if (sbData && sbData.length) sbRecord = sbData[0];
+            (sbData || []).forEach(sb => {
+              const pid = sb.payment_id || sb.id;
+              if (candidates.some(c => c.pid && pid && c.pid === pid)) return;
+              candidates.push({
+                pid: pid, utr: sb.utr || '', plan: sb.plan, amount: sb.amount,
+                date: sb.created_at ? new Date(sb.created_at).toLocaleString('en-IN') : '—',
+                status: sb.status, name: sb.name, gmail: sb.gmail,
+                _ts: sb.created_at ? new Date(sb.created_at).getTime() : 0
+              });
+            });
           }
         } catch (e) { }
 
-        const rec = myRecord || (sbRecord ? {
-          pid: sbRecord.payment_id, plan: sbRecord.plan,
-          amount: sbRecord.amount, date: sbRecord.created_at
-            ? new Date(sbRecord.created_at).toLocaleString('en-IN') : '—',
-          status: sbRecord.status, name: sbRecord.name, gmail: sbRecord.gmail
-        } : null);
+        candidates.sort((a, b) => b._ts - a._ts);
+        // Prefer payment made at/after current premium activation (avoids showing an old expired ₹1 trial)
+        const sinceMs = u.premiumSince ? new Date(u.premiumSince).getTime() : 0;
+        const rec = (sinceMs && candidates.find(c => c._ts >= sinceMs - 12 * 3600 * 1000)) || candidates[0] || null;
+
+        // Effective plan: user's plan, else plan from the matching payment record
+        const effPlan = u.premiumPlan || (rec && rec.plan) || 'monthly';
+        const planLabel = (effPlan === 'yearly') ? 'Yearly Plan — ₹499/yr' :
+          (effPlan === 'trial') ? 'Trial Plan — ₹1 (1 day)' :
+          (effPlan === 'referral') ? 'Referral Reward' :
+            (effPlan === 'manual') ? 'Admin Grant' :
+              'Monthly Plan — ₹99/mo';
+        const sinceDate = u.premiumSince
+          ? new Date(u.premiumSince).toLocaleDateString('en-IN', { day: '2-digit', month: 'short', year: 'numeric' })
+          : '—';
 
         subContent.innerHTML = `
         <!-- Plan badge -->
@@ -32850,7 +32865,7 @@ Rules:
         <div style="display:flex;flex-direction:column;gap:8px;margin-bottom:14px;">
           <div style="display:flex;justify-content:space-between;align-items:center;padding:8px 0;border-bottom:1px solid var(--border);">
             <span style="font-size:12px;color:var(--text3);font-weight:600;">Plan</span>
-            <span style="font-size:13px;font-weight:800;color:var(--text);">${u.premiumPlan === 'yearly' ? '📅 Yearly' : u.premiumPlan === 'referral' ? '🎁 Referral' : u.premiumPlan === 'manual' ? '🛠️ Manual' : '📅 Monthly'}</span>
+            <span style="font-size:13px;font-weight:800;color:var(--text);">${effPlan === 'yearly' ? '📅 Yearly' : effPlan === 'trial' ? '🎟️ Trial' : effPlan === 'referral' ? '🎁 Referral' : effPlan === 'manual' ? '🛠️ Manual' : '📅 Monthly'}</span>
           </div>
           <div style="display:flex;justify-content:space-between;align-items:center;padding:8px 0;border-bottom:1px solid var(--border);">
             <span style="font-size:12px;color:var(--text3);font-weight:600;">Member Since</span>

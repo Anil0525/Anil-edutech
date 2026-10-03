@@ -27382,6 +27382,13 @@ Rules:
                 razorpay_order_id: response.razorpay_order_id,
                 razorpay_payment_id: response.razorpay_payment_id,
                 razorpay_signature: response.razorpay_signature,
+                // ✅ FIX: gmail/plan/amount/name must be sent — the edge function needs
+                // these to grant premium server-side. Without them it can't tell this
+                // apart from a contest-entry payment (which shares this same endpoint).
+                gmail: currentUser ? currentUser.gmail : '',
+                name: currentUser ? currentUser.name : '',
+                plan: plan,
+                amount: amount,
               }),
             });
             const vData = await vRes.json();

@@ -32340,7 +32340,7 @@ Rules:
     return Object.assign({
       'Content-Type': 'application/json',
       'apikey': DM_SB_KEY,
-      'Authorization': 'Bearer ' + DM_SB_KEY
+      'Authorization': (typeof SB_HEADERS !== 'undefined' && SB_HEADERS['Authorization']) || ('Bearer ' + DM_SB_KEY) // admin JWT when logged in
     }, extra || {});
   }
 
@@ -33615,7 +33615,7 @@ Rules:
   const CS_TABLE = 'ae_carousel_slides';
 
   function csHeaders() {
-    return { 'apikey': SB_KEY, 'Authorization': 'Bearer ' + SB_KEY, 'Content-Type': 'application/json', 'Prefer': 'return=representation' };
+    return { 'apikey': SB_KEY, 'Authorization': SB_HEADERS['Authorization'], 'Content-Type': 'application/json', 'Prefer': 'return=representation' }; // admin JWT when logged in (RLS), anon otherwise
   }
 
   async function loadCarouselAdmin() {
@@ -34514,7 +34514,7 @@ Rules:
         headers: {
           'Content-Type': 'application/json',
           'apikey': SB_KEY,
-          'Authorization': 'Bearer ' + SB_KEY,
+          'Authorization': SB_HEADERS['Authorization'], // admin JWT (RLS: contests are admin-write)
           'Prefer': 'return=representation'
         },
         body: JSON.stringify({
@@ -34661,7 +34661,7 @@ Rules:
     if (!confirm('Contest delete చేయాలా? Entries కూడా delete అవుతాయి!')) return;
     const delHeaders = {
       'apikey': SB_KEY,
-      'Authorization': 'Bearer ' + SB_KEY,
+      'Authorization': SB_HEADERS['Authorization'], // admin JWT (RLS)
       'Content-Type': 'application/json'
     };
     try {

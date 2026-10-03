@@ -27393,7 +27393,9 @@ Rules:
             toast('❌ Verification error: ' + e.message, 'error');
             return;
           }
-          _onPaymentSuccess(response, plan, amount, currentUser);
+          // ✅ SECURITY FIX: premium is now granted server-side (inside verify-razorpay-payment,
+          // using the service role key) — the client only reflects that result locally.
+          _onPaymentSuccess(response, plan, amount, currentUser, vData);
         },
         modal: {
           ondismiss: function () {
@@ -27427,7 +27429,7 @@ Rules:
       return durationMs ? new Date(Date.now() + durationMs).toISOString() : null;
     }
 
-    function _onPaymentSuccess(response, plan, amount, user) {
+    function _onPaymentSuccess(response, plan, amount, user, vData) {
       const record = {
         id: response.razorpay_payment_id,
         pid: response.razorpay_payment_id,
@@ -27476,25 +27478,17 @@ Rules:
             _ls.setItem('ae_users', JSON.stringify(allUsers));
           }
         } catch (e2) { }
-        // Supabase ae_subscribers premium update
-        // FIX: status stays 'approved' regardless of plan — trial vs paid is tracked
-        // via premiumPlan, not by overwriting the subscriber-approval status.
-        const _sbPay = { name: user.name, gmail: user.gmail, is_premium: true, premium_since: premiumSince, premiumPlan: plan, status: 'approved' };
-        if (trialExpiry) _sbPay.trial_expiry = trialExpiry;
-        sbSubUpsert(_sbPay).catch(e => console.warn('sbSubUpsert payment:', e));
-        // Supabase ae_settings — persist premium so login check works after logout
-        // BUG FIX: skip this for trial plans — this key never expires, and the login check
-        // (doLogin) treats its mere presence as "always premium", which would re-grant
-        // premium on every future login even after the 1-day trial has expired.
-        if (plan !== 'trial') {
-          sbUpsert('ae_settings', {
-            key: 'premium_gmail_' + user.gmail.replace(/[@.]/g, '_'),
-            value: JSON.stringify({ gmail: user.gmail, since: premiumSince, plan }),
-            updated_at: new Date().toISOString()
-          }).catch(e => console.warn('ae_settings premium write:', e));
+        // ✅ SECURITY FIX: ae_subscribers.is_premium, ae_settings premium key, and
+        // ae_payments are now written server-side inside verify-razorpay-payment
+        // (using the service role key), right after signature verification succeeds.
+        // The client no longer writes these with the anon key — previously anyone
+        // could PATCH ae_subscribers directly (no login needed) and grant themselves
+        // premium for free, bypassing Razorpay entirely. Do NOT re-add client-side
+        // Supabase writes here; if vData is ever missing, surface an error instead
+        // of silently trusting the client.
+        if (!vData || !vData.is_premium) {
+          console.warn('_onPaymentSuccess: server did not confirm premium grant', vData);
         }
-        // Supabase ae_payments save
-        sbInsert('ae_payments', { gmail: user.gmail, name: user.name, plan, amount, payment_id: response.razorpay_payment_id, status: 'paid' }).catch(e => console.warn('ae_payments:', e));
         // Update session
         const sess = { ...user, isPremium: true, premiumPlan: plan };
         if (trialExpiry) sess.trialExpiry = trialExpiry;

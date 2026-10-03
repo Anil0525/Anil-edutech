@@ -15874,8 +15874,15 @@
       }
     };
 
+    // ── 🔒 SECURITY: private keys NEVER leave this device (no Supabase ae_settings / Google Sheets sync) ──
+    // ae_settings is readable with the public anon key, so secrets/personal data must not be stored there.
+    const _PRIVATE_KEYS = ['ae_admin_pw', 'ae_admin_uname', 'ae_admin_recovery', 'ae_pw_resets', 'groq_api_key', 'ae_payment_records'];
+    // One-time cleanup of legacy dead secrets that older versions pulled into this browser
+    ['ae_admin_pw', 'ae_admin_uname', 'ae_admin_recovery', 'ae_pw_resets'].forEach(function (k) { try { localStorage.removeItem(k); } catch (e) { } });
+
     // ── SUPABASE SAVE ──
     async function _sbSave(key, value) {
+      if (_PRIVATE_KEYS.indexOf(key) !== -1) return; // 🔒 local-only
       if (_sbDead) return; // silent when circuit breaker is open
       try {
         if (key === 'anil_edutech_db') {
@@ -15904,6 +15911,7 @@
 
     // ── GOOGLE SHEETS BACKUP SAVE ──
     async function _gsSaveBackup(key, value) {
+      if (_PRIVATE_KEYS.indexOf(key) !== -1) return; // 🔒 local-only
       if (_gsDead) return; // circuit breaker — silent
       try {
         if (key === 'anil_edutech_db') {
@@ -15975,6 +15983,7 @@
         if (settingsRows && Array.isArray(settingsRows)) {
           sbWorking = true;
           settingsRows.forEach(row => {
+            if (row.key && _PRIVATE_KEYS.indexOf(row.key) !== -1) return; // 🔒 never load private keys from server
             if (row.key && row.value !== null && row.value !== undefined && row.value !== '') {
               _store[row.key] = row.value;
               // ⚡ FIX: Supabase = source of truth — overwrite stale local cache
@@ -16002,7 +16011,7 @@
               gsAPI({ action: 'getScores' }),
               gsAPI({ action: 'getPending' }),
               gsAPI({ action: 'getApproved' }),
-              ...SETTING_KEYS.map(key => gsAPI({ action: 'getSetting', key }))
+              ...SETTING_KEYS.map(key => _PRIVATE_KEYS.indexOf(key) !== -1 ? Promise.resolve(null) : gsAPI({ action: 'getSetting', key }))
             ]), 6000);
             if (db && !db.error && db.exams && db.exams.length > 0)
               _store['anil_edutech_db'] = JSON.stringify(db);
@@ -27373,6 +27382,7 @@ Rules:
         theme: { color: '#1A73E8' },
         handler: async function (response) {
           // ✅ FIX: Razorpay signature verify చేయి — fake payment_id తో premium కాదు
+          let vData = null; // FIX: declared outside try — it was block-scoped before, so _onPaymentSuccess() below threw ReferenceError and the modal never closed
           try {
             toast('⏳ Verifying payment...', 'info');
             const vRes = await fetch(`${SB_URL}/functions/v1/verify-razorpay-payment`, {
@@ -27391,7 +27401,7 @@ Rules:
                 amount: amount,
               }),
             });
-            const vData = await vRes.json();
+            vData = await vRes.json();
             if (!vRes.ok || !vData.success) {
               toast('❌ Payment verification failed. Support కి contact చేయండి.', 'error');
               return;
@@ -27497,7 +27507,7 @@ Rules:
           console.warn('_onPaymentSuccess: server did not confirm premium grant', vData);
         }
         // Update session
-        const sess = { ...user, isPremium: true, premiumPlan: plan };
+        const sess = { ...user, isPremium: true, premiumPlan: plan, premiumSince };
         if (trialExpiry) sess.trialExpiry = trialExpiry;
         setCurrentUser(sess);
       }

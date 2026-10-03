@@ -15544,7 +15544,7 @@
           headers: { ...SB_HEADERS, 'Prefer': 'resolution=merge-duplicates,return=minimal' },
           body: JSON.stringify(data)
         });
-        if (!r.ok) { _sbFails++; if (_sbFails >= 5) { _sbDead = true; setTimeout(function () { _sbDead = false; _sbFails = 0; }, 2 * 60 * 1000); } }
+        if (!r.ok && r.status !== 401 && r.status !== 403) { _sbFails++; if (_sbFails >= 5) { _sbDead = true; setTimeout(function () { _sbDead = false; _sbFails = 0; }, 2 * 60 * 1000); } } // 401/403 = RLS denial, not an outage
         return r.ok;
       } catch (e) { _sbFails++; if (_sbFails >= 2) { _sbDead = true; setTimeout(function () { _sbDead = false; _sbFails = 0; }, 5 * 60 * 1000); } return false; }
     }
@@ -15555,7 +15555,7 @@
         const r = await fetch(`${SB_URL}/rest/v1/${table}?${filter}`, {
           method: 'DELETE', headers: SB_HEADERS
         });
-        if (!r.ok) { _sbFails++; if (_sbFails >= 5) { _sbDead = true; setTimeout(function () { _sbDead = false; _sbFails = 0; }, 2 * 60 * 1000); } }
+        if (!r.ok && r.status !== 401 && r.status !== 403) { _sbFails++; if (_sbFails >= 5) { _sbDead = true; setTimeout(function () { _sbDead = false; _sbFails = 0; }, 2 * 60 * 1000); } } // 401/403 = RLS denial, not an outage
         return r.ok;
       } catch (e) { _sbFails++; if (_sbFails >= 2) { _sbDead = true; setTimeout(function () { _sbDead = false; _sbFails = 0; }, 5 * 60 * 1000); } return false; }
     }
@@ -15662,7 +15662,7 @@
           headers: { ...SB_HEADERS, 'Prefer': 'return=minimal' },
           body: JSON.stringify(data)
         });
-        if (!r.ok) { _sbFails++; if (_sbFails >= 5) { _sbDead = true; setTimeout(function () { _sbDead = false; _sbFails = 0; }, 2 * 60 * 1000); } }
+        if (!r.ok && r.status !== 401 && r.status !== 403) { _sbFails++; if (_sbFails >= 5) { _sbDead = true; setTimeout(function () { _sbDead = false; _sbFails = 0; }, 2 * 60 * 1000); } } // 401/403 = RLS denial, not an outage
         return r.ok;
       } catch (e) { _sbFails++; if (_sbFails >= 2) { _sbDead = true; setTimeout(function () { _sbDead = false; _sbFails = 0; }, 5 * 60 * 1000); } return false; }
     }
@@ -15675,7 +15675,7 @@
           headers: { ...SB_HEADERS, 'Prefer': 'return=minimal' },
           body: JSON.stringify(data)
         });
-        if (!r.ok) { _sbFails++; if (_sbFails >= 5) { _sbDead = true; setTimeout(function () { _sbDead = false; _sbFails = 0; }, 2 * 60 * 1000); } }
+        if (!r.ok && r.status !== 401 && r.status !== 403) { _sbFails++; if (_sbFails >= 5) { _sbDead = true; setTimeout(function () { _sbDead = false; _sbFails = 0; }, 2 * 60 * 1000); } } // 401/403 = RLS denial, not an outage
         return r.ok;
       } catch (e) { _sbFails++; if (_sbFails >= 2) { _sbDead = true; setTimeout(function () { _sbDead = false; _sbFails = 0; }, 5 * 60 * 1000); } return false; }
     }
@@ -16913,7 +16913,7 @@ More exams: https://aniledutech.in
     <div class="prog-section" style="background:linear-gradient(135deg,rgba(239,68,68,.08),rgba(245,158,11,.06));border:2px solid rgba(239,68,68,.25);border-radius:var(--radius);padding:20px;">
       <div class="prog-section-title" style="margin-bottom:10px;">🎯 Weakest Area: ${escHtml(weakest.cat)}</div>
       <div style="font-size:13.5px;color:var(--text2);margin-bottom:14px;">మీ ${escHtml(weakest.cat)} average score ${weakest.avg}% — ఇది మీ ఇతర subjects కంటే తక్కువ. దీని మీద ఎక్కువ practice పెట్టడం వల్ల మీ overall rank పెరుగుతుంది.</div>
-      <button class="btn-primary" onclick="goExams('${weakest.cat.replace(/'/g, "\\'")}')">📝 ${escHtml(weakest.cat)} Practice చేయండి →</button>
+      <button class="btn-primary" onclick="goExams(${jsArg(weakest.cat)})">📝 ${escHtml(weakest.cat)} Practice చేయండి →</button>
     </div>` : ''}
   `;
     }
@@ -18517,8 +18517,8 @@ More exams: https://aniledutech.in
           ? `<span class="meta-pill" style="background:rgba(245,183,49,.15);color:#E8640A;border:1px solid rgba(245,183,49,.4)">👑 Premium</span>`
           : `<span class="meta-pill" style="background:rgba(100,100,100,.1);color:var(--text3)">Free</span>`;
         const premBtn = isPrem
-          ? `<button class="del-btn" style="background:rgba(239,68,68,.15);color:#ef4444;border:1px solid rgba(239,68,68,.3);margin-left:4px" onclick="adminRevokePremium('${escHtml(s.gmail)}')">Revoke</button>`
-          : `<button class="edit-btn" style="background:linear-gradient(135deg,#F5B731,#E8640A);color:#fff;min-width:90px" onclick="adminGrantPremium('${escHtml(s.gmail)}')">👑 Grant</button>`;
+          ? `<button class="del-btn" style="background:rgba(239,68,68,.15);color:#ef4444;border:1px solid rgba(239,68,68,.3);margin-left:4px" onclick="adminRevokePremium(${jsArg(s.gmail)})">Revoke</button>`
+          : `<button class="edit-btn" style="background:linear-gradient(135deg,#F5B731,#E8640A);color:#fff;min-width:90px" onclick="adminGrantPremium(${jsArg(s.gmail)})">👑 Grant</button>`;
         const avatarUrl = s.avatarUrl || s.avatar_url || '';
         const photoHtml = avatarUrl
           ? `<img src="${escHtml(avatarUrl)}" referrerpolicy="no-referrer" style="width:28px;height:28px;border-radius:50%;object-fit:cover;vertical-align:middle;margin-right:6px;border:1px solid var(--border2)" onerror="this.style.display='none'">`
@@ -18534,7 +18534,7 @@ More exams: https://aniledutech.in
       <td style="font-size:12px;color:var(--text3)">${escHtml(s.date || '')}</td>
       <td>${premBadge} ${premBtn}</td>
       <td>
-        <button class="del-btn" onclick="removeSubscriber('${escHtml(s.gmail)}')">Remove</button>
+        <button class="del-btn" onclick="removeSubscriber(${jsArg(s.gmail)})">Remove</button>
       </td>
     </tr>`;
       }).join('');
@@ -21212,6 +21212,10 @@ More exams: https://aniledutech.in
     function escHtml(s) {
       return String(s).replace(/[&<>"']/g, c => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[c]));
     }
+    // 🔒 SECURITY: safe JS string argument for inline handlers: onclick="fn(${jsArg(value)})"
+    // escHtml alone is NOT enough inside onclick='...' — the browser decodes &#39; back to ' BEFORE the JS runs (XSS).
+    // JSON.stringify makes a valid JS string literal; escHtml then makes it safe inside the HTML attribute.
+    function jsArg(v) { return escHtml(JSON.stringify(String(v == null ? '' : v))); }
 
     // BUG FIX: Sanitize URLs — only allow http/https to prevent javascript: injection
     function sanitizeUrl(url) {
@@ -24289,35 +24293,44 @@ Rules:
     // (usually the new user, not the referrer). Now tracked in Supabase
     // `ae_referrals`, credited to the code owner, and rewards are redeemed
     // on-demand by the referrer via the Coins Wallet (see _redeemCoins below).
+    // 🔒 SECURITY: all referral/premium writes now go through the `redeem-referral` edge function
+    // (server verifies the logged-in user's token and uses the service-role key). The browser can no
+    // longer insert fake referrals or grant itself premium with the anon key.
+    async function _refFn(payload) {
+      const u = getCurrentUser();
+      if (!u || !u.sbToken) return { ok: false, status: 401, data: { error: 'Session expired. మళ్ళీ login చేయండి.' } };
+      try {
+        const r = await fetch(`${SB_URL}/functions/v1/redeem-referral`, {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json', 'apikey': SB_KEY, 'Authorization': 'Bearer ' + u.sbToken },
+          body: JSON.stringify(payload)
+        });
+        const data = await r.json().catch(() => ({}));
+        return { ok: r.ok && data && data.success, status: r.status, data };
+      } catch (e) {
+        return { ok: false, status: 0, data: { error: 'Network error. Internet check చేయండి.' } };
+      }
+    }
+
     async function _applyPendingReferral(user) {
       try {
         const pendingRef = _ls.getItem('ae_pending_ref');
         if (!pendingRef || !user || !user.gmail) return;
 
         // Don't let users refer themselves
-        const myCode = _getReferralCode(user);
-        if (pendingRef === myCode) {
+        if (pendingRef === _getReferralCode(user)) {
           _ls.removeItem('ae_pending_ref');
           return;
         }
 
-        // Check if this gmail already has a referral credit recorded (Supabase — cross-device safe)
-        const existRes = await fetch(`${SB_URL}/rest/v1/ae_referrals?referred_gmail=eq.${encodeURIComponent(user.gmail)}&select=id`, { headers: SB_HEADERS });
-        const existData = existRes.ok ? await existRes.json() : [];
-        if (Array.isArray(existData) && existData.length > 0) {
+        const r = await _refFn({ action: 'apply', code: pendingRef });
+        if (r.ok) {
           _ls.removeItem('ae_pending_ref');
-          return;
+          setTimeout(() => toast('🎉 Referral తీసుకున్నారు! Referrer కి 10 Coins credit అయ్యాయి.', 'success'), 1000);
+        } else if (r.status !== 401 && r.status !== 0) {
+          // permanent failure (already used / invalid code) — stop retrying; 401/network → retry next login
+          _ls.removeItem('ae_pending_ref');
         }
-
-        await sbInsert('ae_referrals', {
-          ref_code: pendingRef,
-          referred_gmail: user.gmail,
-          referred_name: user.name || user.gmail,
-          created_at: new Date().toISOString()
-        });
-
-        _ls.removeItem('ae_pending_ref');
-        setTimeout(() => toast('🎉 Referral తీసుకున్నారు! Referrer కి 10 Coins credit అయ్యాయి.', 'success'), 1000);
       } catch (e) { console.warn('referral apply:', e); }
     }
 
@@ -24326,21 +24339,11 @@ Rules:
     async function _getReferralWallet(u) {
       if (!u || !u.gmail) return { code: null, referrals: 0, earnedCoins: 0, spentCoins: 0, coins: 0, refList: [] };
       const code = _getReferralCode(u);
-      let refList = [];
-      let spentCoins = 0;
-      try {
-        const refRes = await fetch(`${SB_URL}/rest/v1/ae_referrals?ref_code=eq.${encodeURIComponent(code)}&select=referred_name,referred_gmail,created_at&order=created_at.desc`, { headers: SB_HEADERS });
-        refList = refRes.ok ? await refRes.json() : [];
-      } catch (e) { }
-      try {
-        const redRes = await fetch(`${SB_URL}/rest/v1/ae_referral_redemptions?gmail=eq.${encodeURIComponent(u.gmail)}&status=in.(pending,approved)&select=coins`, { headers: SB_HEADERS });
-        const redData = redRes.ok ? await redRes.json() : [];
-        spentCoins = Array.isArray(redData) ? redData.reduce((s, r) => s + (r.coins || 0), 0) : 0;
-      } catch (e) { }
-      const referrals = Array.isArray(refList) ? refList.length : 0;
-      const earnedCoins = referrals * REF_COIN_PER_REFERRAL;
-      if (u.gmail) _ls.setItem('ae_my_referral_count_cache', String(referrals)); // sync cache for badge checks
-      return { code, referrals, earnedCoins, spentCoins, coins: earnedCoins - spentCoins, refList: refList || [] };
+      const r = await _refFn({ action: 'wallet' });
+      if (!r.ok) return { code, referrals: 0, earnedCoins: 0, spentCoins: 0, coins: 0, refList: [] };
+      const d = r.data;
+      _ls.setItem('ae_my_referral_count_cache', String(d.referrals || 0)); // sync cache for badge checks
+      return { code, referrals: d.referrals || 0, earnedCoins: d.earnedCoins || 0, spentCoins: d.spentCoins || 0, coins: d.coins || 0, refList: d.refList || [] };
     }
     // Sync cached referral count (updated whenever the wallet/referral page loads) — used by badge checks that can't await
     function _getMyReferralCount(u) {
@@ -24370,34 +24373,25 @@ Rules:
         return;
       }
 
-      try {
-        if (item.type === 'premium') {
-          const days = item.days;
-          const expiry = days ? new Date(Date.now() + days * 24 * 60 * 60 * 1000).toISOString() : null;
-          u.isPremium = true;
-          u.premiumPlan = 'referral';
-          u.premiumSince = new Date().toISOString();
-          if (expiry) u.premiumExpiry = expiry;
-          setCurrentUser(u);
-          const premKey = 'premium_gmail_' + u.gmail.replace(/[@.]/g, '_');
-          const premVal = JSON.stringify({ gmail: u.gmail, since: u.premiumSince, expiry, plan: 'referral' });
-          await sbUpsert('ae_settings', { key: premKey, value: premVal, updated_at: new Date().toISOString() }).catch(e => console.warn('referral premium sb:', e));
-          await sbSubUpsert({ name: u.name, gmail: u.gmail, is_premium: true, premium_since: u.premiumSince, status: 'approved' }).catch(e => console.warn('referral sbSubUpsert:', e));
-          await sbInsert('ae_referral_redemptions', {
-            gmail: u.gmail, name: u.name || u.gmail, coins: item.coins, reward: item.label, status: 'approved', created_at: new Date().toISOString()
-          });
-          toast(`🎉 ${item.label} activated!`, 'success');
-        } else {
-          await sbInsert('ae_referral_redemptions', {
-            gmail: u.gmail, name: u.name || u.gmail, coins: item.coins, reward: item.label, status: 'pending', created_at: new Date().toISOString()
-          });
-          toast(`✅ ${item.label} request పంపబడింది. Admin approve చేసిన తర్వాత UPI కి పంపబడుతుంది.`, 'success');
-          const waMsg = encodeURIComponent('💰 Cash Redemption Request!\nName: ' + (u.name || u.gmail) + '\nGmail: ' + u.gmail + '\nReward: ' + item.label + '\nCoins used: ' + item.coins);
-          setTimeout(() => { window.open('https://wa.me/916309535287?text=' + waMsg, '_blank'); }, 1000);
-        }
-      } catch (e) {
-        toast('❌ Error వచ్చింది. మళ్ళీ try చేయండి.', 'error');
+      // 🔒 server validates coins + grants premium (service role). Client only mirrors the result.
+      const r = await _refFn({ action: 'redeem', key });
+      if (!r.ok) {
+        toast('❌ ' + ((r.data && r.data.error) || 'Error వచ్చింది. మళ్ళీ try చేయండి.'), 'error');
         return;
+      }
+      if (item.type === 'premium') {
+        const d = r.data || {};
+        u.isPremium = true;
+        u.premiumPlan = 'referral';
+        u.premiumSince = d.premium_since || new Date().toISOString();
+        if (d.expiry) u.trialExpiry = d.expiry; else delete u.trialExpiry;
+        setCurrentUser(u);
+        try { updateNavUser(); filterExams(); } catch (e) { }
+        toast(`🎉 ${item.label} activated!`, 'success');
+      } else {
+        toast(`✅ ${item.label} request పంపబడింది. Admin approve చేసిన తర్వాత UPI కి పంపబడుతుంది.`, 'success');
+        const waMsg = encodeURIComponent('💰 Cash Redemption Request!\nName: ' + (u.name || u.gmail) + '\nGmail: ' + u.gmail + '\nReward: ' + item.label + '\nCoins used: ' + item.coins);
+        setTimeout(() => { window.open('https://wa.me/916309535287?text=' + waMsg, '_blank'); }, 1000);
       }
       _renderReferral();
     }
@@ -24525,38 +24519,22 @@ Rules:
       if (!u || !u.gmail) { toast('ముందు login చేయండి', 'warn'); return; }
       const code = (document.getElementById('ref-code-input')?.value || '').trim().toUpperCase();
       if (code.length < 7) { toast('❌ Valid code enter చేయండి', 'error'); return; }
-      const myCode = _getReferralCode(u);
-      if (code === myCode) { toast('❌ మీ own code use చేయలేరు', 'error'); return; }
+      if (code === _getReferralCode(u)) { toast('❌ మీ own code use చేయలేరు', 'error'); return; }
 
       const btn = document.getElementById('ref-apply-btn');
       if (btn) { btn.disabled = true; btn.textContent = '⏳...'; }
 
-      try {
-        // Cross-device safe check: has this gmail already claimed a referral?
-        const existRes = await fetch(`${SB_URL}/rest/v1/ae_referrals?referred_gmail=eq.${encodeURIComponent(u.gmail)}&select=id`, { headers: SB_HEADERS });
-        const existData = existRes.ok ? await existRes.json() : [];
-        if (Array.isArray(existData) && existData.length > 0) {
-          toast('⚠️ మీరు ఇప్పటికే ఒక referral code వాడారు', 'warn');
-          if (btn) { btn.disabled = false; btn.textContent = 'Apply ✓'; }
-          return;
-        }
-        await sbInsert('ae_referrals', {
-          ref_code: code,
-          referred_gmail: u.gmail,
-          referred_name: u.name || u.gmail,
-          created_at: new Date().toISOString()
-        });
-        toast('🎉 Referral applied! Referrer కి 10 Coins credit అయ్యాయి.', 'success');
-        document.getElementById('ref-code-input').value = '';
-        _renderReferral();
-      } catch (e) {
-        toast('❌ Error వచ్చింది. మళ్ళీ try చేయండి.', 'error');
+      const r = await _refFn({ action: 'apply', code });
+      if (!r.ok) {
+        const msg = (r.data && r.data.error) || 'Error వచ్చింది. మళ్ళీ try చేయండి.';
+        toast((r.data && r.data.code === 'already_used' ? '⚠️ ' : '❌ ') + msg, r.data && r.data.code === 'already_used' ? 'warn' : 'error');
         if (btn) { btn.disabled = false; btn.textContent = 'Apply ✓'; }
+        return;
       }
+      toast('🎉 Referral applied! Referrer కి 10 Coins credit అయ్యాయి.', 'success');
+      document.getElementById('ref-code-input').value = '';
+      _renderReferral();
     }
-
-
-    let _bulkRows = [];
 
     function _downloadCSVTemplate() {
       const header = 'examId,question,optionA,optionB,optionC,optionD,answer,explanation,section';
@@ -25055,7 +25033,7 @@ Rules:
           <td style="font-weight:800;color:${r.status === 'churned' ? 'var(--red)' : 'var(--amber)'};">${r.daysInactive === null ? '—' : r.daysInactive + 'd'}</td>
           <td>${r.status === 'churned' ? '<span style="color:#EF233C;font-weight:800;">💔 Churned</span>' : '<span style="color:#F5B731;font-weight:800;">⚠️ At Risk</span>'}</td>
           <td>${r.isPremium ? '👑' : '—'}</td>
-          <td><button onclick="_notifyOneAtRisk('${(r.gmail || '').replace(/'/g, "\\'")}','${escHtml(r.name).replace(/'/g, "\\'")}')" style="padding:5px 10px;background:var(--teal);color:#fff;border:none;border-radius:7px;font-size:10px;font-weight:800;cursor:pointer;white-space:nowrap;">🔔 Notify</button></td>
+          <td><button onclick="_notifyOneAtRisk(${jsArg(r.gmail || '')},${jsArg(r.name || '')})" style="padding:5px 10px;background:var(--teal);color:#fff;border:none;border-radius:7px;font-size:10px;font-weight:800;cursor:pointer;white-space:nowrap;">🔔 Notify</button></td>
           </tr>`).join('')}
         ${!atRiskList.length ? '<tr><td colspan="7" style="text-align:center;padding:16px;color:var(--text3);">🎉 అందరూ active గా ఉన్నారు!</td></tr>' : ''}
         </tbody></table></div>
@@ -25512,7 +25490,7 @@ Rules:
       const chipWrap = document.getElementById('video-filter-chips');
       if (chipWrap) {
         chipWrap.innerHTML = `<button class="filter-chip${_videoFilter === '' ? ' active' : ''}" data-vcat="" onclick="setVideoFilter(this,'')">All</button>` +
-          cats.map(c => `<button class="filter-chip${_videoFilter === c ? ' active' : ''}" data-vcat="${escHtml(c)}" onclick="setVideoFilter(this,'${escHtml(c)}')">${escHtml(c)}</button>`).join('');
+          cats.map(c => `<button class="filter-chip${_videoFilter === c ? ' active' : ''}" data-vcat="${escHtml(c)}" onclick="setVideoFilter(this,${jsArg(c)})">${escHtml(c)}</button>`).join('');
       }
 
       const filtered = videos.filter(v =>
@@ -26114,7 +26092,7 @@ Rules:
     <td>${escHtml(r.gmail)}</td>
     <td>${escHtml(r.date || '')}</td>
     <td>
-      <button class="edit-btn" onclick="adminResetPw('${escHtml(r.gmail)}')">🔑 Reset</button>
+      <button class="edit-btn" onclick="adminResetPw(${jsArg(r.gmail)})">🔑 Reset</button>
     </td>
   </tr>`).join('');
     }
@@ -27608,8 +27586,8 @@ Rules:
     <td>
       ${isPending
             ? `<span style="background:var(--amber-soft);color:var(--amber);padding:3px 9px;border-radius:8px;font-size:11px;font-weight:800;display:inline-block;margin-bottom:4px;">⏳ Pending</span><br>
-           <button onclick="adminApproveUTR('${escHtml(r.gmail)}','${escHtml(r.utr || '')}','${escHtml(r.plan || '')}',${r.amount || 0})" style="background:linear-gradient(135deg,#10b981,#059669);color:#fff;border:none;border-radius:6px;padding:3px 9px;font-size:10px;font-weight:800;cursor:pointer">✅ Approve</button>
-           <button onclick="adminRevokePremium('${escHtml(r.gmail)}')" style="margin-left:4px;background:#ef4444;color:#fff;border:none;border-radius:6px;padding:3px 7px;font-size:10px;cursor:pointer">❌ Reject</button>`
+           <button onclick="adminApproveUTR(${jsArg(r.gmail)},${jsArg(r.utr || '')},${jsArg(r.plan || '')},${Number(r.amount) || 0})" style="background:linear-gradient(135deg,#10b981,#059669);color:#fff;border:none;border-radius:6px;padding:3px 9px;font-size:10px;font-weight:800;cursor:pointer">✅ Approve</button>
+           <button onclick="adminRevokePremium(${jsArg(r.gmail)})" style="margin-left:4px;background:#ef4444;color:#fff;border:none;border-radius:6px;padding:3px 7px;font-size:10px;cursor:pointer">❌ Reject</button>`
             : _statusBadge(r.status)
           }
     </td>
@@ -33164,7 +33142,7 @@ Rules:
     list.innerHTML = _bellNotifs.map(n => {
       const time = new Date(n.created_at).toLocaleString('te-IN', { day: '2-digit', month: 'short', hour: '2-digit', minute: '2-digit' });
       const unreadStyle = n.is_read ? '' : 'background:rgba(124,58,237,.06)';
-      return `<div onclick="onBellNotifClick(${n.id}, '${(n.link || '').replace(/'/g, "\\'")}')" style="padding:12px 16px;border-bottom:1px solid var(--border2);cursor:pointer;${unreadStyle}">
+      return `<div onclick="onBellNotifClick(${Number(n.id)}, ${jsArg(n.link || '')})" style="padding:12px 16px;border-bottom:1px solid var(--border2);cursor:pointer;${unreadStyle}">
       <div style="font-weight:700;font-size:13px;color:var(--text);display:flex;align-items:center;gap:6px">
         ${!n.is_read ? '<span style="width:8px;height:8px;border-radius:50%;background:#7c3aed;display:inline-block;flex-shrink:0"></span>' : ''}
         ${n.title}
@@ -34725,7 +34703,7 @@ Rules:
         <td style="padding:10px;font-size:11px;color:var(--text2)">${escHtml(e.gmail || '')}</td>
         <td style="padding:10px;text-align:center;font-weight:900;color:var(--primary)">${e.score || '(not played)'}</td>
         <td style="padding:10px;text-align:center">
-          ${i < 3 ? `<button onclick="markPrizePaid(${e.id},'${escHtml(e.name || e.gmail)}')" style="background:rgba(76,175,80,.15);color:#4CAF50;border:none;border-radius:8px;padding:5px 12px;font-family:inherit;font-size:11px;font-weight:800;cursor:pointer">💸 Paid గా Mark</button>` : '—'}
+          ${i < 3 ? `<button onclick="markPrizePaid(${Number(e.id)},${jsArg(e.name || e.gmail)})" style="background:rgba(76,175,80,.15);color:#4CAF50;border:none;border-radius:8px;padding:5px 12px;font-family:inherit;font-size:11px;font-weight:800;cursor:pointer">💸 Paid గా Mark</button>` : '—'}
         </td>
       </tr>`).join('')}
       </tbody></table></div>`;

@@ -11508,6 +11508,42 @@
   <script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/4.4.1/chart.umd.min.js" defer></script>
   <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js" defer></script>
 
+<style id="admin-ui-v2">
+/* ═══ Admin UI v2 — skin only (colors, radius, shadows). Layout/IDs/handlers untouched ═══ */
+body.admin-active{--a-bg:#f3f5fb;--a-card:#fff;--a-line:#e6e9f4;--a-ink:#1b2140;--a-mute:#6b7396;--a-p:#5b5bf0;--a-p2:#8b5cf6;background:var(--a-bg)}
+[data-theme="dark"] body.admin-active{--a-bg:#0e1222;--a-card:#171c33;--a-line:#262d4d;--a-ink:#e9ecff;--a-mute:#9aa3cf}
+body.admin-active .admin-page-header{background:radial-gradient(900px 220px at 85% -40%,rgba(255,255,255,.22),transparent 60%),linear-gradient(120deg,#3b2fd6 0%,#6d3df0 55%,#c026d3 100%)!important;box-shadow:0 10px 30px rgba(91,91,240,.28)!important;border-bottom:0!important}
+body.admin-active .admin-badge{background:rgba(255,255,255,.16)!important;border:1px solid rgba(255,255,255,.35)!important;backdrop-filter:blur(6px);border-radius:999px!important}
+body.admin-active .admin-tabs{background:var(--a-card)!important;border:1px solid var(--a-line)!important;border-radius:16px!important;margin:14px 12px 4px!important;padding:6px!important;gap:4px!important;box-shadow:0 4px 18px rgba(30,40,90,.06)!important}
+body.admin-active .admin-tabs::before{display:none!important}
+body.admin-active .admin-tab{color:var(--a-mute)!important;background:transparent!important;border:0!important;border-radius:11px!important;font-weight:700!important;transition:background .18s,color .18s,transform .18s,box-shadow .18s!important}
+body.admin-active .admin-tab:hover{background:rgba(91,91,240,.09)!important;color:var(--a-p)!important}
+body.admin-active .admin-tab.active{background:linear-gradient(135deg,var(--a-p),var(--a-p2))!important;color:#fff!important;box-shadow:0 6px 16px rgba(91,91,240,.38)!important;transform:translateY(-1px)}
+body.admin-active .admin-card{background:var(--a-card)!important;border:1px solid var(--a-line)!important;border-radius:20px!important;box-shadow:0 6px 24px rgba(30,40,90,.06)!important;overflow:hidden;animation:aV2in .35s ease both}
+body.admin-active .admin-card:hover{box-shadow:0 12px 34px rgba(30,40,90,.10)!important}
+body.admin-active .admin-card::before{height:3px!important;background:linear-gradient(90deg,var(--a-p),var(--a-p2),#ec4899)!important}
+body.admin-active .admin-card>h3{color:var(--a-ink)!important;font-weight:800!important;background:linear-gradient(180deg,rgba(91,91,240,.06),transparent)!important;border-bottom:1px solid var(--a-line)!important}
+body.admin-active .admin-card label{color:var(--a-mute)!important;font-weight:700!important;font-size:11.5px!important;letter-spacing:.3px;text-transform:uppercase}
+body.admin-active .admin-card input:not([type=checkbox]):not([type=radio]):not([type=range]),body.admin-active .admin-card select,body.admin-active .admin-card textarea{background:var(--a-card)!important;color:var(--a-ink)!important;border:1.5px solid var(--a-line)!important;border-radius:12px!important;transition:border-color .15s,box-shadow .15s}
+body.admin-active .admin-card input:focus,body.admin-active .admin-card select:focus,body.admin-active .admin-card textarea:focus{outline:0!important;border-color:var(--a-p)!important;box-shadow:0 0 0 4px rgba(91,91,240,.16)!important}
+body.admin-active .admin-card table{border-collapse:separate!important;border-spacing:0!important;border:1px solid var(--a-line);border-radius:14px;overflow:hidden}
+body.admin-active .admin-card th{background:linear-gradient(180deg,#f6f7ff,#eef0fb)!important;color:var(--a-mute)!important;font-size:10.5px!important;font-weight:800!important;letter-spacing:.9px!important;text-transform:uppercase;border-bottom:1px solid var(--a-line)!important}
+[data-theme="dark"] body.admin-active .admin-card th{background:#1d2442!important}
+body.admin-active .admin-card td{color:var(--a-ink);border-bottom:1px solid var(--a-line)!important}
+body.admin-active .admin-card tbody tr:last-child td{border-bottom:0!important}
+body.admin-active .admin-card tbody tr:hover td{background:rgba(91,91,240,.055)!important}
+body.admin-active .edit-btn{border:1px solid var(--a-line)!important;border-radius:10px!important;color:var(--a-p);font-weight:800!important}
+body.admin-active .edit-btn:hover{border-color:var(--a-p)!important;box-shadow:0 6px 14px rgba(91,91,240,.22)!important}
+body.admin-active .admin-card button:not(.edit-btn):not(.admin-tab){border-radius:11px;font-weight:800;transition:transform .15s,box-shadow .15s,filter .15s}
+body.admin-active .admin-card button:not(.edit-btn):not(.admin-tab):hover{transform:translateY(-1px);filter:brightness(1.05)}
+body.admin-active .stat-num{background:linear-gradient(135deg,var(--a-p),var(--a-p2));-webkit-background-clip:text;background-clip:text;-webkit-text-fill-color:transparent;font-weight:900}
+body.admin-active .stat-label{color:var(--a-mute)!important;font-weight:700}
+body.admin-active .admin-tabs::-webkit-scrollbar{height:6px}
+body.admin-active .admin-tabs::-webkit-scrollbar-thumb{background:rgba(91,91,240,.35);border-radius:6px}
+@keyframes aV2in{from{opacity:0;transform:translateY(8px)}to{opacity:1;transform:none}}
+@media (prefers-reduced-motion:reduce){body.admin-active .admin-card{animation:none}}
+@media (max-width:640px){body.admin-active .admin-tabs{margin:10px 6px 2px!important;border-radius:14px!important}}
+</style>
 </head>
 
 <body>
@@ -31168,6 +31204,7 @@ Rules:
     const bar = document.getElementById('ssc-part-tabs');
     if (!bar) return;
     const parts = ['A', 'B', 'C', 'D'];
+    ssc._tabsDrawnFor = ssc.activePart; // remember which part the tab bar currently highlights
     // Use exam's custom partLabels if admin set them, else fall back to SSC_PARTS defaults
     const customLabels = (ssc.current && ssc.current.partLabels) ? ssc.current.partLabels : {};
     bar.innerHTML = parts.map(function (part) {
@@ -31219,6 +31256,10 @@ Rules:
     const part = _getPartForQ(q);
     if (part !== ssc.activePart) {
       ssc.activePart = part;
+    }
+    // FIX: sscSaveAndNext() used to set activePart itself, so the tab bar never redrew and the green
+    // highlight stayed on the old PART. Redraw whenever the highlighted tab != active part.
+    if (ssc._tabsDrawnFor !== ssc.activePart) {
       _renderSSCPartTabs();
     }
 

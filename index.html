@@ -11508,19 +11508,51 @@
   <script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/4.4.1/chart.umd.min.js" defer></script>
   <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js" defer></script>
 
-<style id="admin-ui-v2">
-/* ═══ Admin UI v2 — skin only (colors, radius, shadows). Layout/IDs/handlers untouched ═══ */
+<style id="admin-ui-v3">
+/* ═══ Admin UI v3 — sidebar layout + skin. IDs / handlers untouched ═══ */
 body.admin-active{--a-bg:#f3f5fb;--a-card:#fff;--a-line:#e6e9f4;--a-ink:#1b2140;--a-mute:#6b7396;--a-p:#5b5bf0;--a-p2:#8b5cf6;background:var(--a-bg)}
 [data-theme="dark"] body.admin-active{--a-bg:#0e1222;--a-card:#171c33;--a-line:#262d4d;--a-ink:#e9ecff;--a-mute:#9aa3cf}
-body.admin-active .admin-page-header{background:radial-gradient(900px 220px at 85% -40%,rgba(255,255,255,.22),transparent 60%),linear-gradient(120deg,#3b2fd6 0%,#6d3df0 55%,#c026d3 100%)!important;box-shadow:0 10px 30px rgba(91,91,240,.28)!important;border-bottom:0!important}
-body.admin-active .admin-badge{background:rgba(255,255,255,.16)!important;border:1px solid rgba(255,255,255,.35)!important;backdrop-filter:blur(6px);border-radius:999px!important}
-body.admin-active .admin-tabs{background:var(--a-card)!important;border:1px solid var(--a-line)!important;border-radius:16px!important;margin:14px 12px 4px!important;padding:6px!important;gap:4px!important;box-shadow:0 4px 18px rgba(30,40,90,.06)!important}
+/* header */
+body.admin-active .admin-page-header{position:static!important;height:auto!important;min-height:74px;padding:14px 28px!important;flex-wrap:wrap;gap:14px!important;background:radial-gradient(900px 240px at 85% -50%,rgba(255,255,255,.2),transparent 60%),linear-gradient(120deg,#2e2a9e 0%,#5b34e6 55%,#b020c8 100%)!important;box-shadow:0 10px 30px rgba(91,91,240,.25)!important}
+body.admin-active .ah-left{display:flex;align-items:center;gap:12px;min-width:0}
+body.admin-active .ah-logo{width:42px;height:42px;border-radius:13px;background:rgba(255,255,255,.18);border:1px solid rgba(255,255,255,.3);display:flex;align-items:center;justify-content:center;font-size:19px;flex-shrink:0}
+body.admin-active .ah-title h2{margin:0!important;color:#fff!important;font-size:19px!important;font-weight:800!important;letter-spacing:-.2px}
+body.admin-active .admin-page-header p#admin-logged-label{display:block!important;margin:2px 0 0!important;color:rgba(255,255,255,.75)!important;font-size:12px!important;font-weight:600}
+body.admin-active .ah-fa{flex:1 1 280px;display:flex;justify-content:center;min-width:0}
+body.admin-active #fa-control-wrap{margin:0!important}
+body.admin-active #fa-status-box{margin:0!important;background:rgba(255,255,255,.14)!important;border:1px solid rgba(255,255,255,.3)!important;border-radius:999px!important;padding:6px 8px 6px 14px!important;backdrop-filter:blur(6px)}
+body.admin-active #fa-status-box span{color:#fff!important}
+body.admin-active #fa-status-box input{border-radius:8px!important}
+body.admin-active .admin-badge{background:rgba(255,255,255,.16)!important;border:1px solid rgba(255,255,255,.35)!important;border-radius:999px!important;backdrop-filter:blur(6px)}
+body.admin-active .ah-signout{background:rgba(255,255,255,.16)!important;color:#fff!important;border:1px solid rgba(255,255,255,.35)!important;border-radius:999px!important;padding:8px 14px!important;font-weight:700;cursor:pointer}
+body.admin-active .ah-signout:hover{background:rgba(255,255,255,.28)!important}
+/* sidebar layout (desktop) */
+@media (min-width:901px){
+ body.admin-active .admin-layout{display:grid!important;grid-template-columns:262px minmax(0,1fr);grid-template-rows:auto 1fr;align-items:start;min-height:calc(100vh - 52px)}
+ body.admin-active .admin-page-header{grid-column:1/-1}
+ body.admin-active .admin-tabs{grid-column:1;grid-row:2;position:sticky!important;top:64px!important;flex-direction:column!important;align-items:stretch!important;flex-wrap:nowrap!important;overflow-x:hidden!important;overflow-y:auto!important;width:auto!important;max-height:calc(100vh - 80px);margin:18px 0 18px 18px!important;padding:12px!important;gap:3px!important;scroll-snap-type:none!important}
+ body.admin-active .admin-main-area{grid-column:2;grid-row:2;min-width:0}
+ body.admin-active .admin-content-wrap{padding:22px 28px 60px!important;max-width:1320px}
+ body.admin-active .admin-tab{width:100%;justify-content:flex-start!important;padding:10px 12px!important;font-size:13px!important;gap:10px!important}
+}
+/* tabs (shared skin) */
+body.admin-active .admin-tabs{background:var(--a-card)!important;border:1px solid var(--a-line)!important;border-radius:18px!important;box-shadow:0 6px 24px rgba(30,40,90,.07)!important}
 body.admin-active .admin-tabs::before{display:none!important}
-body.admin-active .admin-tab{color:var(--a-mute)!important;background:transparent!important;border:0!important;border-radius:11px!important;font-weight:700!important;transition:background .18s,color .18s,transform .18s,box-shadow .18s!important}
+body.admin-active .admin-tab-group{font-size:10px;font-weight:800;letter-spacing:1.2px;text-transform:uppercase;color:var(--a-mute);opacity:.8;padding:12px 10px 4px;flex-shrink:0}
+body.admin-active .admin-tab-group:first-child{padding-top:4px}
+body.admin-active .admin-tab{color:var(--a-mute)!important;background:transparent!important;border:0!important;border-radius:11px!important;font-weight:700!important;transition:background .18s,color .18s,box-shadow .18s!important}
 body.admin-active .admin-tab:hover{background:rgba(91,91,240,.09)!important;color:var(--a-p)!important}
-body.admin-active .admin-tab.active{background:linear-gradient(135deg,var(--a-p),var(--a-p2))!important;color:#fff!important;box-shadow:0 6px 16px rgba(91,91,240,.38)!important;transform:translateY(-1px)}
-body.admin-active .admin-card{background:var(--a-card)!important;border:1px solid var(--a-line)!important;border-radius:20px!important;box-shadow:0 6px 24px rgba(30,40,90,.06)!important;overflow:hidden;animation:aV2in .35s ease both}
-body.admin-active .admin-card:hover{box-shadow:0 12px 34px rgba(30,40,90,.10)!important}
+body.admin-active .admin-tab.active{background:linear-gradient(135deg,var(--a-p),var(--a-p2))!important;color:#fff!important;box-shadow:0 6px 16px rgba(91,91,240,.38)!important}
+/* mobile / tablet: tabs become a horizontal strip, group labels hidden */
+@media (max-width:900px){
+ body.admin-active .admin-layout{display:flex!important;flex-direction:column}
+ body.admin-active .admin-page-header{padding:12px 14px!important}
+ body.admin-active .ah-fa{order:3;flex-basis:100%;justify-content:flex-start}
+ body.admin-active .admin-tab-group{display:none}
+ body.admin-active .admin-tabs{margin:10px 8px 2px!important;padding:5px!important;top:52px!important;border-radius:14px!important}
+}
+/* cards */
+body.admin-active .admin-card{background:var(--a-card)!important;border:1px solid var(--a-line)!important;border-radius:20px!important;box-shadow:0 6px 24px rgba(30,40,90,.06)!important;overflow:hidden;animation:aV3in .3s ease both}
 body.admin-active .admin-card::before{height:3px!important;background:linear-gradient(90deg,var(--a-p),var(--a-p2),#ec4899)!important}
 body.admin-active .admin-card>h3{color:var(--a-ink)!important;font-weight:800!important;background:linear-gradient(180deg,rgba(91,91,240,.06),transparent)!important;border-bottom:1px solid var(--a-line)!important}
 body.admin-active .admin-card label{color:var(--a-mute)!important;font-weight:700!important;font-size:11.5px!important;letter-spacing:.3px;text-transform:uppercase}
@@ -11534,15 +11566,14 @@ body.admin-active .admin-card tbody tr:last-child td{border-bottom:0!important}
 body.admin-active .admin-card tbody tr:hover td{background:rgba(91,91,240,.055)!important}
 body.admin-active .edit-btn{border:1px solid var(--a-line)!important;border-radius:10px!important;color:var(--a-p);font-weight:800!important}
 body.admin-active .edit-btn:hover{border-color:var(--a-p)!important;box-shadow:0 6px 14px rgba(91,91,240,.22)!important}
-body.admin-active .admin-card button:not(.edit-btn):not(.admin-tab){border-radius:11px;font-weight:800;transition:transform .15s,box-shadow .15s,filter .15s}
-body.admin-active .admin-card button:not(.edit-btn):not(.admin-tab):hover{transform:translateY(-1px);filter:brightness(1.05)}
+body.admin-active .admin-card button:not(.edit-btn){border-radius:11px;font-weight:800;transition:transform .15s,box-shadow .15s,filter .15s}
+body.admin-active .admin-card button:not(.edit-btn):hover{transform:translateY(-1px);filter:brightness(1.05)}
 body.admin-active .stat-num{background:linear-gradient(135deg,var(--a-p),var(--a-p2));-webkit-background-clip:text;background-clip:text;-webkit-text-fill-color:transparent;font-weight:900}
 body.admin-active .stat-label{color:var(--a-mute)!important;font-weight:700}
-body.admin-active .admin-tabs::-webkit-scrollbar{height:6px}
-body.admin-active .admin-tabs::-webkit-scrollbar-thumb{background:rgba(91,91,240,.35);border-radius:6px}
-@keyframes aV2in{from{opacity:0;transform:translateY(8px)}to{opacity:1;transform:none}}
+body.admin-active .admin-tabs::-webkit-scrollbar{width:6px;height:6px}
+body.admin-active .admin-tabs::-webkit-scrollbar-thumb{background:rgba(91,91,240,.3);border-radius:6px}
+@keyframes aV3in{from{opacity:0;transform:translateY(8px)}to{opacity:1;transform:none}}
 @media (prefers-reduced-motion:reduce){body.admin-active .admin-card{animation:none}}
-@media (max-width:640px){body.admin-active .admin-tabs{margin:10px 6px 2px!important;border-radius:14px!important}}
 </style>
 </head>
 
@@ -22608,12 +22639,13 @@ Rules:
     function _renderFreeAccessControl() {
       let box = document.getElementById('fa-control-wrap');
       if (!box) {
-        const anchor = document.getElementById('admin-logged-label');
+        const slot = document.getElementById('admin-fa-slot');
+        const anchor = slot || document.getElementById('admin-logged-label');
         if (!anchor) return;
         box = document.createElement('div');
         box.id = 'fa-control-wrap';
-        box.style.cssText = 'margin:10px 16px;';
-        anchor.insertAdjacentElement('afterend', box);
+        box.style.cssText = slot ? 'margin:0;' : 'margin:10px 16px;';
+        if (slot) slot.appendChild(box); else anchor.insertAdjacentElement('afterend', box);
       }
       box.innerHTML = _freeAccessBadgeHtml();
     }

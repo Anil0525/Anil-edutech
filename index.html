@@ -11551,6 +11551,48 @@ body.admin-active .admin-tab.active{background:linear-gradient(135deg,var(--a-p)
  body.admin-active .admin-tab-group{display:none}
  body.admin-active .admin-tabs{margin:10px 8px 2px!important;padding:5px!important;top:52px!important;border-radius:14px!important}
 }
+/* Notify Me: subtle ghost link */
+.hero .btn-tertiary{background:transparent!important;border:1px solid rgba(255,255,255,.22)!important;color:rgba(255,255,255,.75)!important;font-size:12.5px!important;font-weight:500!important;padding:8px 16px!important;min-height:0!important;border-radius:999px!important;text-decoration:none!important;box-shadow:none!important;transition:background .2s,color .2s,border-color .2s}
+.hero .btn-tertiary:hover{background:rgba(255,255,255,.1)!important;color:#fff!important;border-color:rgba(255,255,255,.45)!important;transform:none!important}
+/* ===== Beauty pass 2 ===== */
+body{background:radial-gradient(900px 500px at 8% -5%,rgba(26,115,232,.09),transparent 60%),radial-gradient(800px 500px at 100% 20%,rgba(124,58,237,.07),transparent 60%),var(--bg)!important;background-attachment:fixed}
+/* hero: rich mesh gradient + dot grid */
+.hero{background:radial-gradient(600px 320px at 85% 10%,rgba(124,58,237,.45),transparent 65%),radial-gradient(520px 320px at 8% 90%,rgba(14,165,233,.40),transparent 65%),radial-gradient(circle at 1px 1px,rgba(255,255,255,.07) 1px,transparent 0) 0 0/22px 22px,linear-gradient(135deg,#0A1628 0%,#17356B 48%,#1A73E8 100%)!important;border-radius:0 0 34px 34px;box-shadow:0 20px 60px rgba(10,22,40,.28)}
+.hero h1 span{background:linear-gradient(90deg,#FFD166,#FF9F43 55%,#FF6B9D);-webkit-background-clip:text;background-clip:text;-webkit-text-fill-color:transparent;color:transparent}
+.hero-badge{background:rgba(255,255,255,.12)!important;border:1px solid rgba(255,255,255,.25)!important;box-shadow:0 6px 24px rgba(0,0,0,.18)}
+.feature-pill{background:rgba(255,255,255,.1)!important;border:1px solid rgba(255,255,255,.2)!important;box-shadow:0 4px 14px rgba(0,0,0,.12)}
+.btn-primary{background:linear-gradient(135deg,#FF8A3D,#FF5E62)!important;box-shadow:0 12px 32px rgba(255,94,98,.4)!important}
+.btn-primary:hover{box-shadow:0 16px 40px rgba(255,94,98,.55)!important}
+.btn-outline{backdrop-filter:blur(10px);border-color:rgba(255,255,255,.35)!important}
+.stats-row>div{background:rgba(255,255,255,.1);border:1px solid rgba(255,255,255,.18);border-radius:18px;padding:12px 8px;backdrop-filter:blur(12px);box-shadow:0 8px 24px rgba(0,0,0,.14)}
+.stat-num{background:linear-gradient(180deg,#fff,#BFD9FF);-webkit-background-clip:text;background-clip:text;-webkit-text-fill-color:transparent}
+/* section titles with accent */
+.section-title{position:relative;padding-left:14px;font-weight:900;letter-spacing:0}
+.section-title::before{content:"";position:absolute;left:0;top:12%;bottom:12%;width:5px;border-radius:5px;background:linear-gradient(180deg,#1A73E8,#7C3AED)}
+/* cards: soft, layered, accent line */
+.exam-card,.cat-card{border-radius:20px!important;border:1px solid var(--border)!important;background:linear-gradient(180deg,var(--card),var(--card2))!important;box-shadow:0 2px 6px rgba(26,115,232,.05),0 10px 28px rgba(26,115,232,.08)!important;position:relative;overflow:hidden}
+.exam-card::after,.cat-card::after{content:"";position:absolute;left:0;right:0;top:0;height:4px;background:linear-gradient(90deg,#1A73E8,#7C3AED,#FF6B35);transform:scaleX(0);transform-origin:left;transition:transform .45s var(--ease)}
+.exam-card:hover::after,.cat-card:hover::after{transform:scaleX(1)}
+.cat-card .cat-icon,.cat-card>div:first-child{transition:transform .35s var(--ease)}
+.cat-card:hover .cat-icon,.cat-card:hover>div:first-child{transform:scale(1.15) rotate(-4deg)}
+/* about/info blocks on home */
+#page-home .section>div{border-radius:22px!important;box-shadow:0 12px 36px rgba(26,115,232,.10)!important}
+/* navbar polish */
+nav{border-bottom:1px solid var(--border)}
+.logo-text span:first-child{background:linear-gradient(90deg,#1A73E8,#7C3AED);-webkit-background-clip:text;background-clip:text;-webkit-text-fill-color:transparent;font-weight:900}
+.nav-btn.nav-accent{box-shadow:0 6px 18px rgba(229,62,62,.28)}
+/* result page + score boxes */
+.result-hero,.ge-score-box{border-radius:24px!important;box-shadow:0 18px 50px rgba(26,115,232,.22)!important}
+.r-stat{border-radius:16px!important;transition:transform .25s var(--ease)}.r-stat:hover{transform:translateY(-3px)}
+/* chips & tabs */
+.filter-chip,.pay-plan-tab{border-radius:999px!important;transition:all .22s var(--ease)}
+.filter-chip:hover{transform:translateY(-2px);box-shadow:var(--shadow-sm)}
+/* footer */
+footer{letter-spacing:.2px}
+/* dark mode keeps contrast */
+[data-theme="dark"] body{background:radial-gradient(900px 500px at 8% -5%,rgba(26,115,232,.18),transparent 60%),var(--bg)!important}
+[data-theme="dark"] .exam-card,[data-theme="dark"] .cat-card{box-shadow:0 10px 30px rgba(0,0,0,.4)!important}
+@media(max-width:640px){.hero{border-radius:0 0 26px 26px}.stats-row>div{padding:9px 4px;border-radius:14px}}
 /* cards */
 body.admin-active .admin-card{background:var(--a-card)!important;border:1px solid var(--a-line)!important;border-radius:20px!important;box-shadow:0 6px 24px rgba(30,40,90,.06)!important;overflow:hidden;animation:aV3in .3s ease both}
 body.admin-active .admin-card::before{height:3px!important;background:linear-gradient(90deg,var(--a-p),var(--a-p2),#ec4899)!important}
@@ -11574,6 +11616,93 @@ body.admin-active .admin-tabs::-webkit-scrollbar{width:6px;height:6px}
 body.admin-active .admin-tabs::-webkit-scrollbar-thumb{background:rgba(91,91,240,.3);border-radius:6px}
 @keyframes aV3in{from{opacity:0;transform:translateY(8px)}to{opacity:1;transform:none}}
 @media (prefers-reduced-motion:reduce){body.admin-active .admin-card{animation:none}}
+</style>
+<style id="ux-polish">
+/* ONE font stack everywhere (Latin: Nunito, Telugu: Noto Sans Telugu) */
+:root{--font:'Nunito','Noto Sans Telugu',system-ui,sans-serif}
+html,body,button,input,select,textarea,.hero h1,.hero p,.logo-text,.logo-text span,.nav-btn,.stat-num,.stat-label,.feature-pill,.hero-badge,#page-admin,#page-admin *,.pw-box *{font-family:var(--font)!important}
+.hero h1,.hero h1 span{letter-spacing:0!important;line-height:1.35!important;word-spacing:normal}
+.hero-btn,.btn-tertiary,.btn-outline,.btn-primary{letter-spacing:0!important}
+/* ===== Anil EduTech UI/UX polish layer (additive, theme-aware) ===== */
+:root{--ease:cubic-bezier(.22,1,.36,1);--ring:0 0 0 3px rgba(26,115,232,.28)}
+html{scroll-behavior:smooth;-webkit-tap-highlight-color:transparent}
+body{-webkit-font-smoothing:antialiased;text-rendering:optimizeLegibility}
+::selection{background:rgba(26,115,232,.22)}
+/* focus + a11y */
+:focus-visible{outline:none!important;box-shadow:var(--ring)!important;border-radius:10px}
+@media(prefers-reduced-motion:reduce){*{animation-duration:.01ms!important;transition-duration:.01ms!important}}
+/* sticky glass navbar */
+nav{backdrop-filter:saturate(1.6) blur(14px);-webkit-backdrop-filter:saturate(1.6) blur(14px);transition:box-shadow .3s var(--ease),background .3s}
+nav.scrolled{box-shadow:0 6px 30px rgba(26,115,232,.16)}
+.nav-btn{transition:transform .2s var(--ease),background .2s,box-shadow .2s;border-radius:10px}
+.nav-btn:hover{transform:translateY(-2px)}
+.nav-btn:active{transform:scale(.95)}
+/* hero */
+.hero{position:relative;overflow:hidden}
+.hero h1{text-wrap:balance}
+.hero-badge,.feature-pill{backdrop-filter:blur(10px);transition:transform .25s var(--ease)}
+.feature-pill:hover{transform:translateY(-3px) scale(1.04)}
+.hero-inner>*{animation:uxUp .7s var(--ease) both}
+.hero-inner>*:nth-child(2){animation-delay:.06s}.hero-inner>*:nth-child(3){animation-delay:.12s}
+.hero-inner>*:nth-child(4){animation-delay:.18s}.hero-inner>*:nth-child(5){animation-delay:.24s}
+.hero-inner>*:nth-child(6){animation-delay:.3s}.hero-inner>*:nth-child(7){animation-delay:.36s}
+@keyframes uxUp{from{opacity:0;transform:translateY(22px)}to{opacity:1;transform:none}}
+.stats-row>div{transition:transform .3s var(--ease)}
+.stats-row>div:hover{transform:translateY(-4px)}
+.stat-num{font-variant-numeric:tabular-nums}
+/* buttons: lift + press + shine */
+.btn-primary,.btn-outline,.start-btn,.btn-submit,.sub-btn,.gen-btn{position:relative;overflow:hidden;transition:transform .22s var(--ease),box-shadow .22s,filter .2s;min-height:44px}
+.btn-primary:hover,.start-btn:hover,.btn-submit:hover{transform:translateY(-2px);box-shadow:0 12px 30px rgba(26,115,232,.35);filter:brightness(1.05)}
+.btn-outline:hover{transform:translateY(-2px)}
+button:active:not(:disabled){transform:scale(.97)}
+button:disabled{opacity:.55;cursor:not-allowed}
+.ux-ripple{position:absolute;border-radius:50%;background:rgba(255,255,255,.45);transform:scale(0);animation:uxRip .6s ease-out;pointer-events:none}
+@keyframes uxRip{to{transform:scale(3.2);opacity:0}}
+/* cards */
+.exam-card,.cat-card,.lb-card,.review-card,.pm-method-card{transition:transform .3s var(--ease),box-shadow .3s var(--ease),border-color .25s;will-change:transform}
+.exam-card:hover,.cat-card:hover{transform:translateY(-6px);box-shadow:var(--shadow-lg);border-color:var(--primary)}
+.exam-card:active,.cat-card:active{transform:translateY(-2px) scale(.99)}
+/* scroll reveal */
+.ux-rv{opacity:0;transform:translateY(26px);transition:opacity .6s var(--ease),transform .6s var(--ease)}
+.ux-rv.in{opacity:1;transform:none}
+/* page transition */
+.page.active{animation:uxPage .45s var(--ease)}
+@keyframes uxPage{from{opacity:0;transform:translateY(14px)}to{opacity:1;transform:none}}
+/* inputs */
+input,select,textarea{transition:border-color .2s,box-shadow .2s}
+input:focus,select:focus,textarea:focus{border-color:var(--primary)!important;box-shadow:var(--ring)!important}
+/* exam screen: clearer options */
+.option{transition:transform .2s var(--ease),background .2s,border-color .2s,box-shadow .2s}
+.option:hover{transform:translateX(4px);border-color:var(--primary);box-shadow:var(--shadow-sm)}
+.option:active{transform:scale(.99)}
+.q-dot{transition:transform .2s var(--ease)}.q-dot:hover{transform:scale(1.15)}
+/* mobile bottom nav */
+.mob-bottom-nav{backdrop-filter:blur(16px);-webkit-backdrop-filter:blur(16px);padding-bottom:max(env(safe-area-inset-bottom),0px)}
+.mob-nav-item{transition:transform .2s var(--ease),color .2s}
+.mob-nav-item:active{transform:scale(.88)}
+/* toast */
+.ae-toast{border-radius:14px;box-shadow:var(--shadow-lg);backdrop-filter:blur(10px)}
+/* back-to-top */
+#ux-top{position:fixed;right:16px;bottom:84px;width:44px;height:44px;border-radius:50%;border:0;background:linear-gradient(135deg,#1A73E8,#7C3AED);color:#fff;font-size:20px;box-shadow:0 8px 24px rgba(26,115,232,.4);cursor:pointer;opacity:0;transform:translateY(16px) scale(.8);pointer-events:none;transition:.3s var(--ease);z-index:900}
+#ux-top.show{opacity:1;transform:none;pointer-events:auto}
+/* scroll progress bar */
+#ux-prog{position:fixed;top:0;left:0;height:3px;width:0;background:linear-gradient(90deg,#1A73E8,#7C3AED,#FF6B35);z-index:100000;transition:width .1s linear}
+/* skeleton shimmer */
+.exam-card-skel{background:linear-gradient(90deg,var(--card2) 25%,var(--border) 50%,var(--card2) 75%)!important;background-size:200% 100%!important;animation:uxSh 1.3s infinite}
+@keyframes uxSh{to{background-position:-200% 0}}
+/* nicer scrollbars (desktop) */
+@media(hover:hover){*{scrollbar-width:thin;scrollbar-color:var(--border2) transparent}}
+/* mobile spacing + tap targets */
+@media(max-width:640px){.hero h1{font-size:clamp(25px,7.2vw,34px)}.exam-card:hover,.cat-card:hover{transform:none}#ux-top{bottom:76px}}
+</style>
+<style id="ux-upsell-css">
+#ux-upsell{display:flex;align-items:center;gap:14px;max-width:760px;margin:18px auto;padding:16px 18px;border-radius:20px;background:linear-gradient(135deg,#1A73E8,#7C3AED 60%,#FF6B35);color:#fff;box-shadow:0 14px 40px rgba(124,58,237,.35);animation:uxUp .6s var(--ease,ease) both}
+#ux-upsell .ux-up-ic{font-size:30px;flex:0 0 auto}
+#ux-upsell .ux-up-tx{flex:1;display:flex;flex-direction:column;gap:3px;font-size:13px;line-height:1.5;opacity:.95}
+#ux-upsell .ux-up-tx b{font-size:15.5px;font-weight:900}
+#ux-upsell button{flex:0 0 auto;border:0;border-radius:12px;padding:11px 16px;background:#fff;color:#5B21B6;font-weight:900;font-size:13px;cursor:pointer;transition:transform .2s}
+#ux-upsell button:hover{transform:translateY(-2px) scale(1.03)}
+@media(max-width:560px){#ux-upsell{flex-wrap:wrap;margin:14px 12px}#ux-upsell button{width:100%}}
 </style>
 </head>
 
@@ -17781,6 +17910,7 @@ More exams: https://aniledutech.in
           '<div style="font-size:18px;font-weight:900;margin-bottom:6px">📱 WhatsApp Number</div>' +
           '<div style="font-size:13px;color:var(--text3,#64748b);line-height:1.5;margin-bottom:12px">Exam updates & important notifications WhatsApp లో పంపడానికి మీ mobile number ఇవ్వండి.</div>' +
           '<input id="mp-input" type="tel" inputmode="numeric" maxlength="15" placeholder="10 digit mobile number" style="width:100%;box-sizing:border-box;padding:12px 14px;border:1.5px solid var(--border2,#e2e8f0);border-radius:10px;font-size:15px;background:var(--bg,#fff);color:var(--text,#0f172a)">' +
+          '<label style="display:flex;gap:9px;align-items:flex-start;margin-top:12px;font-size:12.5px;line-height:1.5;color:var(--text2,#334155);cursor:pointer"><input id="mp-wa" type="checkbox" style="margin-top:3px;width:17px;height:17px;accent-color:#10b981;flex:0 0 auto"><span>✅ WhatsApp లో exam updates, free tests పంపండి. (ఎప్పుడైనా STOP చేయవచ్చు)</span></label>' +
           '<div id="mp-err" style="color:#ef4444;font-size:12px;min-height:16px;margin:6px 0"></div>' +
           '<button id="mp-save" style="width:100%;padding:12px;border:none;border-radius:10px;background:linear-gradient(135deg,#10b981,#059669);color:#fff;font-size:14px;font-weight:900;cursor:pointer">✅ Save</button>' +
           (opts.skippable ? '<button id="mp-later" style="width:100%;margin-top:8px;padding:10px;border:none;border-radius:10px;background:transparent;color:var(--text3,#64748b);font-size:13px;font-weight:700;cursor:pointer">తర్వాత (Later)</button>' : '') +
@@ -17815,6 +17945,7 @@ More exams: https://aniledutech.in
           return;
         }
         try { _ls.setItem('ae_mobile_done_' + gmail, '1'); } catch (e) { }
+        try { const _wa = ov.querySelector('#mp-wa'); if (_wa && _wa.checked) sbSubSetWaOptin(gmail, true); } catch (e) { }
         ov.remove();
         toast('✅ Mobile number saved!', 'success');
       };
@@ -36120,6 +36251,84 @@ Rules:
       if (ov && ov.classList.contains('show') && u && !u.isPremium) openPricing();
     } catch (e) { }
   };
+})();
+</script>
+<script id="ux-polish-js">
+(function(){try{
+var d=document;
+var p=d.createElement('div');p.id='ux-prog';d.body.appendChild(p);
+var t=d.createElement('button');t.id='ux-top';t.setAttribute('aria-label','Back to top');t.textContent='↑';
+t.onclick=function(){scrollTo({top:0,behavior:'smooth'})};d.body.appendChild(t);
+var nav=d.querySelector('nav'),tick=false;
+function onS(){var y=scrollY,h=d.documentElement.scrollHeight-innerHeight;
+p.style.width=(h>0?y/h*100:0)+'%';t.classList.toggle('show',y>500);
+if(nav)nav.classList.toggle('scrolled',y>8);tick=false}
+addEventListener('scroll',function(){if(!tick){tick=true;requestAnimationFrame(onS)}},{passive:true});onS();
+/* ripple */
+d.addEventListener('click',function(e){var b=e.target.closest('.btn-primary,.btn-outline,.start-btn,.btn-submit,.sub-btn,.gen-btn');
+if(!b)return;var r=b.getBoundingClientRect(),s=Math.max(r.width,r.height),x=d.createElement('span');
+x.className='ux-ripple';x.style.cssText='width:'+s+'px;height:'+s+'px;left:'+(e.clientX-r.left-s/2)+'px;top:'+(e.clientY-r.top-s/2)+'px';
+b.appendChild(x);setTimeout(function(){x.remove()},600)});
+/* scroll reveal for home sections */
+if('IntersectionObserver' in window){
+var io=new IntersectionObserver(function(es){es.forEach(function(e){if(e.isIntersecting){e.target.classList.add('in');io.unobserve(e.target)}})},{threshold:.08});
+var sel='#page-home .section,#page-home .cat-card,#page-home .exam-card';
+function arm(){d.querySelectorAll(sel).forEach(function(el){if(!el.dataset.rv){el.dataset.rv=1;el.classList.add('ux-rv');io.observe(el)}})}
+arm();new MutationObserver(arm).observe(d.getElementById('page-home')||d.body,{childList:true,subtree:true});
+}
+}catch(e){console.warn('ux-polish',e)}})();
+</script>
+<script id="ux-monetize-js">
+/* ===== (1) WhatsApp opt-in save  (2) Admin CSV export  (3) Result-page Premium upsell ===== */
+async function sbSubSetWaOptin(gmail, val) {
+  try {
+    const r = await fetch(`${SB_URL}/rest/v1/ae_subscribers?gmail=eq.${encodeURIComponent(gmail)}`, {
+      method: 'PATCH', headers: { ...SB_HEADERS, 'Prefer': 'return=minimal' },
+      body: JSON.stringify({ wa_optin: !!val, wa_optin_at: new Date().toISOString() })
+    });
+    return r.ok;
+  } catch (e) { return false; }
+}
+async function _waRows(){const r=await sbGet('ae_subscribers','wa_optin=eq.true');return (r||[]).filter(x=>x.mobile);}
+async function loadWAOptinCount(){try{const el=document.getElementById('wa-optin-count');if(!el)return;el.textContent='…';el.textContent=(await _waRows()).length;}catch(e){}}
+async function copyWANumbers(){try{const r=await _waRows();if(!r.length){toast('⚠️ Opt-in users లేరు','warn');return;}
+const t=r.map(x=>'91'+String(x.mobile).replace(/\D/g,'').slice(-10)).join('\n');
+try{await navigator.clipboard.writeText(t);}catch(e){const ta=document.createElement('textarea');ta.value=t;document.body.appendChild(ta);ta.select();document.execCommand('copy');ta.remove();}
+toast('✅ '+r.length+' numbers copied','success');}catch(e){toast('❌ Copy failed','error');}}
+async function exportWAOptinCSV() {
+  try {
+    toast('⏳ Preparing list...', 'info');
+    const rows = await sbGet('ae_subscribers', 'wa_optin=eq.true');
+    if (!rows || !rows.length) { toast('⚠️ Opt-in users లేరు (లేదా wa_optin column లేదు)', 'warn'); return; }
+    const q = v => '"' + String(v == null ? '' : v).replace(/"/g, '""') + '"';
+    const lines = ['name,email,whatsapp,premium'];
+    rows.filter(r => r.mobile).forEach(r => lines.push([q(r.name), q(r.gmail), q('91' + String(r.mobile).replace(/\D/g, '').slice(-10)), q(r.is_premium ? 'yes' : 'no')].join(',')));
+    const a = document.createElement('a');
+    a.href = URL.createObjectURL(new Blob(['\ufeff' + lines.join('\n')], { type: 'text/csv;charset=utf-8' }));
+    a.download = 'whatsapp-optin-' + new Date().toISOString().slice(0, 10) + '.csv';
+    document.body.appendChild(a); a.click(); a.remove();
+    toast('✅ ' + (lines.length - 1) + ' users export అయ్యారు', 'success');
+  } catch (e) { toast('❌ Export failed', 'error'); }
+}
+(function () {
+  try {
+    /* result-page Premium upsell */
+    var orig = window.showResultPage;
+    if (typeof orig === 'function') window.showResultPage = function () {
+      var out = orig.apply(this, arguments);
+      try {
+        var old = document.getElementById('ux-upsell'); if (old) old.remove();
+        var u = typeof getCurrentUser === 'function' ? getCurrentUser() : null;
+        if (u && u.isPremium) return out;
+        var box = document.createElement('div'); box.id = 'ux-upsell';
+        box.innerHTML = '<div class="ux-up-ic">👑</div><div class="ux-up-tx"><b>ఇంకా ముందుకు వెళ్ళండి!</b><span>Premium తో: full solutions, weak-topic practice, అన్ని test series, ad-free.</span></div><button type="button">⭐ Premium చూడండి</button>';
+        box.querySelector('button').onclick = function () { if (typeof openPricing === 'function') openPricing(); };
+        var hero = document.querySelector('#page-result .result-hero');
+        if (hero && hero.parentNode) hero.parentNode.insertBefore(box, hero.nextSibling);
+      } catch (e) { }
+      return out;
+    };
+  } catch (e) { console.warn('ux-monetize', e); }
 })();
 </script>
 </body>

@@ -35,7 +35,7 @@
         <button class="admin-tab" onclick="switchAdminTab('scheduled',this)">🗓 Scheduled</button>
         <button class="admin-tab" onclick="switchAdminTab('bulkimport',this)">📥 Bulk Import</button>
         <div class="admin-tab-group">Users &amp; Revenue</div>
-        <button class="admin-tab" onclick="switchAdminTab('subscribers',this)">👥 Subscribers</button>
+        <button class="admin-tab" onclick="switchAdminTab('subscribers',this);loadWAOptinCount()">👥 Subscribers</button>
         <button class="admin-tab" onclick="switchAdminTab('payments',this)">💳 Payments</button>
         <button class="admin-tab" onclick="switchAdminTab('contests',this);_populateContestExamSelect();loadAdminContests()">🏆 Contests</button>
         <button class="admin-tab" onclick="switchAdminTab('retention',this)">📉 Retention</button>
@@ -482,6 +482,21 @@
 
           <!-- ── TAB: SUBSCRIBERS ── -->
           <div id="atab-subscribers" class="admin-panel">
+
+            <!-- WhatsApp opt-in -->
+            <div class="admin-card" style="border-color:rgba(16,185,129,.35)">
+              <h3 style="color:#059669">💬 WhatsApp Opt-in Users</h3>
+              <p style="font-size:12.5px;color:var(--text3);margin-bottom:12px;line-height:1.7">
+                WhatsApp updates కోసం tick చేసిన users మాత్రమే. వీళ్ళకే broadcast పంపండి (వారానికి 2-3 messages చాలు).
+              </p>
+              <div style="display:flex;align-items:center;gap:12px;flex-wrap:wrap">
+                <div style="font-size:26px;font-weight:900;color:#059669" id="wa-optin-count">—</div>
+                <div style="font-size:12.5px;color:var(--text3);font-weight:700">opted-in users</div>
+                <button class="add-btn" onclick="exportWAOptinCSV()">📥 CSV Download</button>
+                <button class="add-btn" style="background:#475569" onclick="copyWANumbers()">📋 Copy Numbers</button>
+                <button class="add-btn" style="background:transparent;color:var(--text3);border:1px solid var(--border2)" onclick="loadWAOptinCount()">↻</button>
+              </div>
+            </div>
 
             <!-- Approved subscribers -->
             <div class="admin-card" style="border-color:rgba(10,140,92,.3)">

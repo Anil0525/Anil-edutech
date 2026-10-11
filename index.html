@@ -9,6 +9,8 @@
     function gtag() { dataLayer.push(arguments); }
     gtag('js', new Date());
     gtag('config', 'G-NF8Z61P355');
+  // Funnel tracking helper — safe no-op if analytics is blocked
+  function _track(name, params) { try { gtag('event', name, params || {}); } catch (e) { } }
   </script>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -27084,22 +27086,22 @@ Rules:
 
         <div class="pm-section-label">Choose Your Plan</div>
         <div class="pm-plan-grid">
-          <button id="ptab-trial" class="pay-plan-tab" onclick="switchPricingTab('trial')">
+          <button id="ptab-trial" class="pay-plan-tab" onclick="_track('premium_plan_select',{plan:'trial'});switchPricingTab('trial')">
             <span class="omr-check">✓</span>
             <span class="plan-tab-name">🎯 Trial <span class="save-badge" style="background:#ef4444;">1 Day</span></span>
             <span class="plan-tab-sub">పూర్తి access ఒక రోజు</span>
             <span class="tab-price">₹1</span>
           </button>
-          <button id="ptab-monthly" class="pay-plan-tab active" onclick="switchPricingTab('monthly')">
+          <button id="ptab-monthly" class="pay-plan-tab active" onclick="_track('premium_plan_select',{plan:'monthly'});switchPricingTab('monthly')">
             <span class="omr-check">✓</span>
             <span class="plan-tab-name">⚡ Monthly</span>
-            <span class="plan-tab-sub">నెలవారీ billing</span>
+            <span class="plan-tab-sub">30 రోజులు · auto-renew లేదు</span>
             <span class="tab-price">₹<span id="ptab-m-price">99</span></span>
           </button>
-          <button id="ptab-yearly" class="pay-plan-tab" onclick="switchPricingTab('yearly')">
+          <button id="ptab-yearly" class="pay-plan-tab" onclick="_track('premium_plan_select',{plan:'yearly'});switchPricingTab('yearly')">
             <span class="omr-check">✓</span>
             <span class="plan-tab-name">🏆 Yearly <span class="save-badge">-33%</span></span>
-            <span class="plan-tab-sub">బెస్ట్ value</span>
+            <span class="plan-tab-sub">365 రోజులు · auto-renew లేదు</span>
             <span class="tab-price">₹<span id="ptab-y-price">499</span></span>
           </button>
         </div>
@@ -27123,7 +27125,9 @@ Rules:
         </div>
 
         <div class="pay-fine-print">By clicking confirm, you agree to Anil EduTech's <a href="privacy-policy.html" target="_blank" rel="noopener">Terms of Use</a>
-          and <a href="privacy-policy.html" target="_blank" rel="noopener">Privacy policy</a>.</div>
+          and <a href="privacy-policy.html" target="_blank" rel="noopener">Privacy policy</a>.<br>
+            ✅ One-time payment — auto-renew / auto-debit లేదు. <a href="refund-policy.html" target="_blank" rel="noopener">Refund policy</a> ·
+            <a href="#" onclick="window.open('https://wa.me/'+SITE_CONFIG.WA_NUMBER,'_blank');return false;">💬 WhatsApp Support</a></div>
       </div><!-- /pricing-left -->
 
       <!-- RIGHT: Order Summary -->
@@ -27287,7 +27291,7 @@ Rules:
 
     function switchPricingTab(plan) {
       _activePricingTab = plan;
-      const isTrial = plan === 'trial';
+const isTrial = plan === 'trial';
       const isYearly = plan === 'yearly';
       const price = isTrial ? 1 : (isYearly ? PLAN_PRICES.yearly : PLAN_PRICES.monthly);
 
@@ -27410,7 +27414,8 @@ Rules:
       // Guard: must be logged in to open pricing
       const _pricingUser = getCurrentUser ? getCurrentUser() : null;
       if (!_pricingUser) {
-        toast('⚠️ ముందు Login చేయండి — then Premium తీసుకోవచ్చు!', 'warn');
+        _track('premium_login_required');
+  toast('⚠️ ముందు Login చేయండి — then Premium తీసుకోవచ్చు!', 'warn');
         if (typeof goLogin === 'function') goLogin();
         else if (typeof showPage === 'function') showPage('login');
         return;
@@ -27421,6 +27426,7 @@ Rules:
         return;
       }
       document.getElementById('pricing-overlay').classList.add('show');
+  _track('premium_pricing_view');
       selectPayMethod('upi');
       // Push history state so device back button closes payment overlay instead of leaving site
       _safeHistoryPush({ ae_page: 'pricing' });
@@ -27634,6 +27640,7 @@ Rules:
       }
       const amount = plan === 'trial' ? 1 : (plan === 'yearly' ? PLAN_PRICES.yearly : PLAN_PRICES.monthly);
       const planLabel = plan === 'trial' ? '1-Day Trial' : (plan === 'yearly' ? 'Yearly Premium' : 'Monthly Premium');
+      _track('premium_checkout_start', { plan: plan, value: amount, currency: 'INR' });
 
       // ── Step 1: Edge Function నుండి order_id తీసుకో ──
       let order_id = null;
@@ -27714,6 +27721,7 @@ Rules:
         },
         modal: {
           ondismiss: function () {
+            _track('premium_checkout_dismissed', { plan: plan });
             toast('Payment cancelled', 'warn');
           }
         }
@@ -27723,6 +27731,7 @@ Rules:
         try {
           const rzp = new Razorpay(options);
           rzp.on('payment.failed', function (resp) {
+            _track('premium_payment_failed', { plan: plan });
             toast('❌ Payment failed: ' + (resp.error.description || 'Try again'), 'error');
           });
           rzp.open();
@@ -27745,6 +27754,7 @@ Rules:
     }
 
     function _onPaymentSuccess(response, plan, amount, user, vData) {
+      _track('purchase', { currency: 'INR', value: amount, transaction_id: response.razorpay_payment_id, plan: plan });
       const record = {
         id: response.razorpay_payment_id,
         pid: response.razorpay_payment_id,

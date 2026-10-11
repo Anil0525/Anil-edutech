@@ -28147,8 +28147,17 @@ Rules:
 
       // ── STEP 3: Duplicate Check — Supabase (cross-device) ──
       try {
-        const sbCheck = await sbGet('ae_payments', `payment_id=eq.${encodeURIComponent(utrRaw)}`);
-        if (sbCheck && sbCheck.length > 0) {
+        // PRIVACY: ae_payments is no longer publicly readable — ask a minimal yes/no DB function instead
+        let _utrUsed = false;
+        try {
+          const _dupRes = await fetch(`${SB_URL}/rest/v1/rpc/utr_exists`, {
+            method: 'POST',
+            headers: { ...SB_HEADERS, 'Content-Type': 'application/json' },
+            body: JSON.stringify({ p_utr: utrRaw })
+          });
+          if (_dupRes.ok) { _utrUsed = (await _dupRes.json()) === true; }
+        } catch (e2) { }
+        if (_utrUsed) {
           toast('❌ ఈ UTR ఇప్పటికే use అయింది', 'error');
           if (unlockBtn) { unlockBtn.disabled = false; unlockBtn.textContent = '🔓 Unlock'; }
           return;

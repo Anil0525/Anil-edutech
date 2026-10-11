@@ -15713,7 +15713,12 @@ input:focus,select:focus,textarea:focus{border-color:var(--primary)!important;bo
         const PAGE = 1000;
         let all = [], offset = 0;
         while (true) {
-          let url = `${SB_URL}/rest/v1/${table}?select=*&limit=${PAGE}&offset=${offset}`;
+          // PRIVACY: non-admin visitors may not read mobile / pw_hash / wa_optin of ae_subscribers
+          // (DB column privileges enforce this) — so they must ask for the public columns only.
+          const _selCols = (table === 'ae_subscribers' && SB_HEADERS['Authorization'] === 'Bearer ' + SB_KEY)
+            ? 'id,gmail,name,is_premium,premium_since,status,joined_at,updated_at,sb_user_id,trial_expiry,district,avatar_url,login_provider'
+            : '*';
+          let url = `${SB_URL}/rest/v1/${table}?select=${_selCols}&limit=${PAGE}&offset=${offset}`;
           if (filters) url += '&' + filters;
           const r = await fetch(url, { headers: { ...SB_HEADERS, 'Prefer': 'return=representation' } });
           if (!r.ok) { _sbFails++; if (_sbFails >= 5) { _sbDead = true; setTimeout(function () { _sbDead = false; _sbFails = 0; }, 2 * 60 * 1000); } return all.length ? all : null; }
@@ -17776,7 +17781,10 @@ More exams: https://aniledutech.in
     // ── ae_subscribers TABLE HELPERS ──
     async function sbSubGet(status) {
       try {
-        const q = status ? `?status=eq.${status}&order=joined_at.desc` : `?order=joined_at.desc`;
+        const _cols = (SB_HEADERS['Authorization'] === 'Bearer ' + SB_KEY)
+          ? 'select=id,gmail,name,is_premium,premium_since,status,joined_at,updated_at,sb_user_id,trial_expiry,district,avatar_url,login_provider&'
+          : '';
+        const q = status ? `?${_cols}status=eq.${status}&order=joined_at.desc` : `?${_cols}order=joined_at.desc`;
         const r = await fetch(`${SB_URL}/rest/v1/ae_subscribers${q}`, { headers: SB_HEADERS });
         return r.ok ? await r.json() : [];
       } catch (e) { return []; }
@@ -17810,6 +17818,15 @@ More exams: https://aniledutech.in
         // Save login method — 'google' or 'password' (helps see ఎవరు ఏ method తో join అయ్యారో)
         if (sub.loginProvider || sub.login_provider) {
           payload.login_provider = sub.loginProvider || sub.login_provider;
+        }
+        // SECURITY: premium fields may only be written by a logged-in admin (real Supabase JWT in
+        // SB_HEADERS). Normal visitors/users must never send them — Premium is granted server-side
+        // by verify-razorpay-payment.
+        if (!_sbIsAdminSession()) {
+          delete payload.is_premium;
+          delete payload.premium_since;
+          delete payload.trial_expiry;
+          delete payload.premium_plan;
         }
         const _upRes = await fetch(`${SB_URL}/rest/v1/ae_subscribers`, {
           method: 'POST',
@@ -17958,7 +17975,13 @@ More exams: https://aniledutech.in
       inp.addEventListener('keydown', function (e) { if (e.key === 'Enter') save(); });
     }
 
+    // True only when the shared SB_HEADERS carries an admin's real access token (not the public anon key)
+    function _sbIsAdminSession() {
+      return SB_HEADERS['Authorization'] !== 'Bearer ' + SB_KEY;
+    }
+
     async function sbSubDelete(gmail) {
+      if (!_sbIsAdminSession()) { console.warn('sbSubDelete blocked: admin session required'); return; }
       try {
         await fetch(`${SB_URL}/rest/v1/ae_subscribers?gmail=eq.${encodeURIComponent(gmail)}`, {
           method: 'DELETE',
@@ -18324,12 +18347,8 @@ More exams: https://aniledutech.in
         const premGmail = await sbGet('ae_settings', `key=eq.${encodeURIComponent(gmailKey)}`);
         if (premGmail && premGmail.length > 0) user.isPremium = true;
       } catch (e) {
-        // Also check local approved list as fallback
-        try {
-          const localApproved = getSubApproved();
-          const localUser = localApproved.find(s => s.gmail === gmail);
-          if (localUser && localUser.isPremium) user.isPremium = true;
-        } catch (e2) { }
+        // SECURITY: do NOT fall back to localStorage for Premium — it is user-editable.
+        // If the server check fails, the user stays Free until the next successful check.
       }
 
       // Fetch premiumPlan + trialExpiry from ae_subscribers (needed for trial expiry check)

@@ -2599,24 +2599,25 @@
     }
 
     .btn-tertiary {
-      background: transparent;
-      color: rgba(255, 255, 255, .72);
-      border: none;
-      padding: 10px 14px;
+      background: rgba(245, 183, 49, .12);
+      color: #FFD66B;
+      border: 1.5px solid rgba(245, 183, 49, .55);
+      padding: 12px 22px;
       border-radius: var(--radius);
       font-family: inherit;
-      font-size: 12.5px;
-      font-weight: 600;
+      font-size: 13.5px;
+      font-weight: 700;
       cursor: pointer;
-      transition: all .2s;
-      text-decoration: underline;
-      text-decoration-color: rgba(255, 255, 255, .3);
-      text-underline-offset: 3px;
+      transition: all .25s;
+      backdrop-filter: blur(8px);
+      text-decoration: none;
     }
 
     .btn-tertiary:hover {
+      background: rgba(245, 183, 49, .24);
+      border-color: rgba(245, 183, 49, .9);
       color: #fff;
-      text-decoration-color: rgba(255, 255, 255, .6);
+      transform: translateY(-2px);
     }
 
     .stats-row {
@@ -6911,6 +6912,11 @@
     .cat-card[data-cat="tspsc"] {
       --cat-color: #2B95B6;
       --cat-bg: rgba(43,149,182, .06);
+    }
+
+    .cat-card[data-cat="appsc"] {
+      --cat-color: #7C3AED;
+      --cat-bg: rgba(124,58,237, .06);
     }
 
     .cat-card[data-cat="ssc"] {
@@ -11553,48 +11559,6 @@ body.admin-active .admin-tab.active{background:linear-gradient(135deg,var(--a-p)
  body.admin-active .admin-tab-group{display:none}
  body.admin-active .admin-tabs{margin:10px 8px 2px!important;padding:5px!important;top:52px!important;border-radius:14px!important}
 }
-/* Notify Me: subtle ghost link */
-.hero .btn-tertiary{background:transparent!important;border:1px solid rgba(255,255,255,.22)!important;color:rgba(255,255,255,.75)!important;font-size:12.5px!important;font-weight:500!important;padding:8px 16px!important;min-height:0!important;border-radius:999px!important;text-decoration:none!important;box-shadow:none!important;transition:background .2s,color .2s,border-color .2s}
-.hero .btn-tertiary:hover{background:rgba(255,255,255,.1)!important;color:#fff!important;border-color:rgba(255,255,255,.45)!important;transform:none!important}
-/* ===== Beauty pass 2 ===== */
-body{background:radial-gradient(900px 500px at 8% -5%,rgba(26,115,232,.09),transparent 60%),radial-gradient(800px 500px at 100% 20%,rgba(124,58,237,.07),transparent 60%),var(--bg)!important;background-attachment:fixed}
-/* hero: rich mesh gradient + dot grid */
-.hero{background:radial-gradient(600px 320px at 85% 10%,rgba(124,58,237,.45),transparent 65%),radial-gradient(520px 320px at 8% 90%,rgba(14,165,233,.40),transparent 65%),radial-gradient(circle at 1px 1px,rgba(255,255,255,.07) 1px,transparent 0) 0 0/22px 22px,linear-gradient(135deg,#0A1628 0%,#17356B 48%,#1A73E8 100%)!important;border-radius:0 0 34px 34px;box-shadow:0 20px 60px rgba(10,22,40,.28)}
-.hero h1 span{background:linear-gradient(90deg,#FFD166,#FF9F43 55%,#FF6B9D);-webkit-background-clip:text;background-clip:text;-webkit-text-fill-color:transparent;color:transparent}
-.hero-badge{background:rgba(255,255,255,.12)!important;border:1px solid rgba(255,255,255,.25)!important;box-shadow:0 6px 24px rgba(0,0,0,.18)}
-.feature-pill{background:rgba(255,255,255,.1)!important;border:1px solid rgba(255,255,255,.2)!important;box-shadow:0 4px 14px rgba(0,0,0,.12)}
-.btn-primary{background:linear-gradient(135deg,#FF8A3D,#FF5E62)!important;box-shadow:0 12px 32px rgba(255,94,98,.4)!important}
-.btn-primary:hover{box-shadow:0 16px 40px rgba(255,94,98,.55)!important}
-.btn-outline{backdrop-filter:blur(10px);border-color:rgba(255,255,255,.35)!important}
-.stats-row>div{background:rgba(255,255,255,.1);border:1px solid rgba(255,255,255,.18);border-radius:18px;padding:12px 8px;backdrop-filter:blur(12px);box-shadow:0 8px 24px rgba(0,0,0,.14)}
-.stat-num{background:linear-gradient(180deg,#fff,#BFD9FF);-webkit-background-clip:text;background-clip:text;-webkit-text-fill-color:transparent}
-/* section titles with accent */
-.section-title{position:relative;padding-left:14px;font-weight:900;letter-spacing:0}
-.section-title::before{content:"";position:absolute;left:0;top:12%;bottom:12%;width:5px;border-radius:5px;background:linear-gradient(180deg,#1A73E8,#7C3AED)}
-/* cards: soft, layered, accent line */
-.exam-card,.cat-card{border-radius:20px!important;border:1px solid var(--border)!important;background:linear-gradient(180deg,var(--card),var(--card2))!important;box-shadow:0 2px 6px rgba(26,115,232,.05),0 10px 28px rgba(26,115,232,.08)!important;position:relative;overflow:hidden}
-.exam-card::after,.cat-card::after{content:"";position:absolute;left:0;right:0;top:0;height:4px;background:linear-gradient(90deg,#1A73E8,#7C3AED,#FF6B35);transform:scaleX(0);transform-origin:left;transition:transform .45s var(--ease)}
-.exam-card:hover::after,.cat-card:hover::after{transform:scaleX(1)}
-.cat-card .cat-icon,.cat-card>div:first-child{transition:transform .35s var(--ease)}
-.cat-card:hover .cat-icon,.cat-card:hover>div:first-child{transform:scale(1.15) rotate(-4deg)}
-/* about/info blocks on home */
-#page-home .section>div{border-radius:22px!important;box-shadow:0 12px 36px rgba(26,115,232,.10)!important}
-/* navbar polish */
-nav{border-bottom:1px solid var(--border)}
-.logo-text span:first-child{background:linear-gradient(90deg,#1A73E8,#7C3AED);-webkit-background-clip:text;background-clip:text;-webkit-text-fill-color:transparent;font-weight:900}
-.nav-btn.nav-accent{box-shadow:0 6px 18px rgba(229,62,62,.28)}
-/* result page + score boxes */
-.result-hero,.ge-score-box{border-radius:24px!important;box-shadow:0 18px 50px rgba(26,115,232,.22)!important}
-.r-stat{border-radius:16px!important;transition:transform .25s var(--ease)}.r-stat:hover{transform:translateY(-3px)}
-/* chips & tabs */
-.filter-chip,.pay-plan-tab{border-radius:999px!important;transition:all .22s var(--ease)}
-.filter-chip:hover{transform:translateY(-2px);box-shadow:var(--shadow-sm)}
-/* footer */
-footer{letter-spacing:.2px}
-/* dark mode keeps contrast */
-[data-theme="dark"] body{background:radial-gradient(900px 500px at 8% -5%,rgba(26,115,232,.18),transparent 60%),var(--bg)!important}
-[data-theme="dark"] .exam-card,[data-theme="dark"] .cat-card{box-shadow:0 10px 30px rgba(0,0,0,.4)!important}
-@media(max-width:640px){.hero{border-radius:0 0 26px 26px}.stats-row>div{padding:9px 4px;border-radius:14px}}
 /* cards */
 body.admin-active .admin-card{background:var(--a-card)!important;border:1px solid var(--a-line)!important;border-radius:20px!important;box-shadow:0 6px 24px rgba(30,40,90,.06)!important;overflow:hidden;animation:aV3in .3s ease both}
 body.admin-active .admin-card::before{height:3px!important;background:linear-gradient(90deg,var(--a-p),var(--a-p2),#ec4899)!important}
@@ -11619,83 +11583,156 @@ body.admin-active .admin-tabs::-webkit-scrollbar-thumb{background:rgba(91,91,240
 @keyframes aV3in{from{opacity:0;transform:translateY(8px)}to{opacity:1;transform:none}}
 @media (prefers-reduced-motion:reduce){body.admin-active .admin-card{animation:none}}
 </style>
-<style id="ux-polish">
-/* ONE font stack everywhere (Latin: Nunito, Telugu: Noto Sans Telugu) */
-:root{--font:'Nunito','Noto Sans Telugu',system-ui,sans-serif}
-html,body,button,input,select,textarea,.hero h1,.hero p,.logo-text,.logo-text span,.nav-btn,.stat-num,.stat-label,.feature-pill,.hero-badge,#page-admin,#page-admin *,.pw-box *{font-family:var(--font)!important}
-.hero h1,.hero h1 span{letter-spacing:0!important;line-height:1.35!important;word-spacing:normal}
-.hero-btn,.btn-tertiary,.btn-outline,.btn-primary{letter-spacing:0!important}
-/* ===== Anil EduTech UI/UX polish layer (additive, theme-aware) ===== */
-:root{--ease:cubic-bezier(.22,1,.36,1);--ring:0 0 0 3px rgba(26,115,232,.28)}
-html{scroll-behavior:smooth;-webkit-tap-highlight-color:transparent}
-body{-webkit-font-smoothing:antialiased;text-rendering:optimizeLegibility}
-::selection{background:rgba(26,115,232,.22)}
-/* focus + a11y */
-:focus-visible{outline:none!important;box-shadow:var(--ring)!important;border-radius:10px}
-@media(prefers-reduced-motion:reduce){*{animation-duration:.01ms!important;transition-duration:.01ms!important}}
-/* sticky glass navbar */
-nav{backdrop-filter:saturate(1.6) blur(14px);-webkit-backdrop-filter:saturate(1.6) blur(14px);transition:box-shadow .3s var(--ease),background .3s}
-nav.scrolled{box-shadow:0 6px 30px rgba(26,115,232,.16)}
-.nav-btn{transition:transform .2s var(--ease),background .2s,box-shadow .2s;border-radius:10px}
-.nav-btn:hover{transform:translateY(-2px)}
-.nav-btn:active{transform:scale(.95)}
-/* hero */
-.hero{position:relative;overflow:hidden}
-.hero h1{text-wrap:balance}
-.hero-badge,.feature-pill{backdrop-filter:blur(10px);transition:transform .25s var(--ease)}
-.feature-pill:hover{transform:translateY(-3px) scale(1.04)}
-.hero-inner>*{animation:uxUp .7s var(--ease) both}
-.hero-inner>*:nth-child(2){animation-delay:.06s}.hero-inner>*:nth-child(3){animation-delay:.12s}
-.hero-inner>*:nth-child(4){animation-delay:.18s}.hero-inner>*:nth-child(5){animation-delay:.24s}
-.hero-inner>*:nth-child(6){animation-delay:.3s}.hero-inner>*:nth-child(7){animation-delay:.36s}
-@keyframes uxUp{from{opacity:0;transform:translateY(22px)}to{opacity:1;transform:none}}
-.stats-row>div{transition:transform .3s var(--ease)}
-.stats-row>div:hover{transform:translateY(-4px)}
-.stat-num{font-variant-numeric:tabular-nums}
-/* buttons: lift + press + shine */
-.btn-primary,.btn-outline,.start-btn,.btn-submit,.sub-btn,.gen-btn{position:relative;overflow:hidden;transition:transform .22s var(--ease),box-shadow .22s,filter .2s;min-height:44px}
-.btn-primary:hover,.start-btn:hover,.btn-submit:hover{transform:translateY(-2px);box-shadow:0 12px 30px rgba(26,115,232,.35);filter:brightness(1.05)}
-.btn-outline:hover{transform:translateY(-2px)}
-button:active:not(:disabled){transform:scale(.97)}
-button:disabled{opacity:.55;cursor:not-allowed}
-.ux-ripple{position:absolute;border-radius:50%;background:rgba(255,255,255,.45);transform:scale(0);animation:uxRip .6s ease-out;pointer-events:none}
-@keyframes uxRip{to{transform:scale(3.2);opacity:0}}
-/* cards */
-.exam-card,.cat-card,.lb-card,.review-card,.pm-method-card{transition:transform .3s var(--ease),box-shadow .3s var(--ease),border-color .25s;will-change:transform}
-.exam-card:hover,.cat-card:hover{transform:translateY(-6px);box-shadow:var(--shadow-lg);border-color:var(--primary)}
-.exam-card:active,.cat-card:active{transform:translateY(-2px) scale(.99)}
-/* scroll reveal */
-.ux-rv{opacity:0;transform:translateY(26px);transition:opacity .6s var(--ease),transform .6s var(--ease)}
-.ux-rv.in{opacity:1;transform:none}
-/* page transition */
-.page.active{animation:uxPage .45s var(--ease)}
-@keyframes uxPage{from{opacity:0;transform:translateY(14px)}to{opacity:1;transform:none}}
-/* inputs */
-input,select,textarea{transition:border-color .2s,box-shadow .2s}
-input:focus,select:focus,textarea:focus{border-color:var(--primary)!important;box-shadow:var(--ring)!important}
-/* exam screen: clearer options */
-.option{transition:transform .2s var(--ease),background .2s,border-color .2s,box-shadow .2s}
-.option:hover{transform:translateX(4px);border-color:var(--primary);box-shadow:var(--shadow-sm)}
-.option:active{transform:scale(.99)}
-.q-dot{transition:transform .2s var(--ease)}.q-dot:hover{transform:scale(1.15)}
-/* mobile bottom nav */
-.mob-bottom-nav{backdrop-filter:blur(16px);-webkit-backdrop-filter:blur(16px);padding-bottom:max(env(safe-area-inset-bottom),0px)}
-.mob-nav-item{transition:transform .2s var(--ease),color .2s}
-.mob-nav-item:active{transform:scale(.88)}
-/* toast */
-.ae-toast{border-radius:14px;box-shadow:var(--shadow-lg);backdrop-filter:blur(10px)}
-/* back-to-top */
-#ux-top{position:fixed;right:16px;bottom:84px;width:44px;height:44px;border-radius:50%;border:0;background:linear-gradient(135deg,#1A73E8,#7C3AED);color:#fff;font-size:20px;box-shadow:0 8px 24px rgba(26,115,232,.4);cursor:pointer;opacity:0;transform:translateY(16px) scale(.8);pointer-events:none;transition:.3s var(--ease);z-index:900}
-#ux-top.show{opacity:1;transform:none;pointer-events:auto}
-/* scroll progress bar */
-#ux-prog{position:fixed;top:0;left:0;height:3px;width:0;background:linear-gradient(90deg,#1A73E8,#7C3AED,#FF6B35);z-index:100000;transition:width .1s linear}
-/* skeleton shimmer */
-.exam-card-skel{background:linear-gradient(90deg,var(--card2) 25%,var(--border) 50%,var(--card2) 75%)!important;background-size:200% 100%!important;animation:uxSh 1.3s infinite}
-@keyframes uxSh{to{background-position:-200% 0}}
-/* nicer scrollbars (desktop) */
-@media(hover:hover){*{scrollbar-width:thin;scrollbar-color:var(--border2) transparent}}
-/* mobile spacing + tap targets */
-@media(max-width:640px){.hero h1{font-size:clamp(25px,7.2vw,34px)}.exam-card:hover,.cat-card:hover{transform:none}#ux-top{bottom:76px}}
+<style id="bell-css">
+/* ── Notification bell: boxed cards + pager ── */
+#ae-bell-list{padding:10px;gap:10px}
+.bn-card{display:flex;align-items:flex-start;gap:12px;background:var(--card);border:1.5px solid var(--border2);border-radius:14px;padding:12px 14px;cursor:pointer;transition:border-color .15s,box-shadow .15s,transform .15s}
+.bn-card:hover{border-color:#7c3aed;box-shadow:0 4px 14px rgba(124,58,237,.14);transform:translateY(-1px)}
+.bn-card.unread{background:rgba(124,58,237,.07);border-color:rgba(124,58,237,.5);box-shadow:0 2px 10px rgba(124,58,237,.12)}
+.bn-ico{flex:0 0 auto;width:38px;height:38px;border-radius:11px;background:rgba(124,58,237,.12);display:flex;align-items:center;justify-content:center;font-size:18px}
+.bn-body{flex:1;min-width:0}
+.bn-title{display:flex;align-items:center;gap:6px;font-weight:800;font-size:13px;color:var(--text);line-height:1.35;word-break:break-word}
+.bn-dot{width:8px;height:8px;border-radius:50%;background:#7c3aed;flex-shrink:0}
+.bn-msg{font-size:12.5px;color:var(--text2);margin-top:4px;line-height:1.5;word-break:break-word}
+.bn-time{font-size:11px;font-weight:700;color:var(--text3);margin-top:6px}
+.bn-pager{display:grid;grid-template-columns:1fr auto 1fr;align-items:center;gap:8px;padding:2px 10px 12px}
+.bn-pbtn{padding:9px 6px;border-radius:11px;border:1.5px solid var(--border2);background:var(--card);color:var(--text);font-weight:800;font-size:12.5px;cursor:pointer;font-family:inherit}
+.bn-pbtn.next{background:linear-gradient(135deg,#7c3aed,#a855f7);border-color:transparent;color:#fff}
+.bn-pbtn:disabled{opacity:.4;cursor:not-allowed}
+.bn-pcur{font-size:12px;font-weight:900;color:var(--text);white-space:nowrap}
+@media (min-width:641px){#ae-bell-dropdown{width:380px!important;max-height:520px!important}}
+</style>
+<style id="pyq-css">
+.pyq-sec-title{font-size:16px;font-weight:900;color:var(--text);margin:6px 0 14px;display:flex;align-items:center;gap:8px}
+/* ---------- folder grid (desktop first) ---------- */
+.pyq-folders{display:grid;grid-template-columns:repeat(auto-fill,minmax(230px,1fr));gap:18px;margin-bottom:22px}
+.pyq-folder{position:relative;display:flex;flex-direction:column;background:var(--card);border:1.5px solid var(--border);border-radius:22px;cursor:pointer;overflow:hidden;transition:transform .2s,box-shadow .2s,border-color .2s}
+.pyq-folder:hover{transform:translateY(-5px);box-shadow:var(--shadow-md);border-color:var(--fa)}
+.pyq-fband{position:relative;height:84px;background:linear-gradient(135deg,var(--fa),var(--fb));display:flex;align-items:flex-end;padding:0 18px;overflow:hidden}
+.pyq-fband::before,.pyq-fband::after{content:"";position:absolute;border-radius:50%;background:rgba(255,255,255,.14)}
+.pyq-fband::before{width:120px;height:120px;right:-30px;top:-50px}
+.pyq-fband::after{width:70px;height:70px;right:50px;top:30px}
+.pyq-fico{position:relative;z-index:1;width:56px;height:56px;margin-bottom:-28px;border-radius:16px;background:var(--card);display:flex;align-items:center;justify-content:center;font-size:28px;box-shadow:0 8px 18px rgba(0,0,0,.18)}
+.pyq-fbody{padding:38px 18px 18px;display:flex;flex-direction:column;flex:1}
+.pyq-fname{font-size:15.5px;font-weight:900;color:var(--text);line-height:1.35;word-break:break-word;display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical;overflow:hidden}
+.pyq-fmeta{display:flex;gap:6px;flex-wrap:wrap;margin-top:8px}
+.pyq-fgo{margin-top:auto;padding-top:14px;font-size:12.5px;font-weight:800;color:var(--fa);display:flex;align-items:center;gap:4px}
+.pyq-fgo i{font-style:normal;transition:transform .2s}
+.pyq-folder:hover .pyq-fgo i{transform:translateX(4px)}
+/* ---------- opened folder ---------- */
+.pyq-banner{position:relative;display:flex;align-items:center;gap:16px;flex-wrap:wrap;padding:20px 22px;border-radius:22px;background:linear-gradient(135deg,var(--fa),var(--fb));color:#fff;margin-bottom:16px;overflow:hidden;box-shadow:0 10px 26px rgba(0,0,0,.14)}
+.pyq-banner::after{content:"";position:absolute;right:-40px;top:-60px;width:200px;height:200px;border-radius:50%;background:rgba(255,255,255,.12)}
+.pyq-back{position:relative;z-index:1;border:1.5px solid rgba(255,255,255,.55);background:rgba(255,255,255,.18);color:#fff;font-weight:800;font-size:13px;border-radius:22px;padding:8px 16px;cursor:pointer;font-family:inherit;backdrop-filter:blur(4px)}
+.pyq-back:hover{background:rgba(255,255,255,.3)}
+.pyq-bt{position:relative;z-index:1;display:flex;align-items:center;gap:12px;min-width:0;flex:1}
+.pyq-bico{flex:0 0 auto;width:50px;height:50px;border-radius:15px;background:rgba(255,255,255,.22);display:flex;align-items:center;justify-content:center;font-size:25px}
+.pyq-bname{font-size:20px;font-weight:900;line-height:1.25;word-break:break-word}
+.pyq-bsub{font-size:12.5px;font-weight:700;opacity:.9;margin-top:2px}
+.pyq-years{display:flex;gap:8px;flex-wrap:wrap;padding:2px 0 14px}
+.pyq-chip{flex:0 0 auto;border:1.5px solid var(--border2);background:var(--card);color:var(--text2);font-weight:800;font-size:12.5px;border-radius:20px;padding:7px 15px;cursor:pointer;font-family:inherit;transition:all .15s}
+.pyq-chip:hover{border-color:var(--primary);color:var(--primary)}
+.pyq-chip.on{background:var(--primary);border-color:var(--primary);color:#fff}
+.pyq-list{display:grid;grid-template-columns:repeat(2,1fr);gap:14px}
+.pyq-row{display:flex;align-items:center;gap:14px;background:var(--card);border:1.5px solid var(--border);border-radius:18px;padding:14px 16px;transition:border-color .2s,box-shadow .2s,transform .2s}
+.pyq-row:hover{border-color:var(--primary);box-shadow:var(--shadow-sm);transform:translateY(-2px)}
+.pyq-ficon{flex:0 0 auto;width:48px;height:48px;border-radius:14px;background:var(--primary-soft);display:flex;align-items:center;justify-content:center;font-size:23px}
+.pyq-rbody{flex:1;min-width:0}
+.pyq-rtitle{font-size:14px;font-weight:800;color:var(--text);line-height:1.4;word-break:break-word;display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical;overflow:hidden}
+.pyq-rmeta{display:flex;align-items:center;gap:6px;flex-wrap:wrap;margin-top:6px}
+.pyq-pill{font-size:10.5px;font-weight:800;border-radius:20px;padding:2px 9px;background:var(--primary-soft);color:var(--primary)}
+.pyq-pill.yr{background:var(--amber-soft);color:var(--amber)}
+.pyq-rdesc{font-size:11.5px;color:var(--text3);font-weight:600}
+.pyq-open{flex:0 0 auto;background:linear-gradient(135deg,#1A73E8,#4F8EFF);color:#fff!important;font-weight:800;font-size:12.5px;text-decoration:none;border-radius:11px;padding:10px 18px;white-space:nowrap;box-shadow:0 4px 12px rgba(26,115,232,.28)}
+.pyq-open:hover{filter:brightness(1.08)}
+.pyq-empty{grid-column:1/-1;text-align:center;padding:40px 16px;color:var(--text3);font-weight:700}
+/* ---------- Prev / Next pager ---------- */
+.pyq-pager{display:flex;align-items:center;justify-content:center;gap:10px;margin:26px 0 6px;flex-wrap:wrap}
+.pyq-pbtn{min-width:120px;padding:12px 22px;border-radius:13px;border:1.5px solid var(--border2);background:var(--card);color:var(--text);font-weight:800;font-size:14px;cursor:pointer;font-family:inherit;transition:all .15s}
+.pyq-pbtn:hover:not(:disabled){border-color:var(--primary);color:var(--primary)}
+.pyq-pbtn.next{background:linear-gradient(135deg,#1A73E8,#4F8EFF);border-color:transparent;color:#fff;box-shadow:0 5px 14px rgba(26,115,232,.28)}
+.pyq-pbtn.next:hover:not(:disabled){color:#fff;filter:brightness(1.08)}
+.pyq-pbtn:disabled{opacity:.4;cursor:not-allowed;box-shadow:none}
+.pyq-pnums{display:flex;gap:6px}
+.pyq-pnum{min-width:40px;height:40px;border-radius:11px;border:1.5px solid var(--border2);background:var(--card);color:var(--text);font-weight:800;font-size:13.5px;cursor:pointer;font-family:inherit}
+.pyq-pnum.on{background:var(--primary);border-color:var(--primary);color:#fff}
+.pyq-pcur{display:none;font-size:14px;font-weight:900;color:var(--text);white-space:nowrap}
+.pyq-pinfo{flex:0 0 100%;text-align:center;font-size:12px;font-weight:700;color:var(--text3);margin-top:2px}
+/* ---------- tablet ---------- */
+@media(max-width:899px){
+.pyq-folders{grid-template-columns:repeat(3,1fr);gap:14px}
+.pyq-list{grid-template-columns:1fr}
+}
+/* ---------- mobile ---------- */
+@media(max-width:640px){
+.pyq-folders{grid-template-columns:repeat(2,1fr);gap:10px}
+.pyq-folder{border-radius:18px}
+.pyq-fband{height:62px;padding:0 12px}
+.pyq-fico{width:44px;height:44px;margin-bottom:-22px;border-radius:13px;font-size:22px}
+.pyq-fbody{padding:30px 12px 12px}
+.pyq-fname{font-size:13.5px}
+.pyq-fgo{font-size:12px;padding-top:10px}
+.pyq-banner{padding:14px;border-radius:18px;gap:10px}
+.pyq-back{padding:7px 13px;font-size:12.5px}
+.pyq-bt{flex:0 0 100%}
+.pyq-bico{width:42px;height:42px;font-size:21px;border-radius:13px}
+.pyq-bname{font-size:17px}
+.pyq-years{flex-wrap:nowrap;overflow-x:auto;scrollbar-width:none;margin:0 -2px;padding:2px 2px 12px}
+.pyq-years::-webkit-scrollbar{display:none}
+.pyq-row{flex-wrap:wrap;padding:12px;gap:10px;border-radius:16px}
+.pyq-ficon{width:42px;height:42px;font-size:21px}
+.pyq-open{width:100%;text-align:center;box-sizing:border-box;padding:11px 16px}
+.pyq-pager{display:grid;grid-template-columns:1fr auto 1fr;gap:8px;margin-top:20px}
+.pyq-pbtn{min-width:0;width:100%;padding:13px 8px;font-size:13.5px}
+.pyq-pnums{display:none}
+.pyq-pcur{display:block;padding:0 4px}
+.pyq-pinfo{grid-column:1/-1}
+}
+/* ── mobile fixes (home + exams) ── */
+@media(max-width:640px){
+.categories-grid{grid-template-columns:repeat(2,1fr)!important;gap:10px!important}
+.cat-card{padding:18px 8px 14px!important;border-radius:16px!important}
+.cat-icon-wrap{width:50px!important;height:50px!important;margin-bottom:10px!important}
+.cat-name{font-size:12.5px!important}
+#exam-search{width:100%!important;box-sizing:border-box}
+#page-exams .tb-main>div:first-of-type,#page-exams .tb-main>div:nth-of-type(1){gap:8px}
+#page-exams .tb-main > div[style*="justify-content:space-between"]>div:last-child{width:100%}
+#exam-sort{flex:1;min-width:0}
+.tb-main{overflow-x:hidden}
+img,video{max-width:100%}
+}
+</style>
+<style id="ae-lively-css">
+/* ticker strip under hero */
+.ae-ticker{overflow:hidden;background:var(--card);border-bottom:1px solid var(--border);padding:10px 0;position:relative}
+.ae-ticker::before,.ae-ticker::after{content:"";position:absolute;top:0;bottom:0;width:36px;z-index:2;pointer-events:none}
+.ae-ticker::before{left:0;background:linear-gradient(90deg,var(--card),transparent)}
+.ae-ticker::after{right:0;background:linear-gradient(270deg,var(--card),transparent)}
+.ae-tk-track{display:flex;gap:10px;width:max-content;animation:aeTk 38s linear infinite}
+.ae-ticker:hover .ae-tk-track{animation-play-state:paused}
+.ae-tk-chip{flex:0 0 auto;font-size:12.5px;font-weight:800;color:var(--primary);background:var(--primary-soft);border:1px solid var(--border2);border-radius:20px;padding:6px 14px;white-space:nowrap}
+.ae-tk-chip:nth-child(3n+2){color:var(--amber);background:var(--amber-soft)}
+.ae-tk-chip:nth-child(3n){color:var(--teal);background:var(--teal-soft)}
+@keyframes aeTk{to{transform:translateX(-50%)}}
+/* hero CTA glow + floating pills */
+.hero .btn-primary{animation:aeGlow 2.4s ease-in-out infinite}
+@keyframes aeGlow{0%,100%{box-shadow:0 6px 20px rgba(255,107,53,.35)}50%{box-shadow:0 8px 34px rgba(255,107,53,.65)}}
+.feature-pill{animation:aeFloat 4s ease-in-out infinite}
+.feature-pill:nth-child(2){animation-delay:.4s}.feature-pill:nth-child(3){animation-delay:.8s}
+.feature-pill:nth-child(4){animation-delay:1.2s}.feature-pill:nth-child(5){animation-delay:1.6s}
+@keyframes aeFloat{0%,100%{transform:translateY(0)}50%{transform:translateY(-4px)}}
+/* category cards: staggered pop-in + bobbing icons (always visible if animation unsupported) */
+.categories-grid .cat-card{animation:aePop .5s cubic-bezier(.34,1.56,.64,1) backwards}
+.categories-grid .cat-card:nth-child(1){animation-delay:.02s}.categories-grid .cat-card:nth-child(2){animation-delay:.06s}
+.categories-grid .cat-card:nth-child(3){animation-delay:.10s}.categories-grid .cat-card:nth-child(4){animation-delay:.14s}
+.categories-grid .cat-card:nth-child(5){animation-delay:.18s}.categories-grid .cat-card:nth-child(6){animation-delay:.22s}
+.categories-grid .cat-card:nth-child(7){animation-delay:.26s}.categories-grid .cat-card:nth-child(8){animation-delay:.30s}
+.categories-grid .cat-card:nth-child(n+9){animation-delay:.34s}
+@keyframes aePop{from{opacity:0;transform:translateY(18px) scale(.94)}to{opacity:1;transform:none}}
+.cat-icon-wrap{animation:aeBob 3.2s ease-in-out infinite}
+.cat-card:nth-child(even) .cat-icon-wrap{animation-delay:.7s}
+@keyframes aeBob{0%,100%{transform:translateY(0)}50%{transform:translateY(-3px)}}
+.cat-card:hover .cat-icon-wrap{animation:none}
+@media(prefers-reduced-motion:reduce){.ae-tk-track,.hero .btn-primary,.feature-pill,.categories-grid .cat-card,.cat-icon-wrap{animation:none!important}}
 </style>
 <style id="ux-upsell-css">
 #ux-upsell{display:flex;align-items:center;gap:14px;max-width:760px;margin:18px auto;padding:16px 18px;border-radius:20px;background:linear-gradient(135deg,#1A73E8,#7C3AED 60%,#FF6B35);color:#fff;box-shadow:0 14px 40px rgba(124,58,237,.35);animation:uxUp .6s var(--ease,ease) both}
@@ -12479,6 +12516,7 @@ input:focus,select:focus,textarea:focus{border-color:var(--primary)!important;bo
     </div>
 
 
+    <div class="ae-ticker" aria-hidden="true"><div class="ae-tk-track"><span class="ae-tk-chip">🏛️ TSPSC Group 1·2·3·4</span><span class="ae-tk-chip">🏛️ APPSC Group 1·2·3·4</span><span class="ae-tk-chip">📋 SSC CGL · CHSL · MTS</span><span class="ae-tk-chip">🚂 RRB NTPC · Group D</span><span class="ae-tk-chip">🏦 IBPS · SBI Clerk</span><span class="ae-tk-chip">📰 Daily Current Affairs</span><span class="ae-tk-chip">⚡ Daily Challenge</span><span class="ae-tk-chip">📂 Previous Year Papers</span><span class="ae-tk-chip">🏆 Quiz Contest</span><span class="ae-tk-chip">✅ 100% Free Mock Tests</span><span class="ae-tk-chip">🏛️ TSPSC Group 1·2·3·4</span><span class="ae-tk-chip">🏛️ APPSC Group 1·2·3·4</span><span class="ae-tk-chip">📋 SSC CGL · CHSL · MTS</span><span class="ae-tk-chip">🚂 RRB NTPC · Group D</span><span class="ae-tk-chip">🏦 IBPS · SBI Clerk</span><span class="ae-tk-chip">📰 Daily Current Affairs</span><span class="ae-tk-chip">⚡ Daily Challenge</span><span class="ae-tk-chip">📂 Previous Year Papers</span><span class="ae-tk-chip">🏆 Quiz Contest</span><span class="ae-tk-chip">✅ 100% Free Mock Tests</span></div></div>
     <div class="section" style="max-width:900px;margin:28px auto 28px;padding:0 20px;">
       <div style="background:var(--card);border:1px solid var(--border);border-radius:var(--radius);box-shadow:var(--shadow-sm);padding:24px 22px;">
         <h2 style="margin:0 0 10px;font-size:19px;font-weight:800;color:var(--text);">Anil EduTech గురించి</h2>
@@ -12584,6 +12622,12 @@ input:focus,select:focus,textarea:focus{border-color:var(--primary)!important;bo
           <div class="cat-count">Buy books</div>
         </div>
         <!-- Popular Test Series -->
+        <div class="cat-card" data-cat="appsc" onclick="goExams('APPSC')"
+          style="--cat-grad:linear-gradient(135deg,#7C3AED,#A855F7);--cat-soft:rgba(124,58,237,.06);--cat-shadow:rgba(124,58,237,.35);">
+          <div class="cat-icon-wrap"><span class="cat-icon">🏛️</span></div>
+          <div class="cat-name">APPSC</div>
+          <div class="cat-count">Group 1, 2, 3, 4</div>
+        </div>
         <div class="cat-card" data-cat="ssc" onclick="goExams('SSC')"
           style="--cat-grad:linear-gradient(135deg,#E8640A,#F97316);--cat-soft:rgba(232,100,10,.06);--cat-shadow:rgba(232,100,10,.35);">
           <div class="cat-icon-wrap"><span class="cat-icon">📋</span></div>
@@ -13809,6 +13853,9 @@ input:focus,select:focus,textarea:focus{border-color:var(--primary)!important;bo
         </a>
         <a href="/?exam=tspsc" class="tb-sb-item" id="sb-tspsc" onclick="event.preventDefault();goExams('TSPSC');_setSbActive('sb-tspsc');closeCatDrawer()">
           <span class="tb-sb-icon" style="background:linear-gradient(135deg,#1A73E8,#0ea5e9)">🏛️</span>TSPSC
+        </a>
+        <a href="/?exam=appsc" class="tb-sb-item" id="sb-appsc" onclick="event.preventDefault();goExams('APPSC');_setSbActive('sb-appsc');closeCatDrawer()">
+          <span class="tb-sb-icon" style="background:linear-gradient(135deg,#7C3AED,#A855F7)">🏛️</span>APPSC
         </a>
         <a href="/?exam=ssc" class="tb-sb-item" id="sb-ssc" onclick="event.preventDefault();goExams('SSC');_setSbActive('sb-ssc');closeCatDrawer()">
           <span class="tb-sb-icon" style="background:linear-gradient(135deg,#10b981,#059669)">📋</span>SSC
@@ -18911,6 +18958,7 @@ More exams: https://aniledutech.in
       mockFolders: [
         // ── Parent Folders ──
         { id: 'tspsc', name: 'TSPSC', icon: '🏛️', color: '#1A73E8', locked: false, parentId: null },
+        { id: 'appsc', name: 'APPSC', icon: '🏛️', color: '#7C3AED', locked: false, parentId: null },
         { id: 'ssc', name: 'SSC', icon: '📋', color: '#E8640A', locked: false, parentId: null },
         { id: 'banking', name: 'Banking', icon: '🏦', color: '#0891B2', locked: false, parentId: null },
         { id: 'gk', name: 'GK', icon: '🌍', color: '#10B981', locked: false, parentId: null },
@@ -18922,6 +18970,11 @@ More exams: https://aniledutech.in
         { id: 'tspsc-group3', name: 'Group-3', icon: '📚', color: '#1A73E8', locked: false, parentId: 'tspsc' },
         { id: 'tspsc-group4', name: 'Group-4', icon: '✏️', color: '#1A73E8', locked: false, parentId: 'tspsc' },
         { id: 'tspsc-fso', name: 'FSO', icon: '🌾', color: '#1A73E8', locked: false, parentId: 'tspsc' },
+        // ── APPSC Sub-Folders ──
+        { id: 'appsc-group1', name: 'Group-1', icon: '⭐', color: '#7C3AED', locked: false, parentId: 'appsc' },
+        { id: 'appsc-group2', name: 'Group-2', icon: '🎯', color: '#7C3AED', locked: false, parentId: 'appsc' },
+        { id: 'appsc-group3', name: 'Group-3', icon: '📚', color: '#7C3AED', locked: false, parentId: 'appsc' },
+        { id: 'appsc-group4', name: 'Group-4', icon: '✏️', color: '#7C3AED', locked: false, parentId: 'appsc' },
         // ── SSC Sub-Folders ──
         { id: 'ssc-cgl', name: 'CGL', icon: '🏆', color: '#E8640A', locked: false, parentId: 'ssc' },
         { id: 'ssc-chsl', name: 'CHSL', icon: '📄', color: '#E8640A', locked: false, parentId: 'ssc' },
@@ -19466,6 +19519,7 @@ More exams: https://aniledutech.in
 
     function goExams(cat) {
       stopTimer();
+      _pyqOpen = null; _pyqYear = 'all';
       _applyExamSeo(cat || '');
       _examFilter = cat || '';
       _sscSubFilter = 'all';
@@ -20013,6 +20067,7 @@ More exams: https://aniledutech.in
     // Category colors for logo circle
     const _catColors = {
       'TSPSC': 'linear-gradient(135deg,#1A73E8,#0ea5e9)',
+      'APPSC': 'linear-gradient(135deg,#7C3AED,#A855F7)',
       'SSC': 'linear-gradient(135deg,#10b981,#059669)',
       'RRB': 'linear-gradient(135deg,#0ea5e9,#0284c7)',
       'Banking': 'linear-gradient(135deg,#f59e0b,#d97706)',
@@ -20023,7 +20078,7 @@ More exams: https://aniledutech.in
       'Previous Papers': 'linear-gradient(135deg,#8b5cf6,#7c3aed)',
     };
     const _catEmoji = {
-      'TSPSC': '🏛️', 'SSC': '📋', 'RRB': '🚂', 'Banking': '🏦', 'GK': '🌍',
+      'TSPSC': '🏛️', 'APPSC': '🏛️', 'SSC': '📋', 'RRB': '🚂', 'Banking': '🏦', 'GK': '🌍',
       'Mock Test': '📝', 'Current Affairs': '📰', 'Live Test': '🔴', 'Previous Papers': '📄',
     };
 
@@ -20096,7 +20151,7 @@ More exams: https://aniledutech.in
       if (!list.length) {
         el.innerHTML = _dbLoading
           ? _examSkeletonHtml(6)
-          : '<div class="empty-state">ఈ category లో exams లేవు. Admin లో add చేయండి.</div>';
+          : '<div class="empty-state" style="padding:40px 16px;text-align:center;"><div style="font-size:40px;margin-bottom:8px;">' + (_examFilter === 'APPSC' ? '🏛️' : '📭') + '</div><div style="font-weight:800;font-size:15px;color:var(--text);margin-bottom:4px;">' + (_examFilter ? _examFilter + ' exams త్వరలో వస్తాయి' : 'Exams త్వరలో వస్తాయి') + '</div><div style="font-size:12.5px;color:var(--text3);">కొత్త mock tests add అవుతున్నాయి — మిగతా categories లో ఇప్పుడే practice చేయండి.</div></div>';
         return;
       }
 
@@ -23169,6 +23224,15 @@ Rules:
 
     // Load folders from localStorage (merged with DEFAULT_DB.mockFolders)
     function getMockFolders() {
+      const list = _getMockFoldersRaw();
+      try {
+        const ids = list.map(f => String(f.id));
+        DEFAULT_DB.mockFolders.filter(f => String(f.id).startsWith('appsc') && !ids.includes(String(f.id)))
+          .forEach(f => list.push(JSON.parse(JSON.stringify(f))));
+      } catch (e) { }
+      return list;
+    }
+    function _getMockFoldersRaw() {
       try {
         const saved = JSON.parse(_ls.getItem('ae_mock_folders') || 'null');
         if (saved && Array.isArray(saved) && saved.length) {
@@ -23728,6 +23792,10 @@ Rules:
       const PDF_ONLY_CATS = ['Previous Papers', 'Book Store', 'eBook', 'Syllabus'];
       const el = document.getElementById('exams-list');
 
+      if (_examFilter === 'Previous Papers') {
+        _renderPyqPage(list);
+        return;
+      }
       if (_examFilter && PDF_ONLY_CATS.includes(_examFilter)) {
         const pdfHtml = renderPdfCards(_examFilter);
         const quizHtml = list.length ? list.map(_examCardHtml).join('') : '';
@@ -24051,6 +24119,138 @@ Rules:
   </div>`;
     }
 
+
+/* ══ PREVIOUS PAPERS — folder → year-wise list (responsive + Prev/Next pager) ══ */
+    let _pyqOpen = null, _pyqYear = 'all', _pyqKeys = [], _pyqPage = 0, _pyqFPage = 0;
+    const _PYQ_PALETTE = ['#B45309,#F59E0B', '#1A73E8,#4F8EFF', '#7C3AED,#A855F7', '#0F766E,#14B8A6', '#E8640A,#F97316', '#DC2626,#EF4444', '#1B2D5E,#2563EB'];
+    function _pyqIsDesk() { return window.innerWidth >= 900; }
+    function _pyqPer() { return _pyqIsDesk() ? 12 : 6; }      // papers per page
+    function _pyqFPer() { return _pyqIsDesk() ? 12 : 8; }     // folders per page
+    function _pyqYearOf(it) {
+      const m = ((it.title || '') + ' ' + (it.description || '') + ' ' + (it.sub || '')).match(/\b(?:19|20)\d{2}\b/);
+      return m ? m[0] : '';
+    }
+    function _pyqGroups() {
+      const g = {};
+      _pdfItemsCache.filter(x => x.cat === 'Previous Papers').forEach(it => {
+        const k = (it.sub || '').trim() || 'ఇతర Papers';
+        (g[k] = g[k] || []).push(it);
+      });
+      return g;
+    }
+    function _pyqScrollTop() {
+      const el = document.getElementById('exams-list');
+      if (!el) return;
+      const y = el.getBoundingClientRect().top + window.pageYOffset - 90;
+      window.scrollTo({ top: Math.max(0, y), behavior: 'smooth' });
+    }
+    function pyqOpenFolder(i) { _pyqOpen = _pyqKeys[i] || null; _pyqYear = 'all'; _pyqPage = 0; filterExams(); window.scrollTo({ top: 0, behavior: 'smooth' }); }
+    function pyqBack() { _pyqOpen = null; _pyqYear = 'all'; _pyqPage = 0; filterExams(); }
+    function pyqSetYear(y) { _pyqYear = y; _pyqPage = 0; filterExams(); }
+    function pyqGoPage(p) { _pyqPage = p; filterExams(); _pyqScrollTop(); }
+    function pyqGoFPage(p) { _pyqFPage = p; filterExams(); _pyqScrollTop(); }
+
+    /* Prev / Next bar — fn = name of global page handler */
+    function _pyqPager(page, totalPages, total, per, fn, unit) {
+      if (totalPages <= 1) return '';
+      const from = page * per + 1, to = Math.min(total, (page + 1) * per);
+      const sP = Math.max(0, Math.min(page - 2, totalPages - 5)), eP = Math.min(totalPages - 1, sP + 4);
+      let nums = '';
+      for (let p = sP; p <= eP; p++) nums += '<button class="pyq-pnum' + (p === page ? ' on' : '') + '" onclick="' + fn + '(' + p + ')">' + (p + 1) + '</button>';
+      return '<div class="pyq-pager">' +
+        '<button class="pyq-pbtn" ' + (page === 0 ? 'disabled' : '') + ' onclick="' + fn + '(' + (page - 1) + ')">← Prev</button>' +
+        '<div class="pyq-pnums">' + nums + '</div><div class="pyq-pcur">' + (page + 1) + ' / ' + totalPages + '</div>' +
+        '<button class="pyq-pbtn next" ' + (page >= totalPages - 1 ? 'disabled' : '') + ' onclick="' + fn + '(' + (page + 1) + ')">Next →</button>' +
+        '<div class="pyq-pinfo">Showing ' + from + '–' + to + ' of ' + total + ' ' + unit + ' · Page ' + (page + 1) + '/' + totalPages + '</div></div>';
+    }
+
+    function _renderPyqPage(quizList) {
+      const el = document.getElementById('exams-list');
+      const subEl = document.getElementById('exams-page-sub');
+      const groups = _pyqGroups();
+      _pyqKeys = Object.keys(groups).sort((a, b) => a.localeCompare(b));
+      const quizHtml = (quizList && quizList.length)
+        ? '<div class="pyq-sec-title">📝 Online Tests</div><div class="exams-grid">' + quizList.map(_examCardHtml).join('') + '</div>' : '';
+      if (!_pyqKeys.length) {
+        el.innerHTML = quizHtml || (_dbLoading ? _examSkeletonHtml(6)
+          : '<div class="empty-state" style="padding:40px 16px;text-align:center;"><div style="font-size:40px;">📂</div><div style="font-weight:800;margin-top:6px;">Previous Papers త్వరలో వస్తాయి</div></div>');
+        if (subEl) subEl.textContent = '0 item(s) found';
+        return;
+      }
+      // ---- inside a folder ----
+      if (_pyqOpen && groups[_pyqOpen]) {
+        const fi = _pyqKeys.indexOf(_pyqOpen);
+        const c = _PYQ_PALETTE[fi % _PYQ_PALETTE.length].split(',');
+        const items = groups[_pyqOpen].slice().sort((a, b) => (_pyqYearOf(b) || '0').localeCompare(_pyqYearOf(a) || '0'));
+        const years = [...new Set(items.map(_pyqYearOf).filter(Boolean))].sort().reverse();
+        const shown = _pyqYear === 'all' ? items : items.filter(x => _pyqYearOf(x) === _pyqYear);
+        const per = _pyqPer(), totalPages = Math.max(1, Math.ceil(shown.length / per));
+        if (_pyqPage >= totalPages) _pyqPage = totalPages - 1;
+        if (_pyqPage < 0) _pyqPage = 0;
+        const pageItems = shown.slice(_pyqPage * per, _pyqPage * per + per);
+        const ys = years.slice().reverse();
+        const range = ys.length ? (ys[0] === ys[ys.length - 1] ? ys[0] : ys[0] + ' – ' + ys[ys.length - 1]) : 'All years';
+        const chips = years.length > 1
+          ? '<div class="pyq-years"><button class="pyq-chip' + (_pyqYear === 'all' ? ' on' : '') + '" onclick="pyqSetYear(\'all\')">All</button>' +
+            years.map(y => '<button class="pyq-chip' + (_pyqYear === y ? ' on' : '') + '" onclick="pyqSetYear(\'' + y + '\')">' + y + '</button>').join('') + '</div>' : '';
+        const rows = pageItems.map(it => {
+          const url = sanitizeUrl(it.url);
+          const yr = _pyqYearOf(it);
+          const isPdf = it.type === 'pdf';
+          return '<div class="pyq-row"><div class="pyq-ficon">' + (isPdf ? '📄' : '🖼️') + '</div>' +
+            '<div class="pyq-rbody"><div class="pyq-rtitle">' + escHtml(it.title) + '</div>' +
+            '<div class="pyq-rmeta">' + (yr ? '<span class="pyq-pill yr">' + yr + '</span>' : '') +
+            '<span class="pyq-pill">' + (isPdf ? 'PDF' : 'Image') + '</span>' +
+            (it.description ? '<span class="pyq-rdesc">' + escHtml(it.description) + '</span>' : '') + '</div></div>' +
+            (url ? '<a class="pyq-open" href="' + url + '" target="_blank" rel="noopener noreferrer">' + (isPdf ? '📄 Open PDF' : '🖼️ View') + '</a>' : '') + '</div>';
+        }).join('');
+        el.innerHTML = '<div class="pyq-banner" style="--fa:' + c[0] + ';--fb:' + c[1] + ';">' +
+          '<button class="pyq-back" onclick="pyqBack()">← Folders</button>' +
+          '<div class="pyq-bt"><div class="pyq-bico">📂</div><div><div class="pyq-bname">' + escHtml(_pyqOpen) + '</div>' +
+          '<div class="pyq-bsub">' + items.length + ' papers · ' + range + '</div></div></div></div>' +
+          chips + '<div class="pyq-list">' + (rows || '<div class="pyq-empty">ఈ year కి papers లేవు.</div>') + '</div>' +
+          _pyqPager(_pyqPage, totalPages, shown.length, per, 'pyqGoPage', 'papers');
+        if (subEl) subEl.textContent = shown.length + ' paper(s) in ' + _pyqOpen;
+        return;
+      }
+      // ---- folder grid ----
+      const fper = _pyqFPer(), fTotalPages = Math.max(1, Math.ceil(_pyqKeys.length / fper));
+      if (_pyqFPage >= fTotalPages) _pyqFPage = fTotalPages - 1;
+      if (_pyqFPage < 0) _pyqFPage = 0;
+      const fStart = _pyqFPage * fper;
+      const folders = _pyqKeys.slice(fStart, fStart + fper).map((k, j) => {
+        const i = fStart + j;                      // global index (used by pyqOpenFolder)
+        const items = groups[k];
+        const ys = items.map(_pyqYearOf).filter(Boolean).sort();
+        const range = ys.length ? (ys[0] === ys[ys.length - 1] ? ys[0] : ys[0] + ' – ' + ys[ys.length - 1]) : 'All years';
+        const c = _PYQ_PALETTE[i % _PYQ_PALETTE.length].split(',');
+        return '<div class="pyq-folder" onclick="pyqOpenFolder(' + i + ')" style="--fa:' + c[0] + ';--fb:' + c[1] + ';">' +
+          '<div class="pyq-fband"><div class="pyq-fico">📂</div></div>' +
+          '<div class="pyq-fbody"><div class="pyq-fname">' + escHtml(k) + '</div>' +
+          '<div class="pyq-fmeta"><span class="pyq-pill">' + items.length + ' paper' + (items.length > 1 ? 's' : '') + '</span>' +
+          '<span class="pyq-pill yr">' + range + '</span></div>' +
+          '<div class="pyq-fgo">Open folder <i>→</i></div></div></div>';
+      }).join('');
+      el.innerHTML = '<div class="pyq-sec-title">📂 Exam Folders</div><div class="pyq-folders">' + folders + '</div>' +
+        _pyqPager(_pyqFPage, fTotalPages, _pyqKeys.length, fper, 'pyqGoFPage', 'folders') + quizHtml;
+      if (subEl) subEl.textContent = _pyqKeys.length + ' folder(s) · ' + _pdfItemsCache.filter(x => x.cat === 'Previous Papers').length + ' papers';
+    }
+
+    /* re-render when switching between mobile ⇄ desktop widths (page size changes) */
+    (function () {
+      let _wasDesk = _pyqIsDesk(), _t;
+      window.addEventListener('resize', function () {
+        clearTimeout(_t);
+        _t = setTimeout(function () {
+          const d = _pyqIsDesk();
+          if (d === _wasDesk) return;
+          _wasDesk = d; _pyqPage = 0; _pyqFPage = 0;
+          try { if (_examFilter === 'Previous Papers') filterExams(); } catch (e) { }
+        }, 150);
+      });
+    })();
+
+
     function renderPdfCards(cat) {
       const items = _pdfItemsCache.filter(x => x.cat === cat);
       return items.map(_pdfCardHtml).join('');
@@ -24059,6 +24259,7 @@ Rules:
     /* ── Load PDF items on startup ── */
     (async function initPdfItems() {
       _pdfItemsCache = await _loadPdfItems();
+      try { if (_examFilter === 'Previous Papers') filterExams(); } catch (e) { }
     })();
 
 
@@ -26889,6 +27090,7 @@ Rules:
             </optgroup>
             <optgroup label="── Subjects ──">
               <option>TSPSC</option>
+              <option>APPSC</option>
               <option>SSC</option>
               <option>RRB</option>
               <option>Banking</option>
@@ -33414,6 +33616,8 @@ const isTrial = plan === 'trial';
   //  🔔 IN-APP BELL NOTIFICATIONS — ae_notifications table
   // ══════════════════════════════════════════════════════════════════
   let _bellNotifs = [];
+  let _bellPage = 0;
+  const _BELL_PER = 5;
   let _bellPollTimer = null;
 
   // Insert notification rows for target users (segment: 'all'|'premium'|'free')
@@ -33483,18 +33687,36 @@ const isTrial = plan === 'trial';
       list.innerHTML = '<div style="padding:24px;text-align:center;color:var(--text3);font-size:13px">📭 Notifications లేవు</div>';
       return;
     }
-    list.innerHTML = _bellNotifs.map(n => {
+    const totalPages = Math.max(1, Math.ceil(_bellNotifs.length / _BELL_PER));
+    if (_bellPage >= totalPages) _bellPage = totalPages - 1;
+    if (_bellPage < 0) _bellPage = 0;
+    const pageItems = _bellNotifs.slice(_bellPage * _BELL_PER, _bellPage * _BELL_PER + _BELL_PER);
+    let html = pageItems.map(n => {
       const time = new Date(n.created_at).toLocaleString('te-IN', { day: '2-digit', month: 'short', hour: '2-digit', minute: '2-digit' });
-      const unreadStyle = n.is_read ? '' : 'background:rgba(124,58,237,.06)';
-      return `<div onclick="onBellNotifClick(${Number(n.id)}, ${jsArg(n.link || '')})" style="padding:12px 16px;border-bottom:1px solid var(--border2);cursor:pointer;${unreadStyle}">
-      <div style="font-weight:700;font-size:13px;color:var(--text);display:flex;align-items:center;gap:6px">
-        ${!n.is_read ? '<span style="width:8px;height:8px;border-radius:50%;background:#7c3aed;display:inline-block;flex-shrink:0"></span>' : ''}
-        ${n.title}
+      return `<div class="bn-card${n.is_read ? '' : ' unread'}" onclick="onBellNotifClick(${Number(n.id)}, ${jsArg(n.link || '')})">
+      <div class="bn-ico">${n.is_read ? '🔔' : '📢'}</div>
+      <div class="bn-body">
+        <div class="bn-title">${!n.is_read ? '<span class="bn-dot"></span>' : ''}${n.title}</div>
+        <div class="bn-msg">${n.message}</div>
+        <div class="bn-time">🕒 ${time}</div>
       </div>
-      <div style="font-size:12.5px;color:var(--text2);margin-top:4px;line-height:1.5">${n.message}</div>
-      <div style="font-size:11px;color:var(--text3);margin-top:4px">${time}</div>
     </div>`;
     }).join('');
+    if (totalPages > 1) {
+      html += `<div class="bn-pager">
+      <button class="bn-pbtn" ${_bellPage === 0 ? 'disabled' : ''} onclick="event.stopPropagation();bellGoPage(${_bellPage - 1})">← Prev</button>
+      <div class="bn-pcur">${_bellPage + 1} / ${totalPages}</div>
+      <button class="bn-pbtn next" ${_bellPage >= totalPages - 1 ? 'disabled' : ''} onclick="event.stopPropagation();bellGoPage(${_bellPage + 1})">Next →</button>
+    </div>`;
+    }
+    list.innerHTML = html;
+  }
+
+  function bellGoPage(p) {
+    _bellPage = p;
+    renderBellDropdown();
+    const dd = document.getElementById('ae-bell-dropdown');
+    if (dd) dd.scrollTo({ top: 0, behavior: 'smooth' });
   }
 
   async function onBellNotifClick(id, link) {
@@ -33531,7 +33753,7 @@ const isTrial = plan === 'trial';
     if (!dd) return;
     const open = dd.style.display !== 'none';
     dd.style.display = open ? 'none' : '';
-    if (!open) fetchBellNotifications();
+    if (!open) { _bellPage = 0; fetchBellNotifications(); }
   }
 
   function closeNotifDropdown() {
@@ -34167,6 +34389,7 @@ const isTrial = plan === 'trial';
     { id: 'ebook', icon: '📖', name: 'eBook' },
     { id: 'videos', icon: '▶️', name: 'Free Videos' },
     { id: 'bookstore', icon: '🛒', name: 'Book Store' },
+    { id: 'appsc', icon: '🏛️', name: 'APPSC' },
     { id: 'ssc', icon: '📋', name: 'SSC' },
     { id: 'rrb', icon: '🚂', name: 'RRB' },
     { id: 'bank', icon: '🏦', name: 'Banking' },
@@ -36291,31 +36514,6 @@ Rules:
   };
 })();
 </script>
-<script id="ux-polish-js">
-(function(){try{
-var d=document;
-var p=d.createElement('div');p.id='ux-prog';d.body.appendChild(p);
-var t=d.createElement('button');t.id='ux-top';t.setAttribute('aria-label','Back to top');t.textContent='↑';
-t.onclick=function(){scrollTo({top:0,behavior:'smooth'})};d.body.appendChild(t);
-var nav=d.querySelector('nav'),tick=false;
-function onS(){var y=scrollY,h=d.documentElement.scrollHeight-innerHeight;
-p.style.width=(h>0?y/h*100:0)+'%';t.classList.toggle('show',y>500);
-if(nav)nav.classList.toggle('scrolled',y>8);tick=false}
-addEventListener('scroll',function(){if(!tick){tick=true;requestAnimationFrame(onS)}},{passive:true});onS();
-/* ripple */
-d.addEventListener('click',function(e){var b=e.target.closest('.btn-primary,.btn-outline,.start-btn,.btn-submit,.sub-btn,.gen-btn');
-if(!b)return;var r=b.getBoundingClientRect(),s=Math.max(r.width,r.height),x=d.createElement('span');
-x.className='ux-ripple';x.style.cssText='width:'+s+'px;height:'+s+'px;left:'+(e.clientX-r.left-s/2)+'px;top:'+(e.clientY-r.top-s/2)+'px';
-b.appendChild(x);setTimeout(function(){x.remove()},600)});
-/* scroll reveal for home sections */
-if('IntersectionObserver' in window){
-var io=new IntersectionObserver(function(es){es.forEach(function(e){if(e.isIntersecting){e.target.classList.add('in');io.unobserve(e.target)}})},{threshold:.08});
-var sel='#page-home .section,#page-home .cat-card,#page-home .exam-card';
-function arm(){d.querySelectorAll(sel).forEach(function(el){if(!el.dataset.rv){el.dataset.rv=1;el.classList.add('ux-rv');io.observe(el)}})}
-arm();new MutationObserver(arm).observe(d.getElementById('page-home')||d.body,{childList:true,subtree:true});
-}
-}catch(e){console.warn('ux-polish',e)}})();
-</script>
 <script id="ux-monetize-js">
 /* ===== (1) WhatsApp opt-in save  (2) Admin CSV export  (3) Result-page Premium upsell ===== */
 async function sbSubSetWaOptin(gmail, val) {
@@ -36368,6 +36566,16 @@ async function exportWAOptinCSV() {
     };
   } catch (e) { console.warn('ux-monetize', e); }
 })();
+</script>
+<script id="ae-lively-js">
+(function(){try{
+function run(el){var t=parseInt(String(el.textContent).replace(/[^0-9]/g,''),10);if(!t||el.dataset.cu==t)return;el.dataset.cu=t;
+var suf=/\+\s*$/.test(el.textContent)?'+':'',st=null,d=1100;
+function f(ts){if(!st)st=ts;var p=Math.min((ts-st)/d,1);el.textContent=Math.round(t*(1-Math.pow(1-p,3))).toLocaleString('en-IN')+suf;if(p<1)requestAnimationFrame(f)}
+requestAnimationFrame(f)}
+['stat-subscribers','stat-viewers','stat-active','stat-e'].forEach(function(id){var el=document.getElementById(id);if(!el)return;
+new MutationObserver(function(){if(el.dataset.busy)return;el.dataset.busy=1;run(el);setTimeout(function(){delete el.dataset.busy},1300)}).observe(el,{childList:true,characterData:true,subtree:true})})
+}catch(e){}})();
 </script>
 </body>
 </html>

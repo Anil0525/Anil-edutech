@@ -11657,6 +11657,13 @@ body.admin-active .admin-tabs::-webkit-scrollbar-thumb{background:rgba(91,91,240
 .pyq-pnum.on{background:var(--primary);border-color:var(--primary);color:#fff}
 .pyq-pcur{display:none;font-size:14px;font-weight:900;color:var(--text);white-space:nowrap}
 .pyq-pinfo{flex:0 0 100%;text-align:center;font-size:12px;font-weight:700;color:var(--text3);margin-top:2px}
+/* FIX: #exams-list is a 3-col .exams-grid (!important) — make every Previous-Papers block span the full row so desktop shows the real folder grid */
+#page-exams .exams-grid>.pyq-sec-title,
+#page-exams .exams-grid>.pyq-folders,
+#page-exams .exams-grid>.pyq-pager,
+#page-exams .exams-grid>.pyq-banner,
+#page-exams .exams-grid>.pyq-years,
+#page-exams .exams-grid>.pyq-list{grid-column:1/-1!important}
 /* ---------- tablet ---------- */
 @media(max-width:899px){
 .pyq-folders{grid-template-columns:repeat(3,1fr);gap:14px}
@@ -11715,7 +11722,46 @@ img,video{max-width:100%}
 @keyframes aeTk{to{transform:translateX(-50%)}}
 /* hero CTA glow + floating pills */
 .hero .btn-primary{animation:aeGlow 2.4s ease-in-out infinite}
-@keyframes aeGlow{0%,100%{box-shadow:0 6px 20px rgba(255,107,53,.35)}50%{box-shadow:0 8px 34px rgba(255,107,53,.65)}}
+/* ===== HOME: YouTube subscribe banner ===== */
+.ae-yt{position:relative;max-width:900px;margin:26px auto 0;padding:0 20px}
+.ae-yt-in{position:relative;overflow:hidden;display:flex;align-items:center;gap:20px;padding:22px 24px;border-radius:24px;color:#fff;background:linear-gradient(135deg,#B91C1C 0%,#EF4444 55%,#FF7A18 100%);box-shadow:0 14px 34px rgba(220,38,38,.35)}
+.ae-yt-in::before,.ae-yt-in::after{content:"";position:absolute;border-radius:50%;background:rgba(255,255,255,.12);pointer-events:none}
+.ae-yt-in::before{width:220px;height:220px;right:-60px;top:-90px}
+.ae-yt-in::after{width:120px;height:120px;right:130px;bottom:-70px}
+.ae-yt-av{position:relative;z-index:1;flex:0 0 auto;width:74px;height:74px;border-radius:50%;background:#fff;padding:4px;box-shadow:0 0 0 4px rgba(255,255,255,.35)}
+.ae-yt-av img{width:100%;height:100%;border-radius:50%;object-fit:cover;display:block}
+.ae-yt-tx{position:relative;z-index:1;flex:1;min-width:0}
+.ae-yt-h{font-size:20px;font-weight:900;line-height:1.3;letter-spacing:-.2px}
+.ae-yt-s{font-size:13px;font-weight:600;opacity:.92;margin-top:4px}
+.ae-yt-chips{display:flex;flex-wrap:wrap;gap:6px;margin-top:10px}
+.ae-yt-chips span{font-size:11.5px;font-weight:800;padding:4px 11px;border-radius:20px;background:rgba(255,255,255,.2);border:1px solid rgba(255,255,255,.3)}
+.ae-yt-cta{position:relative;z-index:1;flex:0 0 auto;display:flex;flex-direction:column;align-items:center;gap:6px}
+.ae-yt-btn{display:inline-flex;align-items:center;gap:8px;background:#fff;color:#B91C1C!important;font-weight:900;font-size:15px;text-decoration:none;padding:13px 26px;border-radius:30px;box-shadow:0 8px 20px rgba(0,0,0,.25);white-space:nowrap;transition:transform .2s,box-shadow .2s;animation:aeYtPulse 2s ease-in-out infinite}
+.ae-yt-btn:hover{transform:translateY(-3px) scale(1.03);box-shadow:0 12px 26px rgba(0,0,0,.3)}
+.ae-yt-note{font-size:11.5px;font-weight:700;opacity:.9}
+@keyframes aeYtPulse{0%,100%{box-shadow:0 8px 20px rgba(0,0,0,.25),0 0 0 0 rgba(255,255,255,.55)}50%{box-shadow:0 8px 20px rgba(0,0,0,.25),0 0 0 10px rgba(255,255,255,0)}}
+@media(max-width:640px){
+.ae-yt{padding:0 12px}
+.ae-yt-in{flex-direction:column;text-align:center;padding:20px 16px;gap:12px;border-radius:20px}
+.ae-yt-chips{justify-content:center}
+.ae-yt-h{font-size:17px}
+.ae-yt-cta{width:100%}
+.ae-yt-btn{width:100%;justify-content:center;box-sizing:border-box}
+}
+@media(prefers-reduced-motion:reduce){.ae-yt-btn{animation:none}}
+/* ===== HOME: livelier section titles + About card ===== */
+#page-home .section-title{font-size:24px}
+#page-home .section-title::after{width:64px;height:4px;background:linear-gradient(90deg,#1A73E8,#7C3AED,#FF7A18)!important}
+.ae-about{position:relative;overflow:hidden}
+.ae-about::before{content:"";position:absolute;left:0;right:0;top:0;height:4px;background:linear-gradient(90deg,#1A73E8,#10B981,#F59E0B)}
+.ae-about>div[style*="grid"]>div{padding:12px;border-radius:14px;transition:transform .2s,background .2s,box-shadow .2s}
+.ae-about>div[style*="grid"]>div:hover{transform:translateY(-3px);background:var(--primary-soft);box-shadow:var(--shadow-sm)}
+/* hero secondary buttons: solid (not glass/transparent) */
+.hero .hero-actions .btn-outline{background:linear-gradient(135deg,#FF0000,#CC0000);border:none;color:#fff;backdrop-filter:none;box-shadow:0 6px 18px rgba(220,0,0,.40)}
+.hero .hero-actions .btn-outline:hover{background:linear-gradient(135deg,#FF2A2A,#D90000);border:none;transform:translateY(-2px);box-shadow:0 10px 24px rgba(220,0,0,.55)}
+.hero .hero-actions .btn-tertiary{background:linear-gradient(135deg,#F5B731,#F59E0B);border:none;color:#2B1B00;backdrop-filter:none;box-shadow:0 6px 18px rgba(245,158,11,.40)}
+.hero .hero-actions .btn-tertiary:hover{background:linear-gradient(135deg,#FFC93D,#F59E0B);border:none;transform:translateY(-2px);box-shadow:0 10px 24px rgba(245,158,11,.55)}
+@keyframes aeGlow{0%,100%{box-shadow:0 8px 24px rgba(26,115,232,.40)}50%{box-shadow:0 10px 30px rgba(26,115,232,.55)}}
 .feature-pill{animation:aeFloat 4s ease-in-out infinite}
 .feature-pill:nth-child(2){animation-delay:.4s}.feature-pill:nth-child(3){animation-delay:.8s}
 .feature-pill:nth-child(4){animation-delay:1.2s}.feature-pill:nth-child(5){animation-delay:1.6s}
@@ -12517,8 +12563,22 @@ img,video{max-width:100%}
 
 
     <div class="ae-ticker" aria-hidden="true"><div class="ae-tk-track"><span class="ae-tk-chip">🏛️ TSPSC Group 1·2·3·4</span><span class="ae-tk-chip">🏛️ APPSC Group 1·2·3·4</span><span class="ae-tk-chip">📋 SSC CGL · CHSL · MTS</span><span class="ae-tk-chip">🚂 RRB NTPC · Group D</span><span class="ae-tk-chip">🏦 IBPS · SBI Clerk</span><span class="ae-tk-chip">📰 Daily Current Affairs</span><span class="ae-tk-chip">⚡ Daily Challenge</span><span class="ae-tk-chip">📂 Previous Year Papers</span><span class="ae-tk-chip">🏆 Quiz Contest</span><span class="ae-tk-chip">✅ 100% Free Mock Tests</span><span class="ae-tk-chip">🏛️ TSPSC Group 1·2·3·4</span><span class="ae-tk-chip">🏛️ APPSC Group 1·2·3·4</span><span class="ae-tk-chip">📋 SSC CGL · CHSL · MTS</span><span class="ae-tk-chip">🚂 RRB NTPC · Group D</span><span class="ae-tk-chip">🏦 IBPS · SBI Clerk</span><span class="ae-tk-chip">📰 Daily Current Affairs</span><span class="ae-tk-chip">⚡ Daily Challenge</span><span class="ae-tk-chip">📂 Previous Year Papers</span><span class="ae-tk-chip">🏆 Quiz Contest</span><span class="ae-tk-chip">✅ 100% Free Mock Tests</span></div></div>
+    <div class="ae-yt">
+      <div class="ae-yt-in">
+        <div class="ae-yt-av"><img src="logo.png" alt="Anil EduTech YouTube" loading="lazy"></div>
+        <div class="ae-yt-tx">
+          <div class="ae-yt-h">📺 మా YouTube Channel Subscribe చేయండి!</div>
+          <div class="ae-yt-s">Daily Current Affairs, Exam Strategy &amp; Free Mock Test Discussions — తెలుగులో</div>
+          <div class="ae-yt-chips"><span>📰 Daily CA</span><span>🎯 Exam Tips</span><span>🆓 100% Free</span><span>🔔 New Videos Alerts</span></div>
+        </div>
+        <div class="ae-yt-cta">
+          <a class="ae-yt-btn" href="https://www.youtube.com/@AnilEduTechYT?sub_confirmation=1" target="_blank" rel="noopener noreferrer" onclick="try{_track('yt_subscribe_click',{src:'home_banner'})}catch(e){}">▶ Subscribe చేయండి</a>
+          <div class="ae-yt-note">🔔 Bell icon కూడా నొక్కండి</div>
+        </div>
+      </div>
+    </div>
     <div class="section" style="max-width:900px;margin:28px auto 28px;padding:0 20px;">
-      <div style="background:var(--card);border:1px solid var(--border);border-radius:var(--radius);box-shadow:var(--shadow-sm);padding:24px 22px;">
+      <div class="ae-about" style="background:var(--card);border:1px solid var(--border);border-radius:var(--radius);box-shadow:var(--shadow-sm);padding:24px 22px;">
         <h2 style="margin:0 0 10px;font-size:19px;font-weight:800;color:var(--text);">Anil EduTech గురించి</h2>
         <p style="margin:0 0 18px;font-size:14.5px;line-height:1.85;color:var(--text2);">తెలుగు మీడియం విద్యార్థుల కోసం ప్రత్యేకంగా రూపొందించిన <strong style="color:var(--text);">100% free</strong> competitive exam prep platform. TSPSC (Group 1,2,3,4), APPSC, SSC (CGL, CHSL, MTS), Banking (IBPS, SBI, RBI), RRB (NTPC, Group D) మరియు జనరల్ నాలెడ్జ్ పరీక్షలకు ఇది మీ పూర్తి practice hub.</p>
         <div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(220px,1fr));gap:16px;">

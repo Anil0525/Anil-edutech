@@ -11756,6 +11756,47 @@ img,video{max-width:100%}
 .ae-about::before{content:"";position:absolute;left:0;right:0;top:0;height:4px;background:linear-gradient(90deg,#1A73E8,#10B981,#F59E0B)}
 .ae-about>div[style*="grid"]>div{padding:12px;border-radius:14px;transition:transform .2s,background .2s,box-shadow .2s}
 .ae-about>div[style*="grid"]>div:hover{transform:translateY(-3px);background:var(--primary-soft);box-shadow:var(--shadow-sm)}
+/* ===== NAV fixes ===== */
+/* Admin tab hidden from public visitors; owner enables it once via ?admin=1 */
+#nav-admin{display:none!important}
+body.ae-show-admin #nav-admin{display:inline-flex!important}
+/* logo never wraps / shrinks */
+nav .logo{flex-shrink:0}
+nav .logo-text span{white-space:nowrap}
+/* laptop / small-desktop widths: compact nav so nothing wraps or gets cut */
+@media(min-width:641px) and (max-width:1180px){
+nav{padding:0 12px}
+nav .logo-text span:last-child{display:none}
+nav .nav-links{min-width:0;flex:1;justify-content:center;flex-wrap:nowrap;overflow-x:auto;scrollbar-width:none}
+nav .nav-links::-webkit-scrollbar{display:none}
+nav .nav-btn{padding:6px 7px;font-size:12px;white-space:nowrap;flex:0 0 auto}
+}
+/* ===== NAV redesign (desktop/tablet only; mobile hamburger untouched) ===== */
+@media(min-width:641px){
+nav{background:rgba(255,255,255,.88);-webkit-backdrop-filter:saturate(1.6) blur(14px);backdrop-filter:saturate(1.6) blur(14px);border-bottom:0;box-shadow:0 4px 24px rgba(26,115,232,.10)}
+nav::after{content:"";position:absolute;left:0;right:0;bottom:0;height:3px;background:linear-gradient(90deg,#1A73E8,#7C3AED,#FF7A18);pointer-events:none}
+[data-theme="dark"] nav{background:rgba(13,17,23,.88)}
+/* brand */
+nav .logo-icon img{box-shadow:0 0 0 2px rgba(26,115,232,.18);background:#fff}
+nav .logo-text span:first-child{background:linear-gradient(90deg,#1A73E8,#7C3AED);-webkit-background-clip:text;background-clip:text;-webkit-text-fill-color:transparent;font-size:15px}
+/* tabs */
+nav .nav-btn{border-radius:999px;font-weight:700;transition:background .2s,color .2s,transform .2s,box-shadow .2s}
+nav .nav-btn:not(.nav-accent):hover{background:rgba(26,115,232,.10);transform:translateY(-1px)}
+nav .nav-btn.active:not(.nav-accent){background:linear-gradient(135deg,#1A73E8,#0EA5E9);color:#fff;box-shadow:0 4px 12px rgba(26,115,232,.35)}
+[data-theme="dark"] nav .nav-btn.active:not(.nav-accent){background:linear-gradient(135deg,#1A73E8,#0EA5E9);color:#fff}
+/* colored CTA pills */
+nav .nav-btn.nav-accent,nav #nav-premium-btn,nav .nav-btn[onclick^="goReferral"]{border-radius:999px!important}
+nav .nav-btn.nav-accent:hover,nav #nav-premium-btn:hover,nav .nav-btn[onclick^="goReferral"]:hover{transform:translateY(-2px);filter:brightness(1.07)}
+/* login pill */
+nav .login-badge{border-radius:999px}
+}
+/* ===== HOME polish: no orphan cards, better empty state, mobile edge fix ===== */
+@media(min-width:641px){#page-home .categories-grid{grid-template-columns:repeat(4,1fr)!important}}
+.lb-empty{background:linear-gradient(135deg,var(--card),var(--primary-soft))!important;border:2px dashed rgba(26,115,232,.35)!important}
+.lb-empty-h{font-size:16px;font-weight:900;color:var(--text);margin-bottom:6px}
+.lb-empty-cta{margin-top:14px;border:0;cursor:pointer;font-weight:900;font-size:14px;color:#fff;padding:11px 22px;border-radius:999px;background:linear-gradient(135deg,#1A73E8,#7C3AED);box-shadow:0 8px 20px rgba(26,115,232,.35);transition:transform .2s}
+.lb-empty-cta:hover{transform:translateY(-2px)}
+@media(max-width:640px){.hx-link{margin:6px 14px 20px!important}}
 /* hero secondary buttons: solid (not glass/transparent) */
 .hero .hero-actions .btn-outline{background:linear-gradient(135deg,#FF0000,#CC0000);border:none;color:#fff;backdrop-filter:none;box-shadow:0 6px 18px rgba(220,0,0,.40)}
 .hero .hero-actions .btn-outline:hover{background:linear-gradient(135deg,#FF2A2A,#D90000);border:none;transform:translateY(-2px);box-shadow:0 10px 24px rgba(220,0,0,.55)}
@@ -13002,7 +13043,7 @@ img,video{max-width:100%}
 
     <script>
       (function () {
-        var SG_LIMIT = 5;
+        var SG_LIMIT = 4;
         var sgExpanded = false;
 
         function sgInit() {
@@ -21481,7 +21522,7 @@ More exams: https://aniledutech.in
       if (!filtered.length) {
         const catLabel = _lbCat !== 'all' ? ` (${_lbCat})` : '';
         const msgs = { all: 'ఇంకా ఎవరూ score save చేయలేదు.<br>Exam complete చేసి మీ పేరు enter చేయండి!', today: 'ఈ రోజు ఇంకా ఎవరూ test ఇవ్వలేదు. మీరు మొదలు పెట్టండి!', week: 'ఈ వారం ఇంకా results లేవు.' };
-        el.innerHTML = `<div class="lb-empty"><span class="lb-empty-icon">🏅</span>${(msgs[_lbFilter] || msgs.all).replace('results', 'results' + catLabel)}</div>`;
+        el.innerHTML = `<div class="lb-empty"><span class="lb-empty-icon">🏅</span><div class="lb-empty-h">Leaderboard లో మొదటి స్థానం మీదే కావచ్చు! 🚀</div>${(msgs[_lbFilter] || msgs.all).replace('results', 'results' + catLabel)}<br><button type="button" class="lb-empty-cta" onclick="goExams()">▶ ఇప్పుడే Free Test రాయండి</button></div>`;
         return;
       }
 
@@ -23813,6 +23854,28 @@ Rules:
       if (seoEl) seoEl.textContent = shown;
     }
 
+    // Category match: case/space-insensitive, and also counts exams placed inside a mock folder
+    // whose top-level folder is that category (e.g. APPSC > Group-1 folder, even if exam.cat is "Mock Test").
+    function _examInCat(e, cat) {
+      const want = String(cat || '').trim().toLowerCase();
+      if (!want) return true;
+      if (String(e.cat || '').trim().toLowerCase() === want) return true;
+      if (e.mockFolder) {
+        try {
+          const fs = getMockFolders();
+          let f = fs.find(x => String(x.id) === String(e.mockFolder));
+          let guard = 0;
+          while (f && f.parentId && guard++ < 6) {
+            const up = fs.find(x => String(x.id) === String(f.parentId));
+            if (!up) break;
+            f = up;
+          }
+          if (f && (String(f.id).toLowerCase() === want || String(f.name || '').trim().toLowerCase() === want)) return true;
+        } catch (err) { }
+      }
+      return false;
+    }
+
     function filterExams() {
       _updateExamCountTitle();
       const q = (document.getElementById('exam-search')?.value || '').toLowerCase();
@@ -23821,7 +23884,7 @@ Rules:
       if (clr) clr.style.display = q ? 'block' : 'none';
 
       let list = DB.exams;
-      if (_examFilter) list = list.filter(e => e.cat === _examFilter);
+      if (_examFilter) list = list.filter(e => _examInCat(e, _examFilter));
       // SSC sub-filter: CGL / CHSL / MTS
       if (_examFilter === 'SSC' && _sscSubFilter !== 'all') {
         list = list.filter(e => (e.name || '').toUpperCase().includes(_sscSubFilter));
@@ -36635,6 +36698,13 @@ function f(ts){if(!st)st=ts;var p=Math.min((ts-st)/d,1);el.textContent=Math.roun
 requestAnimationFrame(f)}
 ['stat-subscribers','stat-viewers','stat-active','stat-e'].forEach(function(id){var el=document.getElementById(id);if(!el)return;
 new MutationObserver(function(){if(el.dataset.busy)return;el.dataset.busy=1;run(el);setTimeout(function(){delete el.dataset.busy},1300)}).observe(el,{childList:true,characterData:true,subtree:true})})
+}catch(e){}})();
+</script>
+<script>
+(function(){try{
+  if(/[?&]admin=1\b/.test(location.search)) localStorage.setItem('ae_show_admin','1');
+  if(/[?&]admin=0\b/.test(location.search)) localStorage.removeItem('ae_show_admin');
+  if(localStorage.getItem('ae_show_admin')==='1') document.body.classList.add('ae-show-admin');
 }catch(e){}})();
 </script>
 </body>

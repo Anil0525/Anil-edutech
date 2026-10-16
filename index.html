@@ -13,6 +13,14 @@
   function _track(name, params) { try { gtag('event', name, params || {}); } catch (e) { } }
   </script>
   <meta charset="UTF-8">
+  <script>
+    /* Admin tab unlock: must run FIRST, before anything strips ?admin=1 from the URL */
+    (function(){try{
+      var q=location.search||'';
+      if(/[?&]admin=1\b/.test(q)) localStorage.setItem('ae_show_admin','1');
+      if(/[?&]admin=0\b/.test(q)) localStorage.removeItem('ae_show_admin');
+    }catch(e){}})();
+  </script>
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <meta name="theme-color" content="#1A73E8">
   <title>Anil EduTech | TSPSC SSC Banking Free Mock Tests Telugu | తెలుగు మాక్ టెస్ట్</title>
@@ -13432,6 +13440,8 @@ nav .login-badge{border-radius:999px}
         <a href="about.html" style="cursor:pointer;color:#10C980;text-decoration:underline;opacity:1;">About Us</a>
         &nbsp;|&nbsp;
         <a href="contact.html" style="cursor:pointer;color:#A855F7;text-decoration:underline;opacity:1;">Contact</a>
+        &nbsp;|&nbsp;
+        <a href="refund-policy.html" style="cursor:pointer;color:#F59E0B;text-decoration:underline;opacity:1;">Refund Policy</a>
       </div>
     </footer>
   </div>
@@ -13617,6 +13627,7 @@ nav .login-badge{border-radius:999px}
           <a href="privacy-policy.html" class="footer-link" style="text-decoration:none; color:inherit;">🔒 Privacy
             Policy</a>
           <a href="disclaimer.html" class="footer-link" style="text-decoration:none; color:inherit;">📄 Disclaimer</a>
+          <a href="refund-policy.html" class="footer-link" style="text-decoration:none; color:inherit;">💰 Refund Policy</a>
         </div>
         <div class="footer-divider"></div>
         <!-- Study Guides -->
@@ -15576,6 +15587,7 @@ nav .login-badge{border-radius:999px}
           <a href="contact.html" class="footer-link" style="text-decoration:none;">📞 Contact</a>
           <a href="privacy-policy.html" class="footer-link" style="text-decoration:none;">🔒 Privacy Policy</a>
           <a href="disclaimer.html" class="footer-link" style="text-decoration:none;">📄 Disclaimer</a>
+          <a href="refund-policy.html" class="footer-link" style="text-decoration:none;">💰 Refund Policy</a>
         </div>
         <div class="footer-divider"></div>
         <div class="footer-copy">Made with ❤️ by <strong>Anil EduTech</strong> &nbsp;·&nbsp; © 2026</div>
@@ -19793,7 +19805,7 @@ More exams: https://aniledutech.in
 
     // 🔒 Set to 'https://admin.aniledutech.in/' once the separate admin site is live.
     // Then this public site stops hosting the admin login and just redirects (admin token never exists on this origin).
-    const ADMIN_SITE_URL = '';
+    const ADMIN_SITE_URL = 'https://admin.aniledutech.in/';
     function goAdmin() {
       if (ADMIN_SITE_URL) { location.href = ADMIN_SITE_URL; return; }
       // Show lockout message if still locked

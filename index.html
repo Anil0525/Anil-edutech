@@ -36702,8 +36702,11 @@ new MutationObserver(function(){if(el.dataset.busy)return;el.dataset.busy=1;run(
 </script>
 <script>
 (function(){try{
-  if(/[?&]admin=1\b/.test(location.search)) localStorage.setItem('ae_show_admin','1');
-  if(/[?&]admin=0\b/.test(location.search)) localStorage.removeItem('ae_show_admin');
+  // location.search is already stripped by _safeHistoryReplace at page load,
+  // so read the query string that was saved before that happened.
+  var _aeQS=window.__aeInitialSearch||location.search||'';
+  if(/[?&]admin=1\b/.test(_aeQS)) localStorage.setItem('ae_show_admin','1');
+  if(/[?&]admin=0\b/.test(_aeQS)) localStorage.removeItem('ae_show_admin');
   if(localStorage.getItem('ae_show_admin')==='1') document.body.classList.add('ae-show-admin');
 }catch(e){}})();
 </script>

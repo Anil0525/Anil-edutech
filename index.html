@@ -11521,8 +11521,30 @@
 
   <!-- ADSENSE_SCRIPT_2 — duplicate removed, enable only after approval -->
   <!-- Chart.js for Progress Dashboard -->
-  <script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/4.4.1/chart.umd.min.js" defer></script>
-  <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js" defer></script>
+  <script>
+  /* Lazy loader: heavy libraries are fetched only when a feature needs them (saves ~900 KB of JS on first load) */
+  (function () {
+    var LIBS = {
+      chart: { url: 'https://cdnjs.cloudflare.com/ajax/libs/Chart.js/4.4.1/chart.umd.min.js', ok: function () { return typeof window.Chart !== 'undefined'; } },
+      jspdf: { url: 'https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js', ok: function () { return !!window.jspdf; } },
+      pdfjs: { url: 'https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.11.174/pdf.min.js', ok: function () { return !!window.pdfjsLib; } }
+    }, pending = {};
+    window._aeLib = function (name) {
+      var L = LIBS[name];
+      if (!L) return Promise.reject(new Error('unknown lib ' + name));
+      if (L.ok()) return Promise.resolve();
+      if (pending[name]) return pending[name];
+      pending[name] = new Promise(function (res, rej) {
+        var el = document.createElement('script');
+        el.src = L.url; el.async = true;
+        el.onload = function () { if (L.ok()) res(); else { delete pending[name]; rej(new Error(name + ' not ready')); } };
+        el.onerror = function () { delete pending[name]; try { el.remove(); } catch (e) { } rej(new Error('failed to load ' + name)); };
+        document.head.appendChild(el);
+      });
+      return pending[name];
+    };
+  })();
+  </script>
 
 <style id="admin-ui-v3">
 /* ═══ Admin UI v3 — sidebar layout + skin. IDs / handlers untouched ═══ */
@@ -15870,31 +15892,64 @@ nav .login-badge{border-radius:999px}
 
     async function sbGet(table, filters) {
       if (_sbDead) return null;
+      const PAGE = 1000;
+      const _fail = function (status) { if (status === 401 || status === 403) return; /* table not readable with this key (RLS/grants) — not a server outage, so don't trip the circuit breaker */ _sbFails++; if (_sbFails >= 5) { _sbDead = true; setTimeout(function () { _sbDead = false; _sbFails = 0; }, 2 * 60 * 1000); } };
       try {
-        // Paginate to bypass Supabase 1000-row limit
-        const PAGE = 1000;
-        let all = [], offset = 0;
-        while (true) {
-          // PRIVACY: non-admin visitors may not read mobile / pw_hash / wa_optin of ae_subscribers
-          // (DB column privileges enforce this) — so they must ask for the public columns only.
-          const _selCols = (table === 'ae_subscribers' && SB_HEADERS['Authorization'] === 'Bearer ' + SB_KEY)
+        // PRIVACY: non-admin visitors may not read mobile / pw_hash / wa_optin of ae_subscribers
+        // (DB column privileges enforce this) — so they must ask for the public columns only.
+        // ae_settings: anon has column-level SELECT on key/value/updated_at only, so select=* returns 401
+        const _selCols = (table === 'ae_settings')
+          ? 'key,value,updated_at'
+          : (table === 'ae_subscribers' && SB_HEADERS['Authorization'] === 'Bearer ' + SB_KEY)
             ? 'id,gmail,name,is_premium,premium_since,status,joined_at,updated_at,sb_user_id,trial_expiry,district,avatar_url,login_provider'
             : '*';
-          let url = `${SB_URL}/rest/v1/${table}?select=${_selCols}&limit=${PAGE}&offset=${offset}`;
-          if (filters) url += '&' + filters;
-          const r = await fetch(url, { headers: { ...SB_HEADERS, 'Prefer': 'return=representation' } });
-          if (!r.ok) { _sbFails++; if (_sbFails >= 5) { _sbDead = true; setTimeout(function () { _sbDead = false; _sbFails = 0; }, 2 * 60 * 1000); } return all.length ? all : null; }
+        // Stable ordering: offset paging without ORDER BY can skip/duplicate rows between pages
+        const _ordered = (table === 'ae_questions' || table === 'ae_exams' || table === 'ae_videos') && !(filters && /(^|&)order=/.test(filters));
+        const base = `${SB_URL}/rest/v1/${table}?select=${_selCols}&limit=${PAGE}` + (_ordered ? '&order=id.asc' : '') + (filters ? '&' + filters : '');
+        const getPage = function (offset, wantCount) {
+          return fetch(`${base}&offset=${offset}`, { headers: { ...SB_HEADERS, 'Prefer': wantCount ? 'count=exact' : 'return=representation' } });
+        };
+
+        const r0 = await getPage(0, true);
+        if (!r0.ok) { _fail(r0.status); return null; }
+        _sbFails = 0;
+        const first = await r0.json();
+        if (!Array.isArray(first) || !first.length) return [];
+        let all = first;
+        if (first.length < PAGE) return all; // single page — done
+
+        // Total row count (Content-Range: 0-999/5234) lets us fetch the remaining pages IN PARALLEL
+        let total = 0;
+        try { const m = (r0.headers.get('content-range') || '').match(/\/(\d+)$/); if (m) total = parseInt(m[1], 10) || 0; } catch (e) { }
+
+        if (total > PAGE) {
+          const offsets = [];
+          for (let o = PAGE; o < total; o += PAGE) offsets.push(o);
+          const rs = await Promise.all(offsets.map(function (o) { return getPage(o, false); }));
+          for (const r of rs) {
+            if (!r.ok) { _fail(r.status); return all; }
+            const page = await r.json();
+            if (!Array.isArray(page)) break;
+            all = all.concat(page);
+          }
+          return all;
+        }
+
+        // Fallback (no count header): sequential paging, as before
+        let offset = PAGE;
+        while (true) {
+          const r = await getPage(offset, false);
+          if (!r.ok) { _fail(r.status); return all; }
           _sbFails = 0;
           const page = await r.json();
           if (!Array.isArray(page) || !page.length) break;
           all = all.concat(page);
-          if (page.length < PAGE) break; // last page
+          if (page.length < PAGE) break;
           offset += PAGE;
         }
         return all;
       } catch (e) {
-        _sbFails++;
-        if (_sbFails >= 5) { _sbDead = true; setTimeout(function () { _sbDead = false; _sbFails = 0; }, 2 * 60 * 1000); }
+        _fail();
         return null;
       }
     }
@@ -16130,13 +16185,16 @@ nav .login-badge{border-radius:999px}
           if (!alreadyMigrated) await _migrateDefaultDataToSupabase();
         }
 
-        // Cache Supabase data to localStorage (offline fallback)
-        try {
-          const snap = { exams: DB.exams, questions: DB.questions, videos: DB.videos, nextExamId: DB.nextExamId, nextQId: DB.nextQId, nextVideoId: DB.nextVideoId };
-          localStorage.setItem('ae_local_db', JSON.stringify(snap));
-          localStorage.setItem('anil_edutech_db', JSON.stringify(DB));
-          localStorage.setItem('ae_nextQId_sb', String(DB.nextQId));
-        } catch (e) { }
+        // Cache Supabase data to localStorage (offline fallback) — deferred to idle time so
+        // stringifying the whole question bank twice never blocks first paint / interaction
+        (window.requestIdleCallback ? function (f) { window.requestIdleCallback(f, { timeout: 4000 }); } : function (f) { setTimeout(f, 1500); })(function () {
+          try {
+            const snap = { exams: DB.exams, questions: DB.questions, videos: DB.videos, nextExamId: DB.nextExamId, nextQId: DB.nextQId, nextVideoId: DB.nextVideoId };
+            localStorage.setItem('ae_local_db', JSON.stringify(snap));
+            localStorage.setItem('anil_edutech_db', JSON.stringify(DB));
+            localStorage.setItem('ae_nextQId_sb', String(DB.nextQId));
+          } catch (e) { }
+        });
 
         return true;
 
@@ -16417,7 +16475,7 @@ nav .login-badge{border-radius:999px}
     document.addEventListener('DOMContentLoaded', function () {
 
       const _startTime = Date.now();
-      const MIN_SHOW = 2000;  // minimum 2s show చేయాలి (too fast అయితే flash అవుతుంది)
+      const MIN_SHOW = 800;   // minimum 2s show చేయాలి (too fast అయితే flash అవుతుంది)
       const MAX_WAIT = 5000;  // max 5s wait చేస్తాం
 
       function _hideLoader() {
@@ -17787,6 +17845,7 @@ More exams: https://aniledutech.in
     function _drawProgressLineChart(myScoresWithTs, mode) {
       const canvas = document.getElementById('prog-chart-canvas');
       if (!canvas) return;
+      if (typeof Chart === 'undefined') { _aeLib('chart').then(function () { _drawProgressLineChart(myScoresWithTs, mode); }).catch(function () { }); return; }
       if (_progLineChart) { _progLineChart.destroy(); _progLineChart = null; }
 
       const { labels, data, counts } = _buildChartData(myScoresWithTs, mode);
@@ -17843,6 +17902,7 @@ More exams: https://aniledutech.in
     function _drawExamBarChart(examMap) {
       const canvas = document.getElementById('prog-exambar-canvas');
       if (!canvas) return;
+      if (typeof Chart === 'undefined') { _aeLib('chart').then(function () { _drawExamBarChart(examMap); }).catch(function () { }); return; }
       if (_progBarChart) { _progBarChart.destroy(); _progBarChart = null; }
 
       const entries = Object.entries(examMap).map(([name, pcts]) => ({
@@ -17878,6 +17938,7 @@ More exams: https://aniledutech.in
     function _drawSubjectDonut(subjects) {
       const canvas = document.getElementById('prog-donut-canvas');
       if (!canvas) return;
+      if (typeof Chart === 'undefined') { _aeLib('chart').then(function () { _drawSubjectDonut(subjects); }).catch(function () { }); return; }
       if (_progDonutChart) { _progDonutChart.destroy(); _progDonutChart = null; }
 
       const colors = ['#1A73E8', '#00B894', '#FF6B35', '#A855F7', '#E53E3E', '#F59E0B'];
@@ -19316,7 +19377,7 @@ More exams: https://aniledutech.in
       try {
         const snap = JSON.parse(localStorage.getItem('ae_local_db') || 'null');
         if (snap && snap.exams && snap.exams.length > 0) {
-          return Object.assign(JSON.parse(JSON.stringify(DEFAULT_DB)), snap);
+          window.__aeHadCache = true; return Object.assign(JSON.parse(JSON.stringify(DEFAULT_DB)), snap);
         }
       } catch (e) { }
       return JSON.parse(JSON.stringify(DEFAULT_DB));
@@ -21399,6 +21460,11 @@ More exams: https://aniledutech.in
     // ── FEATURE: Solutions PDF Download (free, client-side via jsPDF) ──
     function downloadResultPdf() {
       try {
+        if (!window.jspdf && exam._result && exam.questions) {
+          toast('⏳ PDF library load అవుతోంది...', 'info');
+          _aeLib('jspdf').then(downloadResultPdf).catch(function () { toast('PDF library load కాలేదు. Internet check చేసి మళ్ళీ try చేయండి.', 'error'); });
+          return;
+        }
         if (!window.jspdf || !exam._result || !exam.questions) {
           toast('PDF library ఇంకా load అవుతోంది, కాసేపు ఆగి try చేయండి.', 'error');
           return;
@@ -22572,6 +22638,7 @@ More exams: https://aniledutech.in
       setAIStatus('loading', '"' + file.name + '" చదువుతున్నాం...');
 
       try {
+        if (!window.pdfjsLib) await _aeLib('pdfjs').catch(function () { });
         if (!window.pdfjsLib) throw new Error('PDF.js load కాలేదు');
         pdfjsLib.GlobalWorkerOptions.workerSrc = 'https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.11.174/pdf.worker.min.js';
         const ab = await file.arrayBuffer();
@@ -25909,6 +25976,8 @@ Rules:
           if (typeof renderMockFolderAdminTable === 'function') renderMockFolderAdminTable();
         }
       }).catch(() => { });
+      // Returning visitor: exams are already in memory from the local cache — paint now, refresh when the network answers
+      if (window.__aeHadCache) { try { _dbLoading = false; updateStats(); filterExams(); } catch (e) { } }
       // _loadDBFromSupabase runs async; UI updates after data loads
       _loadDBFromSupabase().then(ok => {
         // ok === false → Supabase unreachable AND no offline cache found,
@@ -27393,7 +27462,6 @@ Rules:
 
 
   <script src="https://cdn.jsdelivr.net/npm/@emailjs/browser@4/dist/email.min.js" defer></script>
-  <script src="https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.11.174/pdf.min.js" defer></script>
   <!-- Razorpay loaded on-demand when payment starts -->
 
   <!-- PRICING MODAL -->
@@ -28329,7 +28397,8 @@ const isTrial = plan === 'trial';
 
     function _drawPaymentRevenueChart(records) {
       const canvas = document.getElementById('payment-revenue-chart');
-      if (!canvas || typeof Chart === 'undefined') return;
+      if (!canvas) return;
+      if (typeof Chart === 'undefined') { _aeLib('chart').then(function () { _drawPaymentRevenueChart(records); }).catch(function () { }); return; }
       if (_payRevenueChart) { _payRevenueChart.destroy(); _payRevenueChart = null; }
 
       const days = Array.from({ length: 14 }, (_, i) => {
@@ -28374,7 +28443,8 @@ const isTrial = plan === 'trial';
 
     function _drawPaymentPlanDonut(records) {
       const canvas = document.getElementById('payment-plan-donut');
-      if (!canvas || typeof Chart === 'undefined') return;
+      if (!canvas) return;
+      if (typeof Chart === 'undefined') { _aeLib('chart').then(function () { _drawPaymentPlanDonut(records); }).catch(function () { }); return; }
       if (_payPlanChart) { _payPlanChart.destroy(); _payPlanChart = null; }
 
       const planCounts = { trial: 0, monthly: 0, yearly: 0 };

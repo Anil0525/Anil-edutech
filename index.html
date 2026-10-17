@@ -11860,6 +11860,161 @@ nav .login-badge{border-radius:999px}
 #ux-upsell button:hover{transform:translateY(-2px) scale(1.03)}
 @media(max-width:560px){#ux-upsell{flex-wrap:wrap;margin:14px 12px}#ux-upsell button{width:100%}}
 </style>
+<style id="vx-video-style">
+/* ===== VIDEO SECTION REDESIGN ===== */
+#page-videos{background:radial-gradient(1200px 500px at 85% -10%,rgba(124,92,255,.35),transparent 60%),radial-gradient(900px 500px at -10% 10%,rgba(0,184,148,.22),transparent 55%),linear-gradient(180deg,#0A0F2C 0%,#121545 55%,#0B1030 100%);min-height:100vh;color:#fff}
+#page-videos .vx-hero{max-width:1100px;margin:0 auto;padding:44px 20px 10px;text-align:center}
+#page-videos .vx-badge{display:inline-flex;align-items:center;gap:8px;padding:6px 14px;border-radius:999px;background:rgba(255,255,255,.1);border:1px solid rgba(255,255,255,.18);font-size:12px;font-weight:800;letter-spacing:.4px;color:#C9D4FF;backdrop-filter:blur(8px)}
+#page-videos .vx-hero h2{font-size:clamp(28px,5vw,44px);font-weight:900;margin:14px 0 8px;line-height:1.15;background:linear-gradient(90deg,#fff,#B7C6FF 60%,#7CF2D4);-webkit-background-clip:text;background-clip:text;color:transparent}
+#page-videos .vx-hero p{color:#AEB9E6;font-size:15px;font-weight:600;margin:0 auto;max-width:560px}
+#page-videos .vx-stats{display:flex;justify-content:center;gap:12px;flex-wrap:wrap;margin-top:20px}
+#page-videos .vx-stat{padding:9px 18px;border-radius:14px;background:rgba(255,255,255,.07);border:1px solid rgba(255,255,255,.12);font-size:13px;font-weight:800;color:#DCE4FF}
+#page-videos .vx-stat b{color:#7CF2D4;font-size:16px;margin-right:4px}
+#page-videos .vx-wrap{max-width:1100px;margin:0 auto;padding:18px 20px 40px}
+#page-videos .vx-search{position:relative;max-width:520px;margin:6px auto 16px}
+#page-videos .vx-search span{position:absolute;left:16px;top:50%;transform:translateY(-50%);font-size:15px;opacity:.75}
+#page-videos .vx-search input{width:100%;box-sizing:border-box;padding:13px 18px 13px 44px;border-radius:14px;border:1.5px solid rgba(255,255,255,.16);background:rgba(255,255,255,.08);color:#fff;font-size:14px;font-weight:600;outline:none;transition:.2s}
+#page-videos .vx-search input::placeholder{color:#8F9BCB}
+#page-videos .vx-search input:focus{border-color:#7C9BFF;background:rgba(255,255,255,.12);box-shadow:0 0 0 4px rgba(124,155,255,.2)}
+#page-videos #video-filter-chips{display:flex;gap:8px;flex-wrap:nowrap;overflow-x:auto;padding:4px 2px 10px;justify-content:center;scrollbar-width:none}
+#page-videos #video-filter-chips::-webkit-scrollbar{display:none}
+#page-videos #video-filter-chips .filter-chip{flex:0 0 auto;padding:8px 18px;border-radius:999px;font-size:13px;font-weight:800;background:rgba(255,255,255,.08);color:#C7D2FF;border:1.5px solid rgba(255,255,255,.14);box-shadow:none;transition:.2s}
+#page-videos #video-filter-chips .filter-chip:hover{background:rgba(255,255,255,.16);transform:translateY(-1px)}
+#page-videos #video-filter-chips .filter-chip.active{background:linear-gradient(135deg,#6C5CFF,#2E8BFF);color:#fff;border-color:transparent;box-shadow:0 6px 20px rgba(88,101,255,.45)}
+#page-videos #videos-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(min(290px,100%),1fr));gap:22px;margin-top:14px}
+#page-videos .vx-card{background:rgba(255,255,255,.06);border:1px solid rgba(255,255,255,.12);border-radius:20px;overflow:hidden;cursor:pointer;display:flex;flex-direction:column;transition:transform .25s,box-shadow .25s,border-color .25s;backdrop-filter:blur(10px)}
+#page-videos .vx-card:hover{transform:translateY(-6px);border-color:rgba(124,155,255,.6);box-shadow:0 18px 44px rgba(0,0,0,.45),0 0 0 1px rgba(124,155,255,.25)}
+#page-videos .vx-thumb{position:relative;aspect-ratio:16/9;background:#000;overflow:hidden}
+#page-videos .vx-thumb img{width:100%;height:100%;object-fit:cover;display:block;transition:transform .5s}
+#page-videos .vx-card:hover .vx-thumb img{transform:scale(1.07)}
+#page-videos .vx-thumb::after{content:"";position:absolute;inset:0;background:linear-gradient(180deg,transparent 45%,rgba(5,8,30,.75))}
+#page-videos .vx-ph{position:absolute;inset:0;display:flex;align-items:center;justify-content:center;font-size:44px;background:linear-gradient(135deg,#2B2F7A,#0F7B6C)}
+#page-videos .vx-play{position:absolute;z-index:2;left:50%;top:50%;width:58px;height:58px;margin:-29px 0 0 -29px;border-radius:50%;background:rgba(255,255,255,.95);display:flex;align-items:center;justify-content:center;color:#E53E3E;font-size:20px;padding-left:4px;box-shadow:0 8px 28px rgba(0,0,0,.45);transition:transform .25s}
+#page-videos .vx-card:hover .vx-play{transform:scale(1.14)}
+#page-videos .vx-cat{position:absolute;z-index:2;left:12px;top:12px;padding:5px 12px;border-radius:999px;font-size:11px;font-weight:900;color:#fff;background:linear-gradient(135deg,#FF6B35,#FF3D71);box-shadow:0 4px 14px rgba(255,61,113,.4)}
+#page-videos .vx-new{position:absolute;z-index:2;right:12px;top:12px;padding:5px 11px;border-radius:999px;font-size:11px;font-weight:900;color:#0A0F2C;background:#7CF2D4}
+#page-videos .vx-body{padding:16px 18px 18px;display:flex;flex-direction:column;gap:8px;flex:1}
+#page-videos .vx-title{font-size:15.5px;font-weight:800;line-height:1.45;color:#fff;display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical;overflow:hidden}
+#page-videos .vx-desc{font-size:12.5px;line-height:1.6;color:#A9B5E3;font-weight:600;display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical;overflow:hidden}
+#page-videos .vx-watch{margin-top:auto;padding-top:6px;font-size:13px;font-weight:900;color:#7CF2D4;display:flex;align-items:center;gap:6px}
+#page-videos .vx-card:hover .vx-watch{gap:10px}
+#page-videos .vx-card.vx-feat{grid-column:1/-1;flex-direction:row;border-radius:24px;background:linear-gradient(135deg,rgba(108,92,255,.28),rgba(46,139,255,.14))}
+#page-videos .vx-feat .vx-thumb{flex:1.35;aspect-ratio:auto;min-height:300px}
+#page-videos .vx-feat .vx-body{flex:1;justify-content:center;padding:30px 30px}
+#page-videos .vx-feat .vx-title{font-size:23px;-webkit-line-clamp:3}
+#page-videos .vx-feat .vx-desc{font-size:14px;-webkit-line-clamp:4}
+#page-videos .vx-feat .vx-play{width:72px;height:72px;margin:-36px 0 0 -36px;font-size:26px}
+#page-videos .vx-feat .vx-watch{margin-top:10px;align-self:flex-start;padding:11px 22px;border-radius:12px;background:#fff;color:#1B1B4B}
+#page-videos .vx-label{display:inline-block;font-size:12px;font-weight:900;letter-spacing:.5px;color:#FFD166;margin-bottom:4px}
+#page-videos #videos-empty{color:#AEB9E6!important;background:rgba(255,255,255,.05);border:1px dashed rgba(255,255,255,.2);border-radius:20px;margin-top:20px}
+#page-videos .vx-yt{display:flex;justify-content:center;margin-top:30px}
+#page-videos .vx-yt a{display:inline-flex;align-items:center;gap:10px;padding:13px 26px;border-radius:14px;background:linear-gradient(135deg,#FF2D55,#E53E3E);color:#fff;font-weight:900;font-size:14px;text-decoration:none;box-shadow:0 10px 30px rgba(229,62,62,.4);transition:.2s}
+#page-videos .vx-yt a:hover{transform:translateY(-2px)}
+/* player modal */
+#video-overlay .analytics-box{background:linear-gradient(180deg,#151a52,#0B1030)!important;border:1px solid rgba(255,255,255,.14);color:#fff}
+#video-overlay .analytics-head h3,#video-overlay #video-player-title{color:#fff!important}
+#video-overlay #video-player-desc{color:#B8C3F0!important}
+#video-overlay .analytics-close{background:rgba(255,255,255,.12)!important;color:#fff!important}
+@media(max-width:700px){
+#page-videos .vx-hero{padding:30px 16px 6px}
+#page-videos .vx-wrap{padding:14px 14px 30px}
+#page-videos #video-filter-chips{justify-content:flex-start}
+#page-videos #videos-grid{gap:16px}
+#page-videos .vx-card.vx-feat{flex-direction:column}
+#page-videos .vx-feat .vx-thumb{min-height:0;aspect-ratio:16/9;flex:none}
+#page-videos .vx-feat .vx-body{padding:18px}
+#page-videos .vx-feat .vx-title{font-size:18px}
+#page-videos .vx-stat{padding:8px 14px;font-size:12px}
+}
+</style>
+<style id="vx-video-style2">
+#page-videos .vx-tools{display:flex;gap:10px;max-width:760px;margin:6px auto 14px;align-items:center}
+#page-videos .vx-tools .vx-search{flex:1;margin:0;max-width:none}
+#page-videos .vx-sort{padding:13px 14px;border-radius:14px;border:1.5px solid rgba(255,255,255,.16);background:rgba(255,255,255,.08);color:#fff;font-weight:700;font-size:13px;outline:none;cursor:pointer}
+#page-videos .vx-sort option{color:#111}
+#page-videos .vx-prog{max-width:420px;margin:16px auto 0}
+#page-videos .vx-prog-top{display:flex;justify-content:space-between;font-size:12px;font-weight:800;color:#C9D4FF;margin-bottom:6px}
+#page-videos .vx-bar{height:8px;border-radius:99px;background:rgba(255,255,255,.12);overflow:hidden}
+#page-videos .vx-bar i{display:block;height:100%;border-radius:99px;background:linear-gradient(90deg,#7CF2D4,#2E8BFF);transition:width .6s}
+#page-videos .vx-thumb{background:linear-gradient(110deg,#1b2160 30%,#2a3190 50%,#1b2160 70%);background-size:200% 100%;animation:vxsh 1.4s linear infinite}
+@keyframes vxsh{to{background-position:-200% 0}}
+#page-videos .vx-card{animation:vxin .5s both}
+@keyframes vxin{from{opacity:0;transform:translateY(18px)}to{opacity:1;transform:none}}
+#page-videos .vx-seen{position:absolute;z-index:2;right:12px;bottom:12px;padding:4px 11px;border-radius:999px;font-size:11px;font-weight:900;color:#0A0F2C;background:#7CF2D4}
+#page-videos .vx-card.is-seen .vx-thumb img{filter:saturate(.55) brightness(.8)}
+#page-videos .vx-count{max-width:1100px;margin:0 auto 4px;font-size:12px;font-weight:800;color:#8F9BCB;text-align:left}
+/* player extras */
+#video-overlay .vx-nav{display:flex;gap:8px;flex-wrap:wrap;margin-top:14px}
+#video-overlay .vx-nav button,#video-overlay .vx-nav a{padding:10px 16px;border-radius:12px;border:1px solid rgba(255,255,255,.18);background:rgba(255,255,255,.1);color:#fff;font-size:13px;font-weight:800;cursor:pointer;text-decoration:none;display:inline-flex;align-items:center;gap:6px}
+#video-overlay .vx-nav button:hover{background:rgba(255,255,255,.2)}
+#video-overlay .vx-nav button:disabled{opacity:.35;cursor:not-allowed}
+#video-overlay .vx-nav .vx-wa{background:#25D366;border-color:transparent;color:#05361a}
+#video-overlay .vx-nav .vx-yt2{background:#E53E3E;border-color:transparent}
+#video-overlay .vx-up{margin-top:18px}
+#video-overlay .vx-up h4{margin:0 0 10px;font-size:13px;color:#FFD166;font-weight:900;letter-spacing:.4px}
+#video-overlay .vx-up-item{display:flex;gap:12px;align-items:center;padding:8px;border-radius:12px;cursor:pointer;transition:.2s}
+#video-overlay .vx-up-item:hover{background:rgba(255,255,255,.1)}
+#video-overlay .vx-up-item img{width:96px;aspect-ratio:16/9;object-fit:cover;border-radius:8px;flex:none;background:#000}
+#video-overlay .vx-up-item span{font-size:12.5px;font-weight:700;color:#E3E9FF;line-height:1.45;display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical;overflow:hidden}
+@media(max-width:700px){#page-videos .vx-tools{flex-direction:column;align-items:stretch}#page-videos .vx-sort{width:100%}}
+</style>
+<style id="vx-video-mobile">
+/* ===== VIDEO PAGE — MOBILE ONLY (desktop untouched) ===== */
+@media (max-width:700px){
+#page-videos{background:radial-gradient(500px 300px at 100% 0,rgba(124,92,255,.38),transparent 60%),radial-gradient(420px 300px at 0 8%,rgba(0,184,148,.22),transparent 60%),linear-gradient(180deg,#0A0F2C 0%,#101440 60%,#0B1030 100%)}
+#page-videos .vx-hero{padding:22px 14px 2px}
+#page-videos .vx-badge{font-size:10.5px;padding:5px 12px}
+#page-videos .vx-hero h2{font-size:27px;margin:10px 0 6px}
+#page-videos .vx-hero p{font-size:13px;line-height:1.55;padding:0 6px}
+#page-videos .vx-stats{display:grid;grid-template-columns:repeat(3,1fr);gap:8px;margin-top:14px}
+#page-videos .vx-stat{padding:10px 4px;text-align:center;font-size:11px;border-radius:14px}
+#page-videos .vx-stat b{display:block;font-size:19px;margin:0 0 1px}
+#page-videos .vx-prog{margin-top:14px;padding:0 2px;max-width:none}
+#page-videos .vx-wrap{padding:14px 12px 110px}
+#page-videos .vx-tools{flex-direction:row;gap:8px;margin:2px 0 12px;max-width:none}
+#page-videos .vx-search input{padding:13px 12px 13px 38px;font-size:14px;border-radius:14px}
+#page-videos .vx-search span{left:13px}
+#page-videos .vx-sort{width:104px;flex:none;padding:12px 6px;font-size:12px;border-radius:14px}
+#page-videos #video-filter-chips{margin:0 -12px;padding:2px 12px 12px;gap:8px;justify-content:flex-start;-webkit-overflow-scrolling:touch}
+#page-videos #video-filter-chips .filter-chip{padding:9px 17px;font-size:13px}
+#page-videos .vx-count{font-size:12px;margin:0 2px 8px}
+#page-videos #videos-grid{grid-template-columns:1fr;gap:12px;margin-top:0}
+/* compact list cards: thumbnail left, text right */
+#page-videos .vx-card{border-radius:16px}
+#page-videos .vx-card:hover{transform:none;box-shadow:none}
+#page-videos .vx-card:active{transform:scale(.98)}
+#page-videos .vx-card:not(.vx-feat){flex-direction:row;align-items:stretch}
+#page-videos .vx-card:not(.vx-feat) .vx-thumb{width:140px;flex:none;aspect-ratio:auto;min-height:96px}
+#page-videos .vx-card:not(.vx-feat) .vx-play{width:34px;height:34px;margin:-17px 0 0 -17px;font-size:12px;padding-left:2px}
+#page-videos .vx-card:not(.vx-feat) .vx-cat{left:6px;top:6px;padding:3px 8px;font-size:9px}
+#page-videos .vx-card:not(.vx-feat) .vx-new{right:6px;top:6px;padding:3px 8px;font-size:9px}
+#page-videos .vx-card:not(.vx-feat) .vx-seen{right:6px;bottom:6px;padding:3px 8px;font-size:9px}
+#page-videos .vx-card:not(.vx-feat) .vx-body{padding:11px 12px;gap:5px;justify-content:center}
+#page-videos .vx-card:not(.vx-feat) .vx-title{font-size:13.5px;line-height:1.4;-webkit-line-clamp:3}
+#page-videos .vx-card:not(.vx-feat) .vx-desc{display:none}
+#page-videos .vx-card:not(.vx-feat) .vx-watch{font-size:12px;padding-top:0}
+/* featured card: big image on top */
+#page-videos .vx-card.vx-feat{flex-direction:column;border-radius:20px}
+#page-videos .vx-feat .vx-thumb{min-height:0;aspect-ratio:16/9;flex:none}
+#page-videos .vx-feat .vx-body{padding:16px 16px 18px;gap:7px}
+#page-videos .vx-feat .vx-title{font-size:17px;-webkit-line-clamp:3}
+#page-videos .vx-feat .vx-desc{font-size:13px;-webkit-line-clamp:3}
+#page-videos .vx-feat .vx-play{width:60px;height:60px;margin:-30px 0 0 -30px;font-size:22px}
+#page-videos .vx-feat .vx-watch{align-self:stretch;justify-content:center;padding:13px;margin-top:6px;font-size:14px}
+#page-videos .vx-yt{margin-top:22px}
+#page-videos .vx-yt a{width:100%;justify-content:center;box-sizing:border-box;padding:15px}
+/* player = full-width bottom sheet */
+#video-overlay .analytics-box{max-width:100%!important;max-height:94vh;border-radius:22px 22px 0 0;padding-bottom:calc(20px + env(safe-area-inset-bottom))!important}
+#video-overlay .analytics-head{padding:12px 14px 12px 16px}
+#video-overlay .analytics-head h3{font-size:14px!important;line-height:1.45;padding-right:10px}
+#video-overlay .analytics-box>div:last-child{padding:0 12px 12px!important}
+#video-overlay .analytics-box>div:last-child>div:first-child{border-radius:12px!important}
+#video-overlay #video-player-desc{font-size:12.5px!important}
+#video-overlay .vx-nav{display:grid;grid-template-columns:1fr 1fr;gap:8px}
+#video-overlay .vx-nav button,#video-overlay .vx-nav a{justify-content:center;padding:13px 8px;font-size:13px}
+#video-overlay .vx-up-item img{width:88px}
+}
+</style>
 </head>
 
 <body>
@@ -15230,26 +15385,34 @@ nav .login-badge{border-radius:999px}
 
   <!-- VIDEOS PAGE -->
   <div id="page-videos" class="page">
-    <div class="prog-header">
+    <div class="vx-hero">
+      <span class="vx-badge">🎓 FREE VIDEO CLASSES</span>
       <h2>🎥 Video Lessons</h2>
-      <p>YouTube నుండి free video lessons చూడండి</p>
+      <p>TSPSC, SSC, Banking, GK — తెలుగులో free video lessons చూడండి, నేర్చుకోండి</p>
+      <div class="vx-stats" id="vx-stats"></div>
+      <div class="vx-prog" id="vx-prog"></div>
     </div>
-    <div class="section" style="max-width:860px;margin:0 auto;padding:20px">
+    <div class="vx-wrap">
+      <div class="vx-tools">
+        <div class="vx-search"><span>🔍</span><input id="video-search" placeholder="Video search చేయండి..." oninput="renderVideos()"></div>
+        <select class="vx-sort" id="video-sort" onchange="renderVideos()">
+          <option value="new">🆕 Newest first</option>
+          <option value="old">🕐 Oldest first</option>
+          <option value="az">🔤 A → Z</option>
+          <option value="unseen">👀 Not watched first</option>
+        </select>
+      </div>
       <div class="filter-chips" id="video-filter-chips">
         <button class="filter-chip active" data-vcat="" onclick="setVideoFilter(this,'')">All</button>
       </div>
-      <div class="search-bar-wrap" style="max-width:420px">
-        <span class="search-icon">🔍</span>
-        <input class="search-bar" id="video-search" placeholder="Video search చేయండి..." oninput="renderVideos()">
-      </div>
-      <div id="videos-grid"
-        style="display:grid;grid-template-columns:repeat(auto-fill,minmax(min(280px,100%),1fr));gap:18px;margin-top:4px">
-      </div>
+      <div class="vx-count" id="vx-count"></div>
+      <div id="videos-grid"></div>
       <div id="videos-empty" style="display:none;text-align:center;padding:48px;color:var(--text3)">
         <div style="font-size:48px;margin-bottom:12px">🎥</div>
         <div style="font-weight:700;font-size:15px">Videos ఇంకా add చేయలేదు</div>
         <div style="font-size:13px;margin-top:6px">కొత్త videos కోసం YouTube channel ని చూడండి</div>
       </div>
+      <div class="vx-yt"><a href="https://www.youtube.com/@AnilEduTechYT?sub_confirmation=1" target="_blank" rel="noopener noreferrer" onclick="try{_track('yt_subscribe_click',{src:'video_page'})}catch(e){}">▶ YouTube Channel Subscribe చేయండి</a></div>
     </div>
     <footer>
       <div class="footer-inner">
@@ -15279,10 +15442,19 @@ nav .login-badge{border-radius:999px}
       <div style="padding:0 20px 16px">
         <div style="position:relative;padding-top:56.25%;border-radius:14px;overflow:hidden;background:#000">
           <iframe id="video-iframe" style="position:absolute;inset:0;width:100%;height:100%;border:none"
+            referrerpolicy="strict-origin-when-cross-origin"
+            allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"
             allowfullscreen></iframe>
         </div>
         <div id="video-player-desc"
           style="margin-top:12px;font-size:13px;color:var(--text2);font-weight:600;line-height:1.6"></div>
+        <div class="vx-nav">
+          <button id="vx-prev" onclick="vxStep(-1)">⏮ Previous</button>
+          <button id="vx-next" onclick="vxStep(1)">Next ⏭</button>
+          <a id="vx-wa" class="vx-wa" href="#" target="_blank" rel="noopener noreferrer">📲 Share</a>
+          <a id="video-yt-link" class="vx-yt2" href="#" target="_blank" rel="noopener noreferrer">▶ YouTube</a>
+        </div>
+        <div class="vx-up" id="vx-up"></div>
       </div>
     </div>
   </div>
@@ -26227,31 +26399,66 @@ Rules:
         (!q || v.title.toLowerCase().includes(q) || (v.desc || '').toLowerCase().includes(q))
       );
 
+      const seen = vxSeen();
+      const watchedN = videos.filter(v => seen[v.id]).length;
+      const _stHtml = `<div class="vx-stat"><b>${videos.length}</b>Videos</div><div class="vx-stat"><b>${cats.length}</b>Categories</div><div class="vx-stat"><b>100%</b>Free</div>`;
+      const _st0 = document.getElementById('vx-stats'); if (_st0) _st0.innerHTML = _stHtml;
+      const _pr = document.getElementById('vx-prog');
+      if (_pr) _pr.innerHTML = videos.length ? `<div class="vx-prog-top"><span>✅ మీరు చూసినవి</span><span>${watchedN} / ${videos.length}</span></div><div class="vx-bar"><i style="width:${Math.round(watchedN / videos.length * 100)}%"></i></div>` : '';
+
       if (!filtered.length) {
         grid.style.display = 'none';
         empty.style.display = '';
+        const _c0 = document.getElementById('vx-count'); if (_c0) _c0.textContent = '';
+        _vxList = [];
         return;
       }
       empty.style.display = 'none';
       grid.style.display = '';
 
-      grid.innerHTML = filtered.map(v => {
+      const mode = document.getElementById('video-sort')?.value || 'new';
+      const _sorted = [...filtered].sort((x, y) => {
+        if (mode === 'old') return (Number(x.id) || 0) - (Number(y.id) || 0);
+        if (mode === 'az') return String(x.title).localeCompare(String(y.title));
+        if (mode === 'unseen') return ((seen[x.id] ? 1 : 0) - (seen[y.id] ? 1 : 0)) || ((Number(y.id) || 0) - (Number(x.id) || 0));
+        return (Number(y.id) || 0) - (Number(x.id) || 0);
+      });
+      _vxList = _sorted.map(v => v.id);
+      const _cc = document.getElementById('vx-count'); if (_cc) _cc.textContent = `${_sorted.length} video${_sorted.length === 1 ? '' : 's'}`;
+      const _showFeat = !q && !_videoFilter && mode === 'new' && _sorted.length >= 3;
+      const _maxId = Math.max(0, ...videos.map(x => Number(x.id) || 0));
+      grid.innerHTML = _sorted.map((v, i) => {
         const ytId = getYtId(v.url || '');
         const thumb = ytId ? `https://img.youtube.com/vi/${ytId}/hqdefault.jpg` : '';
-        return `<div class="video-card" onclick="playVideo(${v.id})">
-      <div class="video-thumb">
-        ${thumb ? `<img src="${thumb}" alt="${escHtml(v.title)}" loading="lazy">` : '<div class="video-thumb-placeholder">🎥</div>'}
-        <div class="video-play-btn"><span>▶</span></div>
+        const feat = _showFeat && i === 0;
+        const isNew = Number(v.id) === _maxId && videos.length > 1;
+        const isSeen = !!seen[v.id];
+        return `<div class="vx-card${feat ? ' vx-feat' : ''}${isSeen ? ' is-seen' : ''}" style="animation-delay:${Math.min(i, 12) * 45}ms" onclick="playVideo(${v.id})">
+      <div class="vx-thumb">
+        ${thumb ? `<img src="${thumb}" alt="${escHtml(v.title)}" loading="lazy">` : '<div class="vx-ph">🎥</div>'}
+        <span class="vx-cat">${escHtml(v.cat || 'Video')}</span>
+        ${isNew ? '<span class="vx-new">NEW</span>' : ''}
+        ${isSeen ? '<span class="vx-seen">✓ Watched</span>' : ''}
+        <div class="vx-play">▶</div>
       </div>
-      <div class="video-card-body">
-        <div class="video-card-title">${escHtml(v.title)}</div>
-        <div class="video-card-meta">
-          <span class="video-cat-pill">${escHtml(v.cat)}</span>
-        </div>
-        ${v.desc ? `<div class="video-desc">${escHtml(v.desc)}</div>` : ''}
+      <div class="vx-body">
+        ${feat ? '<span class="vx-label">🔥 LATEST VIDEO</span>' : ''}
+        <div class="vx-title">${escHtml(v.title)}</div>
+        ${v.desc ? `<div class="vx-desc">${escHtml(v.desc)}</div>` : ''}
+        <div class="vx-watch">${isSeen ? '↻ Watch Again' : '▶ Watch Now'} <span>→</span></div>
       </div>
     </div>`;
       }).join('');
+    }
+
+    let _vxList = [];
+    let _vxCur = null;
+    function vxSeen() { try { return JSON.parse(localStorage.getItem('ae_videos_seen') || '{}'); } catch (e) { return {}; } }
+    function vxMark(id) { try { const m = vxSeen(); m[id] = 1; localStorage.setItem('ae_videos_seen', JSON.stringify(m)); } catch (e) { } }
+    function vxStep(d) {
+      const i = _vxList.indexOf(_vxCur);
+      const n = _vxList[i + d];
+      if (n !== undefined) playVideo(n);
     }
 
     function playVideo(id) {
@@ -26259,11 +26466,31 @@ Rules:
       if (!v) return;
       const ytId = getYtId(v.url || '');
       if (!ytId) { window.open(v.url, '_blank'); return; }
+      const ytLink = 'https://www.youtube.com/watch?v=' + ytId;
+      vxMark(id);
+      // YouTube embeds fail (Error 153) on file:// pages — open YouTube directly when testing locally
+      if (location.protocol === 'file:') { window.open(ytLink, '_blank', 'noopener'); renderVideos(); return; }
+      _vxCur = id;
+      const _yl = document.getElementById('video-yt-link'); if (_yl) _yl.href = ytLink;
+      const _wa = document.getElementById('vx-wa');
+      if (_wa) _wa.href = 'https://wa.me/?text=' + encodeURIComponent('📺 ' + v.title + '\n' + ytLink + '\n\nAnil EduTech — Free Telugu Mock Tests: https://aniledutech.in');
       document.getElementById('video-player-title').textContent = v.title;
       document.getElementById('video-player-desc').textContent = v.desc || '';
       const _vif = document.getElementById('video-iframe');
-      if (_vif) _vif.src = `https://www.youtube.com/embed/${ytId}?autoplay=1&rel=0`;
+      if (_vif) _vif.src = `https://www.youtube.com/embed/${ytId}?autoplay=1&rel=0&playsinline=1`;
+      const idx = _vxList.indexOf(id);
+      const pb = document.getElementById('vx-prev'), nb = document.getElementById('vx-next');
+      if (pb) pb.disabled = idx <= 0;
+      if (nb) nb.disabled = idx < 0 || idx >= _vxList.length - 1;
+      const rel = (DB.videos || []).filter(x => x.id !== id && x.cat === v.cat).slice(0, 4);
+      const up = document.getElementById('vx-up');
+      if (up) up.innerHTML = rel.length ? '<h4>▶ UP NEXT — ఇలాంటివే</h4>' + rel.map(x => {
+        const yid = getYtId(x.url || '');
+        return `<div class="vx-up-item" onclick="playVideo(${x.id})">${yid ? `<img src="https://img.youtube.com/vi/${yid}/mqdefault.jpg" alt="" loading="lazy">` : ''}<span>${escHtml(x.title)}</span></div>`;
+      }).join('') : '';
       document.getElementById('video-overlay').classList.add('show');
+      const box = document.querySelector('#video-overlay .analytics-box'); if (box) box.scrollTop = 0;
+      renderVideos();
     }
 
     function closeVideoPlayer() {
@@ -26271,6 +26498,9 @@ Rules:
       const _vif2 = document.getElementById('video-iframe');
       if (_vif2) _vif2.src = '';
     }
+    document.addEventListener('keydown', function (e) {
+      if (e.key === 'Escape') { const o = document.getElementById('video-overlay'); if (o && o.classList.contains('show')) closeVideoPlayer(); }
+    });
 
     // Admin — add video
     function addVideo() {

@@ -16191,7 +16191,6 @@ nav .login-badge{border-radius:999px}
           try {
             const snap = { exams: DB.exams, questions: DB.questions, videos: DB.videos, nextExamId: DB.nextExamId, nextQId: DB.nextQId, nextVideoId: DB.nextVideoId };
             localStorage.setItem('ae_local_db', JSON.stringify(snap));
-            localStorage.setItem('anil_edutech_db', JSON.stringify(DB));
             localStorage.setItem('ae_nextQId_sb', String(DB.nextQId));
           } catch (e) { }
         });
@@ -16301,7 +16300,7 @@ nav .login-badge{border-radius:999px}
       // per-device data (was leaking into the shared ae_settings table / being shared across ALL users)
       '_ae_login_attempts', '_ae_admin_attempts', 'ae_local_db', 'ae_used_ref_codes', 'ae_referral_count', 'ae_my_referral_count_cache', 'ae_pending_ref', 'gnews_api_key'];
     // One-time cleanup of legacy dead secrets that older versions pulled into this browser
-    ['ae_admin_pw', 'ae_admin_uname', 'ae_admin_recovery', 'ae_pw_resets'].forEach(function (k) { try { localStorage.removeItem(k); } catch (e) { } });
+    ['ae_admin_pw', 'ae_admin_uname', 'ae_admin_recovery', 'ae_pw_resets', 'anil_edutech_db'].forEach(function (k) { try { localStorage.removeItem(k); } catch (e) { } });
 
     // ── SUPABASE SAVE ──
     async function _sbSave(key, value) {
@@ -16309,7 +16308,7 @@ nav .login-badge{border-radius:999px}
       if (_sbDead) return; // silent when circuit breaker is open
       try {
         if (key === 'anil_edutech_db') {
-          await sbUpsert('ae_db', { id: 'main', data: value, updated_at: new Date().toISOString() });
+          return; // legacy full-DB blob no longer stored in Supabase (exams/questions have their own tables)
         } else if (key === 'ae_scores') {
           await sbUpsert('ae_db', { id: 'scores', data: value, updated_at: new Date().toISOString() });
         } else if (key === 'ae_sub_pending') {
@@ -16323,6 +16322,9 @@ nav .login-badge{border-radius:999px}
             await sbUpsert('ae_db', { id: key, data: value, updated_at: new Date().toISOString() });
           }
         } else {
+          // ae_settings is writable by the admin (authenticated) only. Visitors use the anon key, so these
+          // writes could only ever fail with 401 — skip them (values still persist locally on the device).
+          if (SB_HEADERS['Authorization'] === 'Bearer ' + SB_KEY) return;
           if (value === null) {
             await sbDelete('ae_settings', `key=eq.${encodeURIComponent(key)}`);
           } else {
@@ -16364,7 +16366,7 @@ nav .login-badge{border-radius:999px}
         let dbRows = null, settingsRows = null;
         try {
           [dbRows, settingsRows] = await withTimeout(Promise.all([
-            sbGet('ae_db', null),
+            sbGet('ae_db', 'id=neq.main'), // skip the 'main' row: it duplicated the whole question bank (loaded from ae_exams/ae_questions anyway)
             sbGet('ae_settings', null)
           ]));
         } catch (e) { /* silent — SB offline */ }
@@ -16427,7 +16429,7 @@ nav .login-badge{border-radius:999px}
         }
 
         // If Supabase empty/failed → try Google Sheets silently
-        if (!sbWorking || !_store['anil_edutech_db']) {
+        if (!sbWorking) {
           try {
             const [db, scores, pending, approved, ...settingResults] = await withTimeout(Promise.all([
               gsAPI({ action: 'getDB' }),

@@ -36794,5 +36794,29 @@ new MutationObserver(function(){if(el.dataset.busy)return;el.dataset.busy=1;run(
   if(localStorage.getItem('ae_show_admin')==='1') document.body.classList.add('ae-show-admin');
 }catch(e){}})();
 </script>
+<script>
+/* ===== Auto-update: mobile/PWA users always get the latest version ===== */
+(function () {
+  if (!('serviceWorker' in navigator)) return;
+  function examRunning() { try { return typeof exam !== 'undefined' && exam && exam.timerInterval; } catch (e) { return false; } }
+  var reloading = false;
+  function safeReload() {
+    if (reloading) return;
+    if (examRunning()) { setTimeout(safeReload, 15000); return; } // don't interrupt a running test
+    reloading = true; location.reload();
+  }
+  var hadController = !!navigator.serviceWorker.controller;
+  navigator.serviceWorker.addEventListener('controllerchange', function () { if (hadController) safeReload(); });
+  window.addEventListener('load', function () {
+    navigator.serviceWorker.register('/sw.js', { updateViaCache: 'none' }).then(function (reg) {
+      reg.update().catch(function () {});
+      document.addEventListener('visibilitychange', function () {
+        if (document.visibilityState === 'visible') reg.update().catch(function () {});
+      });
+      setInterval(function () { reg.update().catch(function () {}); }, 30 * 60 * 1000);
+    }).catch(function () {});
+  });
+})();
+</script>
 </body>
 </html>

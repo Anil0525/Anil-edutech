@@ -1,7 +1,5 @@
 User-agent: *
 Allow: /
-Disallow: /rest/
-Disallow: /auth/
-Disallow: /storage/
+Disallow: /admin-content.html
 
 Sitemap: https://aniledutech.in/sitemap.xml

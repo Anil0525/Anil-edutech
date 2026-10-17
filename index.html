@@ -14140,35 +14140,35 @@ nav .login-badge{border-radius:999px}
         <a href="/" class="tb-sb-item active" id="sb-all" onclick="event.preventDefault();goExams('');_setSbActive('sb-all');closeCatDrawer()">
           <span class="tb-sb-icon" style="background:linear-gradient(135deg,#6366f1,#8b5cf6)">🏠</span>All Exams
         </a>
-        <a href="/?exam=tspsc" class="tb-sb-item" id="sb-tspsc" onclick="event.preventDefault();goExams('TSPSC');_setSbActive('sb-tspsc');closeCatDrawer()">
+        <a href="/tspsc-groups-guide.html" class="tb-sb-item" id="sb-tspsc" onclick="event.preventDefault();goExams('TSPSC');_setSbActive('sb-tspsc');closeCatDrawer()">
           <span class="tb-sb-icon" style="background:linear-gradient(135deg,#1A73E8,#0ea5e9)">🏛️</span>TSPSC
         </a>
-        <a href="/?exam=appsc" class="tb-sb-item" id="sb-appsc" onclick="event.preventDefault();goExams('APPSC');_setSbActive('sb-appsc');closeCatDrawer()">
+        <a href="/appsc-groups-guide.html" class="tb-sb-item" id="sb-appsc" onclick="event.preventDefault();goExams('APPSC');_setSbActive('sb-appsc');closeCatDrawer()">
           <span class="tb-sb-icon" style="background:linear-gradient(135deg,#7C3AED,#A855F7)">🏛️</span>APPSC
         </a>
-        <a href="/?exam=ssc" class="tb-sb-item" id="sb-ssc" onclick="event.preventDefault();goExams('SSC');_setSbActive('sb-ssc');closeCatDrawer()">
+        <a href="/ssc-cgl-guide.html" class="tb-sb-item" id="sb-ssc" onclick="event.preventDefault();goExams('SSC');_setSbActive('sb-ssc');closeCatDrawer()">
           <span class="tb-sb-icon" style="background:linear-gradient(135deg,#10b981,#059669)">📋</span>SSC
         </a>
-        <a href="/?exam=rrb" class="tb-sb-item" id="sb-rrb" onclick="event.preventDefault();goExams('RRB');_setSbActive('sb-rrb');closeCatDrawer()">
+        <a href="/rrb-ntpc-guide.html" class="tb-sb-item" id="sb-rrb" onclick="event.preventDefault();goExams('RRB');_setSbActive('sb-rrb');closeCatDrawer()">
           <span class="tb-sb-icon" style="background:linear-gradient(135deg,#0ea5e9,#0284c7)">🚂</span>RRB
         </a>
-        <a href="/?exam=banking" class="tb-sb-item" id="sb-bank" onclick="event.preventDefault();goExams('Banking');_setSbActive('sb-bank');closeCatDrawer()">
+        <a href="/banking-exam-guide.html" class="tb-sb-item" id="sb-bank" onclick="event.preventDefault();goExams('Banking');_setSbActive('sb-bank');closeCatDrawer()">
           <span class="tb-sb-icon" style="background:linear-gradient(135deg,#f59e0b,#d97706)">🏦</span>Banking
         </a>
-        <a href="/?exam=gk" class="tb-sb-item" id="sb-gk" onclick="event.preventDefault();goExams('GK');_setSbActive('sb-gk');closeCatDrawer()">
+        <a href="/gk-guide.html" class="tb-sb-item" id="sb-gk" onclick="event.preventDefault();goExams('GK');_setSbActive('sb-gk');closeCatDrawer()">
           <span class="tb-sb-icon" style="background:linear-gradient(135deg,#ec4899,#db2777)">🌍</span>GK
         </a>
-        <a href="/?exam=mock-test" class="tb-sb-item" id="sb-mock" onclick="event.preventDefault();goExams('Mock Test');_setSbActive('sb-mock');closeCatDrawer()">
+        <a href="/" class="tb-sb-item" id="sb-mock" onclick="event.preventDefault();goExams('Mock Test');_setSbActive('sb-mock');closeCatDrawer()">
           <span class="tb-sb-icon" style="background:linear-gradient(135deg,#f97316,#ea580c)">📝</span>Mock Tests
         </a>
-        <a href="/?exam=current-affairs" class="tb-sb-item" id="sb-ca"
+        <a href="/current-affairs-strategy.html" class="tb-sb-item" id="sb-ca"
           onclick="event.preventDefault();goExams('Current Affairs');_setSbActive('sb-ca');closeCatDrawer()">
           <span class="tb-sb-icon" style="background:linear-gradient(135deg,#14b8a6,#0d9488)">📰</span>Current Affairs
         </a>
-        <a href="/?exam=live-test" class="tb-sb-item" id="sb-live" onclick="event.preventDefault();goExams('Live Test');_setSbActive('sb-live');closeCatDrawer()">
+        <a href="/" class="tb-sb-item" id="sb-live" onclick="event.preventDefault();goExams('Live Test');_setSbActive('sb-live');closeCatDrawer()">
           <span class="tb-sb-icon" style="background:linear-gradient(135deg,#ef4444,#dc2626)">🔴</span>Live Tests
         </a>
-        <a href="/?exam=previous-papers" class="tb-sb-item" id="sb-pp"
+        <a href="/" class="tb-sb-item" id="sb-pp"
           onclick="event.preventDefault();goExams('Previous Papers');_setSbActive('sb-pp');closeCatDrawer()">
           <span class="tb-sb-icon" style="background:linear-gradient(135deg,#8b5cf6,#7c3aed)">📄</span>Previous Papers
         </a>
@@ -19855,14 +19855,10 @@ More exams: https://aniledutech.in
       if (ogTitle) ogTitle.setAttribute('content', seo.title);
       const ogDesc = document.querySelector('meta[property="og:description"]');
       if (ogDesc) ogDesc.setAttribute('content', seo.desc);
+      // SEO: never create /?exam= URLs (Google counted them as duplicate/not-indexed pages).
+      // Canonical always stays on the home URL; the address bar is left unchanged.
       const canon = document.querySelector('link[rel="canonical"]');
-      const newUrl = seo.slug ? ('/?exam=' + seo.slug) : '/';
-      if (canon) canon.setAttribute('href', 'https://aniledutech.in' + newUrl);
-      try {
-        if (window.location.pathname + window.location.search !== newUrl) {
-          history.pushState(null, '', newUrl);
-        }
-      } catch (e) { }
+      if (canon) canon.setAttribute('href', 'https://aniledutech.in/');
     }
 
     function goExams(cat) {

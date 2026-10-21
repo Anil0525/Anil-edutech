@@ -37107,7 +37107,7 @@ nav .nav-links .nav-btn.nav-accent{grid-column:1/-1;justify-content:center}
 #ae-fest-pop h2{margin:8px 0 4px;font-size:22px}
 #ae-fest-pop .off{display:inline-block;margin:12px 0;background:#F5B731;color:#3b1d00;font-weight:900;border-radius:14px;padding:6px 16px;font-size:18px}
 #ae-fest-pop button{display:block;width:100%;margin-top:8px;padding:12px;border-radius:14px;border:0;font-weight:900;font-size:14px;cursor:pointer;font-family:inherit}
-#ae-fest-pm{margin-bottom:12px;padding:8px 12px;border-radius:12px;background:linear-gradient(90deg,#E8640A,#F5B731);color:#fff;font-weight:800;font-size:12px}
+#ae-fest-pm{margin-bottom:12px;padding:8px 48px 8px 12px;border-radius:12px;background:linear-gradient(90deg,#E8640A,#F5B731);color:#fff;font-weight:800;font-size:12px}
 </style>
 <script id="ae-fest-js">
 /* ===== Festival wishes + automatic festival discounts =====
@@ -37190,6 +37190,61 @@ ready(function(){try{
   document.body.appendChild(p);
  },1500);
 }catch(e){}});
+/* 4) Festival background. Hero (blue frame) gets drawn festival artwork (no emojis); whole page keeps a very faint pattern.
+   Optional: add img:'/fest/xyz.jpg' to a FEST entry to use your own image. Everything disappears automatically when the festival window ends. */
+ready(function(){try{
+ function U(w,h,b){return 'url("data:image/svg+xml,'+encodeURIComponent("<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 "+w+" "+h+"'>"+b+"</svg>")+'")'}
+ function sp(x,y,r,c){return "<path d='M"+x+" "+(y-r)+"Q"+x+" "+y+" "+(x+r)+" "+y+"Q"+x+" "+y+" "+x+" "+(y+r)+"Q"+x+" "+y+" "+(x-r)+" "+y+"Q"+x+" "+y+" "+x+" "+(y-r)+"Z' fill='"+c+"'/>"}
+ function fl(x,y,s){return "<g transform='translate("+x+" "+y+") scale("+s+")'><path d='M0-30C12-14 14-4 0 8C-14-4-12-14 0-30Z' fill='#FFB703'/><path d='M0-14C6-6 6-1 0 5C-6-1-6-6 0-14Z' fill='#FF5A1F'/></g>"}
+ function ci(x,y,r,c){return "<circle cx='"+x+"' cy='"+y+"' r='"+r+"' fill='"+c+"'/>"}
+ function flower(x,y,r,c){var o='';for(var i=0;i<8;i++){var a=i*Math.PI/4;o+=ci((x+Math.cos(a)*r).toFixed(1),(y+Math.sin(a)*r).toFixed(1),r*.7,c)}return o+ci(x,y,r*.6,'#B45309')}
+ function garland(cols){var o="<path d='M0 14Q100 44 200 14T400 14T600 14T800 14' stroke='#7c4a03' stroke-width='2' fill='none'/>";for(var i=0;i<=32;i++){var x=i*25,y=14+(i%8<4?1:-1)*0+Math.sin(i*Math.PI/4)*0;var yy=14+ (Math.abs(((i*25)%200)-100)<=100?(30-Math.abs(((i*25)%200)-100)*0.3):0);o+=ci(x,yy.toFixed(1),8,cols[i%cols.length])}return U(800,60,o)}
+ function bunting(cols){var o="<path d='M0 6Q200 30 400 6T800 6' stroke='#fff' stroke-width='2' fill='none'/>";for(var i=0;i<16;i++){var x=25+i*50,y=6+Math.sin((x/400)*Math.PI)*0+((x%400)<200?(x%400)*.12:(400-x%400)*.12);o+="<path d='M"+(x-14)+" "+y.toFixed(1)+"L"+(x+14)+" "+y.toFixed(1)+"L"+x+" "+(y+34).toFixed(1)+"Z' fill='"+cols[i%cols.length]+"'/>"}return U(800,60,o)}
+ function lights(){var o="<path d='M0 12Q100 40 200 12T400 12T600 12T800 12' stroke='#fde68a' stroke-width='2' fill='none'/>",c=['#FDE047','#FB923C','#F472B6','#60A5FA'];for(var i=0;i<16;i++){var x=25+i*50,y=12+((x%200)<100?(x%200)*.28:(200-x%200)*.28);o+="<circle cx='"+x+"' cy='"+(y+8).toFixed(1)+"' r='14' fill='"+c[i%4]+"' opacity='.25'/>"+ci(x,(y+8).toFixed(1),6,c[i%4])}return U(800,60,o)}
+ function dots(cols,n){var o='',r=7;for(var i=0;i<n;i++){o+=ci((i*83%800),(i*37%56)+4,3+(i%3)*2,cols[i%cols.length])}return U(800,60,o)}
+ function kite(x,y,s,a,b,rot){return "<g transform='translate("+x+" "+y+") rotate("+rot+") scale("+s+")'><path d='M0-34L22 0L0 44L-22 0Z' fill='"+a+"'/><path d='M0-34L22 0L0 0Z M0 44L-22 0L0 0Z' fill='"+b+"'/><path d='M0 44Q-14 62 0 78T0 112' stroke='#fff' stroke-width='2' fill='none'/></g>"}
+ function burst(x,y,r,c){var o='';for(var i=0;i<12;i++){var a=i*Math.PI/6,x1=x+Math.cos(a)*r*.35,y1=y+Math.sin(a)*r*.35,x2=x+Math.cos(a)*r,y2=y+Math.sin(a)*r;o+="<line x1='"+x1.toFixed(1)+"' y1='"+y1.toFixed(1)+"' x2='"+x2.toFixed(1)+"' y2='"+y2.toFixed(1)+"' stroke='"+c+"' stroke-width='3' stroke-linecap='round'/>"+ci(x2.toFixed(1),y2.toFixed(1),3.5,c)}return o+ci(x,y,5,c)}
+ function diya(x,y,s){return "<g transform='translate("+x+" "+y+") scale("+s+")'><circle cx='0' cy='-26' r='34' fill='#FDBA74' opacity='.28'/><path d='M-26 0Q0 30 26 0Z' fill='#C2410C'/><ellipse cx='0' cy='0' rx='26' ry='6' fill='#EA580C'/>"+fl(0,-4,1)+"</g>"}
+ function wheel(x,y,r){var o="<circle cx='"+x+"' cy='"+y+"' r='"+r+"' fill='#fff' opacity='.9'/><circle cx='"+x+"' cy='"+y+"' r='"+r+"' fill='none' stroke='#1E3A8A' stroke-width='4'/>";for(var i=0;i<24;i++){var a=i*Math.PI/12;o+="<line x1='"+x+"' y1='"+y+"' x2='"+(x+Math.cos(a)*r).toFixed(1)+"' y2='"+(y+Math.sin(a)*r).toFixed(1)+"' stroke='#1E3A8A' stroke-width='1.5'/>"}return o+ci(x,y,5,'#1E3A8A')}
+ function tree(x,y,s){return "<g transform='translate("+x+" "+y+") scale("+s+")'><rect x='-8' y='60' width='16' height='22' fill='#78350F'/><path d='M0-70L38-20H-38Z' fill='#16A34A'/><path d='M0-40L50 20H-50Z' fill='#15803D'/><path d='M0-10L62 62H-62Z' fill='#166534'/>"+sp(0,-78,14,'#FDE047')+ci(-20,10,5,'#EF4444')+ci(22,28,5,'#FACC15')+ci(-8,46,5,'#60A5FA')+ci(26,0,4,'#EF4444')+"</g>"}
+ var T={
+ dussehra:{L:U(200,300,ci(120,230,80,'rgba(255,183,3,.22)')+"<path d='M60 40Q4 150 60 260' stroke='#F5B731' stroke-width='7' fill='none' stroke-linecap='round'/><line x1='60' y1='40' x2='60' y2='260' stroke='#fff' stroke-width='2'/><line x1='60' y1='150' x2='178' y2='150' stroke='#FFD27A' stroke-width='5'/><path d='M178 140L198 150L178 160Z' fill='#FFD27A'/>"+fl(184,132,.7)+sp(150,60,14,'#FDE68A')+sp(30,280,10,'#FDE68A')),
+  R:U(200,300,fl(60,290,1.6)+fl(100,296,2)+fl(140,290,1.6)+"<path d='M78 150L38 205M122 150L162 205' stroke='#B5451B' stroke-width='9' stroke-linecap='round'/><rect x='72' y='125' width='56' height='140' rx='8' fill='#B5451B'/><rect x='72' y='170' width='56' height='10' fill='#F5B731'/>"+[50,75,100,125,150].map(function(x,i){return ci(x,100-(i%2?0:10),15,'#E0A96D')+"<path d='M"+(x-12)+" "+(88-(i%2?0:10))+"L"+x+" "+(66-(i%2?0:10))+"L"+(x+12)+" "+(88-(i%2?0:10))+"Z' fill='#F5B731'/>"}).join('')+fl(100,240,1.2)),
+  H:garland(['#FB923C','#FACC15','#F97316'])},
+ diwali:{L:U(200,300,diya(50,280,1.1)+diya(130,284,1.1)+diya(90,236,1)+sp(160,90,14,'#FDE68A')+sp(40,150,10,'#FDE68A')+burst(120,60,36,'#FDBA74')),
+  R:U(200,300,"<line x1='100' y1='0' x2='100' y2='70' stroke='#FDE68A' stroke-width='3'/>"+ci(100,150,80,'rgba(253,186,116,.25)')+"<path d='M100 70L150 120L100 190L50 120Z' fill='#F59E0B' stroke='#FDE68A' stroke-width='3'/><path d='M100 70L125 120L100 190L75 120Z' fill='#FCD34D'/><line x1='100' y1='190' x2='100' y2='230' stroke='#FDE68A' stroke-width='3'/>"+ci(100,238,6,'#EF4444')+sp(40,260,10,'#FDE68A')+sp(165,40,12,'#FDE68A')),
+  H:lights()},
+ kite:{L:U(200,300,kite(60,70,1.2,'#EF4444','#F97316',-18)+kite(140,160,1,'#3B82F6','#22D3EE',14)+kite(50,230,.9,'#A855F7','#EC4899',-8)+sp(170,40,10,'#FEF3C7')),
+  R:U(200,300,ci(150,70,44,'#FDBA74')+ci(150,70,34,'#FB923C')+kite(70,150,1.1,'#FACC15','#F97316',16)+kite(150,240,1,'#22C55E','#16A34A',-12)+sp(30,40,10,'#FEF3C7')),
+  H:bunting(['#EF4444','#FACC15','#22C55E','#3B82F6'])},
+ xmas:{L:U(200,300,tree(90,170,1.5)+sp(30,40,10,'#fff')+sp(170,70,12,'#fff')),
+  R:U(200,300,tree(120,200,1)+"<rect x='20' y='240' width='50' height='44' fill='#DC2626'/><rect x='41' y='240' width='8' height='44' fill='#FDE047'/><rect x='150' y='256' width='36' height='30' fill='#2563EB'/><rect x='164' y='256' width='7' height='30' fill='#FDE047'/>"+sp(170,40,12,'#fff')),
+  H:dots(['#fff','#FDE68A','#BAE6FD'],60)},
+ fireworks:{L:U(200,300,burst(90,90,70,'#FACC15')+burst(40,220,40,'#F472B6')+burst(150,200,34,'#38BDF8')),
+  R:U(200,300,burst(110,100,66,'#F472B6')+burst(160,230,42,'#FACC15')+burst(50,200,34,'#34D399')),
+  H:dots(['#F472B6','#FACC15','#38BDF8','#34D399','#fff'],70)},
+ flag:{L:U(200,300,"<path d='M0 40Q50 10 100 40T200 40V90Q150 60 100 90T0 90Z' fill='#FF9933'/><path d='M0 90Q50 60 100 90T200 90V140Q150 110 100 140T0 140Z' fill='#fff'/><path d='M0 140Q50 110 100 140T200 140V190Q150 160 100 190T0 190Z' fill='#138808'/>"+wheel(100,115,30)),
+  R:U(200,300,wheel(100,150,60)+sp(30,40,10,'#fff')+sp(170,260,12,'#fff')),
+  H:bunting(['#FF9933','#fff','#138808'])},
+ holi:{L:U(200,300,ci(60,200,60,'#EC4899')+ci(120,250,45,'#FACC15')+ci(40,270,32,'#22C55E')+ci(150,170,34,'#3B82F6')+ci(90,120,26,'#A855F7')),
+  R:U(200,300,ci(140,200,62,'#3B82F6')+ci(70,250,46,'#EC4899')+ci(160,270,34,'#FACC15')+ci(50,170,32,'#22C55E')+ci(110,120,26,'#F97316')),
+  H:dots(['#EC4899','#FACC15','#22C55E','#3B82F6','#A855F7'],70)},
+ generic:{L:U(200,300,flower(60,230,18,'#F59E0B')+flower(120,270,15,'#FB923C')+flower(40,150,13,'#FACC15')+flower(130,190,12,'#F59E0B')+"<path d='M10 290Q60 200 40 120' stroke='#16A34A' stroke-width='5' fill='none'/>"+sp(150,60,12,'#FDE68A')),
+  R:U(200,300,flower(140,230,18,'#FB923C')+flower(80,270,15,'#F59E0B')+flower(160,150,13,'#FACC15')+flower(70,190,12,'#FB923C')+"<path d='M190 290Q140 200 160 120' stroke='#16A34A' stroke-width='5' fill='none'/>"+sp(40,60,12,'#FDE68A')),
+  H:garland(['#FB923C','#FACC15','#F59E0B'])}};
+ var MAP={dussehra:'dussehra',rama:'dussehra',diwali:'diwali',sankranti:'kite',xmas:'xmas',ny:'fireworks',republic:'flag',indep:'flag',holi:'holi'};
+ var th=T[F.theme||MAP[F.k.replace(/\d+$/,'')]||'generic'];
+ var own=F.img?'url("'+F.img+'") center/cover no-repeat':'';
+ var tile=U(130,110,"<text x='18' y='34' font-size='26'>"+F.ic+"</text><text x='80' y='80' font-size='20'>✨</text>");
+ var st=document.createElement('style');st.id='ae-fest-bg-css';
+ st.textContent='#ae-fest-bg{position:fixed;inset:0;z-index:-1;pointer-events:none;opacity:.10;background:'+(own||tile)+'}'+
+  '.ae-fest-herobg{position:absolute;inset:0;pointer-events:none;border-radius:inherit;opacity:.62;background:'+(own?own+',':'')+th.H+' center top/100% auto no-repeat,'+th.L+' left bottom/min(46%,250px) auto no-repeat,'+th.R+' right bottom/min(46%,250px) auto no-repeat,linear-gradient(135deg,rgba(232,100,10,.22),rgba(124,58,237,.20))}';
+ document.head.appendChild(st);
+ var bg=document.createElement('div');bg.id='ae-fest-bg';document.body.appendChild(bg);
+ var h=document.querySelector('#page-home .hero');
+ if(h){if(getComputedStyle(h).position==='static')h.style.position='relative';
+  var hb=document.createElement('div');hb.className='ae-fest-herobg';h.appendChild(hb)}
+}catch(e){console.warn('ae-fest-bg',e)}});
 }catch(e){console.warn('ae-festival',e)}})();
 </script>
 

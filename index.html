@@ -37097,5 +37097,101 @@ nav .nav-links .nav-btn.nav-accent{grid-column:1/-1;justify-content:center}
 .btn-primary:active,.btn-outline:active,.btn-tertiary:active,.start-btn:active{transform:scale(.96)}
 }
 </style>
+<style id="ae-fest-css">
+#ae-fest-bar{display:flex;align-items:center;justify-content:center;gap:10px;flex-wrap:wrap;padding:9px 40px 9px 14px;background:linear-gradient(90deg,#E8640A,#F5B731,#7C3AED);color:#fff;font-weight:800;font-size:13px;text-align:center;position:relative;z-index:50}
+#ae-fest-bar button.go{background:#fff;color:#E8640A;border:0;border-radius:20px;padding:5px 14px;font-weight:900;font-size:12px;cursor:pointer;font-family:inherit}
+#ae-fest-bar .x{position:absolute;right:10px;top:50%;transform:translateY(-50%);background:none;border:0;color:#fff;font-size:18px;cursor:pointer}
+#ae-fest-pop{position:fixed;inset:0;z-index:99999;background:rgba(10,20,50,.6);display:flex;align-items:center;justify-content:center;padding:16px}
+#ae-fest-pop .card{max-width:360px;width:100%;text-align:center;border-radius:24px;padding:26px 20px;color:#fff;background:linear-gradient(135deg,#7C3AED,#E8640A);box-shadow:0 20px 60px rgba(0,0,0,.4)}
+#ae-fest-pop .ic{font-size:54px}
+#ae-fest-pop h2{margin:8px 0 4px;font-size:22px}
+#ae-fest-pop .off{display:inline-block;margin:12px 0;background:#F5B731;color:#3b1d00;font-weight:900;border-radius:14px;padding:6px 16px;font-size:18px}
+#ae-fest-pop button{display:block;width:100%;margin-top:8px;padding:12px;border-radius:14px;border:0;font-weight:900;font-size:14px;cursor:pointer;font-family:inherit}
+#ae-fest-pm{margin-bottom:12px;padding:8px 12px;border-radius:12px;background:linear-gradient(90deg,#E8640A,#F5B731);color:#fff;font-weight:800;font-size:12px}
+</style>
+<script id="ae-fest-js">
+/* ===== Festival wishes + automatic festival discounts =====
+   Edit this list only. d = festival date (YYYY-MM-DD), pre/post = days before/after the offer runs, pct = % off.
+   Lunar-calendar dates (marked ~) must be re-checked each year. */
+(function(){try{
+var FEST=[
+{k:'diwali26',d:'2026-11-08',pre:3,post:1,pct:30,ic:'🪔',te:'దీపావళి శుభాకాంక్షలు!',en:'Happy Diwali!'},
+{k:'xmas26',d:'2026-12-25',pre:2,post:0,pct:15,ic:'🎄',te:'క్రిస్మస్ శుభాకాంక్షలు!',en:'Merry Christmas!'},
+{k:'ny27',d:'2027-01-01',pre:2,post:1,pct:20,ic:'🎉',te:'నూతన సంవత్సర శుభాకాంక్షలు!',en:'Happy New Year!'},
+{k:'sankranti27',d:'2027-01-14',pre:3,post:2,pct:30,ic:'🪁',te:'సంక్రాంతి శుభాకాంక్షలు!',en:'Happy Sankranti!'},
+{k:'republic27',d:'2027-01-26',pre:1,post:0,pct:15,ic:'🇮🇳',te:'గణతంత్ర దినోత్సవ శుభాకాంక్షలు!',en:'Happy Republic Day!'},
+{k:'shivaratri27',d:'2027-03-06',pre:1,post:0,pct:10,ic:'🔱',te:'మహాశివరాత్రి శుభాకాంక్షలు!',en:'Maha Shivaratri wishes!'}, /* ~ */
+{k:'holi27',d:'2027-03-22',pre:1,post:0,pct:15,ic:'🎨',te:'హోలీ శుభాకాంక్షలు!',en:'Happy Holi!'}, /* ~ */
+{k:'ugadi27',d:'2027-04-06',pre:3,post:1,pct:30,ic:'🌿',te:'ఉగాది శుభాకాంక్షలు!',en:'Happy Ugadi!'}, /* ~ */
+{k:'rama27',d:'2027-04-15',pre:1,post:0,pct:10,ic:'🏹',te:'శ్రీరామనవమి శుభాకాంక్షలు!',en:'Sri Rama Navami wishes!'}, /* ~ */
+{k:'telangana27',d:'2027-06-02',pre:1,post:0,pct:15,ic:'🌟',te:'తెలంగాణ ఆవిర్భావ దినోత్సవ శుభాకాంక్షలు!',en:'Telangana Formation Day!'},
+{k:'indep27',d:'2027-08-15',pre:2,post:0,pct:20,ic:'🇮🇳',te:'స్వాతంత్ర్య దినోత్సవ శుభాకాంక్షలు!',en:'Happy Independence Day!'},
+{k:'teachers27',d:'2027-09-05',pre:0,post:0,pct:10,ic:'👩‍🏫',te:'ఉపాధ్యాయ దినోత్సవ శుభాకాంక్షలు!',en:"Happy Teachers' Day!"},
+{k:'vinayaka27',d:'2027-09-04',pre:1,post:1,pct:15,ic:'🐘',te:'వినాయక చవితి శుభాకాంక్షలు!',en:'Happy Vinayaka Chavithi!'}, /* ~ */
+{k:'dussehra27',d:'2027-10-09',pre:2,post:1,pct:25,ic:'🏹',te:'దసరా శుభాకాంక్షలు!',en:'Happy Dussehra!'}, /* ~ */
+{k:'diwali27',d:'2027-10-29',pre:3,post:1,pct:30,ic:'🪔',te:'దీపావళి శుభాకాంక్షలు!',en:'Happy Diwali!'} /* ~ */
+];
+function dn(s){var a=s.split('-');return Date.UTC(+a[0],a[1]-1,+a[2])/864e5}
+function today(){return dn(new Intl.DateTimeFormat('en-CA',{timeZone:'Asia/Kolkata'}).format(new Date()))}
+function active(){var t=today();for(var i=0;i<FEST.length;i++){var f=FEST[i],d=dn(f.d);if(t>=d-f.pre&&t<=d+f.post){f.left=d+f.post-t+1;return f}}return null}
+var F=active(); if(!F) return;
+function cut(p){return Math.max(1,Math.round(p*(1-F.pct/100)))}
+function premium(){try{var u=getCurrentUser();return !!(u&&u.isPremium)}catch(e){return false}}
+window.aeFestival=F;
+
+/* 1) Prices: swap PLAN_PRICES to discounted values only while pricing/payment code runs */
+var busy=false;
+function wrap(n){var o=window[n];if(typeof o!=='function')return;
+ window[n]=function(){
+  if(busy)return o.apply(this,arguments);
+  var base=PLAN_PRICES;busy=true;
+  PLAN_PRICES={monthly:cut(base.monthly),yearly:cut(base.yearly)};
+  var r,done=function(){PLAN_PRICES=base;busy=false};
+  try{r=o.apply(this,arguments)}catch(e){done();throw e}
+  if(r&&typeof r.then==='function')return r.then(function(v){done();return v},function(e){done();throw e});
+  done();return r};}
+['openPricing','switchPricingTab','startPayment','submitUTR','openUpiApp','_generateUpiQR'].forEach(wrap);
+
+/* 2) Pricing modal: strike-through old price + festival badge */
+var op=window.openPricing;
+if(typeof op==='function')window.openPricing=function(){
+ var r=op.apply(this,arguments);
+ try{var b=PLAN_PRICES,m=document.getElementById('ptab-m-price'),y=document.getElementById('ptab-y-price');
+  if(m)m.innerHTML='<s style="opacity:.55;font-size:.8em">'+b.monthly+'</s> '+cut(b.monthly);
+  if(y)y.innerHTML='<s style="opacity:.55;font-size:.8em">'+b.yearly+'</s> '+cut(b.yearly);
+  var pl=document.querySelector('#pricing-overlay .pricing-left');
+  if(pl&&!document.getElementById('ae-fest-pm')){var d=document.createElement('div');d.id='ae-fest-pm';
+   d.textContent=F.ic+' '+F.te+' — '+F.pct+'% Festival Offer! ('+F.left+' రోజులు మాత్రమే)';pl.insertBefore(d,pl.firstChild)}
+ }catch(e){}
+ return r};
+
+/* 3) Greeting banner (all users) + one-time popup per festival per day */
+function ready(fn){document.readyState==='loading'?document.addEventListener('DOMContentLoaded',fn):fn()}
+ready(function(){try{
+ var nav=document.querySelector('nav');if(!nav||!nav.parentNode)return;
+ var bar=document.createElement('div');bar.id='ae-fest-bar';
+ var txt=F.ic+' '+F.te+' '+F.en+(premium()?'':' — Premium పై <b>'+F.pct+'% OFF</b> ('+F.left+' రోజులు మాత్రమే!)');
+ bar.innerHTML='<span>'+txt+'</span>'+(premium()?'':'<button class="go" type="button">⭐ Offer చూడండి</button>')+'<button class="x" type="button" aria-label="Close">×</button>';
+ var go=bar.querySelector('.go');if(go)go.onclick=function(){if(typeof openPricing==='function')openPricing()};
+ bar.querySelector('.x').onclick=function(){bar.remove()};
+ nav.parentNode.insertBefore(bar,nav);
+ var key='ae_fest_seen_'+F.k+'_'+today(),seen=false;
+ try{seen=!!localStorage.getItem(key)}catch(e){}
+ if(seen)return;
+ setTimeout(function(){
+  try{localStorage.setItem(key,'1')}catch(e){}
+  var p=document.createElement('div');p.id='ae-fest-pop';
+  p.innerHTML='<div class="card"><div class="ic">'+F.ic+'</div><h2>'+F.te+'</h2><div>'+F.en+' — Anil EduTech family నుండి శుభాకాంక్షలు 💐</div>'+
+  (premium()?'':'<div class="off">🎁 Premium పై '+F.pct+'% OFF</div><div style="font-size:12px;opacity:.9">'+F.left+' రోజులు మాత్రమే — automatic గా apply అవుతుంది</div><button type="button" class="o" style="background:#fff;color:#E8640A">⭐ Offer తీసుకోండి</button>')+
+  '<button type="button" class="c" style="background:rgba(255,255,255,.2);color:#fff">తర్వాత</button></div>';
+  p.onclick=function(e){if(e.target===p)p.remove()};
+  p.querySelector('.c').onclick=function(){p.remove()};
+  var o=p.querySelector('.o');if(o)o.onclick=function(){p.remove();if(typeof openPricing==='function')openPricing()};
+  document.body.appendChild(p);
+ },1500);
+}catch(e){}});
+}catch(e){console.warn('ae-festival',e)}})();
+</script>
+
 </body>
 </html>

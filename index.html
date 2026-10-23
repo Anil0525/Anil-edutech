@@ -33917,14 +33917,112 @@ const isTrial = plan === 'trial';
       fr.readAsDataURL(file);
     });
   }
-  async function _pfOnFile(inp) {
+  // ── Crop step: drag to reposition, slider/wheel to zoom, then "Use photo" ──
+  let _pfCr = null;
+  function _pfOnFile(inp) {
     const f = inp.files && inp.files[0];
     inp.value = '';
     if (!f) return;
-    try {
-      _pfEd.avatar = await _pfResizeImage(f);
-      _pfEdPreview();
-    } catch (e) { toast(e.message || 'Photo load కాలేదు', 'error'); }
+    if (!/^image\//.test(f.type)) { toast('Image file select చేయండి', 'error'); return; }
+    if (f.size > 8 * 1024 * 1024) { toast('Image 8MB కంటే చిన్నదిగా ఉండాలి', 'error'); return; }
+    const fr = new FileReader();
+    fr.onerror = function () { toast('File చదవలేకపోయాం', 'error'); };
+    fr.onload = function () {
+      const img = new Image();
+      img.onerror = function () { toast('ఈ image format support కాదు — JPG/PNG వాడండి', 'error'); };
+      img.onload = function () { _pfOpenCrop(img); };
+      img.src = fr.result;
+    };
+    fr.readAsDataURL(f);
+  }
+  function _pfCloseCrop() {
+    const o = document.getElementById('pf-crop-ov');
+    if (o) o.remove();
+    _pfCr = null;
+  }
+  function _pfOpenCrop(img) {
+    _pfCloseCrop();
+    const B = 240;
+    _pfCr = { img: img, B: B, zoom: 1, cx: img.width / 2, cy: img.height / 2, min: B / Math.min(img.width, img.height) };
+    const ov = document.createElement('div');
+    ov.id = 'pf-crop-ov';
+    ov.style.cssText = 'position:fixed;inset:0;z-index:100001;background:rgba(0,0,0,.65);display:flex;align-items:center;justify-content:center;padding:16px;';
+    const btn = 'padding:11px 18px;border-radius:12px;font-family:inherit;font-size:13px;font-weight:900;cursor:pointer;';
+    ov.innerHTML =
+      '<div style="background:var(--card);color:var(--text);border:1.5px solid var(--border);border-radius:20px;width:100%;max-width:340px;padding:20px;text-align:center;">' +
+        '<div style="font-size:16px;font-weight:900;margin-bottom:4px;">✂️ Photo crop చేయండి</div>' +
+        '<div style="font-size:12px;color:var(--text3);margin-bottom:12px;">Drag చేసి position సెట్ చేయండి · Slider తో zoom</div>' +
+        '<canvas id="pf-crop-cv" width="' + B + '" height="' + B + '" style="width:' + B + 'px;height:' + B + 'px;max-width:100%;border-radius:14px;touch-action:none;cursor:grab;background:#000;"></canvas>' +
+        '<div style="display:flex;align-items:center;gap:10px;margin:14px 6px 4px;"><span style="font-size:14px;">🔍</span>' +
+        '<input id="pf-crop-zoom" type="range" min="1" max="3" step="0.01" value="1" style="flex:1;accent-color:var(--primary);"></div>' +
+        '<div style="display:flex;gap:10px;margin-top:14px;">' +
+          '<button type="button" onclick="_pfCloseCrop()" style="' + btn + 'flex:1;background:var(--surface);border:1.5px solid var(--border);color:var(--text);">Cancel</button>' +
+          '<button type="button" onclick="_pfApplyCrop()" style="' + btn + 'flex:1;background:var(--primary);border:none;color:#fff;">✓ Use photo</button>' +
+        '</div>' +
+      '</div>';
+    document.body.appendChild(ov);
+    const cv = document.getElementById('pf-crop-cv');
+    const z = document.getElementById('pf-crop-zoom');
+    z.addEventListener('input', function () { _pfCr.zoom = parseFloat(z.value); _pfCropDraw(); });
+    let drag = null;
+    cv.addEventListener('pointerdown', function (e) {
+      drag = { x: e.clientX, y: e.clientY };
+      try { cv.setPointerCapture(e.pointerId); } catch (x) { }
+      cv.style.cursor = 'grabbing';
+    });
+    cv.addEventListener('pointermove', function (e) {
+      if (!drag || !_pfCr) return;
+      const ratio = _pfCr.B / cv.getBoundingClientRect().width;
+      const sc = _pfCr.min * _pfCr.zoom;
+      _pfCr.cx -= (e.clientX - drag.x) * ratio / sc;
+      _pfCr.cy -= (e.clientY - drag.y) * ratio / sc;
+      drag = { x: e.clientX, y: e.clientY };
+      _pfCropDraw();
+    });
+    const end = function () { drag = null; cv.style.cursor = 'grab'; };
+    cv.addEventListener('pointerup', end);
+    cv.addEventListener('pointercancel', end);
+    cv.addEventListener('wheel', function (e) {
+      e.preventDefault();
+      _pfCr.zoom = Math.max(1, Math.min(3, _pfCr.zoom + (e.deltaY < 0 ? 0.1 : -0.1)));
+      z.value = _pfCr.zoom; _pfCropDraw();
+    }, { passive: false });
+    _pfCropDraw();
+  }
+  function _pfCropClamp() {
+    const c = _pfCr, sc = c.min * c.zoom, half = c.B / (2 * sc);
+    c.cx = Math.max(half, Math.min(c.img.width - half, c.cx));
+    c.cy = Math.max(half, Math.min(c.img.height - half, c.cy));
+  }
+  function _pfCropDraw() {
+    const c = _pfCr; if (!c) return;
+    _pfCropClamp();
+    const cv = document.getElementById('pf-crop-cv'); if (!cv) return;
+    const x = cv.getContext('2d'), B = c.B, sc = c.min * c.zoom;
+    x.fillStyle = '#fff'; x.fillRect(0, 0, B, B);
+    x.drawImage(c.img, B / 2 - c.cx * sc, B / 2 - c.cy * sc, c.img.width * sc, c.img.height * sc);
+    // dim outside the circle
+    x.save();
+    x.fillStyle = 'rgba(0,0,0,.55)';
+    x.beginPath(); x.rect(0, 0, B, B); x.arc(B / 2, B / 2, B / 2 - 6, 0, Math.PI * 2, true);
+    x.fill('evenodd');
+    x.restore();
+    x.strokeStyle = 'rgba(255,255,255,.9)'; x.lineWidth = 2;
+    x.beginPath(); x.arc(B / 2, B / 2, B / 2 - 6, 0, Math.PI * 2); x.stroke();
+  }
+  function _pfApplyCrop() {
+    const c = _pfCr; if (!c) return;
+    _pfCropClamp();
+    const sc = c.min * c.zoom, side = c.B / sc;   // square region (in source pixels) inside the circle frame
+    const R = side * (c.B - 12) / c.B;            // only the part inside the circle ring
+    const S = 192, out = document.createElement('canvas');
+    out.width = out.height = S;
+    const x = out.getContext('2d');
+    x.fillStyle = '#fff'; x.fillRect(0, 0, S, S);
+    x.drawImage(c.img, c.cx - R / 2, c.cy - R / 2, R, R, 0, 0, S, S);
+    _pfEd.avatar = out.toDataURL('image/jpeg', 0.82);
+    _pfCloseCrop();
+    _pfEdPreview();
   }
   async function _pfSave() {
     const u = getCurrentUser();

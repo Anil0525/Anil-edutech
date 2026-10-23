@@ -12015,6 +12015,86 @@ nav .login-badge{border-radius:999px}
 #video-overlay .vx-up-item img{width:88px}
 }
 </style>
+<style id="ae-login-v2">
+/* ===== Login / Register redesign (override layer) ===== */
+.sub-overlay{background:radial-gradient(1200px 700px at 15% 10%,#2b1c5a 0%,transparent 60%),radial-gradient(900px 600px at 90% 90%,#5a1f4a 0%,transparent 55%),#0b0716!important;overflow-x:hidden;overflow-y:auto;scrollbar-width:thin;scrollbar-color:#3b2a66 transparent}
+.sub-overlay .sub-panel .sub-field{margin-bottom:10px}
+.sub-overlay .sub-box{padding-bottom:0}
+.sub-overlay::before,.sub-overlay::after{border-radius:50%!important;filter:blur(70px);opacity:.55;width:420px!important;height:420px!important}
+.sub-overlay::before{background:#7c3aed!important;top:-8%!important;left:-6%!important}
+.sub-overlay::after{background:#f97316!important;bottom:-10%!important;right:-6%!important;opacity:.38;animation-delay:-5s}
+.sub-overlay .sub-box{background:rgba(22,15,40,.74)!important;backdrop-filter:blur(26px) saturate(150%);-webkit-backdrop-filter:blur(26px) saturate(150%);border:1px solid rgba(255,255,255,.12)!important;box-shadow:0 40px 100px rgba(0,0,0,.6),0 0 0 1px rgba(124,58,237,.15),0 0 80px rgba(124,58,237,.18)!important;animation:aeBoxIn .6s cubic-bezier(.16,1,.3,1) both}
+@keyframes aeBoxIn{from{opacity:0;transform:translateY(24px) scale(.97)}to{opacity:1;transform:none}}
+@keyframes aeMesh{0%{background-position:0% 0%,100% 0%,50% 100%}50%{background-position:30% 40%,70% 30%,60% 70%}100%{background-position:0% 0%,100% 0%,50% 100%}}
+@keyframes aeFloat{0%,100%{transform:translateY(0)}50%{transform:translateY(-6px)}}
+@keyframes aeShine{to{transform:translateX(130%)}}
+
+/* left brand panel */
+.sub-overlay .sub-banner{background:radial-gradient(circle at 20% 15%,rgba(255,255,255,.28),transparent 45%),radial-gradient(circle at 85% 25%,#ec4899 0%,transparent 50%),radial-gradient(circle at 40% 100%,#fb923c 0%,transparent 55%),linear-gradient(160deg,#4c1d95,#6d28d9 55%,#be185d);background-size:140% 140%,160% 160%,150% 150%,100% 100%;animation:aeMesh 14s ease-in-out infinite}
+.sub-overlay .sub-banner::before{background:rgba(10,5,25,.35)!important}
+.sub-overlay .sub-banner-logo{font-weight:900;letter-spacing:.2px;text-shadow:0 2px 14px rgba(0,0,0,.35)}
+.sub-overlay .sub-banner-tagline{font-weight:900;line-height:1.35;text-shadow:0 4px 24px rgba(0,0,0,.35)}
+.sub-feats{display:none;flex-direction:column;gap:7px;margin:4px 0 2px;position:relative;z-index:2}
+.sub-feats span{display:flex;align-items:center;gap:9px;width:fit-content;font-size:11.5px;font-weight:800;color:#fff;padding:6px 12px;border-radius:999px;background:rgba(255,255,255,.16);border:1px solid rgba(255,255,255,.28);backdrop-filter:blur(8px);animation:aeFloat 5s ease-in-out infinite}
+.sub-feats span:nth-child(2){animation-delay:-1.6s;margin-left:14px}
+.sub-feats span:nth-child(3){animation-delay:-3.2s}
+
+/* form side */
+.sub-overlay .sub-panel-title{font-size:25px!important;font-weight:900!important;background:linear-gradient(90deg,#fff,#d8c7ff 60%,#f9a8d4);-webkit-background-clip:text;background-clip:text;-webkit-text-fill-color:transparent;letter-spacing:-.4px}
+.sub-overlay .sub-panel-sub{color:#a99cc9!important}
+.sub-overlay .sub-panel-sub button{color:#c4a8ff!important;font-weight:800}
+.sub-overlay .sub-panel.active{animation:aeBoxIn .45s cubic-bezier(.16,1,.3,1) both}
+.sub-overlay .sub-yt-note{background:linear-gradient(135deg,rgba(236,72,153,.14),rgba(249,115,22,.14))!important;border:1px solid rgba(249,115,22,.38)!important;border-radius:14px!important;padding:10px 14px!important}
+.sub-overlay .sub-field input,.sub-overlay .sub-field select{height:46px;border-radius:13px!important;background:rgba(255,255,255,.06)!important;border:1.5px solid rgba(255,255,255,.12)!important;color:#fff!important;font-size:14px;padding:0 16px;transition:all .25s}
+.sub-overlay .sub-field input:hover{border-color:rgba(167,139,250,.45)!important}
+.sub-overlay .sub-field input:focus,.sub-overlay .sub-field select:focus{background:rgba(124,58,237,.12)!important;border-color:#a78bfa!important;box-shadow:0 0 0 4px rgba(139,92,246,.22),0 8px 24px rgba(124,58,237,.25)!important;outline:none}
+.sub-overlay .sub-field input::placeholder{color:#8478a6!important}
+.sub-overlay .sub-field-eye{color:#a99cc9}
+.sub-overlay .sub-btn{position:relative;overflow:hidden;height:46px;border-radius:13px!important;border:none;font-size:15px;font-weight:900;letter-spacing:.3px;color:#fff;background:linear-gradient(135deg,#7c3aed 0%,#c026d3 55%,#f97316 100%)!important;box-shadow:0 12px 34px rgba(168,85,247,.45)!important;transition:transform .2s,box-shadow .2s}
+.sub-overlay .sub-btn::after{content:'';position:absolute;inset:0;width:60%;left:-70%;background:linear-gradient(100deg,transparent,rgba(255,255,255,.35),transparent);transform:skewX(-20deg)}
+.sub-overlay .sub-btn:hover{transform:translateY(-3px);box-shadow:0 18px 44px rgba(192,38,211,.55)!important}
+.sub-overlay .sub-btn:hover::after{animation:aeShine .9s}
+.sub-overlay .sub-btn:active{transform:translateY(0) scale(.98)}
+.sub-overlay .sub-btn.green-btn{background:linear-gradient(135deg,#059669,#10b981)!important;box-shadow:0 12px 30px rgba(16,185,129,.4)!important}
+.sub-overlay .sub-or-divider{color:#8478a6!important}
+.sub-overlay .sub-social-btn{height:44px;border-radius:13px!important;background:#fff!important;color:#1f1f2e!important;border:none!important;font-weight:800;font-size:14.5px;box-shadow:0 8px 24px rgba(0,0,0,.28);transition:transform .2s,box-shadow .2s}
+.sub-overlay .sub-social-btn:hover{transform:translateY(-3px);box-shadow:0 14px 32px rgba(0,0,0,.38)}
+.sub-overlay .sub-forgot-link button{color:#c4a8ff!important}
+.sub-overlay .sub-back-btn:hover{transform:translateX(-3px)}
+
+@media (min-width:820px){
+  .sub-overlay .sub-box{width:760px!important;max-width:94vw!important;height:560px!important;min-height:0!important;max-height:calc(100vh - 40px)!important;margin:auto;zoom:.8;border-radius:26px!important}
+  .sub-overlay .sub-banner{width:300px!important;padding:26px 24px!important}
+  .sub-overlay .sub-banner-logo{font-size:18px!important}
+  .sub-overlay .sub-banner-tagline{font-size:22px!important}
+  .sub-feats{display:flex}
+  .sub-overlay .sub-body{padding:24px 40px!important;justify-content:center;overflow-y:auto!important;scrollbar-width:none;-ms-overflow-style:none}
+}
+/* working banner slider dots */
+.sub-overlay .sub-banner-dots{gap:6px!important;z-index:3}
+.sub-overlay .sub-banner-dots span{width:7px!important;height:7px!important;cursor:pointer;transition:all .35s;background:rgba(255,255,255,.45)}
+.sub-overlay .sub-banner-dots span:hover{background:#fff}
+.sub-overlay .sub-banner-dots span.active{width:20px!important;border-radius:5px!important;background:#fff}
+.sub-overlay .sub-banner-tagline{transition:opacity .35s,transform .35s}
+.sub-overlay .sub-banner-tagline.swap{opacity:0;transform:translateY(8px)}
+#subpanel-register .sub-field{margin-bottom:8px}
+#subpanel-register .sub-field input{height:42px}
+#subpanel-register .sub-panel-sub{margin-bottom:10px}
+#subpanel-register .sub-or-divider{margin:8px 0}
+.sub-overlay .sub-body::-webkit-scrollbar{display:none}
+@media (max-width:819px){
+  .sub-overlay .sub-box{height:min(620px,calc(100vh - 64px))!important;height:min(620px,calc(100dvh - 64px))!important;min-height:0!important;margin:44px auto 16px!important;border-radius:24px!important}
+  .sub-overlay .sub-banner{height:84px!important;flex-shrink:0}
+  .sub-overlay .sub-banner-tagline{font-size:15px!important}
+  .sub-overlay .sub-body{padding:18px 20px!important;overflow-y:auto!important;scrollbar-width:none;justify-content:flex-start}
+  .sub-overlay .sub-panel-title{font-size:23px!important}
+  .sub-overlay .sub-field input{height:46px}
+  #subpanel-register .sub-field input{height:42px}
+  .sub-overlay .sub-btn{height:46px}
+  .sub-overlay .sub-social-btn{height:44px}
+}
+@media (prefers-reduced-motion:reduce){.sub-overlay *,.sub-overlay::before,.sub-overlay::after{animation:none!important}}
+</style>
 </head>
 
 <body>
@@ -15146,6 +15226,7 @@ nav .login-badge{border-radius:999px}
       <div class="sub-banner">
         <div class="sub-banner-logo">🎓 Anil EduTech</div>
         <div class="sub-banner-tagline">మీ Exam Success<br>ఇక్కడ మొదలవుతుంది</div>
+        <div class="sub-feats"><span>📝 500+ Mock Questions</span><span>🏆 Live Leaderboard</span><span>📜 Free Certificates</span></div>
         <div class="sub-banner-dots"><span></span><span></span><span class="active"></span></div>
       </div>
 
@@ -18782,7 +18863,7 @@ More exams: https://aniledutech.in
       updateNavUser();
       closeSubModal();
       filterExams();
-      localStorage.removeItem('ae_guest_exam_count'); // Reset guest exam counter on login
+      localStorage.removeItem('ae_guest_exam_count'); document.cookie = 'ae_gec=0;max-age=0;path=/'; // Reset guest exam counter on login
       toast('🎉 Welcome ' + user.name + '!' + (user.isPremium ? ' 👑 Premium' : ''), 'success');
       _logUserActivity(user.name, user.gmail, 'login');
       sendEmailNotification('login', { name: user.name, gmail: user.gmail });
@@ -18960,7 +19041,7 @@ More exams: https://aniledutech.in
         // flash అవుతుంది. Supabase check complete అయిన తర్వాత మాత్రమే setCurrentUser
         // call అవుతుంది (inner .then() లో). ఇక్కడ UI non-premium actions మాత్రమే:
         closeSubModal();
-        localStorage.removeItem('ae_guest_exam_count'); // Reset guest exam counter on login
+        localStorage.removeItem('ae_guest_exam_count'); document.cookie = 'ae_gec=0;max-age=0;path=/'; // Reset guest exam counter on login
         toast('🎉 Welcome ' + name + '!', 'success');
         // New user → register email to admin; existing → login email
         sendEmailNotification(isNewUser ? 'register' : 'login', { name, gmail });
@@ -20728,22 +20809,11 @@ More exams: https://aniledutech.in
         }
       }
 
-      // Guest exam gate: allow 3 free exams without login, then show signup wall
+      // Login required: exams open only after login/register.
       if (!getCurrentUser()) {
-        const _guestCount = parseInt(localStorage.getItem('ae_guest_exam_count') || '0');
-        const FREE_GUEST_EXAMS = 3;
-        if (_guestCount >= FREE_GUEST_EXAMS) {
-          _showGuestSignupWall(examId);
-          return;
-        }
-        // Increment guest count and allow
-        localStorage.setItem('ae_guest_exam_count', String(_guestCount + 1));
-        const _remaining = FREE_GUEST_EXAMS - (_guestCount + 1);
-        if (_remaining > 0) {
-          toast(`🎯 Free exam ${_guestCount + 1}/${FREE_GUEST_EXAMS} — ఇంకా ${_remaining} free exams మిగిలాయి!`, 'info');
-        } else {
-          toast('🎁 Last free exam! తర్వాత login అవసరం.', 'warn');
-        }
+        toast('🔐 Exam రాయడానికి ముందు Login / Register చేయండి (Free!)', 'warn');
+        openSubModal(() => startExam(examId));
+        return;
       }
 
       const e = DB.exams.find(x => x.id === examId);
@@ -20780,6 +20850,23 @@ More exams: https://aniledutech.in
       }
 
       _beginFreshExam(e, qs);
+    }
+
+    // ---- Guest free-exam counter helpers ----
+    const FREE_GUEST_EXAMS = 1; // change this number to allow more free exams without login
+    function _guestExamCount() {
+      let a = 0, b = 0;
+      try { a = parseInt(localStorage.getItem('ae_guest_exam_count') || '0') || 0; } catch (e) { }
+      try { const m = document.cookie.match(/(?:^|; )ae_gec=(\d+)/); b = m ? parseInt(m[1]) : 0; } catch (e) { }
+      return Math.max(a, b);
+    }
+    function _consumeGuestExam() {
+      const n = _guestExamCount() + 1;
+      try { localStorage.setItem('ae_guest_exam_count', String(n)); } catch (e) { }
+      try { document.cookie = 'ae_gec=' + n + ';max-age=31536000;path=/;SameSite=Lax'; } catch (e) { }
+      const left = FREE_GUEST_EXAMS - n;
+      if (left > 0) toast(`🎯 Free exam ${n}/${FREE_GUEST_EXAMS} — ఇంకా ${left} free exams మిగిలాయి!`, 'info');
+      else toast('🎁 ఇదే Last free exam! తర్వాత login అవసరం.', 'warn');
     }
 
     function _showPremiumLockModal(examName) {
@@ -20835,8 +20922,8 @@ More exams: https://aniledutech.in
   <div style="padding:24px 22px 20px;">
     <button onclick="document.getElementById('guest-signup-wall').remove()" style="position:absolute;top:12px;right:14px;background:rgba(128,128,128,.15);border:none;font-size:15px;cursor:pointer;color:var(--text3);width:28px;height:28px;border-radius:50%;display:flex;align-items:center;justify-content:center;">✕</button>
     <div style="font-size:48px;margin-bottom:8px;filter:drop-shadow(0 0 20px rgba(99,102,241,.5));">🎓</div>
-    <div style="font-size:19px;font-weight:900;color:var(--text);margin-bottom:4px;">3 Free Exams అయిపోయాయి!</div>
-    <div style="font-size:12.5px;color:var(--text3);margin-bottom:16px;line-height:1.6;">మీరు ఇప్పటికే <strong style="color:#6366F1;">3 free exams</strong> చేశారు 🎉<br>మరిన్ని exams కోసం Free లో Register చేయండి!</div>
+    <div style="font-size:19px;font-weight:900;color:var(--text);margin-bottom:4px;">Free Exam అయిపోయింది!</div>
+    <div style="font-size:12.5px;color:var(--text3);margin-bottom:16px;line-height:1.6;">మీరు ఇప్పటికే <strong style="color:#6366F1;">free exam</strong> చేశారు 🎉<br>మరిన్ని exams కోసం Free లో Register చేయండి!</div>
 
     <!-- Benefits -->
     <div style="background:linear-gradient(135deg,rgba(99,102,241,.1),rgba(139,92,246,.08));border:1px solid rgba(99,102,241,.25);border-radius:14px;padding:14px;margin-bottom:16px;text-align:left;">
@@ -37248,5 +37335,18 @@ ready(function(){try{
 }catch(e){console.warn('ae-festival',e)}})();
 </script>
 
+<script>
+/* Login banner slider: dots are clickable + auto-rotate every 4.5s */
+(function(){try{
+ var tag=document.querySelector('.sub-banner-tagline'),dots=document.querySelectorAll('.sub-banner-dots span');
+ if(!tag||dots.length<3)return;
+ var M=['మీ Exam Success<br>ఇక్కడ మొదలవుతుంది','తెలుగులో Free Mock Tests<br>TSPSC · SSC · Banking','Practice చేయండి<br>Leaderboard లో Top అవ్వండి 🏆'],i=2,t;
+ function show(n){i=n;tag.classList.add('swap');setTimeout(function(){tag.innerHTML=M[n];tag.classList.remove('swap')},300);
+  dots.forEach(function(d,k){d.classList.toggle('active',k===n)})}
+ function auto(){clearInterval(t);t=setInterval(function(){show((i+1)%3)},4500)}
+ dots.forEach(function(d,k){d.addEventListener('click',function(){show(k);auto()})});
+ show(0);auto();
+}catch(e){}})();
+</script>
 </body>
 </html>

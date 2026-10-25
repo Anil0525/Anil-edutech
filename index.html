@@ -5147,5 +5147,32 @@ new MutationObserver(function(){if(el.dataset.busy)return;el.dataset.busy=1;run(
  show(0);auto();
 }catch(e){}})();
 </script>
+<!-- AE_DEBUG_BOX (temporary: remove after debugging). Shows only when URL has ?debug=1 -->
+<script>
+(function(){
+  if(!/[?&]debug=1/.test(location.search)) return;
+  var box=document.createElement('pre');
+  box.style.cssText='position:fixed;left:0;right:0;bottom:0;max-height:45vh;overflow:auto;margin:0;padding:8px;font:11px/1.3 monospace;background:#000c;color:#0f0;z-index:2147483647;white-space:pre-wrap';
+  document.body.appendChild(box);
+  var errs=[];
+  window.addEventListener('error',function(e){errs.push('ERR '+e.message)});
+  window.addEventListener('unhandledrejection',function(e){errs.push('REJ '+(e.reason&&e.reason.message||e.reason))});
+  setInterval(function(){
+    try{
+      var l=document.getElementById('exams-list'),pg=document.querySelector('.page.active'),u=null;
+      try{u=getCurrentUser()}catch(e){}
+      var cs=l?getComputedStyle(l):null;
+      box.textContent=[
+        'exams='+DB.exams.length+' q='+DB.questions.length+' loading='+_dbLoading+' sbDead='+_sbDead,
+        'page='+(pg&&pg.id)+' cards='+(l?l.querySelectorAll('.exam-card').length:'no-list'),
+        'list display='+(cs&&cs.display)+' h='+(l&&l.offsetHeight),
+        'user='+(u&&u.gmail)+' w='+innerWidth,
+        'sw='+(navigator.serviceWorker&&navigator.serviceWorker.controller?'controlled':'none'),
+        errs.slice(-5).join('\n')
+      ].join('\n');
+    }catch(e){box.textContent='dbg error: '+e.message}
+  },1000);
+})();
+</script>
 </body>
 </html>

@@ -1,5 +1,5 @@
 /* Anil EduTech service worker — network-first so every device gets the latest version */
-const VERSION = 'ae-2026-10-17-2'; // change this string on every deploy to force-refresh all devices
+const VERSION = 'ae-2026-10-26-1'; // change this string on every deploy to force-refresh all devices
 const CACHE = 'ae-cache-' + VERSION;
 
 self.addEventListener('install', () => self.skipWaiting());

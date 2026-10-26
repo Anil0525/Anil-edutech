@@ -1,7 +1,7 @@
 <!DOCTYPE html>
 <html lang="te">
 
-<head>
+<head><script>try{if(/[?&]debug=1\b/.test(location.search))localStorage.setItem("ae_dbg","1");if(/[?&]debug=0\b/.test(location.search))localStorage.removeItem("ae_dbg")}catch(e){}</script>
   <!-- Google tag (gtag.js) -->
   <script async src="https://www.googletagmanager.com/gtag/js?id=G-NF8Z61P355"></script>
   <script>
@@ -4982,6 +4982,6 @@ new MutationObserver(function(){if(el.dataset.busy)return;el.dataset.busy=1;run(
  show(0);auto();
 }catch(e){}})();
 </script>
-<script id="ae-debug-chip">(function(){try{if(!/[?&]debug=1\b/.test(location.search))return;var d=document.createElement("div");d.style.cssText="position:fixed;left:6px;top:6px;z-index:2147483647;background:rgba(0,0,0,.82);color:#7CFC00;font:11px/1.4 monospace;padding:6px 8px;border-radius:8px;max-width:94vw;white-space:pre-wrap;pointer-events:none";document.body.appendChild(d);function t(){try{var u="function"==typeof getCurrentUser?getCurrentUser():null,pg=document.querySelector(".page.active"),cards=document.querySelectorAll(".exam-card"),c=cards[0],cs=c?getComputedStyle(c):null,l=document.getElementById("exams-list"),ls=l?getComputedStyle(l):null;d.textContent="build: v3-debug\nexams(DB): "+DB.exams.length+"  questions: "+DB.questions.length+"\nuser: "+(u?u.gmail+(u.isPremium?" PREMIUM":" free"):"none")+"\npage: "+(pg?pg.id:"?")+"  filter: "+("undefined"!=typeof _examFilter?JSON.stringify(_examFilter):"?")+"\ncards in DOM: "+cards.length+(cs?"  first: disp="+cs.display+" vis="+cs.visibility+" op="+cs.opacity+" h="+c.offsetHeight:"")+"\nexams-list: "+(l?"h="+l.offsetHeight+" disp="+ls.display:"none")+"\nsbDead: "+_sbDead+"  dbLoading: "+_dbLoading+"  w="+innerWidth+"  sw: "+(navigator.serviceWorker&&navigator.serviceWorker.controller?"yes":"no")}catch(e){d.textContent="dbg err "+e.message}}t(),setInterval(t,1e3)}catch(e){}})();</script>
+<script id="ae-debug-chip">(function(){try{var _dq=!1;try{_dq=/[?&]debug=1\b/.test(location.search)||"1"===localStorage.getItem("ae_dbg")}catch(e){}if(!_dq)return;var d=document.createElement("div");d.style.cssText="position:fixed;left:6px;top:6px;z-index:2147483647;background:rgba(0,0,0,.82);color:#7CFC00;font:11px/1.4 monospace;padding:6px 8px;border-radius:8px;max-width:94vw;white-space:pre-wrap;pointer-events:none";document.body.appendChild(d);function t(){try{var u="function"==typeof getCurrentUser?getCurrentUser():null,pg=document.querySelector(".page.active"),cards=document.querySelectorAll(".exam-card"),c=cards[0],cs=c?getComputedStyle(c):null,l=document.getElementById("exams-list"),ls=l?getComputedStyle(l):null;d.textContent="build: v3-debug\nexams(DB): "+DB.exams.length+"  questions: "+DB.questions.length+"\nuser: "+(u?u.gmail+(u.isPremium?" PREMIUM":" free"):"none")+"\npage: "+(pg?pg.id:"?")+"  filter: "+("undefined"!=typeof _examFilter?JSON.stringify(_examFilter):"?")+"\ncards in DOM: "+cards.length+(cs?"  first: disp="+cs.display+" vis="+cs.visibility+" op="+cs.opacity+" h="+c.offsetHeight:"")+"\nexams-list: "+(l?"h="+l.offsetHeight+" disp="+ls.display:"none")+"\nsbDead: "+_sbDead+"  dbLoading: "+_dbLoading+"  w="+innerWidth+"  sw: "+(navigator.serviceWorker&&navigator.serviceWorker.controller?"yes":"no")}catch(e){d.textContent="dbg err "+e.message}}t(),setInterval(t,1e3)}catch(e){}})();</script>
 </body>
 </html>

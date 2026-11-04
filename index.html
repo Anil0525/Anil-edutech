@@ -5823,6 +5823,34 @@ async function _mfSave(){
     }catch(err){console.warn('podium',err)}
   };
 })();
+  <!-- SSC CGL Score Calculator: paste inside <body> of index.html (needs SB_URL and SB_KEY already defined there) -->
+<section id="aeScoreCalc" style="max-width:640px;margin:16px auto;padding:16px;border:1px solid #dbe3ee;border-radius:14px;background:#fff;font-family:inherit">
+  <h2 style="margin:0 0 4px;font-size:20px">SSC CGL Pre 2026 Score Calculator</h2>
+  <p style="margin:0 0 12px;color:#667;font-size:13px">Answer key link paste cheyandi, marks ventane chudandi</p>
+  <div style="display:flex;gap:8px">
+    <input id="aeScUrl" type="url" placeholder="Paste your answer key URL here" style="flex:1;padding:10px;border:1px solid #cbd5e1;border-radius:8px;min-width:0">
+    <button type="button" onclick="aeScPaste()" style="padding:10px 14px;border:0;border-radius:8px;background:#e3efff;color:#0b63d6;font-weight:600">Paste</button>
+  </div>
+  <button id="aeScGo" type="button" onclick="aeScCalc()" style="width:100%;margin-top:10px;padding:12px;border:0;border-radius:8px;background:#0b7bff;color:#fff;font-weight:700">Submit</button>
+  <div id="aeScMsg" style="margin-top:10px;font-size:14px"></div>
+  <div id="aeScOut" style="overflow-x:auto"></div>
+</section>
+<script>
+async function aeScPaste(){try{document.getElementById('aeScUrl').value=await navigator.clipboard.readText()}catch(e){}}
+async function aeScCalc(){
+  var u=document.getElementById('aeScUrl').value.trim(),m=document.getElementById('aeScMsg'),o=document.getElementById('aeScOut'),b=document.getElementById('aeScGo');
+  o.innerHTML='';if(!u){m.textContent='Link paste cheyandi';return}
+  b.disabled=true;m.textContent='Calculating...';
+  try{
+    var r=await fetch(SB_URL+'/functions/v1/ssc-score',{method:'POST',headers:{'Content-Type':'application/json',apikey:SB_KEY,Authorization:'Bearer '+SB_KEY},body:JSON.stringify({url:u})});
+    var d=await r.json();if(!d.ok)throw new Error(d.error||'Failed');
+    m.textContent='';
+    var row=function(n,p,bold){return '<tr style="'+(bold?'font-weight:700;':'')+'border-top:1px solid #e5eaf2"><td style="padding:10px 8px;text-align:left">'+n+'</td><td>'+p.attempted+'</td><td>'+p.unattempted+'</td><td style="color:#16a34a">'+p.right+'</td><td style="color:#dc2626">'+p.wrong+'</td><td style="color:#7c3aed">'+p.marks.toFixed(2)+'</td></tr>'};
+    o.innerHTML='<h3 style="margin:16px 0 8px">Subject-wise Marks</h3><table style="width:100%;border-collapse:collapse;text-align:center;font-size:13px;min-width:460px"><tr style="color:#667"><th style="text-align:left;padding:8px">Subjects</th><th>Attempted</th><th>Unattempted</th><th>Right</th><th>Wrong</th><th>Marks</th></tr>'+d.parts.map(function(p){return row(p.name,p)}).join('')+row('Overall',d.overall,1)+'</table>';
+  }catch(e){m.textContent='Error: '+e.message}
+  b.disabled=false;
+}
+</script>
 </script>
 </body>
 </html>

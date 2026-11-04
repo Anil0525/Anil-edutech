@@ -1209,6 +1209,17 @@ window.emailjs={send:function(_svc,_tpl,p){
       </div>
     </div>
 
+    <div class="section" style="padding-bottom:0;">
+      <div onclick="goRank()" style="cursor:pointer;display:flex;align-items:center;gap:14px;background:linear-gradient(135deg,#4f46e5,#7c3aed);border-radius:18px;padding:16px 18px;color:#fff;box-shadow:0 8px 24px rgba(99,102,241,.35);">
+        <div style="font-size:34px;">🎯</div>
+        <div style="flex:1;min-width:0;">
+          <div style="font-size:16px;font-weight:900;">Rank Predictor</div>
+          <div style="font-size:12px;opacity:.9;margin-top:2px;">మీ score తో rank, selection chance, weak topics &amp; study plan చూడండి</div>
+        </div>
+        <div style="font-size:22px;opacity:.8;">›</div>
+      </div>
+    </div>
+
     <div class="section">
       <div class="section-title" id="categories-section">Exam Categories</div>
       <div class="section-sub">మీకు నచ్చిన category select చేయండి</div>
@@ -2720,6 +2731,7 @@ window.emailjs={send:function(_svc,_tpl,p){
       <div style="display:flex;gap:10px;margin-bottom:24px;flex-wrap:wrap">
         <button class="btn-primary" onclick="goHome()">← Home కి వెళ్ళు</button>
         <button class="btn-nav" onclick="retakeExam()">🔄 మళ్ళీ చేయండి</button>
+        <button class="btn-nav" onclick="goRank(exam.current&&exam.current.id)">🎯 Rank Predict</button>
         <button class="btn-nav" onclick="goExams('')">📝 Other Exams</button>
         <button class="btn-nav" id="cert-btn" onclick="showCertificate()"
           style="background:linear-gradient(135deg,#F5B731,#E8640A);color:#fff;border:none;display:none">🏅 Certificate
@@ -3788,6 +3800,215 @@ window.emailjs={send:function(_svc,_tpl,p){
       <div id="mistakes-content"></div>
     </div>
   </div>
+
+  <!-- RANK PREDICTOR (Rank Mitra style) -->
+  <div id="page-rank" class="page">
+    <div class="section">
+      <div class="section-title">🎯 Rank Predictor</div>
+      <div class="section-sub">మీ score తో rank, selection chance, weak topics & study plan — అన్నీ ఒకే చోట</div>
+      <div id="rank-content"></div>
+    </div>
+  </div>
+  <script>
+  (function(){
+    var RK={tab:"rank",examId:"",whatif:null,cache:{},mine:[]};
+    function $(i){return document.getElementById(i)}
+    function card(inner,extra){return '<div style="background:var(--card);border:2px solid var(--border);border-radius:16px;padding:18px;margin-bottom:16px;'+(extra||'')+'">'+inner+'</div>'}
+    function me(){try{return getCurrentUser()}catch(e){return null}}
+    function lsGet(k,d){try{var v=JSON.parse(_ls.getItem(k)||"null");return v||d}catch(e){return d}}
+    function lsSet(k,v){try{_ls.setItem(k,JSON.stringify(v))}catch(e){}}
+    function normA(v){if(v==null||v==="")return null;if(typeof v==="number")return String.fromCharCode(65+v);var s=String(v).trim();if(/^\d+$/.test(s))return String.fromCharCode(65+parseInt(s,10));return s.toUpperCase()}
+    function exName(id){var e=(DB.exams||[]).find(function(x){return String(x.id)===String(id)});return e?e.name:("Exam "+id)}
+    function secLabel(s){return(typeof SECTION_META!=="undefined"&&SECTION_META[s])?SECTION_META[s].label:s}
+    var INP='width:100%;box-sizing:border-box;padding:10px 12px;border-radius:10px;border:1.5px solid var(--border2);background:var(--bg);color:var(--text);font-family:inherit;font-size:14px;';
+    var LBL='font-size:11.5px;font-weight:800;color:var(--text3);display:block;margin-bottom:4px;';
+    var BTN='padding:11px 18px;border:none;border-radius:12px;background:linear-gradient(135deg,#6366f1,#8b5cf6);color:#fff;font-family:inherit;font-size:13.5px;font-weight:800;cursor:pointer;';
+
+    async function loadMine(u){
+      var local=[],rem=[];
+      try{local=JSON.parse(_ls.getItem("ae_scores")||"[]")}catch(e){}
+      try{rem=await sbLoadResults(500)}catch(e){}
+      var all=(rem||[]).slice();
+      local.forEach(function(x){if(!all.find(function(y){return y.ts==x.ts}))all.push(x)});
+      RK.mine=all.filter(function(r){return(r.gmail&&u.gmail&&r.gmail===u.gmail)||(!r.gmail&&r.name===u.name)}).sort(function(a,b){return(b.ts||0)-(a.ts||0)});
+    }
+    function attempted(){
+      var out=[],idx={};
+      RK.mine.forEach(function(r){
+        if(!r.examId)return;var k=String(r.examId);
+        if(idx[k]===undefined){idx[k]=out.length;out.push({id:r.examId,pct:r.pct||0,name:r.examName||exName(r.examId),total:r.total||0,cat:r.examCat||""})}
+        else if((r.pct||0)>out[idx[k]].pct){out[idx[k]].pct=r.pct||0;out[idx[k]].total=r.total||out[idx[k]].total}
+      });
+      return out;
+    }
+    async function examPool(id,myKey){
+      var key=String(id);
+      if(!RK.cache[key]){
+        var rows=[];
+        try{rows=await _fetchAllRows("ae_results","user_name,user_gmail,pct","exam_id=eq."+encodeURIComponent(id),"pct.desc")}catch(e){}
+        var best={};
+        rows.forEach(function(r){var k=r.user_gmail||r.user_name||"?";var p=r.pct||0;if(best[k]===undefined||p>best[k])best[k]=p});
+        RK.cache[key]=Object.keys(best).map(function(k){return{k:k,pct:best[k]}});
+      }
+      return RK.cache[key].filter(function(x){return x.k!==myKey});
+    }
+    function getCfg(){return lsGet("ae_rk_cfg",{applicants:"",vacancies:"",cutoff:""})}
+
+    function tabsHtml(){
+      var T=[["rank","🎯 Rank"],["weak","💪 Weak Topics"],["plan","🗓 Study Plan"]];
+      return '<div style="display:flex;gap:8px;margin-bottom:16px;overflow-x:auto;padding-bottom:2px;">'+T.map(function(t){
+        var on=RK.tab===t[0];
+        return '<button onclick="rkTab(\''+t[0]+'\')" style="flex:0 0 auto;padding:9px 16px;border-radius:20px;border:1.5px solid '+(on?'#6366f1':'var(--border2)')+';background:'+(on?'linear-gradient(135deg,#6366f1,#8b5cf6)':'var(--card)')+';color:'+(on?'#fff':'var(--text2)')+';font-family:inherit;font-size:13px;font-weight:800;cursor:pointer;">'+t[1]+'</button>'}).join('')+'</div><div id="rk-body"></div>';
+    }
+    async function render(){
+      var box=$("rank-content");if(!box)return;
+      var u=me();
+      if(!u){box.innerHTML=card('<div style="text-align:center;padding:20px 8px"><div style="font-size:44px">🔐</div><div style="font-weight:900;font-size:16px;margin:8px 0">Login చేయండి</div><div style="font-size:13px;color:var(--text3);margin-bottom:14px">మీ exam results ఆధారంగా rank, weak topics చూపిస్తాం.</div><button style="'+BTN+'" onclick="openSubModal(function(){goRank()})">Login / Register →</button></div>');return}
+      box.innerHTML='<div class="prog-empty"><span class="prog-empty-icon">⏳</span>Loading your data...</div>';
+      await loadMine(u);
+      box.innerHTML=tabsHtml();
+      draw();
+    }
+    function draw(){
+      var b=$("rk-body");if(!b)return;
+      if(RK.tab==="rank")drawRank();else if(RK.tab==="weak")drawWeak();else drawPlan();
+    }
+
+    /* ---------- RANK TAB ---------- */
+    function emptyCard(msg){return card('<div style="text-align:center;padding:16px 8px"><div style="font-size:40px">📝</div><div style="font-size:13.5px;color:var(--text2);font-weight:700;margin:8px 0 14px">'+msg+'</div><button style="'+BTN+'" onclick="goExams(\'\')">Exams చూడండి →</button></div>')}
+    async function drawRank(){
+      var b=$("rk-body"),att=attempted();
+      if(!att.length){b.innerHTML=emptyCard("ఇంకా ఏ exam చేయలేదు. ఒక mock test రాయండి — వెంటనే మీ rank చూపిస్తాం!");return}
+      if(!att.find(function(a){return String(a.id)===String(RK.examId)})){RK.examId=att[0].id;RK.whatif=null}
+      var cur=att.find(function(a){return String(a.id)===String(RK.examId)});
+      var pct=RK.whatif!=null?RK.whatif:cur.pct;
+      var opts=att.map(function(a){return '<option value="'+escHtml(a.id)+'"'+(String(a.id)===String(RK.examId)?' selected':'')+'>'+escHtml(a.name)+' — best '+a.pct+'%</option>'}).join('');
+      var cfg=getCfg();
+      b.innerHTML=card(
+        '<label style="'+LBL+'">Exam select చేయండి</label><select id="rk-exam" onchange="rkSetExam(this.value)" style="'+INP+'margin-bottom:12px;">'+opts+'</select>'+
+        '<label style="'+LBL+'">Score % (what-if — మార్చి చూడండి)</label><div style="display:flex;gap:8px;"><input id="rk-pct" type="number" min="0" max="100" step="0.5" value="'+pct+'" style="'+INP+'"><button style="'+BTN+'" onclick="rkCalc()">Check</button></div>')+
+        '<div id="rk-res">'+card('<div style="text-align:center;color:var(--text3);font-size:13px;">⏳ Rank calculate అవుతోంది...</div>')+'</div>'+
+        card('<div style="font-size:14px;font-weight:900;color:var(--text);margin-bottom:4px;">🎓 Selection Chance Predictor</div><div style="font-size:11.5px;color:var(--text3);margin-bottom:12px;">Notification లో ఉన్న వివరాలు enter చేయండి (వచ్చే applicants అంచనా వేయవచ్చు)</div>'+
+          '<div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(130px,1fr));gap:10px;margin-bottom:12px;">'+
+          '<div><label style="'+LBL+'">Expected Applicants</label><input id="rk-app" type="number" min="1" value="'+escHtml(cfg.applicants)+'" placeholder="e.g. 300000" style="'+INP+'"></div>'+
+          '<div><label style="'+LBL+'">Vacancies</label><input id="rk-vac" type="number" min="1" value="'+escHtml(cfg.vacancies)+'" placeholder="e.g. 1500" style="'+INP+'"></div>'+
+          '<div><label style="'+LBL+'">Expected Cutoff %</label><input id="rk-cut" type="number" min="0" max="100" step="0.5" value="'+escHtml(cfg.cutoff)+'" placeholder="e.g. 60" style="'+INP+'"></div></div>'+
+          '<button style="'+BTN+'" onclick="rkCalc()">🔍 Predict చేయండి</button><div id="rk-chance" style="margin-top:14px;"></div>');
+      await rkCompute(cur,pct);
+    }
+    async function rkCompute(cur,pct){
+      var u=me(),res=$("rk-res");if(!res)return;
+      var pool=await examPool(cur.id,u.gmail||u.name);
+      var N=pool.length,total=N+1;
+      var higher=pool.filter(function(x){return x.pct>pct}).length,below=pool.filter(function(x){return x.pct<pct}).length;
+      var rank=higher+1,pctile=N?Math.round(below/N*100):100,topPct=Math.max(1,100-pctile);
+      var warn=total<20?'<div style="font-size:11.5px;color:#d97706;font-weight:700;margin-top:10px;">⚠️ ఈ exam కి '+total+' మంది మాత్రమే attempt చేశారు — rank approximate మాత్రమే. Attempts పెరిగే కొద్దీ accurate అవుతుంది.</div>':'';
+      var tone=pctile>=90?'#00B894':pctile>=60?'#1A73E8':pctile>=30?'#FF6B35':'#E53E3E';
+      var msg=!N?'ఈ exam కి మీరే మొదటి attempt! 🙌':pctile>=90?'అద్భుతం! మీరు top performers లో ఉన్నారు 🏆':pctile>=60?'మంచి performance — ఇంకొంచెం push చేస్తే top లోకి వస్తారు 💪':pctile>=30?'Average range — weak topics మీద focus పెట్టండి 📚':'ఎక్కువ practice అవసరం — Study Plan follow అవ్వండి 🔥';
+      res.innerHTML=card(
+        '<div style="text-align:center;"><div style="font-size:11px;font-weight:800;color:var(--text3);text-transform:uppercase;letter-spacing:1px;">'+escHtml(cur.name)+'</div>'+
+        '<div style="font-size:46px;font-weight:900;color:'+tone+';line-height:1.1;margin:6px 0;">#'+rank+' <span style="font-size:18px;color:var(--text3);font-weight:700;">/ '+total+'</span></div>'+
+        '<div style="font-size:13px;color:var(--text2);font-weight:700;margin-bottom:12px;">Score '+pct+'% · మీరు '+pctile+'% మంది కంటే ముందున్నారు · <b style="color:'+tone+'">Top '+topPct+'%</b></div>'+
+        '<div style="height:10px;background:var(--border);border-radius:6px;overflow:hidden;"><div style="width:'+pctile+'%;height:100%;background:linear-gradient(90deg,#6366f1,'+tone+');border-radius:6px;transition:width 1s;"></div></div>'+
+        '<div style="font-size:13px;color:var(--text2);margin-top:12px;font-weight:600;">'+msg+'</div></div>'+warn);
+      RK._last={cur:cur,pct:pct,pctile:pctile,total:total,rank:rank};
+      showChance();
+    }
+    function showChance(){
+      var L=RK._last,el=$("rk-chance"),cfg=getCfg();if(!L||!el)return;
+      var A=+cfg.applicants,V=+cfg.vacancies,C=+cfg.cutoff,topPct=Math.max(1,100-L.pctile),out='';
+      if(A>0&&V>0){
+        var req=V/A*100,est=Math.max(1,Math.round(topPct/100*A)),lab,col;
+        if(topPct<=req*0.5){lab='🟢 Very High';col='#00B894'}else if(topPct<=req){lab='🟢 High';col='#10b981'}else if(topPct<=req*2){lab='🟠 Borderline';col='#FF6B35'}else{lab='🔴 Low — improve అవ్వాలి';col='#E53E3E'}
+        out+='<div style="background:'+col+'18;border:1.5px solid '+col+'55;border-radius:14px;padding:14px;margin-bottom:10px;"><div style="font-size:15px;font-weight:900;color:'+col+';">Selection Chance: '+lab+'</div>'+
+          '<div style="font-size:12.5px;color:var(--text2);line-height:1.7;margin-top:6px;">📊 Expected all-applicants rank: <b>~'+est.toLocaleString("en-IN")+'</b> / '+A.toLocaleString("en-IN")+'<br>🎯 Selection కి కావలసింది: <b>Top '+req.toFixed(2)+'%</b> · మీరు: <b>Top '+topPct+'%</b></div></div>';
+      }
+      if(C>0){
+        var gap=+(L.pct-C).toFixed(1);
+        if(gap>=0)out+='<div style="font-size:13px;font-weight:700;color:#00B894;">✅ మీ score cutoff కంటే '+gap+'% పైన ఉంది — safe zone లో ఉన్నారు (negative marks జాగ్రత్త!)</div>';
+        else{var need=L.cur.total?Math.ceil(-gap/100*L.cur.total):0;out+='<div style="font-size:13px;font-weight:700;color:#E53E3E;">⚠️ Cutoff కి ఇంకా '+(-gap)+'% తక్కువ'+(need?' — ఇంకా సుమారు <b>'+need+' ప్రశ్నలు</b> ఎక్కువ correct చేయాలి':'')+'.</div>'}
+      }
+      if(!out)out='<div style="font-size:12.5px;color:var(--text3);">పై వివరాలు fill చేసి Predict నొక్కండి.</div>';
+      out+='<div style="font-size:10.5px;color:var(--text3);margin-top:10px;line-height:1.5;">ℹ️ ఇది Anil EduTech students data ఆధారంగా అంచనా మాత్రమే. అసలు exam లో applicants, difficulty, normalization వల్ల result మారవచ్చు — official result కాదు.</div>';
+      el.innerHTML=out;
+    }
+    window.rkSetExam=function(v){RK.examId=v;RK.whatif=null;drawRank()};
+    window.rkCalc=function(){
+      var p=$("rk-pct");if(p&&p.value!==""){var n=parseFloat(p.value);if(!isNaN(n))RK.whatif=Math.max(0,Math.min(100,n))}
+      var a=$("rk-app"),v=$("rk-vac"),c=$("rk-cut");
+      if(a&&v&&c)lsSet("ae_rk_cfg",{applicants:a.value,vacancies:v.value,cutoff:c.value});
+      try{_track("rank_predict_calc",{exam:RK.examId})}catch(e){}
+      var att=attempted(),cur=att.find(function(x){return String(x.id)===String(RK.examId)});
+      if(cur)rkCompute(cur,RK.whatif!=null?RK.whatif:cur.pct);
+    };
+
+    /* ---------- WEAK TOPICS TAB ---------- */
+    function secStats(){
+      var qmap={},st={},seen={};
+      (DB.questions||[]).forEach(function(q){qmap[q.id]=q});
+      RK.mine.forEach(function(r){
+        if(!r.answers||seen[r.ts])return;seen[r.ts]=1;
+        Object.keys(r.answers).forEach(function(qid){
+          var q=qmap[qid];if(!q)return;var s=q.section||"ga";var o=st[s]||(st[s]={a:0,c:0});
+          o.a++;if(normA(r.answers[qid])===normA(q.ans))o.c++;
+        });
+      });
+      return Object.keys(st).map(function(k){return{sec:k,a:st[k].a,c:st[k].c,acc:Math.round(st[k].c/st[k].a*100)}}).sort(function(x,y){return x.acc-y.acc});
+    }
+    function drawWeak(){
+      var b=$("rk-body"),s=secStats();
+      if(!s.length){b.innerHTML=emptyCard("Weak topics analyse చేయడానికి exams రాయాలి. కనీసం 1-2 mock tests attempt చేయండి!");return}
+      var rows=s.map(function(x){
+        var col=x.acc>=75?'#00B894':x.acc>=50?'#FF6B35':'#E53E3E',tag=x.acc>=75?'Strong 💪':x.acc>=50?'Average 📊':'Weak ⚠️';
+        return '<div style="margin-bottom:14px;"><div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:5px;"><span style="font-size:13.5px;font-weight:800;color:var(--text);">'+escHtml(secLabel(x.sec))+'</span><span style="font-size:12px;font-weight:900;color:'+col+';">'+tag+' · '+x.acc+'%</span></div>'+
+          '<div style="height:8px;background:var(--border);border-radius:4px;overflow:hidden;"><div style="width:'+x.acc+'%;height:100%;background:'+col+';border-radius:4px;"></div></div>'+
+          '<div style="font-size:11px;color:var(--text3);margin-top:3px;">'+x.c+' / '+x.a+' ప్రశ్నలు correct (మీ అన్ని attempts లో)</div></div>'}).join('');
+      var w=s[0];
+      b.innerHTML=card('<div style="font-size:14px;font-weight:900;color:var(--text);margin-bottom:14px;">💪 Section-wise Accuracy</div>'+rows)+
+        (w.acc<75?card('<div style="font-size:14px;font-weight:900;color:#E53E3E;margin-bottom:6px;">🎯 Focus Area: '+escHtml(secLabel(w.sec))+'</div><div style="font-size:13px;color:var(--text2);line-height:1.6;margin-bottom:12px;">ఈ section లో accuracy '+w.acc+'% మాత్రమే. ఇది '+Math.min(95,w.acc+20)+'% కి పెంచితే మీ rank గణనీయంగా మెరుగవుతుంది.</div><div style="display:flex;gap:8px;flex-wrap:wrap;"><button style="'+BTN+'" onclick="goExams(\'\')">📝 Practice Exams</button><button style="'+BTN+'background:var(--bg);color:var(--text);border:1.5px solid var(--border2);" onclick="goMistakes()">🧠 Mistake Notebook</button></div>','background:linear-gradient(135deg,rgba(239,68,68,.07),rgba(245,158,11,.05));border-color:rgba(239,68,68,.25);'):'');
+    }
+
+    /* ---------- STUDY PLAN TAB ---------- */
+    function drawPlan(){
+      var b=$("rk-body"),p=lsGet("ae_rk_plan",{date:"",tpw:3,dq:50}),s=secStats();
+      var form=card('<div style="font-size:14px;font-weight:900;color:var(--text);margin-bottom:12px;">🗓 మీ Study Plan</div>'+
+        '<div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(140px,1fr));gap:10px;margin-bottom:12px;">'+
+        '<div><label style="'+LBL+'">Exam Date</label><input id="rk-pl-date" type="date" value="'+escHtml(p.date)+'" style="'+INP+'"></div>'+
+        '<div><label style="'+LBL+'">Mock Tests / week</label><input id="rk-pl-tpw" type="number" min="1" max="14" value="'+escHtml(p.tpw)+'" style="'+INP+'"></div>'+
+        '<div><label style="'+LBL+'">Daily Questions</label><input id="rk-pl-dq" type="number" min="10" max="500" step="10" value="'+escHtml(p.dq)+'" style="'+INP+'"></div></div>'+
+        '<button style="'+BTN+'" onclick="rkSavePlan()">💾 Plan Save చేయండి</button>');
+      var out='';
+      if(p.date){
+        var days=Math.ceil((new Date(p.date+"T00:00:00")-new Date())/864e5);
+        if(days<0)out=card('<div style="font-size:13px;color:var(--text2);font-weight:700;">ఈ exam date దాటిపోయింది. కొత్త date set చేయండి.</div>');
+        else{
+          var weeks=Math.max(1,Math.ceil(days/7)),tpw=+p.tpw||3,dq=+p.dq||50;
+          var weekAgo=Date.now()-6048e5,done=RK.mine.filter(function(r){return(r.ts||0)>weekAgo}).length,prog=Math.min(100,Math.round(done/tpw*100));
+          var wk=s.length?s.slice(0,3).map(function(x){return secLabel(x.sec)}):["🧠 Reasoning","🔢 Arithmetic","🌍 General Awareness"];
+          var plan=[["సోమ",wk[0]+" — "+dq+" Qs practice"],["మంగళ",(wk[1]||wk[0])+" — "+dq+" Qs practice"],["బుధ",(wk[2]||wk[0])+" — "+dq+" Qs practice"],["గురు","Current Affairs + GK quiz"],["శుక్ర","Mistake Notebook revision 🧠"],["శని","Full Mock Test రాయండి 📝"],["ఆది","Mock analysis + weak topics notes"]];
+          out=card('<div style="display:flex;gap:10px;margin-bottom:14px;text-align:center;"><div style="flex:1;background:var(--bg);border-radius:12px;padding:12px;"><div style="font-size:26px;font-weight:900;color:#6366f1;">'+days+'</div><div style="font-size:10.5px;color:var(--text3);font-weight:800;">రోజులు మిగిలాయి</div></div><div style="flex:1;background:var(--bg);border-radius:12px;padding:12px;"><div style="font-size:26px;font-weight:900;color:#00B894;">'+weeks*tpw+'</div><div style="font-size:10.5px;color:var(--text3);font-weight:800;">మొత్తం mock tests</div></div><div style="flex:1;background:var(--bg);border-radius:12px;padding:12px;"><div style="font-size:26px;font-weight:900;color:#FF6B35;">'+dq*days+'</div><div style="font-size:10.5px;color:var(--text3);font-weight:800;">Total Questions</div></div></div>'+
+            '<div style="font-size:12.5px;font-weight:800;color:var(--text);margin-bottom:5px;">ఈ వారం progress: '+done+' / '+tpw+' tests</div><div style="height:9px;background:var(--border);border-radius:6px;overflow:hidden;"><div style="width:'+prog+'%;height:100%;background:linear-gradient(90deg,#6366f1,#00B894);border-radius:6px;"></div></div>')+
+            card('<div style="font-size:14px;font-weight:900;color:var(--text);margin-bottom:12px;">📅 Weekly Schedule'+(s.length?' <span style="font-size:11px;color:var(--text3);font-weight:600;">(మీ weak sections ఆధారంగా)</span>':'')+'</div>'+plan.map(function(d){return '<div style="display:flex;gap:12px;align-items:center;padding:9px 0;border-bottom:1px solid var(--border);"><div style="min-width:46px;font-size:12px;font-weight:900;color:#6366f1;">'+d[0]+'</div><div style="font-size:13px;color:var(--text2);font-weight:600;">'+escHtml(d[1])+'</div></div>'}).join('')+'<button style="'+BTN+'margin-top:14px;" onclick="goExams(\'\')">▶ Today\'s Test Start చేయండి</button>');
+        }
+      }else out='<div style="font-size:12.5px;color:var(--text3);text-align:center;padding:6px;">Exam date set చేస్తే రోజువారీ & వారం plan తయారవుతుంది.</div>';
+      b.innerHTML=form+out;
+    }
+    window.rkSavePlan=function(){
+      var d=$("rk-pl-date"),t=$("rk-pl-tpw"),q=$("rk-pl-dq");if(!d)return;
+      lsSet("ae_rk_plan",{date:d.value,tpw:t.value,dq:q.value});
+      try{toast("✅ Study plan save అయింది!","success")}catch(e){}
+      drawPlan();
+    };
+    window.rkTab=function(t){RK.tab=t;var box=$("rank-content");if(box){box.innerHTML=tabsHtml()}draw()};
+    window.goRank=function(examId){
+      try{stopTimer()}catch(e){}
+      if(examId){RK.examId=examId;RK.whatif=null;RK.tab="rank"}
+      showPage("rank");
+      try{_track("rank_predict_open")}catch(e){}
+      render();
+    };
+  })();
+  </script>
 
   <div id="page-admin" class="page"></div>
   <!-- admin content lazy-loaded from admin-content.html -->

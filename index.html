@@ -4095,6 +4095,8 @@ window.emailjs={send:function(_svc,_tpl,p){
       h+='<div style="font-size:15px;font-weight:900;color:var(--text);margin:6px 0 8px;">🏆 Top Rankers (by raw marks)</div><div style="'+card+'">'
         +st.top.map(function(x,i){return '<div style="display:flex;justify-content:space-between;padding:7px 0;'+(i?'border-top:1px solid var(--border);':'')+'font-size:13px;color:var(--text)"><span>#'+(i+1)+' · '+escHtml(x.category)+'</span><span style="font-weight:800">'+(+x.marks).toFixed(2)+' <span style="color:var(--text3);font-weight:600">(✅'+x.right+' ❌'+x.wrong+')</span></span></div>'}).join('')+'</div>';
     }
+    var bad=(d.diag||[]).some(function(x){return x.dup||x.total<10});
+    if(bad&&!d.partial){h+='<div style="'+card+'font-size:12px;color:var(--text2)"><b>⚠️ కొన్ని parts సరిగ్గా చదవలేదు.</b> ఈ debug text copy చేసి Claude కి పంపండి:<textarea readonly onclick="this.select()" style="width:100%;height:90px;margin-top:6px;font-size:11px;background:var(--bg);color:var(--text);border:1px solid var(--border2);border-radius:8px;box-sizing:border-box">'+escHtml(JSON.stringify(d.diag))+'</textarea></div>'}
     return h;
   }
   async function aeScCalc(){
@@ -4112,6 +4114,7 @@ window.emailjs={send:function(_svc,_tpl,p){
       var r=await fetch(SB_URL+'/functions/v1/ssc-score',{method:'POST',headers:{'Content-Type':'application/json',apikey:SB_KEY,Authorization:'Bearer '+SB_KEY},body:JSON.stringify(body)});
       var d=await r.json();
       if(!d.ok)throw new Error(d.error||'Failed');
+      if(d.maxMarks==null)throw new Error('Supabase లో edge function పాత version ఉంది — కొత్త index.ts తో redeploy చేయండి');
       m.textContent='';o.innerHTML=aeScRender(d);
     }catch(e){m.textContent='❌ '+(e.message||'Error')+' — link సరైనదో చూసి మళ్ళీ try చేయండి'}
     b.disabled=false;b.textContent='Submit';

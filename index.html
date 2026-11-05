@@ -4052,6 +4052,7 @@ window.emailjs={send:function(_svc,_tpl,p){
           <label style="font-size:11px;font-weight:800;color:var(--text3);letter-spacing:.4px;">STATE<select id="aeScState" style="width:100%;margin-top:4px;padding:10px;border:1.5px solid var(--border2);border-radius:10px;background:var(--bg);color:var(--text);font-family:inherit;font-size:13px;box-sizing:border-box;"></select></label>
           <label style="font-size:11px;font-weight:800;color:var(--text3);letter-spacing:.4px;">PAPER LANGUAGE<select id="aeScLang" style="width:100%;margin-top:4px;padding:10px;border:1.5px solid var(--border2);border-radius:10px;background:var(--bg);color:var(--text);font-family:inherit;font-size:13px;box-sizing:border-box;"><option>English</option><option>Hindi</option><option>Telugu</option><option>Other</option></select></label>
         </div>
+        <label style="display:block;margin-top:12px;font-size:11px;font-weight:800;color:var(--text3);letter-spacing:.4px;">EXPECTED / PREVIOUS YEAR CUTOFF MARKS (optional — pass/fail status కోసం)<input id="aeScCut" type="number" step="0.01" min="0" placeholder="e.g. 140" style="width:100%;margin-top:4px;padding:10px;border:1.5px solid var(--border2);border-radius:10px;background:var(--bg);color:var(--text);font-family:inherit;font-size:13px;box-sizing:border-box;"></label>
         <button id="aeScGo" type="button" onclick="aeScCalc()" style="width:100%;margin-top:14px;padding:13px;border:0;border-radius:12px;background:linear-gradient(135deg,#0B63D6,#38BDF8);color:#fff;font-family:inherit;font-size:15px;font-weight:900;cursor:pointer;">Submit</button>
         <div id="aeScMsg" style="margin-top:10px;font-size:13px;font-weight:700;color:var(--text2);"></div>
       </div>
@@ -4070,10 +4071,22 @@ window.emailjs={send:function(_svc,_tpl,p){
   function aeScRender(d){
     var o=d.overall,st=d.stats,card='background:var(--card);border:2px solid var(--border);border-radius:14px;padding:14px;margin-bottom:14px;';
     var acc=o.attempted?Math.round(o.right/o.attempted*100):0,h='';
-    h+='<div style="'+card+'"><div style="font-size:12px;color:var(--text3);font-weight:800">YOUR SCORE</div><div style="font-size:30px;font-weight:900;color:var(--text)">'+o.marks.toFixed(2)+' <span style="font-size:14px;color:var(--text3)">/ '+d.maxMarks+'</span></div>'
+    h+='<div style="'+card+'"><div style="font-size:12px;color:var(--text3);font-weight:800">YOUR SCORE</div><div style="font-size:30px;font-weight:900;color:var(--text)">'+o.marks.toFixed(2)+' <span style="font-size:14px;color:var(--text3)">/ '+d.maxMarks+' ('+(d.maxMarks?(o.marks/d.maxMarks*100).toFixed(1):0)+'%)</span></div>'
       +'<div style="display:flex;gap:14px;flex-wrap:wrap;font-size:12.5px;font-weight:800;margin-top:6px"><span style="color:#16a34a">✅ Right '+o.right+'</span><span style="color:#dc2626">❌ Wrong '+o.wrong+'</span><span style="color:#d97706">⏭ Skipped '+o.unattempted+'</span><span style="color:#0b63d6">🎯 Accuracy '+acc+'%</span></div>'
       +'<div style="font-size:11.5px;color:var(--text3);margin-top:6px">Category: '+escHtml(d.category)+' · Shift: '+escHtml(d.shift)+'</div></div>';
-    if(st){
+    var cutV=parseFloat((document.getElementById('aeScCut')||{}).value),plusV=parseFloat((document.getElementById('aeScPlus')||{}).value)||1;
+    if(cutV>0){
+      var gapM=o.marks-cutV,safeM=0.05*d.maxMarks,sc,sl,sm;
+      if(gapM>=safeM){sc='#16a34a';sl='🟢 Safe zone — Cutoff పైన ఉన్నారు';sm='Cutoff కంటే <b>'+gapM.toFixed(2)+'</b> marks ఎక్కువ.'}
+      else if(gapM>=0){sc='#d97706';sl='🟠 Borderline — Cutoff దగ్గరగా ఉన్నారు';sm='Cutoff కంటే కేవలం <b>'+gapM.toFixed(2)+'</b> marks ఎక్కువ. Cutoff కొంచెం పెరిగినా risk.'}
+      else{sc='#dc2626';sl='🔴 Cutoff కంటే తక్కువ';sm='Cutoff కి ఇంకా <b>'+(-gapM).toFixed(2)+'</b> marks తక్కువ (సుమారు <b>'+Math.ceil(-gapM/plusV)+'</b> ఎక్కువ correct answers కావాలి).'}
+      h+='<div style="'+card+'border-color:'+sc+'88;background:'+sc+'12"><div style="font-size:15px;font-weight:900;color:'+sc+'">'+sl+'</div><div style="font-size:12.5px;color:var(--text2);margin-top:6px;line-height:1.7">Cutoff: <b>'+cutV+'</b> · మీ marks: <b>'+o.marks.toFixed(2)+'</b><br>'+sm+'</div><div style="font-size:10.5px;color:var(--text3);margin-top:8px">ℹ️ మీరు enter చేసిన cutoff ఆధారంగా అంచనా మాత్రమే. Official cutoff (category-wise) notification లో మాత్రమే final.</div></div>';
+    }else{
+      h+='<div style="'+card+'font-size:12.5px;color:var(--text2)">🎯 <b>Pass / Fail status</b> కావాలంటే పైన <b>Expected / Previous year Cutoff</b> enter చేసి మళ్ళీ Submit చేయండి. Cutoff exam, category, year ని బట్టి మారుతుంది, అందుకే మేము fix చేయలేదు.</div>';
+    }
+    if(st&&st.total<5){
+      h+='<div style="'+card+'font-size:12.5px;color:#d97706;font-weight:700">⚠️ ఇప్పటివరకు '+st.total+' student మాత్రమే submit చేశారు. Rank, averages, shift comparison చూపడానికి కనీసం 5 మంది కావాలి. Friends కి share చేయండి — data పెరిగితే accurate rank వస్తుంది.</div>';
+    }else if(st){
       h+='<div style="'+card+'"><div style="font-size:15px;font-weight:900;margin-bottom:10px;color:var(--text)">Your Rank Among Candidates</div><div style="display:flex;gap:8px;flex-wrap:wrap">'
         +aeScRankCard('OVERALL RANK',st.overall_rank,st.total)+aeScRankCard('SHIFT RANK',st.shift_rank,st.shift_total)+aeScRankCard('CATEGORY RANK',st.cat_rank,st.cat_total)+'</div>'
         +(st.total<50?'<div style="margin-top:10px;font-size:11.5px;color:#d97706;font-weight:700">⚠️ ఇప్పటివరకు '+st.total+' students మాత్రమే submit చేశారు — rank rough estimate మాత్రమే. ఎక్కువ మంది submit చేస్తే accurate అవుతుంది.</div>':'')+'</div>';
@@ -4087,11 +4100,11 @@ window.emailjs={send:function(_svc,_tpl,p){
     var hasAvg=d.parts.some(function(p){return p.avg!=null});
     var row=function(n,p,b){return '<tr style="'+(b?'font-weight:800;background:var(--bg2);':'')+'border-top:1px solid var(--border)"><td style="padding:11px 8px;text-align:left">'+escHtml(n)+'</td><td>'+p.attempted+'</td><td>'+p.unattempted+'</td><td style="color:#16a34a;font-weight:800">'+p.right+'</td><td style="color:#dc2626;font-weight:800">'+p.wrong+'</td><td style="color:#7c3aed;font-weight:900">'+p.marks.toFixed(2)+'</td>'+(hasAvg?'<td style="color:var(--text3)">'+(p.avg!=null?(+p.avg).toFixed(2):'')+'</td>':'')+'</tr>'};
     h+='<div style="font-size:15px;font-weight:900;color:var(--text);margin-bottom:8px;">Subject-wise Marks</div><div style="'+card+'padding:0;overflow-x:auto"><table style="width:100%;border-collapse:collapse;text-align:center;font-size:12.5px;color:var(--text);min-width:460px"><tr style="color:var(--text3);font-size:11px"><th style="text-align:left;padding:10px 8px">Subjects</th><th>Attempted</th><th>Unattempted</th><th>Right</th><th>Wrong</th><th>Marks</th>'+(hasAvg?'<th>Avg</th>':'')+'</tr>'+d.parts.map(function(p){return row(p.name||'Part',p)}).join('')+row('Overall',d.overall,1)+'</table></div>';
-    if(st&&st.shifts&&st.shifts.length){
+    if(st&&st.total>=5&&st.shifts&&st.shifts.length){
       h+='<div style="font-size:15px;font-weight:900;color:var(--text);margin:6px 0 8px;">Shift-wise Average (Hardest → Easiest)</div><div style="'+card+'padding:0;overflow-x:auto"><table style="width:100%;border-collapse:collapse;text-align:center;font-size:12.5px;color:var(--text)"><tr style="color:var(--text3);font-size:11px"><th style="text-align:left;padding:10px 8px">Shift</th><th>Candidates</th><th>Avg Marks</th></tr>'
         +st.shifts.map(function(x,i){var me=x.shift===d.shift;return '<tr style="border-top:1px solid var(--border);'+(me?'background:rgba(11,99,214,.1);font-weight:800':'')+'"><td style="padding:10px 8px;text-align:left">'+(i+1)+'. '+escHtml(x.shift)+(me?' ← మీరు':'')+'</td><td>'+x.n+'</td><td>'+(+x.avg).toFixed(2)+'</td></tr>'}).join('')+'</table></div>';
     }
-    if(st&&st.top&&st.top.length){
+    if(st&&st.total>=5&&st.top&&st.top.length){
       h+='<div style="font-size:15px;font-weight:900;color:var(--text);margin:6px 0 8px;">🏆 Top Rankers (by raw marks)</div><div style="'+card+'">'
         +st.top.map(function(x,i){return '<div style="display:flex;justify-content:space-between;padding:7px 0;'+(i?'border-top:1px solid var(--border);':'')+'font-size:13px;color:var(--text)"><span>#'+(i+1)+' · '+escHtml(x.category)+'</span><span style="font-weight:800">'+(+x.marks).toFixed(2)+' <span style="color:var(--text3);font-weight:600">(✅'+x.right+' ❌'+x.wrong+')</span></span></div>'}).join('')+'</div>';
     }

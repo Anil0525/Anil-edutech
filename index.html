@@ -4069,7 +4069,7 @@ window.emailjs={send:function(_svc,_tpl,p){
   function aeScBar(label,val,max,color){var w=max>0?Math.max(2,Math.min(100,val/max*100)):0;return '<div style="margin-bottom:9px;"><div style="display:flex;justify-content:space-between;font-size:12px;font-weight:800;color:var(--text);margin-bottom:3px"><span>'+label+'</span><span>'+(val==null?'—':(+val).toFixed(2))+'</span></div><div style="height:8px;background:var(--border);border-radius:4px;overflow:hidden"><div style="width:'+(val==null?0:w)+'%;height:100%;background:'+color+';border-radius:4px"></div></div></div>'}
   function aeScRankCard(t,r,n){return '<div style="flex:1;min-width:130px;background:var(--bg2);border-radius:12px;padding:12px;text-align:center"><div style="font-size:10.5px;color:var(--text3);font-weight:800">'+t+'</div><div style="font-size:22px;font-weight:900;color:var(--primary)">'+(r?'#'+r:'—')+'</div><div style="font-size:11px;color:var(--text3)">'+(n?'of '+n:'')+'</div></div>'}
   function aeScRender(d){
-    var o=d.overall,st=d.stats,card='background:var(--card);border:2px solid var(--border);border-radius:14px;padding:14px;margin-bottom:14px;';
+    window._aeScLast=d;var o=d.overall,st=d.stats,card='background:var(--card);border:2px solid var(--border);border-radius:14px;padding:14px;margin-bottom:14px;';
     var acc=o.attempted?Math.round(o.right/o.attempted*100):0,h='';
     h+='<div style="'+card+'"><div style="font-size:12px;color:var(--text3);font-weight:800">YOUR SCORE</div><div style="font-size:30px;font-weight:900;color:var(--text)">'+o.marks.toFixed(2)+' <span style="font-size:14px;color:var(--text3)">/ '+d.maxMarks+' ('+(d.maxMarks?(o.marks/d.maxMarks*100).toFixed(1):0)+'%)</span></div>'
       +'<div style="display:flex;gap:14px;flex-wrap:wrap;font-size:12.5px;font-weight:800;margin-top:6px"><span style="color:#16a34a">✅ Right '+o.right+'</span><span style="color:#dc2626">❌ Wrong '+o.wrong+'</span><span style="color:#d97706">⏭ Skipped '+o.unattempted+'</span><span style="color:#0b63d6">🎯 Accuracy '+acc+'%</span></div>'
@@ -4084,6 +4084,7 @@ window.emailjs={send:function(_svc,_tpl,p){
     }else{
       h+='<div style="'+card+'font-size:12.5px;color:var(--text2)">🎯 <b>Pass / Fail status</b> కావాలంటే పైన <b>Expected / Previous year Cutoff</b> enter చేసి మళ్ళీ Submit చేయండి. Cutoff exam, category, year ని బట్టి మారుతుంది, అందుకే మేము fix చేయలేదు.</div>';
     }
+    h+='<div style="display:flex;gap:10px;flex-wrap:wrap;margin-bottom:14px"><button type="button" onclick="aeScDownload()" style="flex:1;min-width:160px;padding:13px;border:0;border-radius:12px;background:linear-gradient(135deg,#E8640A,#F5B731);color:#fff;font-family:inherit;font-size:14px;font-weight:900;cursor:pointer">📥 Score Card Download</button><button type="button" onclick="aeScShare()" style="flex:1;min-width:160px;padding:13px;border:0;border-radius:12px;background:linear-gradient(135deg,#25D366,#128C7E);color:#fff;font-family:inherit;font-size:14px;font-weight:900;cursor:pointer">📤 Share</button></div>';
     if(st&&st.total<5){
       h+='<div style="'+card+'font-size:12.5px;color:#d97706;font-weight:700">⚠️ ఇప్పటివరకు '+st.total+' student మాత్రమే submit చేశారు. Rank, averages, shift comparison చూపడానికి కనీసం 5 మంది కావాలి. Friends కి share చేయండి — data పెరిగితే accurate rank వస్తుంది.</div>';
     }else if(st){
@@ -4112,6 +4113,69 @@ window.emailjs={send:function(_svc,_tpl,p){
     if(bad&&!d.partial){h+='<div style="'+card+'font-size:12px;color:var(--text2)"><b>⚠️ కొన్ని parts సరిగ్గా చదవలేదు.</b> ఈ debug text copy చేసి Claude కి పంపండి:<textarea readonly onclick="this.select()" style="width:100%;height:90px;margin-top:6px;font-size:11px;background:var(--bg);color:var(--text);border:1px solid var(--border2);border-radius:8px;box-sizing:border-box">'+escHtml(JSON.stringify(d.diag))+'</textarea></div>'}
     return h;
   }
+  /* ===== Score card (PNG download / share) ===== */
+  function aeScDraw(){
+    var d=window._aeScLast;if(!d)return null;
+    var o=d.overall,st=d.stats,W=1080,P=48,showRank=!!(st&&st.total>=5);
+    var exam=((document.getElementById('aeScExam').selectedOptions||[])[0]||{}).text||'Exam';
+    exam=exam.replace(/\s*\(.*\)\s*$/,'');
+    var cut=parseFloat((document.getElementById('aeScCut')||{}).value);
+    var plusV=parseFloat((document.getElementById('aeScPlus')||{}).value)||1;
+    var pct=d.maxMarks?o.marks/d.maxMarks*100:0,acc=o.attempted?Math.round(o.right/o.attempted*100):0;
+    var n=d.parts.length,H=190+270+150+(showRank?170:0)+(cut>0?130:0)+60+(n+2)*56+20+100;
+    var c=document.createElement('canvas');c.width=W;c.height=H;var x=c.getContext('2d');
+    var F='Nunito, Segoe UI, Arial, sans-serif';
+    function rr(a,b,w,h,r,fill,stroke){x.beginPath();x.moveTo(a+r,b);x.arcTo(a+w,b,a+w,b+h,r);x.arcTo(a+w,b+h,a,b+h,r);x.arcTo(a,b+h,a,b,r);x.arcTo(a,b,a+w,b,r);x.closePath();if(fill){x.fillStyle=fill;x.fill()}if(stroke){x.strokeStyle=stroke;x.lineWidth=2;x.stroke()}}
+    function t(s,a,b,font,col,al){x.font=font;x.fillStyle=col;x.textAlign=al||'left';x.fillText(s,a,b)}
+    function fit(s,w,font){x.font=font;if(x.measureText(s).width<=w)return s;while(s.length>3&&x.measureText(s+'…').width>w)s=s.slice(0,-1);return s+'…'}
+    var g=x.createLinearGradient(0,0,0,H);g.addColorStop(0,'#0F1A35');g.addColorStop(1,'#1A2E6B');x.fillStyle=g;x.fillRect(0,0,W,H);
+    x.fillStyle='#E8640A';x.fillRect(0,0,W,10);
+    t('ANIL EDUTECH',P,72,'900 34px '+F,'#F5B731');
+    t('Exam Score Card',W-P,72,'700 26px '+F,'rgba(255,255,255,.7)','right');
+    t(fit(exam,W-2*P,'800 40px '+F),P,132,'800 40px '+F,'#fff');
+    var y=190;
+    var col=pct>=60?'#34d399':pct>=35?'#fbbf24':'#f87171';
+    rr(P,y,W-2*P,250,26,'rgba(255,255,255,.08)','rgba(255,255,255,.15)');
+    t('YOUR SCORE',P+32,y+52,'800 22px '+F,'rgba(255,255,255,.6)');
+    t(o.marks.toFixed(2),P+32,y+146,'900 90px '+F,'#fff');
+    x.font='900 90px '+F;var sw=x.measureText(o.marks.toFixed(2)).width;
+    t('/ '+d.maxMarks,P+48+sw,y+146,'700 38px '+F,'rgba(255,255,255,.6)');
+    t(pct.toFixed(1)+'%',W-P-32,y+146,'900 70px '+F,col,'right');
+    rr(P+32,y+186,W-2*P-64,16,8,'rgba(255,255,255,.15)');rr(P+32,y+186,Math.max(16,(W-2*P-64)*Math.min(100,Math.max(0,pct))/100),16,8,col);
+    y+=270;
+    var bw=(W-2*P-3*16)/4,B=[['RIGHT',o.right,'#34d399'],['WRONG',o.wrong,'#f87171'],['SKIPPED',o.unattempted,'#fbbf24'],['ACCURACY',acc+'%','#60a5fa']];
+    B.forEach(function(q,i){var bx=P+i*(bw+16);rr(bx,y,bw,130,20,'rgba(255,255,255,.08)');t(String(q[1]),bx+bw/2,y+70,'900 52px '+F,q[2],'center');t(q[0],bx+bw/2,y+108,'800 19px '+F,'rgba(255,255,255,.6)','center')});
+    y+=150;
+    if(showRank){
+      var rw=(W-2*P-2*16)/3,R=[['OVERALL RANK',st.overall_rank,st.total],['SHIFT RANK',st.shift_rank,st.shift_total],['CATEGORY RANK',st.cat_rank,st.cat_total]];
+      R.forEach(function(q,i){var bx=P+i*(rw+16);rr(bx,y,rw,150,20,'rgba(245,183,49,.12)','rgba(245,183,49,.35)');t(q[1]?'#'+q[1]:'—',bx+rw/2,y+78,'900 56px '+F,'#F5B731','center');t(q[2]?'of '+q[2]:'',bx+rw/2,y+110,'700 22px '+F,'rgba(255,255,255,.6)','center');t(q[0],bx+rw/2,y+138,'800 17px '+F,'rgba(255,255,255,.5)','center')});
+      y+=170;
+    }
+    if(cut>0){
+      var gap=o.marks-cut,safe=0.05*d.maxMarks,cc,tx;
+      if(gap>=safe){cc='#34d399';tx='Above cutoff by '+gap.toFixed(2)+' marks'}else if(gap>=0){cc='#fbbf24';tx='Borderline: only '+gap.toFixed(2)+' marks above cutoff'}else{cc='#f87171';tx=(-gap).toFixed(2)+' marks below cutoff (~'+Math.ceil(-gap/plusV)+' more correct)'}
+      rr(P,y,W-2*P,110,20,cc+'22',cc+'88');t('Cutoff '+cut+'  ·  '+tx,W/2,y+66,'800 30px '+F,cc,'center');
+      y+=130;
+    }
+    t('Subject-wise Marks',P,y+34,'900 30px '+F,'#fff');y+=60;
+    var cx=[W-P-420,W-P-310,W-P-200,W-P-90];
+    rr(P,y,W-2*P,56,12,'rgba(255,255,255,.12)');
+    t('Subject',P+20,y+37,'800 20px '+F,'rgba(255,255,255,.7)');
+    [['Right',0],['Wrong',1],['Skip',2],['Marks',3]].forEach(function(h){t(h[0],cx[h[1]],y+37,'800 20px '+F,'rgba(255,255,255,.7)','center')});
+    y+=56;
+    d.parts.concat([{name:'Overall',right:o.right,wrong:o.wrong,unattempted:o.unattempted,marks:o.marks,_o:1}]).forEach(function(p){
+      if(p._o)rr(P,y,W-2*P,56,12,'rgba(245,183,49,.15)');
+      t(fit(p.name||'Part',W-2*P-480,(p._o?'900':'700')+' 22px '+F),P+20,y+37,(p._o?'900':'700')+' 22px '+F,'#fff');
+      t(String(p.right),cx[0],y+37,'800 22px '+F,'#34d399','center');t(String(p.wrong),cx[1],y+37,'800 22px '+F,'#f87171','center');t(String(p.unattempted),cx[2],y+37,'800 22px '+F,'#fbbf24','center');t(p.marks.toFixed(2),cx[3],y+37,'900 22px '+F,'#c4b5fd','center');
+      x.fillStyle='rgba(255,255,255,.08)';x.fillRect(P,y+55,W-2*P,1);y+=56;
+    });
+    y+=20;
+    t('aniledutech.in  ·  Free Mock Tests for TSPSC, SSC, Banking',W/2,y+40,'800 24px '+F,'#F5B731','center');
+    t('Estimate only, not an official result. Check official notification.',W/2,y+76,'600 18px '+F,'rgba(255,255,255,.45)','center');
+    return c;
+  }
+  function aeScDownload(){var c=aeScDraw();if(!c)return;c.toBlob(function(b){var a=document.createElement('a');a.href=URL.createObjectURL(b);a.download='AnilEduTech_ScoreCard.png';document.body.appendChild(a);a.click();a.remove();setTimeout(function(){URL.revokeObjectURL(a.href)},2000);try{toast('✅ Score card download అయింది!','success')}catch(e){}},'image/png')}
+  function aeScShare(){var c=aeScDraw();if(!c)return;c.toBlob(function(b){var f=new File([b],'AnilEduTech_ScoreCard.png',{type:'image/png'});if(navigator.canShare&&navigator.canShare({files:[f]}))navigator.share({files:[f],text:'My score card — aniledutech.in'}).catch(function(){});else aeScDownload()},'image/png')}
   async function aeScCalc(){
     var u=document.getElementById('aeScUrl').value.trim(),f=document.getElementById('aeScFile').files[0],m=document.getElementById('aeScMsg'),o=document.getElementById('aeScOut'),b=document.getElementById('aeScGo');
     o.innerHTML='';

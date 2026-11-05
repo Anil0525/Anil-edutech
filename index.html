@@ -4184,6 +4184,9 @@ window.emailjs={send:function(_svc,_tpl,p){
     if(!u&&!f){m.textContent='Link paste చేయండి లేదా file upload చేయండి';return}
     if(f&&f.size>2000000){m.textContent='File 2 MB కంటే పెద్దది';return}
     var ex=document.getElementById('aeScExam').value.split('|');
+    if(u){var hu=u.toLowerCase(),key=ex[0];
+      if(/^https?:\/\/sscexams\./.test(hu)&&key!=='custom'&&key.indexOf('ssc-')!==0){m.textContent='❌ ఇది SSC response sheet link. పైన Exam లో SSC exam select చేయండి (RRB / IBPS కాదు).';return}
+      if(/\/cgle\d/.test(hu)&&key!=='ssc-cgl-t1'&&key!=='custom'){m.textContent='❌ ఈ link SSC CGL ది. Exam లో "SSC CGL Tier-1" select చేయండి.';return}}
     var body={examKey:ex[0],plus:parseFloat(document.getElementById('aeScPlus').value),minus:parseFloat(document.getElementById('aeScMinus').value),
       category:document.getElementById('aeScCat').value,horizontal:document.getElementById('aeScHz').value,gender:document.getElementById('aeScGender').value,
       state:document.getElementById('aeScState').value,language:document.getElementById('aeScLang').value};

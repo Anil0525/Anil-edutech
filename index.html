@@ -1014,6 +1014,7 @@ window.emailjs={send:function(_svc,_tpl,p){
       <button class="nav-btn" id="nav-exams" onclick="goExams();closeMenu()">📝 <span>పరీక్షలు</span></button>
       <button class="nav-btn" id="nav-progress" onclick="goProgress();closeMenu()">📊 <span>Progress</span></button>
       <button class="nav-btn" id="nav-mistakes" onclick="goMistakes();closeMenu()">🧠 <span>Revise</span><span id="mn-nav-badge"></span></button>
+      <button class="nav-btn" id="nav-scorecalc" onclick="goScoreCalc();closeMenu()">🧮 <span>Score</span></button>
       <button class="nav-btn" id="nav-videos" onclick="goVideos();closeMenu()">🎥 <span>Videos</span></button>
       <button class="nav-btn" id="nav-support" onclick="goSupport();closeMenu()">🆘 <span>Support</span></button>
       <button class="nav-btn" id="nav-admin" onclick="goAdmin();closeMenu()">⚙️ <span>Admin</span></button>
@@ -1224,6 +1225,13 @@ window.emailjs={send:function(_svc,_tpl,p){
       <div class="section-title" id="categories-section">Exam Categories</div>
       <div class="section-sub">మీకు నచ్చిన category select చేయండి</div>
       <div class="categories-grid">
+        <!-- SSC Score Calculator -->
+        <div class="cat-card" data-cat="scorecalc" onclick="goScoreCalc()"
+          style="--cat-grad:linear-gradient(135deg,#0B63D6,#38BDF8);--cat-soft:rgba(11,99,214,.06);--cat-shadow:rgba(11,99,214,.35);">
+          <div class="cat-icon-wrap"><span class="cat-icon">🧮</span></div>
+          <div class="cat-name">Score Calculator</div>
+          <div class="cat-count">All Exams</div>
+        </div>
         <!-- Govt Jobs -->
         <div class="cat-card" data-cat="jobs" onclick="goPage('jobs');loadJobArticles()"
           style="--cat-grad:linear-gradient(135deg,#0F766E,#10B981);--cat-soft:rgba(15,118,110,.06);--cat-shadow:rgba(15,118,110,.35);">
@@ -4010,6 +4018,106 @@ window.emailjs={send:function(_svc,_tpl,p){
   })();
   </script>
 
+  <div id="page-scorecalc" class="page">
+    <div style="max-width:720px;margin:0 auto;padding:18px 14px 40px;">
+      <div class="section-title" style="margin-bottom:2px;">🧮 Exam Score &amp; Rank Calculator</div>
+      <div class="section-sub" style="margin-bottom:14px;">Response Sheet link paste చేయండి — marks, rank, averages వెంటనే చూడండి</div>
+      <div style="background:var(--card);border:2px solid var(--border);border-radius:16px;padding:16px;">
+        <label style="font-size:11px;font-weight:800;color:var(--text3);letter-spacing:.4px;">EXAM *</label>
+        <select id="aeScExam" onchange="aeScPreset()" style="width:100%;margin-top:4px;padding:10px;border:1.5px solid var(--border2);border-radius:10px;background:var(--bg);color:var(--text);font-family:inherit;font-size:13px;box-sizing:border-box;">
+          <option value="ssc-cgl-t1|2|0.5">SSC CGL Tier-1 (+2, −0.50)</option>
+          <option value="ssc-chsl-t1|2|0.5">SSC CHSL Tier-1 (+2, −0.50)</option>
+          <option value="ssc-mts|1|0.25">SSC MTS (+1, −0.25)</option>
+          <option value="ssc-gd|1|0.25">SSC GD Constable (+1, −0.25)</option>
+          <option value="rrb-ntpc|1|0.33">RRB NTPC (+1, −1/3)</option>
+          <option value="rrb-groupd|1|0.33">RRB Group D (+1, −1/3)</option>
+          <option value="ibps-sbi-pre|1|0.25">IBPS / SBI Prelims (+1, −0.25)</option>
+          <option value="custom|1|0">Other / Custom (rank ఉండదు)</option>
+        </select>
+        <div style="display:flex;gap:8px;margin:10px 0;">
+          <label style="flex:1;font-size:11px;font-weight:800;color:var(--text3);letter-spacing:.4px;">Right (+)<input id="aeScPlus" type="number" step="0.01" value="2" style="width:100%;margin-top:4px;padding:10px;border:1.5px solid var(--border2);border-radius:10px;background:var(--bg);color:var(--text);font-family:inherit;font-size:13px;box-sizing:border-box;"></label>
+          <label style="flex:1;font-size:11px;font-weight:800;color:var(--text3);letter-spacing:.4px;">Wrong (−)<input id="aeScMinus" type="number" step="0.01" value="0.5" style="width:100%;margin-top:4px;padding:10px;border:1.5px solid var(--border2);border-radius:10px;background:var(--bg);color:var(--text);font-family:inherit;font-size:13px;box-sizing:border-box;"></label>
+        </div>
+        <label style="font-size:11px;font-weight:800;color:var(--text3);letter-spacing:.4px;">RESPONSE SHEET URL *</label>
+        <div style="display:flex;gap:8px;margin:4px 0 8px;">
+          <input id="aeScUrl" type="url" placeholder="Paste your response sheet URL here" style="flex:1;min-width:0;padding:11px;border:1.5px solid var(--border2);border-radius:10px;background:var(--bg);color:var(--text);font-family:inherit;font-size:13px;">
+          <button type="button" onclick="aeScPaste()" style="padding:0 14px;border:0;border-radius:10px;background:rgba(11,99,214,.12);color:#0b63d6;font-weight:800;cursor:pointer;">Paste</button>
+        </div>
+        <label style="font-size:11px;font-weight:800;color:var(--text3);letter-spacing:.4px;">లేదా SAVED .HTML FILE UPLOAD (max 2 MB — ఒక్క part మాత్రమే, rank రాదు)</label>
+        <input id="aeScFile" type="file" accept=".html,.htm" style="width:100%;margin-top:4px;padding:10px;border:1.5px solid var(--border2);border-radius:10px;background:var(--bg);color:var(--text);font-family:inherit;font-size:13px;box-sizing:border-box;">
+        <div style="display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-top:12px;">
+          <label style="font-size:11px;font-weight:800;color:var(--text3);letter-spacing:.4px;">CATEGORY *<select id="aeScCat" style="width:100%;margin-top:4px;padding:10px;border:1.5px solid var(--border2);border-radius:10px;background:var(--bg);color:var(--text);font-family:inherit;font-size:13px;box-sizing:border-box;"><option>General</option><option>EWS</option><option>OBC</option><option>SC</option><option>ST</option></select></label>
+          <label style="font-size:11px;font-weight:800;color:var(--text3);letter-spacing:.4px;">HORIZONTAL CATEGORY<select id="aeScHz" style="width:100%;margin-top:4px;padding:10px;border:1.5px solid var(--border2);border-radius:10px;background:var(--bg);color:var(--text);font-family:inherit;font-size:13px;box-sizing:border-box;"><option>None</option><option>PwBD</option><option>Ex-Servicemen</option></select></label>
+          <label style="font-size:11px;font-weight:800;color:var(--text3);letter-spacing:.4px;">GENDER *<select id="aeScGender" style="width:100%;margin-top:4px;padding:10px;border:1.5px solid var(--border2);border-radius:10px;background:var(--bg);color:var(--text);font-family:inherit;font-size:13px;box-sizing:border-box;"><option>Male</option><option>Female</option><option>Other</option></select></label>
+          <label style="font-size:11px;font-weight:800;color:var(--text3);letter-spacing:.4px;">STATE<select id="aeScState" style="width:100%;margin-top:4px;padding:10px;border:1.5px solid var(--border2);border-radius:10px;background:var(--bg);color:var(--text);font-family:inherit;font-size:13px;box-sizing:border-box;"></select></label>
+          <label style="font-size:11px;font-weight:800;color:var(--text3);letter-spacing:.4px;">PAPER LANGUAGE<select id="aeScLang" style="width:100%;margin-top:4px;padding:10px;border:1.5px solid var(--border2);border-radius:10px;background:var(--bg);color:var(--text);font-family:inherit;font-size:13px;box-sizing:border-box;"><option>English</option><option>Hindi</option><option>Telugu</option><option>Other</option></select></label>
+        </div>
+        <button id="aeScGo" type="button" onclick="aeScCalc()" style="width:100%;margin-top:14px;padding:13px;border:0;border-radius:12px;background:linear-gradient(135deg,#0B63D6,#38BDF8);color:#fff;font-family:inherit;font-size:15px;font-weight:900;cursor:pointer;">Submit</button>
+        <div id="aeScMsg" style="margin-top:10px;font-size:13px;font-weight:700;color:var(--text2);"></div>
+      </div>
+      <div id="aeScOut" style="margin-top:16px;"></div>
+      <div style="margin-top:14px;font-size:11.5px;color:var(--text3);line-height:1.6;">మీ roll number, పేరు, link save చేయం. Rank అనేది ఇక్కడ submit చేసిన students మధ్య estimate మాత్రమే — official rank కాదు. Marking scheme notification లో check చేయండి.</div>
+    </div>
+  </div>
+  <script>
+  var AE_STATES=['','Andhra Pradesh','Telangana','Karnataka','Tamil Nadu','Kerala','Maharashtra','Gujarat','Rajasthan','Madhya Pradesh','Uttar Pradesh','Bihar','West Bengal','Odisha','Jharkhand','Chhattisgarh','Punjab','Haryana','Delhi','Himachal Pradesh','Uttarakhand','Assam','Jammu & Kashmir','Goa','Other'];
+  (function(){var e=document.getElementById('aeScState');if(e)e.innerHTML=AE_STATES.map(function(x){return '<option value="'+x+'">'+(x||'Choose State')+'</option>'}).join('')})();
+  function goScoreCalc(){stopTimer();showPage('scorecalc')}
+  function aeScPreset(){var a=document.getElementById('aeScExam').value.split('|');document.getElementById('aeScPlus').value=a[1];document.getElementById('aeScMinus').value=a[2]}
+  async function aeScPaste(){try{document.getElementById('aeScUrl').value=await navigator.clipboard.readText()}catch(e){toast('Clipboard access లేదు, manual గా paste చేయండి','warn')}}
+  function aeScBar(label,val,max,color){var w=max>0?Math.max(2,Math.min(100,val/max*100)):0;return '<div style="margin-bottom:9px;"><div style="display:flex;justify-content:space-between;font-size:12px;font-weight:800;color:var(--text);margin-bottom:3px"><span>'+label+'</span><span>'+(val==null?'—':(+val).toFixed(2))+'</span></div><div style="height:8px;background:var(--border);border-radius:4px;overflow:hidden"><div style="width:'+(val==null?0:w)+'%;height:100%;background:'+color+';border-radius:4px"></div></div></div>'}
+  function aeScRankCard(t,r,n){return '<div style="flex:1;min-width:130px;background:var(--bg2);border-radius:12px;padding:12px;text-align:center"><div style="font-size:10.5px;color:var(--text3);font-weight:800">'+t+'</div><div style="font-size:22px;font-weight:900;color:var(--primary)">'+(r?'#'+r:'—')+'</div><div style="font-size:11px;color:var(--text3)">'+(n?'of '+n:'')+'</div></div>'}
+  function aeScRender(d){
+    var o=d.overall,st=d.stats,card='background:var(--card);border:2px solid var(--border);border-radius:14px;padding:14px;margin-bottom:14px;';
+    var acc=o.attempted?Math.round(o.right/o.attempted*100):0,h='';
+    h+='<div style="'+card+'"><div style="font-size:12px;color:var(--text3);font-weight:800">YOUR SCORE</div><div style="font-size:30px;font-weight:900;color:var(--text)">'+o.marks.toFixed(2)+' <span style="font-size:14px;color:var(--text3)">/ '+d.maxMarks+'</span></div>'
+      +'<div style="display:flex;gap:14px;flex-wrap:wrap;font-size:12.5px;font-weight:800;margin-top:6px"><span style="color:#16a34a">✅ Right '+o.right+'</span><span style="color:#dc2626">❌ Wrong '+o.wrong+'</span><span style="color:#d97706">⏭ Skipped '+o.unattempted+'</span><span style="color:#0b63d6">🎯 Accuracy '+acc+'%</span></div>'
+      +'<div style="font-size:11.5px;color:var(--text3);margin-top:6px">Category: '+escHtml(d.category)+' · Shift: '+escHtml(d.shift)+'</div></div>';
+    if(st){
+      h+='<div style="'+card+'"><div style="font-size:15px;font-weight:900;margin-bottom:10px;color:var(--text)">Your Rank Among Candidates</div><div style="display:flex;gap:8px;flex-wrap:wrap">'
+        +aeScRankCard('OVERALL RANK',st.overall_rank,st.total)+aeScRankCard('SHIFT RANK',st.shift_rank,st.shift_total)+aeScRankCard('CATEGORY RANK',st.cat_rank,st.cat_total)+'</div>'
+        +(st.total<50?'<div style="margin-top:10px;font-size:11.5px;color:#d97706;font-weight:700">⚠️ ఇప్పటివరకు '+st.total+' students మాత్రమే submit చేశారు — rank rough estimate మాత్రమే. ఎక్కువ మంది submit చేస్తే accurate అవుతుంది.</div>':'')+'</div>';
+      h+='<div style="'+card+'"><div style="font-size:15px;font-weight:900;margin-bottom:10px;color:var(--text)">You vs Average Candidate</div>'
+        +aeScBar('You',o.marks,d.maxMarks,'#0b63d6')+aeScBar('All Candidates (avg)',st.avg_all,d.maxMarks,'#94a3b8')+aeScBar('Your Shift (avg)',st.avg_shift,d.maxMarks,'#a855f7')+aeScBar('Your Category (avg)',st.avg_cat,d.maxMarks,'#f59e0b')+'</div>';
+    }else if(d.partial){
+      h+='<div style="'+card+'font-size:12.5px;color:var(--text2)">ℹ️ File upload లో ఒక్క part మాత్రమే ఉంటుంది కాబట్టి rank/average చూపించలేము. పూర్తి result కోసం link paste చేయండి.</div>';
+    }else if(!d.saved){
+      h+='<div style="'+card+'font-size:12.5px;color:var(--text2)">ℹ️ ఈ exam కి rank ఉండదు (Custom) లేదా server setup పూర్తి కాలేదు.</div>';
+    }
+    var hasAvg=d.parts.some(function(p){return p.avg!=null});
+    var row=function(n,p,b){return '<tr style="'+(b?'font-weight:800;background:var(--bg2);':'')+'border-top:1px solid var(--border)"><td style="padding:11px 8px;text-align:left">'+escHtml(n)+'</td><td>'+p.attempted+'</td><td>'+p.unattempted+'</td><td style="color:#16a34a;font-weight:800">'+p.right+'</td><td style="color:#dc2626;font-weight:800">'+p.wrong+'</td><td style="color:#7c3aed;font-weight:900">'+p.marks.toFixed(2)+'</td>'+(hasAvg?'<td style="color:var(--text3)">'+(p.avg!=null?(+p.avg).toFixed(2):'')+'</td>':'')+'</tr>'};
+    h+='<div style="font-size:15px;font-weight:900;color:var(--text);margin-bottom:8px;">Subject-wise Marks</div><div style="'+card+'padding:0;overflow-x:auto"><table style="width:100%;border-collapse:collapse;text-align:center;font-size:12.5px;color:var(--text);min-width:460px"><tr style="color:var(--text3);font-size:11px"><th style="text-align:left;padding:10px 8px">Subjects</th><th>Attempted</th><th>Unattempted</th><th>Right</th><th>Wrong</th><th>Marks</th>'+(hasAvg?'<th>Avg</th>':'')+'</tr>'+d.parts.map(function(p){return row(p.name||'Part',p)}).join('')+row('Overall',d.overall,1)+'</table></div>';
+    if(st&&st.shifts&&st.shifts.length){
+      h+='<div style="font-size:15px;font-weight:900;color:var(--text);margin:6px 0 8px;">Shift-wise Average (Hardest → Easiest)</div><div style="'+card+'padding:0;overflow-x:auto"><table style="width:100%;border-collapse:collapse;text-align:center;font-size:12.5px;color:var(--text)"><tr style="color:var(--text3);font-size:11px"><th style="text-align:left;padding:10px 8px">Shift</th><th>Candidates</th><th>Avg Marks</th></tr>'
+        +st.shifts.map(function(x,i){var me=x.shift===d.shift;return '<tr style="border-top:1px solid var(--border);'+(me?'background:rgba(11,99,214,.1);font-weight:800':'')+'"><td style="padding:10px 8px;text-align:left">'+(i+1)+'. '+escHtml(x.shift)+(me?' ← మీరు':'')+'</td><td>'+x.n+'</td><td>'+(+x.avg).toFixed(2)+'</td></tr>'}).join('')+'</table></div>';
+    }
+    if(st&&st.top&&st.top.length){
+      h+='<div style="font-size:15px;font-weight:900;color:var(--text);margin:6px 0 8px;">🏆 Top Rankers (by raw marks)</div><div style="'+card+'">'
+        +st.top.map(function(x,i){return '<div style="display:flex;justify-content:space-between;padding:7px 0;'+(i?'border-top:1px solid var(--border);':'')+'font-size:13px;color:var(--text)"><span>#'+(i+1)+' · '+escHtml(x.category)+'</span><span style="font-weight:800">'+(+x.marks).toFixed(2)+' <span style="color:var(--text3);font-weight:600">(✅'+x.right+' ❌'+x.wrong+')</span></span></div>'}).join('')+'</div>';
+    }
+    return h;
+  }
+  async function aeScCalc(){
+    var u=document.getElementById('aeScUrl').value.trim(),f=document.getElementById('aeScFile').files[0],m=document.getElementById('aeScMsg'),o=document.getElementById('aeScOut'),b=document.getElementById('aeScGo');
+    o.innerHTML='';
+    if(!u&&!f){m.textContent='Link paste చేయండి లేదా file upload చేయండి';return}
+    if(f&&f.size>2000000){m.textContent='File 2 MB కంటే పెద్దది';return}
+    var ex=document.getElementById('aeScExam').value.split('|');
+    var body={examKey:ex[0],plus:parseFloat(document.getElementById('aeScPlus').value),minus:parseFloat(document.getElementById('aeScMinus').value),
+      category:document.getElementById('aeScCat').value,horizontal:document.getElementById('aeScHz').value,gender:document.getElementById('aeScGender').value,
+      state:document.getElementById('aeScState').value,language:document.getElementById('aeScLang').value};
+    b.disabled=true;b.textContent='Calculating...';m.textContent='Response sheet చదువుతున్నాం... (10-20 sec పట్టవచ్చు)';
+    try{
+      if(f)body.html=await f.text();else body.url=u;
+      var r=await fetch(SB_URL+'/functions/v1/ssc-score',{method:'POST',headers:{'Content-Type':'application/json',apikey:SB_KEY,Authorization:'Bearer '+SB_KEY},body:JSON.stringify(body)});
+      var d=await r.json();
+      if(!d.ok)throw new Error(d.error||'Failed');
+      m.textContent='';o.innerHTML=aeScRender(d);
+    }catch(e){m.textContent='❌ '+(e.message||'Error')+' — link సరైనదో చూసి మళ్ళీ try చేయండి'}
+    b.disabled=false;b.textContent='Submit';
+  }
+  </script>
+
   <div id="page-admin" class="page"></div>
   <!-- admin content lazy-loaded from admin-content.html -->
 
@@ -5823,34 +5931,6 @@ async function _mfSave(){
     }catch(err){console.warn('podium',err)}
   };
 })();
-  <!-- SSC CGL Score Calculator: paste inside <body> of index.html (needs SB_URL and SB_KEY already defined there) -->
-<section id="aeScoreCalc" style="max-width:640px;margin:16px auto;padding:16px;border:1px solid #dbe3ee;border-radius:14px;background:#fff;font-family:inherit">
-  <h2 style="margin:0 0 4px;font-size:20px">SSC CGL Pre 2026 Score Calculator</h2>
-  <p style="margin:0 0 12px;color:#667;font-size:13px">Answer key link paste cheyandi, marks ventane chudandi</p>
-  <div style="display:flex;gap:8px">
-    <input id="aeScUrl" type="url" placeholder="Paste your answer key URL here" style="flex:1;padding:10px;border:1px solid #cbd5e1;border-radius:8px;min-width:0">
-    <button type="button" onclick="aeScPaste()" style="padding:10px 14px;border:0;border-radius:8px;background:#e3efff;color:#0b63d6;font-weight:600">Paste</button>
-  </div>
-  <button id="aeScGo" type="button" onclick="aeScCalc()" style="width:100%;margin-top:10px;padding:12px;border:0;border-radius:8px;background:#0b7bff;color:#fff;font-weight:700">Submit</button>
-  <div id="aeScMsg" style="margin-top:10px;font-size:14px"></div>
-  <div id="aeScOut" style="overflow-x:auto"></div>
-</section>
-<script>
-async function aeScPaste(){try{document.getElementById('aeScUrl').value=await navigator.clipboard.readText()}catch(e){}}
-async function aeScCalc(){
-  var u=document.getElementById('aeScUrl').value.trim(),m=document.getElementById('aeScMsg'),o=document.getElementById('aeScOut'),b=document.getElementById('aeScGo');
-  o.innerHTML='';if(!u){m.textContent='Link paste cheyandi';return}
-  b.disabled=true;m.textContent='Calculating...';
-  try{
-    var r=await fetch(SB_URL+'/functions/v1/ssc-score',{method:'POST',headers:{'Content-Type':'application/json',apikey:SB_KEY,Authorization:'Bearer '+SB_KEY},body:JSON.stringify({url:u})});
-    var d=await r.json();if(!d.ok)throw new Error(d.error||'Failed');
-    m.textContent='';
-    var row=function(n,p,bold){return '<tr style="'+(bold?'font-weight:700;':'')+'border-top:1px solid #e5eaf2"><td style="padding:10px 8px;text-align:left">'+n+'</td><td>'+p.attempted+'</td><td>'+p.unattempted+'</td><td style="color:#16a34a">'+p.right+'</td><td style="color:#dc2626">'+p.wrong+'</td><td style="color:#7c3aed">'+p.marks.toFixed(2)+'</td></tr>'};
-    o.innerHTML='<h3 style="margin:16px 0 8px">Subject-wise Marks</h3><table style="width:100%;border-collapse:collapse;text-align:center;font-size:13px;min-width:460px"><tr style="color:#667"><th style="text-align:left;padding:8px">Subjects</th><th>Attempted</th><th>Unattempted</th><th>Right</th><th>Wrong</th><th>Marks</th></tr>'+d.parts.map(function(p){return row(p.name,p)}).join('')+row('Overall',d.overall,1)+'</table>';
-  }catch(e){m.textContent='Error: '+e.message}
-  b.disabled=false;
-}
-</script>
 </script>
 </body>
 </html>

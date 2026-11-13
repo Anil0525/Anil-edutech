@@ -6207,39 +6207,5 @@ document.readyState==="loading"?document.addEventListener("DOMContentLoaded",ini
 })();
 </script>
 
-<!-- AE PWA INSTALL BANNER v1 -->
-<style id="ae-pwa-css">
-#ae-pwa{position:fixed;left:12px;right:12px;bottom:14px;z-index:9998;max-width:460px;margin:0 auto;display:none;align-items:center;gap:10px;background:var(--card,#fff);color:var(--text,#1A1A2E);border:1.5px solid var(--primary,#1A73E8);border-radius:16px;padding:12px 14px;box-shadow:0 8px 32px rgba(26,115,232,.28)}
-#ae-pwa.show{display:flex}#ae-pwa .t{flex:1;font-size:13px;line-height:1.35}#ae-pwa b{display:block;font-size:14px}
-#ae-pwa button{border:0;border-radius:10px;padding:9px 14px;font-weight:700;cursor:pointer}
-#ae-pwa .go{background:var(--primary,#1A73E8);color:#fff}#ae-pwa .x{background:transparent;color:var(--text3,#8892B0);padding:6px 8px;font-size:16px}
-</style>
-<script id="ae-pwa-js">
-(function(){
-"use strict";
-var K="ae_pwa_dismiss",dp=null;
-function ok(){try{return !(window.matchMedia("(display-mode: standalone)").matches||navigator.standalone)}catch(e){return true}}
-function snoozed(){try{return Date.now()-(+localStorage.getItem(K)||0)<6048e5}catch(e){return false}}
-var ios=/iphone|ipad|ipod/i.test(navigator.userAgent)&&!window.MSStream;
-var bar;
-function mk(){
- if(bar)return bar;bar=document.createElement("div");bar.id="ae-pwa";
- bar.innerHTML='<span style="font-size:26px">📲</span><div class="t"><b>Anil EduTech App install cheyandi</b><span id="ae-pwa-s">Home screen nunchi fast ga open avutundi</span></div><button class="go" id="ae-pwa-go">Install</button><button class="x" id="ae-pwa-x" aria-label="Close">✕</button>';
- document.body.appendChild(bar);
- document.getElementById("ae-pwa-x").onclick=function(){bar.classList.remove("show");try{localStorage.setItem(K,String(Date.now()))}catch(e){}};
- document.getElementById("ae-pwa-go").onclick=function(){
-  if(dp){dp.prompt();dp.userChoice.then(function(){dp=null;bar.classList.remove("show")}).catch(function(){})}
-  else document.getElementById("ae-pwa-s").textContent="Safari lo Share ⬆️ → 'Add to Home Screen' nokkandi";
- };
- return bar;
-}
-function show(){if(ok()&&!snoozed())setTimeout(function(){mk().classList.add("show")},6000)}
-window.addEventListener("beforeinstallprompt",function(e){e.preventDefault();dp=e;show()});
-window.addEventListener("appinstalled",function(){dp=null;bar&&bar.classList.remove("show");try{toast("App install ayyindi 🎉")}catch(e){}});
-window.aeInstallApp=function(){if(dp){dp.prompt()}else{mk().classList.add("show");document.getElementById("ae-pwa-s").textContent=ios?"Safari lo Share ⬆️ → 'Add to Home Screen'":"Browser menu (⋮) → 'Install app' / 'Add to Home screen'"}};
-if(ios&&ok()){document.readyState==="loading"?document.addEventListener("DOMContentLoaded",show):show()}
-})();
-</script>
-
 </body>
 </html>

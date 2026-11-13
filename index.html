@@ -6074,5 +6074,172 @@ async function _mfSave(){
   try{new MutationObserver(schedule).observe(document.body||document.documentElement,{childList:true,subtree:true})}catch(e){}
 })();
 </script>
+<!-- AE GROWTH PACK v1: Flashcards, Topic Practice, Typing, GK of Day, Community, Coupon -->
+<style id="ae-gp-css">
+#page-growth .gp{max-width:760px;margin:0 auto;padding:16px 14px 40px}
+.gp-tabs{display:flex;gap:6px;overflow-x:auto;padding-bottom:8px;margin-bottom:12px}
+.gp-tab{flex:none;border:1.5px solid var(--border2);background:var(--card);color:var(--text2);border-radius:20px;padding:8px 14px;font-weight:700;font-size:13px;cursor:pointer}
+.gp-tab.on{background:var(--primary);color:#fff;border-color:var(--primary)}
+.gp-card{background:var(--card);border:1.5px solid var(--border2);border-radius:16px;padding:16px;margin-bottom:12px;color:var(--text)}
+.gp-btn{border:0;border-radius:10px;padding:10px 16px;font-weight:700;cursor:pointer;background:var(--primary);color:#fff;margin:4px 6px 0 0}
+.gp-btn.alt{background:var(--card2);color:var(--text2);border:1.5px solid var(--border2)}
+.gp-btn.ok{background:var(--teal)}.gp-btn.no{background:var(--red)}
+.gp-opt{display:block;width:100%;text-align:left;margin:6px 0;padding:10px 12px;border-radius:10px;border:1.5px solid var(--border2);background:var(--card2);color:var(--text);cursor:pointer}
+.gp-opt.right{background:var(--teal-soft);border-color:var(--teal)}.gp-opt.bad{background:var(--red-soft);border-color:var(--red)}
+.gp-in{width:100%;padding:10px;border-radius:10px;border:1.5px solid var(--border2);background:var(--card2);color:var(--text);font-size:15px;box-sizing:border-box}
+.gp-big{font-size:30px;font-weight:900}.gp-mut{color:var(--text3);font-size:12.5px}
+.gp-ty{font-size:17px;line-height:1.8;letter-spacing:.2px}.gp-ty .c{color:var(--teal)}.gp-ty .w{color:var(--red);background:var(--red-soft)}
+</style>
+<script id="ae-gp-js">
+(function(){
+"use strict";
+var TG="https://t.me/AnilEduTechYt",WA="https://whatsapp.com/channel/0029VbDHW7DK5cDFtBNByt2H";
+var TOPPERS=[]; /* {name:"",exam:"",quote:""} — topper stories ikkada add cheyandi */
+var PASSAGES=["The quick brown fox jumps over the lazy dog while the sun sets slowly behind the green hills of the quiet village.","Hard work and regular practice are the keys to success in every competitive examination held across the country.","A good reader reads newspapers daily and notes down important facts about economy, polity, science and current events."];
+var $=function(i){return document.getElementById(i)};
+var E=function(s){return String(s==null?"":s).replace(/[&<>"']/g,function(c){return{"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"}[c]})};
+function ls(k,d){try{return JSON.parse(localStorage.getItem(k)||"null")||d}catch(e){return d}}
+function sv(k,v){try{localStorage.setItem(k,JSON.stringify(v))}catch(e){}}
+function ist(){return new Date(Date.now()+198e5).toISOString().slice(0,10)}
+function L(a){return typeof a==="number"?String.fromCharCode(65+a):(a===""||a==null?null:(isNaN(a)?String(a).toUpperCase():String.fromCharCode(65+parseInt(a))))}
+function qs(sec){try{return (DB.questions||[]).filter(function(q){return q&&q.q&&Array.isArray(q.opts)&&q.opts.length>1&&L(q.ans)&&(!sec||(q.section||"ga")===sec)})}catch(e){return[]}}
+function shuf(a){a=a.slice();for(var i=a.length-1;i>0;i--){var j=Math.random()*(i+1)|0,t=a[i];a[i]=a[j];a[j]=t}return a}
+function opt(q,i){return String.fromCharCode(65+i)+") "+E(q.opts[i])}
+var tab="fc",tmr=null,V;
+function T(m,t){try{toast(m,t||"success")}catch(e){}}
+function build(){
+ if($("page-growth"))return;
+ var p=document.createElement("div");p.id="page-growth";p.className="page";
+ p.innerHTML='<div class="gp"><div class="section-title">🚀 Study Boosters</div><div class="section-sub">Flashcards · Topic Practice · Typing · GK of the Day · Community · Coupon</div><div class="gp-tabs" id="gp-tabs"></div><div id="gp-body"></div></div>';
+ var ref=$("ae-toast-wrap");ref&&ref.parentNode?ref.parentNode.insertBefore(p,ref):document.body.appendChild(p);
+ var nl=$("nav-links");
+ if(nl&&!$("nav-growth")){var b=document.createElement("button");b.className="nav-btn";b.id="nav-growth";b.innerHTML="🚀 <span>Boost</span>";b.onclick=function(){goGrowth();try{closeMenu()}catch(e){}};nl.appendChild(b)}
+}
+window.goGrowth=function(t){build();showPage("growth");tab=t||tab;draw()};
+function draw(){
+ clearInterval(tmr);V=null;
+ var T_=[["fc","🃏 Flashcards"],["tp","🎯 Topic Practice"],["ty","⌨️ Typing"],["gk","🌟 GK of Day"],["cm","💬 Community"],["cp","🎟 Coupon"]];
+ $("gp-tabs").innerHTML=T_.map(function(x){return'<button class="gp-tab'+(x[0]===tab?" on":"")+'" data-t="'+x[0]+'">'+x[1]+"</button>"}).join("");
+ Array.prototype.forEach.call($("gp-tabs").children,function(b){b.onclick=function(){tab=b.dataset.t;draw()}});
+ ({fc:fc,tp:tp,ty:ty,gk:gk,cm:cm,cp:cp})[tab]();
+}
+/* ---- 6. Flashcards + Leitner spaced repetition ---- */
+function fc(){
+ var st=ls("ae_fc_v1",{}),today=ist(),all=qs();
+ if(!all.length){$("gp-body").innerHTML='<div class="gp-card">Questions load avvaledu. Konchem sepu tarvata try cheyandi.</div>';return}
+ var due=all.filter(function(q){var s=st[q.id];return !s||s.d<=today});
+ var q=shuf(due)[0];
+ if(!q){$("gp-body").innerHTML='<div class="gp-card"><div class="gp-big">🎉</div>Ee roju anni cards complete! Repu malli randi.</div>';return}
+ var ci=L(q.ans).charCodeAt(0)-65,s=st[q.id]||{b:0};
+ $("gp-body").innerHTML='<div class="gp-card"><div class="gp-mut">Due: '+due.length+' · Box '+(s.b+1)+'/5</div><div style="font-size:17px;font-weight:700;margin:10px 0">'+E(q.q)+'</div><div id="fc-back" style="display:none"><div class="gp-opt right">✅ '+opt(q,ci)+'</div>'+(q.explanation?'<div class="gp-mut" style="margin-top:8px">'+E(q.explanation)+"</div>":"")+'<button class="gp-btn ok" id="fc-y">✔ Telusu</button><button class="gp-btn no" id="fc-n">↻ Malli</button></div><button class="gp-btn" id="fc-show">Answer chupinchu</button></div>';
+ $("fc-show").onclick=function(){$("fc-back").style.display="block";this.style.display="none"};
+ var gap=[0,1,3,7,14];
+ function rate(ok){var b=ok?Math.min(4,s.b+1):0,d=new Date(Date.now()+198e5+gap[b]*864e5).toISOString().slice(0,10);st[q.id]={b:b,d:ok?d:today};sv("ae_fc_v1",st);if(!ok)st[q.id].d="9999";fc()}
+ $("fc-y").onclick=function(){rate(1)};$("fc-n").onclick=function(){st[q.id]={b:0,d:today};sv("ae_fc_v1",st);fc()};
+}
+/* ---- 7+8. Topic/section practice with timer, speed & accuracy ---- */
+function tp(){
+ var names={ga:"General Awareness",math:"Maths",reasoning:"Reasoning",english:"English",science:"Science"},cnt={};
+ qs().forEach(function(q){var s=q.section||"ga";cnt[s]=(cnt[s]||0)+1});
+ var ks=Object.keys(cnt);
+ $("gp-body").innerHTML='<div class="gp-card"><b>Section select chesi practice cheyandi</b><div class="gp-mut">Timer + speed/accuracy report untundi</div>'+(ks.length?ks.map(function(k){return'<button class="gp-btn" data-s="'+E(k)+'">'+E(names[k]||k.toUpperCase())+" ("+cnt[k]+")</button>"}).join(""):"<p>Questions load avvaledu.</p>")+"</div>";
+ Array.prototype.forEach.call(document.querySelectorAll("#gp-body [data-s]"),function(b){b.onclick=function(){quiz(b.dataset.s)}});
+}
+function quiz(sec){
+ var Q=shuf(qs(sec)).slice(0,10),i=0,ok=0,wr=0,t0=Date.now(),qt=Date.now(),lim=Q.length*60;
+ clearInterval(tmr);
+ tmr=setInterval(function(){var el=$("gp-tm");if(!el){clearInterval(tmr);return}var r=lim-((Date.now()-t0)/1e3|0);el.textContent="⏱ "+(r/60|0)+":"+("0"+r%60).slice(-2);if(r<=0)done()},1e3);
+ function done(){clearInterval(tmr);var s=(Date.now()-t0)/1e3,n=ok+wr,acc=n?Math.round(ok/n*100):0;
+  $("gp-body").innerHTML='<div class="gp-card"><div class="gp-big">'+ok+" / "+Q.length+'</div>Accuracy: <b>'+acc+'%</b> · Avg speed: <b>'+(n?(s/n).toFixed(1):0)+'s/question</b> · Total: '+(s/60).toFixed(1)+' min<br><button class="gp-btn" id="gp-again">Malli</button><button class="gp-btn alt" id="gp-back">Sections</button></div>';
+  $("gp-again").onclick=function(){quiz(sec)};$("gp-back").onclick=tp}
+ function show(){
+  if(i>=Q.length)return done();var q=Q[i],c=L(q.ans);qt=Date.now();
+  $("gp-body").innerHTML='<div class="gp-card"><div class="gp-mut">Q '+(i+1)+"/"+Q.length+' · <span id="gp-tm"></span></div><div style="font-size:16px;font-weight:700;margin:8px 0">'+E(q.q)+"</div>"+q.opts.map(function(o,j){return'<button class="gp-opt" data-j="'+j+'">'+opt(q,j)+"</button>"}).join("")+'<div id="gp-ex" class="gp-mut"></div></div>';
+  Array.prototype.forEach.call(document.querySelectorAll("#gp-body .gp-opt"),function(b){b.onclick=function(){
+   var j=+b.dataset.j,good=String.fromCharCode(65+j)===c;good?ok++:wr++;
+   Array.prototype.forEach.call(document.querySelectorAll("#gp-body .gp-opt"),function(x){x.disabled=true;if(String.fromCharCode(65+ +x.dataset.j)===c)x.classList.add("right")});
+   if(!good)b.classList.add("bad");
+   $("gp-ex").innerHTML=(q.explanation?E(q.explanation)+"<br>":"")+'<button class="gp-btn" id="gp-nx">'+(i+1<Q.length?"Next →":"Finish")+"</button>";
+   $("gp-nx").onclick=function(){i++;show()}}});
+ }
+ if(!Q.length){T("Ee section lo questions levu","warn");return tp()}show();
+}
+/* ---- 11a. Typing test ---- */
+function ty(){
+ var txt=PASSAGES[Math.random()*PASSAGES.length|0],t0=0,left=60;
+ $("gp-body").innerHTML='<div class="gp-card"><div class="gp-mut">Ee passage type cheyandi — 60 sec · <b id="ty-t">60</b>s</div><div class="gp-ty" id="ty-p"></div><textarea class="gp-in" id="ty-i" rows="3" placeholder="Ikkada type cheyandi..."></textarea><div id="ty-r" style="margin-top:8px"></div></div>';
+ var inp=$("ty-i");
+ function paint(){var v=inp.value;$("ty-p").innerHTML=txt.split("").map(function(c,i){return'<span class="'+(i<v.length?(v[i]===c?"c":"w"):"")+'">'+E(c)+"</span>"}).join("")}
+ function fin(){clearInterval(tmr);inp.disabled=true;var v=inp.value,m=Math.max((Date.now()-t0)/6e4,1/60),good=0;for(var i=0;i<v.length;i++)if(v[i]===txt[i])good++;
+  var wpm=Math.round(good/5/m),acc=v.length?Math.round(good/v.length*100):0,b=ls("ae_ty_best",0);if(wpm>b)sv("ae_ty_best",wpm);
+  $("ty-r").innerHTML='<div class="gp-big">'+wpm+' WPM</div>Accuracy '+acc+'% · Best: '+Math.max(b,wpm)+' WPM<br><button class="gp-btn" id="ty-re">Malli</button>';$("ty-re").onclick=ty}
+ paint();
+ inp.oninput=function(){if(!t0){t0=Date.now();tmr=setInterval(function(){left--;$("ty-t")&&($("ty-t").textContent=left);if(left<=0)fin()},1e3)}paint();if(inp.value.length>=txt.length)fin()};
+}
+/* ---- 11b. GK of the Day ---- */
+function gk(){
+ var a=qs().filter(function(q){return q.explanation});if(!a.length)a=qs();
+ if(!a.length){$("gp-body").innerHTML='<div class="gp-card">Questions load avvaledu.</div>';return}
+ var d=ist().split("-").join("")|0,q=a[d%a.length],c=L(q.ans).charCodeAt(0)-65;
+ $("gp-body").innerHTML='<div class="gp-card"><div class="gp-mut">🌟 '+ist()+'</div><div style="font-size:17px;font-weight:700;margin:8px 0">'+E(q.q)+'</div><button class="gp-btn" id="gk-s">Answer chudu</button><div id="gk-a" style="display:none;margin-top:8px"><div class="gp-opt right">✅ '+opt(q,c)+"</div>"+E(q.explanation||"")+'<br><button class="gp-btn alt" id="gk-sh">📤 WhatsApp lo share</button></div></div>';
+ $("gk-s").onclick=function(){$("gk-a").style.display="block";this.style.display="none"};
+ $("gk-sh").onclick=function(){window.open("https://wa.me/?text="+encodeURIComponent("🌟 GK of the Day\n"+q.q+"\n✅ "+q.opts[c]+"\n\nMore: "+location.origin))};
+}
+/* ---- 9+12. Community + topper stories ---- */
+function cm(){
+ $("gp-body").innerHTML='<div class="gp-card"><b>📢 Daily quiz alerts kosam join avvandi</b><br><a class="gp-btn" href="'+TG+'" target="_blank" rel="noopener" style="display:inline-block;text-decoration:none">Telegram</a><a class="gp-btn ok" href="'+WA+'" target="_blank" rel="noopener" style="display:inline-block;text-decoration:none">WhatsApp Channel</a></div><div class="gp-card"><b>🏆 Topper Stories</b>'+(TOPPERS.length?TOPPERS.map(function(t){return'<div style="margin-top:10px;padding:10px;border-radius:10px;background:var(--card2)"><b>'+E(t.name)+'</b> <span class="gp-mut">'+E(t.exam)+"</span><br>“"+E(t.quote)+"”</div>"}).join(""):'<p class="gp-mut">Mee success story share cheyandi — WhatsApp channel lo message pampandi, ikkada feature chestam.</p>')+"</div>";
+}
+/* ---- 10. Coupon (validates against Supabase ae_coupons) ---- */
+function cp(){
+ var ap=ls("ae_coupon_applied",null),pm=PLAN_PRICES.monthly,py=PLAN_PRICES.yearly;
+ $("gp-body").innerHTML='<div class="gp-card"><b>🎟 Coupon code</b><input class="gp-in" id="cp-i" placeholder="CODE" style="margin:8px 0;text-transform:uppercase"><button class="gp-btn" id="cp-b">Apply</button><div id="cp-r" style="margin-top:10px"></div></div>';
+ function res(c){$("cp-r").innerHTML='<div class="gp-opt right">✅ '+E(c.code)+" — "+c.percent+'% off</div>Monthly: <s>₹'+pm+"</s> <b>₹"+Math.round(pm*(100-c.percent)/100)+"</b> · Yearly: <s>₹"+py+"</s> <b>₹"+Math.round(py*(100-c.percent)/100)+"</b>"}
+ ap&&res(ap);
+ $("cp-b").onclick=function(){
+  var code=$("cp-i").value.trim().toUpperCase();if(!/^[A-Z0-9_-]{3,30}$/.test(code))return T("Valid code ivvandi","warn");
+  fetch(SB_URL+"/rest/v1/ae_coupons?code=eq."+encodeURIComponent(code)+"&active=eq.true&select=code,percent,expires_at",{headers:SB_HEADERS}).then(function(r){return r.json()}).then(function(a){
+   var c=Array.isArray(a)&&a[0];if(!c||(c.expires_at&&new Date(c.expires_at)<new Date())){$("cp-r").textContent="❌ Invalid / expired code";return}
+   sv("ae_coupon_applied",c);res(c);T("Coupon applied 🎉")}).catch(function(){T("Network error","error")});
+ };
+}
+function init(){build()}
+document.readyState==="loading"?document.addEventListener("DOMContentLoaded",init):init();
+})();
+</script>
+
+<!-- AE PWA INSTALL BANNER v1 -->
+<style id="ae-pwa-css">
+#ae-pwa{position:fixed;left:12px;right:12px;bottom:14px;z-index:9998;max-width:460px;margin:0 auto;display:none;align-items:center;gap:10px;background:var(--card,#fff);color:var(--text,#1A1A2E);border:1.5px solid var(--primary,#1A73E8);border-radius:16px;padding:12px 14px;box-shadow:0 8px 32px rgba(26,115,232,.28)}
+#ae-pwa.show{display:flex}#ae-pwa .t{flex:1;font-size:13px;line-height:1.35}#ae-pwa b{display:block;font-size:14px}
+#ae-pwa button{border:0;border-radius:10px;padding:9px 14px;font-weight:700;cursor:pointer}
+#ae-pwa .go{background:var(--primary,#1A73E8);color:#fff}#ae-pwa .x{background:transparent;color:var(--text3,#8892B0);padding:6px 8px;font-size:16px}
+</style>
+<script id="ae-pwa-js">
+(function(){
+"use strict";
+var K="ae_pwa_dismiss",dp=null;
+function ok(){try{return !(window.matchMedia("(display-mode: standalone)").matches||navigator.standalone)}catch(e){return true}}
+function snoozed(){try{return Date.now()-(+localStorage.getItem(K)||0)<6048e5}catch(e){return false}}
+var ios=/iphone|ipad|ipod/i.test(navigator.userAgent)&&!window.MSStream;
+var bar;
+function mk(){
+ if(bar)return bar;bar=document.createElement("div");bar.id="ae-pwa";
+ bar.innerHTML='<span style="font-size:26px">📲</span><div class="t"><b>Anil EduTech App install cheyandi</b><span id="ae-pwa-s">Home screen nunchi fast ga open avutundi</span></div><button class="go" id="ae-pwa-go">Install</button><button class="x" id="ae-pwa-x" aria-label="Close">✕</button>';
+ document.body.appendChild(bar);
+ document.getElementById("ae-pwa-x").onclick=function(){bar.classList.remove("show");try{localStorage.setItem(K,String(Date.now()))}catch(e){}};
+ document.getElementById("ae-pwa-go").onclick=function(){
+  if(dp){dp.prompt();dp.userChoice.then(function(){dp=null;bar.classList.remove("show")}).catch(function(){})}
+  else document.getElementById("ae-pwa-s").textContent="Safari lo Share ⬆️ → 'Add to Home Screen' nokkandi";
+ };
+ return bar;
+}
+function show(){if(ok()&&!snoozed())setTimeout(function(){mk().classList.add("show")},6000)}
+window.addEventListener("beforeinstallprompt",function(e){e.preventDefault();dp=e;show()});
+window.addEventListener("appinstalled",function(){dp=null;bar&&bar.classList.remove("show");try{toast("App install ayyindi 🎉")}catch(e){}});
+window.aeInstallApp=function(){if(dp){dp.prompt()}else{mk().classList.add("show");document.getElementById("ae-pwa-s").textContent=ios?"Safari lo Share ⬆️ → 'Add to Home Screen'":"Browser menu (⋮) → 'Install app' / 'Add to Home screen'"}};
+if(ios&&ok()){document.readyState==="loading"?document.addEventListener("DOMContentLoaded",show):show()}
+})();
+</script>
+
 </body>
 </html>

@@ -6284,6 +6284,7 @@ document.readyState==="loading"?document.addEventListener("DOMContentLoaded",ini
     var d=document.createElement("div");d.id="ae-renew-banner";
     d.style.cssText="position:fixed;left:50%;transform:translateX(-50%);bottom:16px;z-index:9000;max-width:94vw;width:420px;background:#fff;border:2px solid #F59E0B;border-radius:16px;box-shadow:0 10px 30px rgba(0,0,0,.18);padding:12px 14px;display:flex;align-items:center;gap:10px;font-family:inherit;";
     d.innerHTML='<div style="font-size:24px">⏰</div><div style="flex:1;min-width:0"><div style="font-size:13px;font-weight:900;color:#111">'+msgFor(i)+'</div><div style="font-size:11px;color:#555;margin-top:2px">Renew చేస్తే మిగిలిన రోజులకు కొత్త plan add అవుతుంది</div></div><button id="ae-renew-go" style="border:none;border-radius:10px;padding:9px 12px;font-weight:900;font-size:12px;color:#fff;background:linear-gradient(135deg,#F59E0B,#FF6B35);cursor:pointer;font-family:inherit">Renew</button><button id="ae-renew-x" aria-label="Close" style="border:none;background:none;font-size:18px;cursor:pointer;color:#777">✕</button>';
+    if(!document.getElementById("ae-renew-css")){var st=document.createElement("style");st.id="ae-renew-css";st.textContent="@media(max-width:640px){#ae-renew-banner{bottom:92px!important}}body:has(#pricing-overlay.show) #ae-renew-banner,body:has(#page-exam.active) #ae-renew-banner{display:none!important}";document.head.appendChild(st)}
     document.body.appendChild(d);
     document.getElementById("ae-renew-go").onclick=window._aeRenewNow;
     document.getElementById("ae-renew-x").onclick=function(){ls("ae_renew_dismiss",i.key+"|"+new Date().toDateString());d.remove()};
@@ -6375,6 +6376,29 @@ document.readyState==="loading"?document.addEventListener("DOMContentLoaded",ini
       };
     }
   }catch(e){console.warn("[renew] stats wrap failed",e)}
+
+  /* mobile menu: Progress label was invisible (span font-size:0 made its ::before label 0px) + grid alignment */
+  try{
+    var ms=document.createElement("style");ms.id="ae-menu-fix";
+    ms.textContent="@media(max-width:640px){#nav-progress span[data-full]::before{font-size:13.5px!important;line-height:1.2}#nav-growth,.nav-links>.nav-btn.nav-accent{grid-column:1/-1}}";
+    document.head.appendChild(ms);
+  }catch(e){}
+  function fixMenuGrid(){
+    try{
+      var nl=document.getElementById("nav-links");if(!nl)return;
+      var half=[].filter.call(nl.children,function(el){
+        if(!el.classList.contains("nav-btn")||el.id==="nav-growth"||el.classList.contains("nav-accent"))return false;
+        el.style.gridColumn="";
+        return el.offsetParent!==null||getComputedStyle(el).display!=="none";
+      });
+      if(half.length%2===1)half[half.length-1].style.gridColumn="1/-1";
+    }catch(e){}
+  }
+  try{
+    if(typeof toggleMenu==="function"){var _tm=toggleMenu;toggleMenu=function(){var r=_tm.apply(this,arguments);setTimeout(fixMenuGrid,30);return r}}
+    if(typeof updateNavUser==="function"){var _un2=updateNavUser;updateNavUser=function(){var r=_un2.apply(this,arguments);setTimeout(fixMenuGrid,60);return r}}
+    if(typeof setLang==="function"){var _sl=setLang;setLang=function(){var r=_sl.apply(this,arguments);setTimeout(fixMenuGrid,60);return r}}
+  }catch(e){}
   function boot(){setTimeout(function(){try{window._aeExpiryBanner();injectBell()}catch(e){}},2500)}
   document.readyState==="loading"?document.addEventListener("DOMContentLoaded",boot):boot();
   setInterval(function(){try{window._aeExpiryBanner()}catch(e){}},6e4);

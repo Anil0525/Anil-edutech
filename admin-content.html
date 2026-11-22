@@ -29,13 +29,14 @@
         <button class="admin-tab" onclick="switchAdminTab('pdfitems',this)">📁 PDFs/Images</button>
         <button class="admin-tab" onclick="switchAdminTab('videos',this)">🎥 Videos</button>
         <button class="admin-tab" onclick="switchAdminTab('ebooks',this);renderEbookAdminList()">📖 eBooks</button>
+        <button class="admin-tab" onclick="switchAdminTab('books',this);loadAdminBooks()">📚 Books</button>
         <button class="admin-tab" onclick="switchAdminTab('carousel',this);loadCarouselAdmin()">🎠 Carousel</button>
         <button class="admin-tab" onclick="switchAdminTab('categories',this);loadCategoryOrderAdmin()">🗂️ Category Order</button>
         <button class="admin-tab" onclick="switchAdminTab('dailymock',this)">📅 Daily Mock</button>
         <button class="admin-tab" onclick="switchAdminTab('scheduled',this)">🗓 Scheduled</button>
         <button class="admin-tab" onclick="switchAdminTab('bulkimport',this)">📥 Bulk Import</button>
         <div class="admin-tab-group">Users &amp; Revenue</div>
-        <button class="admin-tab" onclick="switchAdminTab('subscribers',this);loadWAOptinCount()">👥 Subscribers</button>
+        <button class="admin-tab" onclick="switchAdminTab('subscribers',this)">👥 Subscribers</button>
         <button class="admin-tab" onclick="switchAdminTab('payments',this)">💳 Payments</button>
         <button class="admin-tab" onclick="switchAdminTab('contests',this);_populateContestExamSelect();loadAdminContests()">🏆 Contests</button>
         <button class="admin-tab" onclick="switchAdminTab('retention',this)">📉 Retention</button>
@@ -482,21 +483,6 @@
 
           <!-- ── TAB: SUBSCRIBERS ── -->
           <div id="atab-subscribers" class="admin-panel">
-
-            <!-- WhatsApp opt-in -->
-            <div class="admin-card" style="border-color:rgba(16,185,129,.35)">
-              <h3 style="color:#059669">💬 WhatsApp Opt-in Users</h3>
-              <p style="font-size:12.5px;color:var(--text3);margin-bottom:12px;line-height:1.7">
-                WhatsApp updates కోసం tick చేసిన users మాత్రమే. వీళ్ళకే broadcast పంపండి (వారానికి 2-3 messages చాలు).
-              </p>
-              <div style="display:flex;align-items:center;gap:12px;flex-wrap:wrap">
-                <div style="font-size:26px;font-weight:900;color:#059669" id="wa-optin-count">—</div>
-                <div style="font-size:12.5px;color:var(--text3);font-weight:700">opted-in users</div>
-                <button class="add-btn" onclick="exportWAOptinCSV()">📥 CSV Download</button>
-                <button class="add-btn" style="background:#475569" onclick="copyWANumbers()">📋 Copy Numbers</button>
-                <button class="add-btn" style="background:transparent;color:var(--text3);border:1px solid var(--border2)" onclick="loadWAOptinCount()">↻</button>
-              </div>
-            </div>
 
             <!-- Approved subscribers -->
             <div class="admin-card" style="border-color:rgba(10,140,92,.3)">
@@ -1401,29 +1387,15 @@
 
           <div id="atab-settings" class="admin-panel">
             <div class="admin-card" style="border-color:rgba(26,115,232,.25)">
-              <h3 style="color:var(--primary)">📧 Email Notifications (EmailJS)</h3>
+              <h3 style="color:var(--primary)">📧 Email Notifications (Emitlo)</h3>
               <div style="font-size:12.5px;color:var(--text3);margin-bottom:14px;font-weight:600">
-                Free email notifications కోసం <a href="https://www.emailjs.com" target="_blank"
-                  style="color:var(--primary)">emailjs.com</a> లో account create చేసి keys paste చేయండి.
-              </div>
-              <div class="form-row">
-                <div class="form-group">
-                  <label>Service ID</label>
-                  <input type="text" id="ejs-service" placeholder="service_xxxxxxx">
-                </div>
-                <div class="form-group">
-                  <label>Template ID</label>
-                  <input type="text" id="ejs-template" placeholder="template_xxxxxxx">
-                </div>
-              </div>
-              <div class="form-group" style="max-width:340px">
-                <label>Public Key</label>
-                <input type="text" id="ejs-pubkey" placeholder="your_public_key">
+                Emails <a href="https://app.emitlo.com" target="_blank" rel="noopener noreferrer"
+                  style="color:var(--primary)">Emitlo</a> ద్వారా Supabase function (send-email) నుంచి వెళ్తాయి. API key
+                Supabase Secrets లో ఉంటుంది — ఇక్కడ ఏమీ paste చేయక్కర్లేదు.
               </div>
               <div style="display:flex;gap:10px;flex-wrap:wrap;align-items:center;margin-top:6px">
-                <button class="add-btn" style="margin:0" onclick="saveEmailJSConfig()">💾 Save Config</button>
                 <button class="add-btn" style="margin:0;background:linear-gradient(135deg,var(--teal),#077042)"
-                  onclick="testEmailJS()">📨 Test Email పంపు</button>
+                  onclick="testEmailJS()">📨 Test Email పంపు (admin mailbox కి)</button>
               </div>
               <div id="ejs-status" style="font-size:12.5px;margin-top:10px;font-weight:600;display:none"></div>
               <div
@@ -2164,6 +2136,83 @@
 
             </div><!-- /admin-card -->
           </div><!-- /atab-ebooks -->
+
+          <!-- ══════════════════════════════════════════════════════
+               📚 TAB: BOOKS (affiliate)
+          ══════════════════════════════════════════════════════ -->
+          <div id="atab-books" class="admin-panel">
+            <div class="admin-card">
+              <div style="margin-bottom:16px;">
+                <h2 style="font-size:17px;font-weight:900;color:var(--text);margin:0 0 4px;">📚 Books Manager (Affiliate)</h2>
+                <p style="font-size:12.5px;color:var(--text3);margin:0;">Amazon / Flipkart affiliate books — site లో Books page లో కనిపిస్తాయి · click stats ఇక్కడ చూడవచ్చు</p>
+              </div>
+
+              <div style="display:flex;gap:10px;flex-wrap:wrap;margin-bottom:16px;">
+                <div style="flex:1;min-width:110px;background:var(--bg);border:1.5px solid var(--border);border-radius:12px;padding:10px;text-align:center;"><b id="bka-s-n" style="display:block;font-size:20px;color:var(--text);">0</b><span style="font-size:11.5px;color:var(--text3);font-weight:700;">Books</span></div>
+                <div style="flex:1;min-width:110px;background:var(--bg);border:1.5px solid var(--border);border-radius:12px;padding:10px;text-align:center;"><b id="bka-s-v" style="display:block;font-size:20px;color:var(--text);">0</b><span style="font-size:11.5px;color:var(--text3);font-weight:700;">Total views 👁</span></div>
+                <div style="flex:1;min-width:110px;background:var(--bg);border:1.5px solid var(--border);border-radius:12px;padding:10px;text-align:center;"><b id="bka-s-c" style="display:block;font-size:20px;color:var(--text);">0</b><span style="font-size:11.5px;color:var(--text3);font-weight:700;">Total clicks</span></div>
+                <div style="flex:2;min-width:160px;background:var(--bg);border:1.5px solid var(--border);border-radius:12px;padding:10px;text-align:center;"><b id="bka-s-top" style="display:block;font-size:14px;color:var(--text);">-</b><span style="font-size:11.5px;color:var(--text3);font-weight:700;">Top clicked</span></div>
+              </div>
+
+              <div style="margin-bottom:16px;">
+                <label style="font-size:12px;font-weight:700;color:var(--text3);display:block;margin-bottom:5px;">🏷️ Amazon Store ID (tag) — amazon.in links కి auto add అవుతుంది</label>
+                <input id="bka-tag" type="text" placeholder="e.g. aniledutech-21" oninput="try{localStorage.setItem('bk_tag',this.value.trim())}catch(e){}" style="width:100%;padding:10px 12px;border:1.5px solid var(--border);border-radius:10px;font-size:13.5px;font-weight:600;background:var(--bg);color:var(--text);box-sizing:border-box;">
+              </div>
+
+              <div style="background:var(--bg2,rgba(0,0,0,.03));border:1.5px solid var(--border);border-radius:14px;padding:18px;margin-bottom:24px;">
+                <div id="bka-ftitle" style="font-size:14px;font-weight:800;color:var(--text);margin-bottom:14px;">➕ New Book Add చేయండి</div>
+                <input type="hidden" id="bka-id">
+                <div style="margin-bottom:12px;"><label style="font-size:12px;font-weight:700;color:var(--text3);display:block;margin-bottom:5px;">📝 Title *</label><input id="bka-title" type="text" maxlength="200" style="width:100%;padding:10px 12px;border:1.5px solid var(--border);border-radius:10px;font-size:13.5px;font-weight:600;background:var(--bg);color:var(--text);box-sizing:border-box;"></div>
+                <div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(200px,1fr));gap:12px;margin-bottom:12px;">
+                  <div><label style="font-size:12px;font-weight:700;color:var(--text3);display:block;margin-bottom:5px;">✍️ Author</label><input id="bka-author" type="text" maxlength="120" style="width:100%;padding:10px 12px;border:1.5px solid var(--border);border-radius:10px;font-size:13.5px;font-weight:600;background:var(--bg);color:var(--text);box-sizing:border-box;"></div>
+                  <div><label style="font-size:12px;font-weight:700;color:var(--text3);display:block;margin-bottom:5px;">🎯 Exam</label><input id="bka-exam" type="text" list="bka-exams" maxlength="40" placeholder="TSPSC / APPSC / SSC..." style="width:100%;padding:10px 12px;border:1.5px solid var(--border);border-radius:10px;font-size:13.5px;font-weight:600;background:var(--bg);color:var(--text);box-sizing:border-box;"><datalist id="bka-exams"><option>TSPSC</option><option>APPSC</option><option>SSC</option><option>Banking</option><option>RRB</option><option>GK</option></datalist></div>
+                  <div><label style="font-size:12px;font-weight:700;color:var(--text3);display:block;margin-bottom:5px;">📂 Category</label><input id="bka-cat" type="text" list="bka-cats" maxlength="60" style="width:100%;padding:10px 12px;border:1.5px solid var(--border);border-radius:10px;font-size:13.5px;font-weight:600;background:var(--bg);color:var(--text);box-sizing:border-box;"><datalist id="bka-cats"><option>📗 Telugu Medium</option><option>📘 English Medium</option><option>📋 Question Banks</option><option>🎁 Combo Packs</option><option>📒 Practice Sets</option><option>🗒️ Notes &amp; Guides</option></datalist></div>
+                  <div><label style="font-size:12px;font-weight:700;color:var(--text3);display:block;margin-bottom:5px;">🔢 Sort order (చిన్న number ముందు)</label><input id="bka-sort" type="number" value="0" style="width:100%;padding:10px 12px;border:1.5px solid var(--border);border-radius:10px;font-size:13.5px;font-weight:600;background:var(--bg);color:var(--text);box-sizing:border-box;"></div>
+                </div>
+                <div style="margin-bottom:12px;"><label style="font-size:12px;font-weight:700;color:var(--text3);display:block;margin-bottom:5px;">🔗 Affiliate link * (https://)</label><input id="bka-link" type="text" placeholder="https://www.amazon.in/dp/XXXXXXXXXX  లేదా  https://amzn.to/..." style="width:100%;padding:10px 12px;border:1.5px solid var(--border);border-radius:10px;font-size:13.5px;font-weight:600;background:var(--bg);color:var(--text);box-sizing:border-box;"></div>
+                <div style="margin-bottom:12px;"><label style="font-size:12px;font-weight:700;color:var(--text3);display:block;margin-bottom:5px;">🖼️ Cover image URL (https://) — Amazon image hotlink చేయకండి, own/publisher image వాడండి</label><input id="bka-cover" type="text" style="width:100%;padding:10px 12px;border:1.5px solid var(--border);border-radius:10px;font-size:13.5px;font-weight:600;background:var(--bg);color:var(--text);box-sizing:border-box;"></div>
+                <div style="display:grid;grid-template-columns:1fr 1fr;gap:12px;margin-bottom:12px;">
+                  <div><label style="font-size:12px;font-weight:700;color:var(--text3);display:block;margin-bottom:5px;">💰 Price</label><input id="bka-price" type="text" maxlength="30" placeholder="₹299" style="width:100%;padding:10px 12px;border:1.5px solid var(--border);border-radius:10px;font-size:13.5px;font-weight:600;background:var(--bg);color:var(--text);box-sizing:border-box;"></div>
+                  <div><label style="font-size:12px;font-weight:700;color:var(--text3);display:block;margin-bottom:5px;">🏷️ MRP (cut price)</label><input id="bka-mrp" type="text" maxlength="30" placeholder="₹450" style="width:100%;padding:10px 12px;border:1.5px solid var(--border);border-radius:10px;font-size:13.5px;font-weight:600;background:var(--bg);color:var(--text);box-sizing:border-box;"></div>
+                </div>
+                <div style="margin-bottom:12px;"><label style="font-size:12px;font-weight:700;color:var(--text3);display:block;margin-bottom:5px;">📄 Note — "ఈ book ఎవరికి ఉపయోగం" 2 lines (max 400)</label><textarea id="bka-note" rows="2" maxlength="400" style="width:100%;padding:10px 12px;border:1.5px solid var(--border);border-radius:10px;font-size:13.5px;font-weight:600;background:var(--bg);color:var(--text);box-sizing:border-box;resize:vertical;"></textarea></div>
+                <div style="display:flex;gap:18px;flex-wrap:wrap;margin-bottom:14px;">
+                  <label style="display:flex;align-items:center;gap:6px;font-size:13px;font-weight:700;color:var(--text);"><input type="checkbox" id="bka-feat"> ⭐ Top Pick</label>
+                  <label style="display:flex;align-items:center;gap:6px;font-size:13px;font-weight:700;color:var(--text);"><input type="checkbox" id="bka-act" checked> Active (site లో కనిపిస్తుంది)</label>
+                  <label style="display:flex;align-items:center;gap:6px;font-size:13px;font-weight:700;color:var(--text);"><input type="checkbox" id="bka-notify" checked> 🔔 Users కి notification పంపు (కొత్త book కి మాత్రమే)</label>
+                </div>
+                <div style="display:flex;gap:8px;flex-wrap:wrap;">
+                  <button id="bka-save-btn" onclick="adminSaveBook()" style="flex:1;min-width:140px;padding:12px;background:linear-gradient(135deg,#D97706,#F59E0B);color:#fff;border:none;border-radius:12px;font-size:14px;font-weight:900;cursor:pointer;font-family:inherit;">💾 Book Save చేయండి</button>
+                  <button onclick="_bkaReset()" style="padding:12px 16px;background:var(--bg);color:var(--text);border:1.5px solid var(--border);border-radius:12px;font-size:13px;font-weight:800;cursor:pointer;font-family:inherit;">Clear</button>
+                </div>
+                <div id="bka-msg" style="display:none;margin-top:10px;font-size:13px;font-weight:700;text-align:center;"></div>
+              </div>
+
+              <div style="background:var(--bg2,rgba(0,0,0,.03));border:1.5px solid var(--border);border-radius:14px;padding:18px;margin-bottom:24px;">
+                <div style="font-size:14px;font-weight:800;color:var(--text);margin-bottom:6px;">📥 Bulk Upload (CSV) — చాలా books ఒకేసారి</div>
+                <p style="font-size:12px;color:var(--text3);margin:0 0 12px;line-height:1.6;">Excel / Google Sheets లో books రాసి <b>CSV (UTF-8)</b> గా save చేయండి. ఒక row = ఒక book. Columns: <b>title, author, exam, category, link, cover_url, price, mrp, note, featured</b> (featured: yes/no). title మరియు link తప్పనిసరి. cover_url ఖాళీగా వదిలితే Amazon link నుండి auto వస్తుంది.</p>
+                <div style="display:flex;gap:8px;flex-wrap:wrap;margin-bottom:10px;align-items:center;">
+                  <button id="bka-fix-btn" onclick="_bkaFixCovers()" style="padding:9px 14px;background:var(--bg);color:var(--text);border:1.5px solid var(--border);border-radius:10px;font-size:12.5px;font-weight:800;cursor:pointer;font-family:inherit;">🪄 Missing images auto-fill</button>
+                  <button onclick="_bkaBulkTemplate()" style="padding:9px 14px;background:var(--bg);color:var(--text);border:1.5px solid var(--border);border-radius:10px;font-size:12.5px;font-weight:800;cursor:pointer;font-family:inherit;">⬇ Template download</button>
+                  <input id="bka-bulk-file" type="file" accept=".csv,text/csv,text/plain" onchange="_bkaBulkFile(this)" style="font-size:12px;max-width:100%;">
+                </div>
+                <textarea id="bka-bulk-text" rows="5" placeholder="లేదా ఇక్కడ CSV rows paste చేయండి..." style="width:100%;padding:10px 12px;border:1.5px solid var(--border);border-radius:10px;font-size:12.5px;background:var(--bg);color:var(--text);box-sizing:border-box;resize:vertical;font-family:monospace;"></textarea>
+                <label style="display:flex;align-items:center;gap:6px;font-size:13px;font-weight:700;color:var(--text);margin-top:10px;"><input type="checkbox" id="bka-bulk-notify" checked> 🔔 Import అయ్యాక users కి ఒక notification పంపు</label>
+                <button id="bka-bulk-btn" onclick="_bkaBulkImport()" style="margin-top:10px;width:100%;padding:12px;background:linear-gradient(135deg,#059669,#10B981);color:#fff;border:none;border-radius:12px;font-size:14px;font-weight:900;cursor:pointer;font-family:inherit;">📥 Import చేయండి</button>
+                <div id="bka-bulk-msg" style="display:none;margin-top:10px;font-size:13px;font-weight:700;text-align:center;"></div>
+              </div>
+
+              <div style="font-size:14px;font-weight:800;color:var(--text);margin-bottom:12px;">📚 All Books</div>
+              <div style="display:flex;gap:8px;flex-wrap:wrap;align-items:center;margin-bottom:12px;">
+                <input id="bka-search" type="search" oninput="_bkaRender()" placeholder="🔍 Title / author / exam తో వెతకండి..." style="flex:1;min-width:180px;padding:10px 12px;border:1.5px solid var(--border);border-radius:10px;font-size:13px;background:var(--bg);color:var(--text);font-family:inherit;box-sizing:border-box;">
+                <select id="bka-filter" onchange="_bkaRender()" style="padding:10px 12px;border:1.5px solid var(--border);border-radius:10px;font-size:13px;background:var(--bg);color:var(--text);font-family:inherit;">
+                  <option value="all">All</option><option value="noimg">🖼 Image లేనివి</option><option value="hidden">🙈 Hidden</option><option value="top">⭐ Top Pick</option>
+                </select>
+                <span id="bka-count" style="font-size:12px;font-weight:700;color:var(--text3);"></span>
+              </div>
+              <div id="bka-list"><div style="text-align:center;padding:30px;color:var(--text3);font-size:13px;font-weight:600;">⏳ Loading...</div></div>
+            </div><!-- /admin-card -->
+          </div><!-- /atab-books -->
 
           <!-- ══════════════════════════════════
          📉 TAB: RETENTION & COHORT ANALYSIS

@@ -2486,6 +2486,7 @@ window.emailjs={send:function(_svc,_tpl,p){
         <div class="section-title" id="exams-page-title" style="font-size:16px;font-weight:800;margin:12px 0 8px;">
         </div>
         <div class="exams-grid" id="exams-list"></div>
+        <div id="exam-books-strip"></div>
 
         <!-- ఎప్పుడూ HTML లో ఉండే SEO content — JS/DB లోడ్ ఆలస్యంతో సంబంధం లేకుండా Google కి వెంటనే కనిపిస్తుంది -->
         <div class="exam-categories-seo" style="margin-top:24px;padding-top:16px;border-top:1px solid var(--border2);font-size:13px;color:var(--text3);line-height:1.9;">
@@ -6530,6 +6531,46 @@ function renderBooks(){
   var mw=document.getElementById("bk-more-wrap");
   if(mw)mw.innerHTML=list.length>shown.length?'<button class="bk-more" onclick="_bkPage++;renderBooks()">ఇంకా చూపించు ('+(list.length-shown.length)+')</button>':"";
 }
+var _ebT=0,_ebLoading=!1;
+function _ebMatch(b,f){var e=String(b.exam||"").toLowerCase().trim();if(!e)return!1;f=f.toLowerCase();return e===f||e.indexOf(f)>=0||f.indexOf(e)>=0||(f.indexOf("bank")>=0&&e.indexOf("bank")>=0)}
+function _renderExamBooks(){
+  var box=document.getElementById("exam-books-strip");if(!box)return;
+  var f=(typeof _examFilter!=="undefined"&&_examFilter)?String(_examFilter):"";
+  if(!_bkAll.length){
+    if(!_ebLoading){_ebLoading=!0;loadBooks().then(function(){_ebLoading=!1;if(_bkAll.length)_renderExamBooks()}).catch(function(){_ebLoading=!1})}
+    box.innerHTML="";return;
+  }
+  var list=_bkAll.filter(function(b){return f?_ebMatch(b,f):!0}).filter(function(b){return sanitizeUrl(b.link)});
+  list.sort(function(a,b){return(b.featured?1:0)-(a.featured?1:0)});
+  list=list.slice(0,6);
+  if(!list.length){box.innerHTML="";return}
+  var h='<div style="margin:22px 0 8px;padding-top:16px;border-top:1px solid var(--border2);">'+
+    '<div style="display:flex;align-items:center;justify-content:space-between;gap:8px;margin-bottom:10px;flex-wrap:wrap;">'+
+    '<div style="font-size:16px;font-weight:800;color:var(--text);">📚 '+(f?escHtml(f)+" కోసం ":"")+'Recommended Books</div>'+
+    '<a href="/" onclick="goBooks();return false;" style="font-size:12.5px;font-weight:800;color:#D97706;text-decoration:none;">అన్ని books →</a></div>'+
+    '<div style="display:flex;gap:12px;overflow-x:auto;padding-bottom:8px;-webkit-overflow-scrolling:touch;">';
+  list.forEach(function(b){
+    var link=sanitizeUrl(b.link),cover=sanitizeUrl(b.cover_url);
+    h+='<div style="flex:0 0 150px;background:var(--card,#fff);border:1.5px solid var(--border);border-radius:12px;padding:10px;display:flex;flex-direction:column;gap:6px;">'+
+    '<div style="height:120px;display:flex;align-items:center;justify-content:center;font-size:36px;background:#fff;border-radius:8px;overflow:hidden;">'+(cover?'<img src="'+escHtml(cover)+'" alt="'+escHtml(b.title||"Book")+'" loading="lazy" referrerpolicy="no-referrer" style="max-width:100%;max-height:100%;object-fit:contain" onload="if(this.naturalWidth<30)this.parentNode.textContent=\'📘\'" onerror="this.parentNode.textContent=\'📘\'">':"📘")+'</div>'+
+    '<div style="font-size:12px;font-weight:800;color:var(--text);line-height:1.35;height:32px;overflow:hidden;">'+escHtml(b.title||"")+'</div>'+
+    ((b.price||b.mrp)?'<div style="font-size:13px;font-weight:900;color:var(--text);">'+escHtml(b.price||"")+(b.mrp?' <s style="font-size:11px;font-weight:600;color:var(--text3);">'+escHtml(b.mrp)+'</s>':"")+'</div>':"")+
+    '<a href="'+escHtml(link)+'" target="_blank" rel="sponsored nofollow noopener noreferrer" onclick="_bkClick('+Number(b.id)+')" style="margin-top:auto;text-align:center;padding:8px 6px;border-radius:9px;background:linear-gradient(135deg,#D97706,#F59E0B);color:#fff;font-size:12px;font-weight:800;text-decoration:none;">'+_bkBuyLabel(link)+'</a></div>';
+  });
+  h+='</div><div style="font-size:11px;color:var(--text3);margin-top:4px;">ఈ links affiliate links — మీకు extra cost ఉండదు.</div></div>';
+  box.innerHTML=h;
+  try{_bkTrackViews(list)}catch(e){}
+}
+(function(){
+  function init(){
+    try{
+      var el=document.getElementById("exams-list");if(!el||typeof MutationObserver==="undefined")return;
+      new MutationObserver(function(){clearTimeout(_ebT);_ebT=setTimeout(_renderExamBooks,200)}).observe(el,{childList:!0});
+      _renderExamBooks();
+    }catch(e){}
+  }
+  document.readyState==="loading"?document.addEventListener("DOMContentLoaded",init):setTimeout(init,300);
+})();
 function _bkTrackViews(list){
   try{
     if(typeof _adminAuthenticated!=="undefined"&&_adminAuthenticated)return;
@@ -6571,7 +6612,10 @@ function _bkaRender(){
   var n=document.getElementById("bka-s-n"),c=document.getElementById("bka-s-c"),t=document.getElementById("bka-s-top");
   if(n)n.textContent=_bkaAll.length;var vv=document.getElementById("bka-s-v");if(vv)vv.textContent=_bkaAll.reduce(function(a,b){return a+(b.views||0)},0);if(c)c.textContent=tot;if(t)t.textContent=top&&top.clicks?(String(top.title).slice(0,40)+" ("+top.clicks+")"):"-";
   var l=document.getElementById("bka-list");if(!l)return;
-  l.innerHTML=_bkaAll.length?_bkaAll.map(function(b){
+  var _bq=((document.getElementById("bka-search")||{}).value||"").toLowerCase().trim(),_bf=(document.getElementById("bka-filter")||{}).value||"all";
+  var _bl=_bkaAll.filter(function(b){if(_bf==="noimg"&&b.cover_url)return!1;if(_bf==="hidden"&&b.is_active)return!1;if(_bf==="top"&&!b.featured)return!1;return!_bq||((b.title||"")+" "+(b.author||"")+" "+(b.exam||"")+" "+(b.category||"")).toLowerCase().indexOf(_bq)>=0});
+  var _cn=document.getElementById("bka-count");if(_cn)_cn.textContent=(_bq||_bf!=="all")?(_bl.length+" / "+_bkaAll.length+" books"):(_bkaAll.length+" books");
+  l.innerHTML=_bl.length?_bl.map(function(b){
     var img=sanitizeUrl(b.cover_url);
     return '<div style="display:flex;gap:12px;align-items:center;padding:12px 14px;border-radius:12px;border:1.5px solid var(--border);background:var(--bg);margin-bottom:10px;flex-wrap:wrap;">'+
     '<div style="width:46px;height:60px;border:1px solid var(--border);border-radius:6px;background:#fff;display:flex;align-items:center;justify-content:center;overflow:hidden;flex-shrink:0;">'+(img?'<img src="'+escHtml(img)+'" referrerpolicy="no-referrer" style="width:100%;height:100%;object-fit:contain" alt="" onload="if(this.naturalWidth<30)this.parentNode.textContent=\'📘\'" onerror="this.parentNode.textContent=\'📘\'">':"📘")+'</div>'+

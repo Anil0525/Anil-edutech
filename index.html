@@ -6526,8 +6526,19 @@ function renderBooks(){
     '<div class="bk-actions"><a class="bk-buy" href="'+escHtml(link)+'" target="_blank" rel="sponsored nofollow noopener noreferrer" onclick="_bkClick('+Number(b.id)+')">'+_bkBuyLabel(link)+'</a>'+
     '<button class="bk-share" aria-label="Share on WhatsApp" onclick="_bkShare('+Number(b.id)+')">📤</button></div></div></div>'}).join(""):
     '<div class="bk-empty">'+(_bkAll.length?"ఏ book దొరకలేదు. Filters మార్చి చూడండి.":"ఇంకా books add చేయలేదు — త్వరలో వస్తాయి! 📚")+'</div>';
+  _bkTrackViews(shown);
   var mw=document.getElementById("bk-more-wrap");
   if(mw)mw.innerHTML=list.length>shown.length?'<button class="bk-more" onclick="_bkPage++;renderBooks()">ఇంకా చూపించు ('+(list.length-shown.length)+')</button>':"";
+}
+function _bkTrackViews(list){
+  try{
+    if(typeof _adminAuthenticated!=="undefined"&&_adminAuthenticated)return;
+    var seen={};try{seen=JSON.parse(sessionStorage.getItem("ae_bk_viewed")||"{}")}catch(e){}
+    var ids=[];list.forEach(function(b){if(b&&b.id&&!seen[b.id]){seen[b.id]=1;ids.push(b.id)}});
+    if(!ids.length)return;
+    try{sessionStorage.setItem("ae_bk_viewed",JSON.stringify(seen))}catch(e){}
+    fetch(SB_URL+"/rest/v1/rpc/ae_book_view",{method:"POST",keepalive:!0,headers:{"Content-Type":"application/json",apikey:SB_KEY,Authorization:"Bearer "+SB_KEY},body:JSON.stringify({p_ids:ids})}).catch(function(){})
+  }catch(e){}
 }
 function _bkClick(id){
   var b=_bkAll.find(function(x){return x.id===id});
@@ -6558,14 +6569,14 @@ async function loadAdminBooks(){
 function _bkaRender(){
   var tot=_bkaAll.reduce(function(a,b){return a+(b.clicks||0)},0),top=_bkaAll.slice().sort(function(a,b){return(b.clicks||0)-(a.clicks||0)})[0];
   var n=document.getElementById("bka-s-n"),c=document.getElementById("bka-s-c"),t=document.getElementById("bka-s-top");
-  if(n)n.textContent=_bkaAll.length;if(c)c.textContent=tot;if(t)t.textContent=top&&top.clicks?(String(top.title).slice(0,40)+" ("+top.clicks+")"):"-";
+  if(n)n.textContent=_bkaAll.length;var vv=document.getElementById("bka-s-v");if(vv)vv.textContent=_bkaAll.reduce(function(a,b){return a+(b.views||0)},0);if(c)c.textContent=tot;if(t)t.textContent=top&&top.clicks?(String(top.title).slice(0,40)+" ("+top.clicks+")"):"-";
   var l=document.getElementById("bka-list");if(!l)return;
   l.innerHTML=_bkaAll.length?_bkaAll.map(function(b){
     var img=sanitizeUrl(b.cover_url);
     return '<div style="display:flex;gap:12px;align-items:center;padding:12px 14px;border-radius:12px;border:1.5px solid var(--border);background:var(--bg);margin-bottom:10px;flex-wrap:wrap;">'+
     '<div style="width:46px;height:60px;border:1px solid var(--border);border-radius:6px;background:#fff;display:flex;align-items:center;justify-content:center;overflow:hidden;flex-shrink:0;">'+(img?'<img src="'+escHtml(img)+'" referrerpolicy="no-referrer" style="width:100%;height:100%;object-fit:contain" alt="">':"📘")+'</div>'+
     '<div style="flex:1;min-width:180px;"><div style="font-weight:800;font-size:13.5px;color:var(--text);">'+escHtml(b.title||"")+(b.featured?" ⭐":"")+(b.is_active?"":' <span style="color:#ef4444;font-size:11px;">(hidden)</span>')+'</div>'+
-    '<div style="font-size:11.5px;color:var(--text3);margin-top:3px;">'+escHtml(b.exam||"-")+' · '+escHtml(b.category||"-")+' · '+escHtml(b.price||"-")+' · 👆 '+(b.clicks||0)+' clicks</div></div>'+
+    '<div style="font-size:11.5px;color:var(--text3);margin-top:3px;">'+escHtml(b.exam||"-")+' · '+escHtml(b.category||"-")+' · '+escHtml(b.price||"-")+' · 👁 '+(b.views||0)+' views · 👆 '+(b.clicks||0)+' clicks'+((b.views||0)>0?' ('+Math.round((b.clicks||0)/b.views*100)+'% CTR)':'')+'</div></div>'+
     '<div style="display:flex;gap:6px;flex-wrap:wrap;">'+
     '<button onclick="_bkaToggle('+Number(b.id)+',\'featured\')" style="padding:6px 10px;border-radius:8px;border:1.5px solid var(--border);background:var(--card);cursor:pointer;font-size:12px;font-weight:800;">⭐</button>'+
     '<button onclick="_bkaToggle('+Number(b.id)+',\'is_active\')" style="padding:6px 10px;border-radius:8px;border:1.5px solid var(--border);background:var(--card);color:var(--text);cursor:pointer;font-size:12px;font-weight:800;font-family:inherit;">'+(b.is_active?"Hide":"Show")+'</button>'+
@@ -6623,6 +6634,62 @@ async function _bkaDelete(id){
   if(!confirm("ఈ book delete చేయాలా?"))return;
   try{var r=await fetch(SB_URL+"/rest/v1/ae_books?id=eq."+id,{method:"DELETE",headers:SB_HEADERS});
     if(!r.ok)return toast("Delete failed ("+r.status+")","error");toast("🗑 Book deleted","warn");loadAdminBooks();try{localStorage.removeItem("ae_books_cache")}catch(x){}}catch(e){toast("Network error","error")}
+}
+
+/* ===== Bulk upload (CSV) ===== */
+function _bkaBulkTemplate(){
+  var rows=["title,author,exam,category,link,cover_url,price,mrp,note,featured",
+  '"Example Book Title","Author Name",TSPSC,📗 Telugu Medium,https://www.amazon.in/dp/XXXXXXXXXX,,₹299,₹450,"ఈ book ఎవరికి ఉపయోగం",no'];
+  _downloadText("\ufeff"+rows.join("\n"),"AniEduTech_Books_Template.csv","text/csv");
+}
+function _bkaBulkFile(inp){
+  var f=inp&&inp.files&&inp.files[0];if(!f)return;
+  if(f.size>2097152)return _bkaBulkSay("File 2MB కంటే చిన్నగా ఉండాలి",!1);
+  var rd=new FileReader();
+  rd.onload=function(ev){var ta=document.getElementById("bka-bulk-text");if(ta)ta.value=String(ev.target.result||"");_bkaBulkSay("✅ File load అయింది ("+_bkaBulkParse(ta.value).length+" rows). ఇప్పుడు Import నొక్కండి.",!0)};
+  rd.readAsText(f,"utf-8");
+}
+function _bkaBulkSay(t,ok){var m=document.getElementById("bka-bulk-msg");if(!m)return;m.style.display=t?"block":"none";m.textContent=t||"";m.style.color=ok?"#059669":"#ef4444"}
+function _bkaBulkParse(txt){
+  var lines=String(txt||"").replace(/^\uFEFF/,"").split(/\r?\n/).filter(function(l){return l.trim()});
+  if(!lines.length)return[];
+  var head=_splitCSVLine(lines[0]).map(function(h){return h.toLowerCase().replace(/\s+/g,"_")});
+  var hasHead=head.indexOf("title")>=0&&head.indexOf("link")>=0;
+  var cols=hasHead?head:["title","author","exam","category","link","cover_url","price","mrp","note","featured"];
+  return(hasHead?lines.slice(1):lines).map(function(l,i){
+    var c=_splitCSVLine(l),o={};cols.forEach(function(k,j){o[k]=(c[j]||"").trim()});o._row=i+(hasHead?2:1);return o});
+}
+async function _bkaBulkImport(){
+  var ta=document.getElementById("bka-bulk-text"),btn=document.getElementById("bka-bulk-btn");
+  var rows=_bkaBulkParse(ta?ta.value:"");
+  if(!rows.length)return _bkaBulkSay("CSV paste చేయండి లేదా file select చేయండి",!1);
+  var have={};_bkaAll.forEach(function(b){have[String(b.link||"").split("?")[0].toLowerCase()]=1});
+  var good=[],bad=[],dup=0;
+  rows.forEach(function(r){
+    if(!r.title||!/^https?:\/\//i.test(r.link||"")){bad.push(r._row);return}
+    var key=r.link.split("?")[0].toLowerCase();if(have[key]){dup++;return}have[key]=1;
+    good.push({title:r.title.slice(0,200),author:r.author||null,exam:r.exam||null,category:r.category||null,
+      link:_bkaApplyTag(r.link),cover_url:_bkaCover(r.cover_url,r.link)||null,price:r.price||null,mrp:r.mrp||null,
+      note:(r.note||"").slice(0,400)||null,featured:/^(yes|y|true|1)$/i.test(r.featured||""),is_active:!0,sort_order:0});
+  });
+  if(!good.length)return _bkaBulkSay("Import చేయడానికి valid books లేవు"+(dup?" ("+dup+" duplicates)":"")+(bad.length?" · తప్పు rows: "+bad.slice(0,10).join(", "):""),!1);
+  if(btn)btn.disabled=!0;_bkaBulkSay("⏳ "+good.length+" books upload అవుతున్నాయి...",!0);
+  var ok=0;
+  try{
+    for(var i=0;i<good.length;i+=50){
+      var ch=good.slice(i,i+50);
+      var r=await fetch(SB_URL+"/rest/v1/ae_books",{method:"POST",headers:{...SB_HEADERS,Prefer:"return=minimal"},body:JSON.stringify(ch)});
+      if(!r.ok){var e={};try{e=await r.json()}catch(x){}_bkaBulkSay("❌ "+ok+" saved, తర్వాత error: "+(e.message||r.status),!1);break}
+      ok+=ch.length;
+    }
+  }catch(e){_bkaBulkSay("❌ Network error ("+ok+" saved)",!1)}
+  if(btn)btn.disabled=!1;
+  if(ok===good.length){
+    _bkaBulkSay("✅ "+ok+" books add అయ్యాయి!"+(dup?" · "+dup+" duplicates skip":"")+(bad.length?" · తప్పు rows skip: "+bad.slice(0,10).join(", "):""),!0);
+    if(ta)ta.value="";var fi=document.getElementById("bka-bulk-file");if(fi)fi.value="";
+  }
+  try{localStorage.removeItem("ae_books_cache")}catch(x){}
+  loadAdminBooks();
 }
 </script>
 </body>

@@ -6578,12 +6578,20 @@ function _bkaApplyTag(u){
   try{var x=new URL(u);if(/(^|\.)amazon\.in$/i.test(x.hostname)&&!x.searchParams.get("tag")){x.searchParams.set("tag",tg);return x.toString()}}catch(e){}
   return u;
 }
+function _bkaAsin(u){var m=String(u||"").match(/\/(?:dp|gp\/product)\/([A-Z0-9]{10})(?:[\/?#]|$)/i);return m?m[1].toUpperCase():""}
+function _bkaCover(cover,link){
+  cover=(cover||"").trim();
+  if(cover&&(/\.(jpe?g|png|webp|gif)(\?|$)/i.test(cover)||/media-amazon\.com|ssl-images-amazon\.com/i.test(cover)))return cover;
+  var a=_bkaAsin(cover)||_bkaAsin(link);
+  return a?"https://m.media-amazon.com/images/P/"+a+".01.LZZZZZZZ.jpg":"";
+}
 function _bkaVal(i){var e=document.getElementById(i);return e?e.value.trim():""}
 async function adminSaveBook(){
   var title=_bkaVal("bka-title"),link=_bkaVal("bka-link"),cover=_bkaVal("bka-cover");
   if(!title)return _bkaMsg("Title enter చేయండి!",!1);
   if(!/^https?:\/\//i.test(link))return _bkaMsg("Affiliate link https:// తో start అవ్వాలి",!1);
   if(cover&&!/^https?:\/\//i.test(cover))return _bkaMsg("Cover URL https:// తో start అవ్వాలి",!1);
+  cover=_bkaCover(cover,link);
   var body={title:title,author:_bkaVal("bka-author")||null,exam:_bkaVal("bka-exam")||null,category:_bkaVal("bka-cat")||null,sort_order:parseInt(_bkaVal("bka-sort"))||0,link:_bkaApplyTag(link),cover_url:cover||null,price:_bkaVal("bka-price")||null,mrp:_bkaVal("bka-mrp")||null,note:_bkaVal("bka-note")||null,featured:!!document.getElementById("bka-feat").checked,is_active:!!document.getElementById("bka-act").checked};
   var id=_bkaVal("bka-id"),btn=document.getElementById("bka-save-btn");if(btn)btn.disabled=!0;
   try{

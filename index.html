@@ -6525,7 +6525,7 @@ function renderBooks(){
     (b.note?'<div class="bk-note">'+escHtml(b.note)+'</div>':"")+
     ((b.price||b.mrp)?'<div class="bk-price">'+(b.price?'<b>'+escHtml(b.price)+'</b>':"")+(b.mrp?'<s>'+escHtml(b.mrp)+'</s>':"")+'</div>':"")+
     '<div class="bk-actions"><a class="bk-buy" href="'+escHtml(link)+'" target="_blank" rel="sponsored nofollow noopener noreferrer" onclick="_bkClick('+Number(b.id)+')">'+_bkBuyLabel(link)+'</a>'+
-    '<button class="bk-share" aria-label="Share on WhatsApp" onclick="_bkShare('+Number(b.id)+')">📤</button></div></div></div>'}).join(""):
+    '<button class="bk-share" aria-label="Share on WhatsApp" onclick="_bkShare('+Number(b.id)+')">📤</button><button class="bk-share" aria-label="ఈ book గురించి అడగండి" title="ఈ book గురించి అడగండి" onclick="_bkAsk('+Number(b.id)+')">💬</button></div></div></div>'}).join(""):
     '<div class="bk-empty">'+(_bkAll.length?"ఏ book దొరకలేదు. Filters మార్చి చూడండి.":"ఇంకా books add చేయలేదు — త్వరలో వస్తాయి! 📚")+'</div>';
   _bkTrackViews(shown);
   var mw=document.getElementById("bk-more-wrap");
@@ -6571,6 +6571,18 @@ function _renderExamBooks(){
   }
   document.readyState==="loading"?document.addEventListener("DOMContentLoaded",init):setTimeout(init,300);
 })();
+async function _bkaNotify(title,msg){
+  try{
+    if(typeof sendNotification==="function")await sendNotification("new-book",title,msg,"all",{url:"https://aniledutech.in/#books",email:!1,localPush:!1});
+    else if(typeof createBellNotifications==="function")await createBellNotifications(title,msg,"all","https://aniledutech.in/#books");
+  }catch(e){}
+}
+(function(){try{if(location.hash==="#books")setTimeout(function(){if(typeof goBooks==="function")goBooks()},1500)}catch(e){}})();
+function _bkAsk(id){
+  var b=_bkAll.find(function(x){return x.id===id});if(!b)return;
+  var m="Hi Anil EduTech 👋\nఈ book గురించి సందేహం ఉంది: "+(b.title||"")+(b.exam?" ("+b.exam+")":"");
+  window.open("https://wa.me/916309535287?text="+encodeURIComponent(m),"_blank","noopener");
+}
 function _bkTrackViews(list){
   try{
     if(typeof _adminAuthenticated!=="undefined"&&_adminAuthenticated)return;
@@ -6686,7 +6698,8 @@ async function adminSaveBook(){
   try{
     var r=await fetch(SB_URL+"/rest/v1/ae_books"+(id?"?id=eq."+encodeURIComponent(id):""),{method:id?"PATCH":"POST",headers:{...SB_HEADERS,Prefer:"return=minimal"},body:JSON.stringify(body)});
     if(!r.ok){var e={};try{e=await r.json()}catch(x){}return _bkaMsg("Error: "+(e.message||r.status),!1)}
-    toast(id?"✓ Book updated!":"✓ Book added!","success");_bkaReset();loadAdminBooks();
+    toast(id?"✓ Book updated!":"✓ Book added!","success");
+    if(!id&&body.is_active&&(document.getElementById("bka-notify")||{}).checked){_bkaNotify("📚 కొత్త Book వచ్చింది!",body.title.slice(0,90)+(body.exam?" ("+body.exam+")":"")+" — ఇప్పుడే చూడండి 👀");toast("🔔 Users కి notification పంపాం","success")}_bkaReset();loadAdminBooks();
     try{localStorage.removeItem("ae_books_cache")}catch(x){}
   }catch(e){_bkaMsg("Network error",!1)}finally{if(btn)btn.disabled=!1}
 }
@@ -6722,6 +6735,101 @@ async function _bkaDelete(id){
   try{var r=await fetch(SB_URL+"/rest/v1/ae_books?id=eq."+id,{method:"DELETE",headers:SB_HEADERS});
     if(!r.ok)return toast("Delete failed ("+r.status+")","error");toast("🗑 Book deleted","warn");loadAdminBooks();try{localStorage.removeItem("ae_books_cache")}catch(x){}}catch(e){toast("Network error","error")}
 }
+
+/* ===== AI Chat Assistant (books + site help) ===== */
+var _acOpen=!1,_acBusy=!1,_acHist=[],_acBuilt=!1,_acHideIds=["page-exam","page-exam-ssc","page-admin","page-result"];
+function _acEsc(s){return escHtml(String(s==null?"":s))}
+function _acBookCard(id){
+  var b=(typeof _bkAll!=="undefined"?_bkAll:[]).find(function(x){return Number(x.id)===id});if(!b)return"";
+  var link=sanitizeUrl(b.link);if(!link)return"";
+  var cover=sanitizeUrl(b.cover_url);
+  try{_bkTrackViews([b])}catch(e){}
+  return '<div class="ac-book"><div class="ac-bimg">'+(cover?'<img src="'+_acEsc(cover)+'" alt="" referrerpolicy="no-referrer" onload="if(this.naturalWidth<30)this.parentNode.textContent=\'📘\'" onerror="this.parentNode.textContent=\'📘\'">':"📘")+'</div>'+
+    '<div class="ac-binfo"><div class="ac-bt">'+_acEsc(b.title||"")+'</div>'+((b.price||b.mrp)?'<div class="ac-bp">'+_acEsc(b.price||"")+(b.mrp?' <s>'+_acEsc(b.mrp)+'</s>':"")+'</div>':"")+
+    '<a class="ac-buy" href="'+_acEsc(link)+'" target="_blank" rel="sponsored nofollow noopener noreferrer" onclick="_bkClick('+Number(b.id)+')">'+_bkBuyLabel(link)+'</a></div></div>';
+}
+function _acFmt(txt){
+  var h=_acEsc(txt).replace(/\*\*(.+?)\*\*/g,"<b>$1</b>").replace(/\n/g,"<br>");
+  return h.replace(/\{\{book:(\d+)\}\}/g,function(m,id){return _acBookCard(Number(id))});
+}
+function _acAdd(role,html){
+  var box=document.getElementById("ac-msgs");if(!box)return null;
+  var d=document.createElement("div");d.className="ac-m "+(role==="user"?"ac-u":"ac-b");d.innerHTML=html;
+  box.appendChild(d);box.scrollTop=box.scrollHeight;return d;
+}
+function _acBuild(){
+  if(_acBuilt||document.getElementById("ac-root"))return;_acBuilt=!0;
+  var st=document.createElement("style");
+  st.textContent="#ac-fab{position:fixed;left:14px;bottom:16px;z-index:900;width:54px;height:54px;border-radius:50%;border:none;background:linear-gradient(135deg,#6366f1,#8b5cf6);color:#fff;font-size:24px;cursor:pointer;box-shadow:0 6px 20px rgba(99,102,241,.45);display:flex;align-items:center;justify-content:center}"+
+  "#ac-panel{position:fixed;left:14px;bottom:80px;z-index:901;width:min(360px,calc(100vw - 28px));height:min(520px,calc(100vh - 110px));background:var(--surface,#fff);color:var(--text,#111);border:1.5px solid var(--border,#e5e7eb);border-radius:18px;box-shadow:0 20px 60px rgba(0,0,0,.3);display:none;flex-direction:column;overflow:hidden;font-family:inherit}"+
+  "#ac-panel.on{display:flex}#ac-head{padding:12px 14px;background:linear-gradient(135deg,#6366f1,#8b5cf6);color:#fff;display:flex;align-items:center;justify-content:space-between;font-weight:800;font-size:14px}"+
+  "#ac-head button{background:none;border:none;color:#fff;font-size:18px;cursor:pointer}#ac-msgs{flex:1;overflow-y:auto;padding:12px;display:flex;flex-direction:column;gap:8px;font-size:13px;line-height:1.55}"+
+  ".ac-m{max-width:88%;padding:9px 12px;border-radius:14px;word-wrap:break-word}.ac-u{align-self:flex-end;background:#6366f1;color:#fff;border-bottom-right-radius:4px}.ac-b{align-self:flex-start;background:var(--bg,#f3f4f6);color:var(--text,#111);border-bottom-left-radius:4px}"+
+  ".ac-chips{display:flex;flex-wrap:wrap;gap:6px;margin-top:6px}.ac-chip{border:1.5px solid var(--border,#ddd);background:var(--surface,#fff);color:var(--text,#111);border-radius:999px;padding:6px 10px;font-size:12px;font-weight:700;cursor:pointer;font-family:inherit}"+
+  ".ac-book{display:flex;gap:8px;margin:8px 0 2px;padding:8px;border:1.5px solid var(--border,#ddd);border-radius:10px;background:var(--surface,#fff)}.ac-bimg{width:44px;height:60px;flex-shrink:0;display:flex;align-items:center;justify-content:center;font-size:22px;background:#fff;border-radius:6px;overflow:hidden}.ac-bimg img{width:100%;height:100%;object-fit:contain}"+
+  ".ac-binfo{min-width:0;display:flex;flex-direction:column;gap:3px}.ac-bt{font-size:12px;font-weight:800;line-height:1.3;max-height:32px;overflow:hidden}.ac-bp{font-size:12px;font-weight:900}.ac-bp s{font-weight:500;opacity:.6}.ac-buy{align-self:flex-start;background:linear-gradient(135deg,#D97706,#F59E0B);color:#fff!important;text-decoration:none;font-size:11.5px;font-weight:800;padding:5px 9px;border-radius:8px}"+
+  "#ac-foot{padding:8px 10px;border-top:1px solid var(--border,#e5e7eb);display:flex;gap:6px}#ac-in{flex:1;padding:9px 11px;border:1.5px solid var(--border,#ddd);border-radius:10px;font-size:13px;background:var(--bg,#fff);color:var(--text,#111);font-family:inherit;min-width:0}#ac-send{border:none;background:#6366f1;color:#fff;border-radius:10px;padding:0 14px;font-weight:800;cursor:pointer;font-family:inherit}#ac-send:disabled{opacity:.5}"+
+  "#ac-note{font-size:10.5px;color:var(--text3,#888);padding:0 12px 8px;text-align:center}";
+  document.head.appendChild(st);
+  var root=document.createElement("div");root.id="ac-root";
+  root.innerHTML='<button id="ac-fab" aria-label="Chat assistant" title="Books / Site help" onclick="_acToggle()">💬</button>'+
+   '<div id="ac-panel"><div id="ac-head"><span>📚 Anil EduTech Assistant</span><button onclick="_acToggle()" aria-label="Close">✕</button></div>'+
+   '<div id="ac-msgs"></div><div id="ac-note">Books suggestions &amp; site help మాత్రమే · chats quality కోసం save అవుతాయి</div>'+
+   '<div id="ac-foot"><input id="ac-in" type="text" maxlength="500" placeholder="మీ ప్రశ్న రాయండి..." onkeydown="if(event.key===\'Enter\')_acSend()"><button id="ac-send" onclick="_acSend()">Send</button></div></div>';
+  document.body.appendChild(root);
+}
+function _acToggle(){
+  _acOpen=!_acOpen;var p=document.getElementById("ac-panel");if(!p)return;p.classList.toggle("on",_acOpen);
+  if(_acOpen){
+    try{loadBooks()}catch(e){}
+    var box=document.getElementById("ac-msgs");
+    if(box&&!box.children.length){
+      _acAdd("bot","నమస్తే! 👋 నేను Anil EduTech assistant ని. Books suggest చేయగలను, site గురించి చెప్పగలను.");
+      var c=_acAdd("bot",'<div class="ac-chips">'+["SSC CGL కి best books?","TSPSC Group 2 books?","Premium ఎలా తీసుకోవాలి?","Exam ఎలా start చేయాలి?"].map(function(q){return '<button class="ac-chip" onclick="_acSend(this.textContent)">'+_acEsc(q)+'</button>'}).join("")+'</div>');
+    }
+    var i=document.getElementById("ac-in");if(i)i.focus();
+  }
+}
+async function _acSend(pre){
+  if(_acBusy)return;
+  var inp=document.getElementById("ac-in"),q=String(pre||(inp&&inp.value)||"").trim();if(!q)return;
+  if(inp)inp.value="";
+  _acAdd("user",_acEsc(q));
+  var user=null;try{user=getCurrentUser()}catch(e){}
+  var token=null;try{token=await _aeUserToken()}catch(e){}
+  if(!user||!token)return _acAdd("bot","Chat వాడాలంటే ముందు <b>Login</b> అవ్వండి 🙏 (పైన Login button నొక్కండి).");
+  _acBusy=!0;var sb=document.getElementById("ac-send");if(sb)sb.disabled=!0;
+  var wait=_acAdd("bot","⏳ ఆలోచిస్తున్నా...");
+  try{await loadBooks()}catch(e){}
+  try{
+    var r=await fetch(SB_URL+"/functions/v1/ae-chat",{method:"POST",headers:{"Content-Type":"application/json",apikey:SB_KEY,Authorization:"Bearer "+token},body:JSON.stringify({message:q,history:_acHist.slice(-6)})});
+    var d={};try{d=await r.json()}catch(e){}
+    if(r.ok&&d.reply){
+      wait.innerHTML=_acFmt(d.reply);_acHist.push({role:"user",content:q},{role:"assistant",content:d.reply.replace(/\{\{book:\d+\}\}/g,"")});
+      if(typeof d.left==="number"&&d.left<=3)_acAdd("bot","ℹ️ ఈ రోజు ఇంకా "+d.left+" ప్రశ్నలు అడగవచ్చు.");
+    }else if(r.status===401)wait.innerHTML="Session expire అయింది. మళ్ళీ <b>Login</b> అవ్వండి 🙏";
+    else if(r.status===429&&d.error==="limit")wait.innerHTML="ఈ రోజు మీ questions limit అయిపోయింది 🙏 రేపు మళ్ళీ అడగండి.";
+    else if(r.status===429)wait.innerHTML="ఇప్పుడు చాలా మంది వాడుతున్నారు. కొంచెం సేపటి తర్వాత try చేయండి 🙏";
+    else wait.innerHTML="ఇప్పుడు సమాధానం ఇవ్వలేకపోతున్నా 😔 కొంచెం సేపటి తర్వాత try చేయండి.";
+  }catch(e){wait.innerHTML="Network error. Internet check చేసి మళ్ళీ try చేయండి."}
+  _acBusy=!1;if(sb)sb.disabled=!1;
+  var box=document.getElementById("ac-msgs");if(box)box.scrollTop=box.scrollHeight;
+}
+function _acSync(){
+  var root=document.getElementById("ac-root");if(!root)return;
+  var pg=document.querySelector(".page.active"),hide=!!(pg&&_acHideIds.indexOf(pg.id)>=0);
+  root.style.display=hide?"none":"";
+  if(hide&&_acOpen)_acToggle();
+}
+(function(){
+  function init(){
+    try{
+      if(typeof ADMIN_SITE_URL!=="undefined"&&!ADMIN_SITE_URL)return; /* admin build: no chat */
+      _acBuild();_acSync();setInterval(_acSync,1200);
+    }catch(e){}
+  }
+  document.readyState==="loading"?document.addEventListener("DOMContentLoaded",init):setTimeout(init,500);
+})();
 
 /* ===== Bulk upload (CSV) ===== */
 function _bkaBulkTemplate(){
@@ -6776,6 +6884,7 @@ async function _bkaBulkImport(){
   }catch(e){_bkaBulkSay("❌ Network error ("+ok+" saved)",!1)}
   if(btn)btn.disabled=!1;
   if(ok===good.length){
+    if(ok>0&&(document.getElementById("bka-bulk-notify")||{}).checked){var _ex=[];good.forEach(function(g){if(g.exam&&_ex.indexOf(g.exam)<0)_ex.push(g.exam)});_bkaNotify("📚 "+ok+" కొత్త Books వచ్చాయి!",(_ex.length?_ex.slice(0,4).join(", ")+" కోసం ":"")+"recommended books ఇప్పుడే చూడండి 👀")}
     _bkaBulkSay("✅ "+ok+" books add అయ్యాయి!"+(dup?" · "+dup+" duplicates skip":"")+(bad.length?" · తప్పు rows skip: "+bad.slice(0,10).join(", "):""),!0);
     if(ta)ta.value="";var fi=document.getElementById("bka-bulk-file");if(fi)fi.value="";
   }

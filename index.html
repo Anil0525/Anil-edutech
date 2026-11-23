@@ -6750,7 +6750,7 @@ function _acBookCard(id){
 }
 function _acFmt(txt){
   var h=_acEsc(txt).replace(/\*\*(.+?)\*\*/g,"<b>$1</b>").replace(/\n/g,"<br>");
-  h=h.replace(/\{\{go:(books|exams|support)\}\}/g,function(m,k){return '<button class="ac-chip" onclick="_acGo(\''+k+'\')">'+({books:"📚 Books page చూడండి",exams:"📝 Exams చూడండి",support:"🛟 Support page"})[k]+'</button>'}).replace(/\{\{wa\}\}/g,'<a class="ac-chip" style="text-decoration:none;display:inline-block" href="https://wa.me/916309535287" target="_blank" rel="noopener">💬 WhatsApp</a>');
+  h=h.replace(/\{\{go:(books|exams|support)\}\}/g,function(m,k){return '<button class="ac-chip" onclick="_acGo(\''+k+'\')">'+({books:"📚 Books page చూడండి",exams:"📝 Exams చూడండి",support:"🛟 Support page"})[k]+'</button>'}).replace(/\{\{chips\}\}/g,function(){return '<div class="ac-chips">'+_AC_CHIPS.map(function(c){return '<button class="ac-chip" onclick="_acSend(this.textContent)">'+_acEsc(c)+'</button>'}).join("")+'</div>'}).replace(/\{\{wa\}\}/g,'<a class="ac-chip" style="text-decoration:none;display:inline-block" href="https://wa.me/916309535287" target="_blank" rel="noopener">💬 WhatsApp</a>');
   return h.replace(/\{\{book:(\d+)\}\}/g,function(m,id){return _acBookCard(Number(id))});
 }
 function _acAdd(role,html){
@@ -6761,8 +6761,8 @@ function _acAdd(role,html){
 function _acBuild(){
   if(_acBuilt||document.getElementById("ac-root"))return;_acBuilt=!0;
   var st=document.createElement("style");
-  st.textContent="#ac-fab{position:fixed;left:14px;bottom:16px;z-index:900;width:54px;height:54px;border-radius:50%;border:none;background:linear-gradient(135deg,#6366f1,#8b5cf6);color:#fff;font-size:24px;cursor:pointer;box-shadow:0 6px 20px rgba(99,102,241,.45);display:flex;align-items:center;justify-content:center}"+
-  "#ac-panel{position:fixed;left:14px;bottom:80px;z-index:901;width:min(360px,calc(100vw - 28px));height:min(520px,calc(100vh - 110px));background:var(--surface,#fff);color:var(--text,#111);border:1.5px solid var(--border,#e5e7eb);border-radius:18px;box-shadow:0 20px 60px rgba(0,0,0,.3);display:none;flex-direction:column;overflow:hidden;font-family:inherit}"+
+  st.textContent="#ac-fab{width:46px;height:46px;border-radius:50%;border:none;background:linear-gradient(135deg,#6366f1,#8b5cf6);color:#fff;font-size:21px;cursor:pointer;box-shadow:0 4px 16px rgba(99,102,241,.45);display:flex;align-items:center;justify-content:center;flex-shrink:0}#ac-fab.ac-fixed{position:fixed;right:18px;bottom:96px;z-index:99999}"+
+  "#ac-panel{position:fixed;right:18px;bottom:196px;z-index:99998;width:min(360px,calc(100vw - 36px));height:min(520px,calc(100vh - 230px));background:var(--surface,#fff);color:var(--text,#111);border:1.5px solid var(--border,#e5e7eb);border-radius:18px;box-shadow:0 20px 60px rgba(0,0,0,.3);display:none;flex-direction:column;overflow:hidden;font-family:inherit}"+
   "#ac-panel.on{display:flex}#ac-head{padding:12px 14px;background:linear-gradient(135deg,#6366f1,#8b5cf6);color:#fff;display:flex;align-items:center;justify-content:space-between;font-weight:800;font-size:14px}"+
   "#ac-head button{background:none;border:none;color:#fff;font-size:18px;cursor:pointer}#ac-msgs{flex:1;overflow-y:auto;padding:12px;display:flex;flex-direction:column;gap:8px;font-size:13px;line-height:1.55}"+
   ".ac-m{max-width:88%;padding:9px 12px;border-radius:14px;word-wrap:break-word}.ac-u{align-self:flex-end;background:#6366f1;color:#fff;border-bottom-right-radius:4px}.ac-b{align-self:flex-start;background:var(--bg,#f3f4f6);color:var(--text,#111);border-bottom-left-radius:4px}"+
@@ -6773,11 +6773,13 @@ function _acBuild(){
   "#ac-note{font-size:10.5px;color:var(--text3,#888);padding:0 12px 8px;text-align:center}";
   document.head.appendChild(st);
   var root=document.createElement("div");root.id="ac-root";
-  root.innerHTML='<button id="ac-fab" aria-label="Chat assistant" title="Books / Site help" onclick="_acToggle()">💬</button>'+
-   '<div id="ac-panel"><div id="ac-head"><span>📚 Anil EduTech Assistant</span><button onclick="_acToggle()" aria-label="Close">✕</button></div>'+
+  root.innerHTML='<div id="ac-panel"><div id="ac-head"><span>📚 Anil EduTech Assistant</span><button onclick="_acToggle()" aria-label="Close">✕</button></div>'+
    '<div id="ac-msgs"></div><div id="ac-note">Books suggestions &amp; site help మాత్రమే</div>'+
    '<div id="ac-foot"><input id="ac-in" type="text" maxlength="500" placeholder="మీ ప్రశ్న రాయండి..." onkeydown="if(event.key===\'Enter\')_acSend()"><button id="ac-send" onclick="_acSend()">Send</button></div></div>';
   document.body.appendChild(root);
+  var fab=document.createElement("button");fab.id="ac-fab";fab.setAttribute("aria-label","Chat assistant");fab.title="Books / Site help";fab.textContent="💬";fab.onclick=_acToggle;
+  var wrap=document.getElementById("aeFloatWrap"),wa=document.getElementById("ae-wa-btn");
+  if(wrap&&wa)wrap.insertBefore(fab,wa);else{fab.classList.add("ac-fixed");document.body.appendChild(fab)}
 }
 function _acToggle(){
   _acOpen=!_acOpen;var p=document.getElementById("ac-panel");if(!p)return;p.classList.toggle("on",_acOpen);
@@ -6786,7 +6788,7 @@ function _acToggle(){
     var box=document.getElementById("ac-msgs");
     if(box&&!box.children.length){
       _acAdd("bot","నమస్తే! 👋 నేను Anil EduTech assistant ని. Books suggest చేయగలను, site గురించి చెప్పగలను.");
-      var c=_acAdd("bot",'<div class="ac-chips">'+["SSC CGL కి best books?","TSPSC Group 2 books?","Premium ఎలా తీసుకోవాలి?","Exam ఎలా start చేయాలి?"].map(function(q){return '<button class="ac-chip" onclick="_acSend(this.textContent)">'+_acEsc(q)+'</button>'}).join("")+'</div>');
+      _acAdd("bot",_acFmt("{{chips}}"));
     }
     var i=document.getElementById("ac-in");if(i)i.focus();
   }
@@ -6828,28 +6830,53 @@ function _acBooks(q){
   if(!list.length)return"ఆ topic కి ఇంకా book add చేయలేదు 😔 మిగతా books Books page లో చూడండి.\n{{go:books}}";
   return"మీ కోసం ఈ books suggest చేస్తున్నా 👇\n"+list.map(function(b){return"{{book:"+b.id+"}}"}).join("\n")+disc+"\n{{go:books}}";
 }
+var _AC_CHIPS=["SSC కి best books","Premium plans","Exam ఎలా start చేయాలి?","Referral coins ఎలా?","Password మర్చిపోయా","Study guides"];
+var _AC_FAQ=[
+ [/forgot|password|passwd|పాస్‌వర్డ్|పాస్వర్డ్|మర్చి/u,"🔑 Password మర్చిపోతే: Login page లో **Forgot Password?** నొక్కి, మీ Gmail ID ఇవ్వండి. Admin password reset చేస్తారు. వెంటనే కావాలంటే WhatsApp లో contact చేయండి (6309535287).\n{{wa}}"],
+ [/refer|referral|invite|reward|coins?|కాయిన్|రిఫర్|redeem/u,"🎁 **Referral:** పైన menu లో **Refer** లో మీ code ఉంటుంది. Friend మీ code తో join అయితే మీకు **10 Coins** వస్తాయి.\n**Coins తో redeem:**\n• 50 coins = 7 days Premium\n• 150 = 30 days, 400 = 90 days, 1000 = Lifetime\n• 100 coins = ₹50 UPI, 180 = ₹100 UPI (Admin approve చేస్తారు)"],
+ [/login|log in|sign ?in|sign ?up|register|account|లాగిన్|రిజిస్టర్|ఖాతా|join|subscribe|సబ్‌స్క్రైబ్|సబ్స్క్రైబ్/u,"Free గా exams చేయడానికి:\n1. YouTube లో Anil EduTech channel **Subscribe** చేయండి\n2. **Register** చేయండి\n3. **Login** అవ్వండి\n4. **Exams** start చేయండి 🎉\n100% Free!"],
+ [/premium|plan|trial|upgrade|ప్రీమియం|ప్లాన్|ధర|price|cost|ఎంత|\bfee\b|charges?/u,"🚀 **Plans:**\n• **Trial** — ₹1 (1 రోజు full access, 24 గంటల తర్వాత auto-lock)\n• **Monthly** — ₹99/month\n• **Yearly** — ₹499/year\n\n⭐ Premium లో: exclusive exams, detailed analytics, priority support మరియు more features ఉంటాయి.\nపైన menu లో **Premium** button నొక్కండి."],
+ [/free|ఉచిత|ఫ్రీ|paid|డబ్బు|money/u,"✅ Site లో చాలా mock tests **100% Free**. Free గా చేయడానికి:\n1. YouTube channel **Subscribe** చేయండి\n2. **Register** → **Login**\n3. **Exams** start చేయండి\nకొన్ని exclusive features కి **Premium** (₹99/month) ఉంటుంది."],
+ [/(start|attempt|begin|మొదలు|ఎలా రాయ|ఎలా చేయ|how to).*(exam|test|mock|పరీక్ష)|(exam|test|mock|పరీక్ష).*(start|attempt|ఎలా|how|ఎక్కడ)/u,"Exam start చేయడానికి:\n1. పైన menu లో **Exams** నొక్కండి\n2. Category (TSPSC / SSC / Banking...) select చేయండి\n3. Exam ఎంచుకుని **Start** నొక్కండి\nFree mock tests చాలా ఉన్నాయి 💪\n{{go:exams}}"],
+ [/mock|quiz|rapid|grand|topic.?wise|types?\b|రకాలు|kinds?/u,"📝 Site లో ఈ రకాల tests ఉన్నాయి:\n• Full Mock, Half Mock, Topic-wise Mock, Grand Test, Revision Mock\n• Daily Quiz, Weekly Quiz, Rapid Fire, GK Quiz, Math Quiz, Telugu Quiz\n• Previous Papers (year-wise)\n{{go:exams}}"],
+ [/news|current|కరెంట్|న్యూస్|వార్త|newspaper|daily paper/u,"📰 Site లో **Daily News Paper / Current Affairs** ఉన్నాయి. పైన menu చూడండి. GK కోసం **GK Guide** page కూడా ఉంది (footer లో)."],
+ [/pyq|previous|past paper|old paper|గత|పాత|papers?\b|పేపర్/u,"📁 **Previous Papers** year-wise (2017 నుండి 2024 వరకు) **Exams** page లో ఉన్నాయి.\n{{go:exams}}"],
+ [/calculator|cut.?off|కట్.?ఆఫ్|score calc|expected score/u,"🧮 పైన menu లో **Score** tab లో score calculator ఉంది — అక్కడ మీ marks estimate చేసుకోవచ్చు."],
+ [/leaderboard|rank|topper|ర్యాంక్|లీడర్/u,"🏆 **Leaderboard** Home page లో ఉంది. Exams రాసి score పెంచుకుంటే మీ rank మెరుగవుతుంది!"],
+ [/progress|result|marks|history|ఫలిత|మార్కు|ప్రోగ్రెస్|percentage/u,"📊 Login అయిన తర్వాత menu లో **Progress** నొక్కండి. మీరు రాసిన అన్ని exams scores, percentage, history అక్కడ కనిపిస్తాయి."],
+ [/certificate|సర్టిఫికెట్/u,"🎓 Exams complete చేసినప్పుడు **certificate** download చేసుకోవచ్చు. Option కనిపించకపోతే Support ని అడగండి."],
+ [/reminder|notify|bell|notif|alerts?\b|నోటిఫై|రిమైండర్|నోటిఫికేషన్/u,"🔔 Notifications కోసం: Home page లో **Notify Me** button నొక్కండి, browser permission **Allow** చేయండి. Daily reminders వస్తాయి. కొత్త exams/books వచ్చినప్పుడు పైన 🔔 bell లో కూడా కనిపిస్తాయి."],
+ [/revise|revision|mistake|wrong|spaced|తప్పు|రివైజ్/u,"🧠 **Revise** tab: Exams లో తప్పు చేసిన ప్రశ్నలు auto-save అవుతాయి. Spaced repetition తో మళ్ళీ మళ్ళీ revise చేసి గుర్తుపెట్టుకోవచ్చు."],
+ [/video|youtube|channel|వీడియో|యూట్యూబ్/u,"🎥 పైన menu లో **Videos** tab లో classes ఉన్నాయి. **YouTube** button నొక్కి మా channel చూడండి, Subscribe చేయండి!"],
+ [/syllabus|pattern|eligib|age limit|salary|vacanc|exam date|notification date|సిలబస్|ప్యాటర్న్|అర్హత|జీతం|తేదీ|study|guide|material|prepare|preparation|tips|strategy|ప్రిపేర్|స్టడీ/u,"📚 **Study Hub** లో Study Method, Exam Patterns, FAQ ఉన్నాయి. Footer లో **TSPSC Guide, SSC CGL, Banking, Speed Maths, GK Guide** pages కూడా ఉన్నాయి.\n⚠️ Exact syllabus / dates / vacancies కోసం official notification తప్పక చూడండి."],
+ [/govt|government|jobs?\b|recruit|ఉద్యోగ|జాబ్/u,"💼 **Govt Jobs** updates site లో ఉంటాయి. 🔔 Notify Me ఆన్ చేస్తే కొత్త updates వస్తాయి. Official details కోసం ఎప్పుడూ అసలు notification చూడండి."],
+ [/ebook|e-book|pdf|notes|images?\b|నోట్స్/u,"📄 **Exams** page లో eBooks (Telugu History, Indian History, Geography, Polity) మరియు PDFs/Images ఉన్నాయి. Books page కింద **Free Book Store PDFs** కూడా ఉంది.\n{{go:books}}"],
+ [/language|telugu or english|english or telugu|భాష|తెలుగు లో|toggle/u,"🌐 Site Telugu మరియు English రెండింటిలో ఉంది. పైన **EN / తె** toggle తో మార్చుకోవచ్చు. Books లో కూడా Telugu Medium / English Medium ఉన్నాయి."],
+ [/dark|night|theme|light mode|డార్క్/u,"🌙 పైన moon icon నొక్కితే dark / light mode మారుతుంది."],
+ [/refund|రిఫండ్|cancel|money back/u,"💰 **Refund Policy** page footer లో ఉంది. Payment సమస్య ఉంటే WhatsApp లో contact చేయండి (6309535287).\n{{wa}}"],
+ [/privacy|disclaimer|about us|about|contact us|terms|ప్రైవసీ/u,"ℹ️ Footer లో **About Us, Contact, Privacy Policy, Disclaimer, Refund Policy** pages ఉన్నాయి."],
+ [/support|help|problem|issue|error|bug|contact|whatsapp|complaint|not working|సమస్య|సహాయం|పని చేయ/u,"సహాయం కోసం WhatsApp లో మమ్మల్ని contact చేయండి 🙏 (6309535287) లేదా **Support** page లో message పంపండి.\n{{wa}}\n{{go:support}}"]
+];
+var _AC_PAYFAIL=/(payment|paid|deduct|debited|పేమెంట్|డబ్బు|amount).*(fail|not|deduct|stuck|pending|problem|issue|కాలేదు|రాలేదు|పోయ|activate)|(premium|plan).*(activate|not (working|active)|కాలేదు|రాలేదు)/u;
+var _AC_BOOKMETA=[
+ [/affiliate|commission|కమిషన్/u,"🔗 Books లోని links **Amazon affiliate links**. మీరు కొంటే Amazon మాకు చిన్న commission ఇస్తుంది — మీకు **extra cost ఉండదు**. Price Amazon లోనే ఉంటుంది."],
+ [/deliver|return|cod|cash on|order|shipping|డెలివరీ|ఆర్డర్|రిటర్న్|ఎలా కొన|how to buy|ఎక్కడ కొన/u,"🛒 Books **Amazon లో** కొనాలి — card లోని **Amazon లో కొనండి** button నొక్కండి. Order, delivery, return, payment అన్నీ Amazon policy ప్రకారం. Order సమస్యలకు Amazon customer care ని సంప్రదించండి."],
+ [/(price|rate|ధర).*(change|differ|వేరు|మారు|ఎక్కువ|తక్కువ)|(change|differ).*(price|rate)/u,"💰 Books price Amazon లో మారుతూ ఉంటుంది. Site లో update కావడానికి కొంచెం time పట్టవచ్చు. కొనే ముందు **Amazon page లో latest price** చూడండి."]
+];
+function _acFirst(list,s){for(var i=0;i<list.length;i++){if(list[i][0].test(s))return list[i][1]}return null}
 function _acAnswer(q){
-  var s=_acLc(q).trim();
-  if(/^(hi+|hello|hey|hai|namaste|నమస్తే|హాయ్|హలో)\s*[!.]*$/u.test(s))return"నమస్తే! 👋 Books suggest చేయగలను, site గురించి చెప్పగలను. ఏం కావాలి?";
-  var bookWord=/book|బుక్|పుస్తక/u.test(s);
-  if(!bookWord){
-    if(/premium|plan|subscri|trial|payment|₹|rs\.?\s?\d|price|cost|ధర|ఎంత|ప్లాన్|పేమెంట్/u.test(s))
-      return"🚀 Plans:\n• **Trial** — ₹1 (1 రోజు full access, 24 గంటల తర్వాత auto-lock)\n• **Monthly** — ₹99/month\n• **Yearly** — ₹499/year\nపైన menu లో **Premium** button నొక్కండి.";
-    if(/start|attempt|mock|exam|test|పరీక్ష|ఎలా రాయ/u.test(s)&&/start|attempt|ఎలా|how|where|ఎక్కడ|మొదలు/u.test(s))
-      return"Exam start చేయడానికి:\n1. పైన menu లో **Exams** నొక్కండి\n2. Category (TSPSC / SSC / Banking...) select చేయండి\n3. Exam ఎంచుకుని **Start** నొక్కండి\nFree mock tests చాలా ఉన్నాయి 💪\n{{go:exams}}";
-    if(/support|help|problem|issue|error|refund|contact|whatsapp|complaint|సమస్య|సహాయం|రిఫండ్|పని చేయ/u.test(s))
-      return"సహాయం కోసం WhatsApp లో మమ్మల్ని contact చేయండి 🙏 (6309535287) లేదా Support page చూడండి.\n{{wa}}\n{{go:support}}";
-    if(/refer|referral|invite|reward|coins?|రిఫర్/u.test(s))
-      return"పైన menu లో **Refer** నొక్కండి — అక్కడ మీ referral details ఉంటాయి. Friends కి share చేయండి 🎁";
-    if(/video|youtube|news|current|paper|previous|వీడియో|పేపర్|వార్త/u.test(s))
-      return"Site లో **Videos**, **Daily News Paper** మరియు **Previous Papers** ఉన్నాయి. పైన menu చూడండి 📰";
-    if(/login|sign ?in|register|account|లాగిన్|ఖాతా/u.test(s))
-      return"పైన కుడి వైపు **Login** button నొక్కి మీ Gmail తో login అవ్వండి.";
-  }
-  var toks=_acTokens(s);
+  var s=_acLc(q).trim(),r;
+  if(/^(hi+|hello|hey|hai|namaste|నమస్తే|హాయ్|హలో)\s*[!.]*$/u.test(s))return"నమస్తే! 👋 Books suggest చేయగలను, site గురించి చెప్పగలను. ఏం కావాలి?\n{{chips}}";
+  if(/^(thanks?|thank you|thx|ty|ధన్యవాదాలు|థాంక్స్|థాంక్యూ|సూపర్|బాగుంది|ok|okay|సరే)[\s!.]*$/u.test(s))return"మీకు స్వాగతం! 😊 ఇంకేమైనా సందేహం ఉంటే అడగండి.";
+  if(/who are you|what can you do|నువ్వు ఎవరు|మీరు ఎవరు|ఏం చేయగలవు|ఏమి చేయగలరు|^help$|^menu$|^హెల్ప్$/u.test(s))return"నేను **Anil EduTech assistant** ని 🤖\n• 📚 Exam కి తగ్గ **books suggest** చేస్తాను\n• ℹ️ Premium, exams, login, referral, progress వంటి **site help** ఇస్తాను\nఏదైనా అడగండి 👇\n{{chips}}";
+  if(_AC_PAYFAIL.test(s))return"😟 Payment / Premium activate సమస్యకు వెంటనే WhatsApp లో contact చేయండి (6309535287). Payment screenshot, మీ Gmail పంపండి — త్వరగా సరిచేస్తారు.\n{{wa}}";
+  var bookWord=/(^|[^a-z])books?(?![a-z])|బుక్|పుస్తక/u.test(s);
+  r=_acFirst(_AC_BOOKMETA,s);if(r&&(bookWord||/affiliate|commission|కమిషన్|deliver|cod|shipping|డెలివరీ/u.test(s)))return r;
   if(bookWord)return _acBooks(s);
+  r=_acFirst(_AC_FAQ,s);if(r)return r;
+  var toks=_acTokens(s);
   if(toks.some(function(t){return _AC_EXAMS.indexOf(t)>=0})||_acMatch(toks).length)return _acBooks(s);
-  return"క్షమించండి, అర్థం కాలేదు 🙏 నేను **books suggest** చేయగలను, **site help** ఇవ్వగలను. ఉదా: \"SSC కి best books\", \"Premium ధర\", \"Exam ఎలా start చేయాలి\".";
+  return"క్షమించండి, పూర్తిగా అర్థం కాలేదు 🙏 ఇవి try చేయండి 👇\n{{chips}}\nలేదా WhatsApp లో అడగండి:\n{{wa}}";
 }
 function _acGo(x){
   if(_acOpen)_acToggle();
@@ -6873,7 +6900,7 @@ async function _acSend(pre){
 function _acSync(){
   var root=document.getElementById("ac-root");if(!root)return;
   var pg=document.querySelector(".page.active"),hide=!!(pg&&_acHideIds.indexOf(pg.id)>=0);
-  root.style.display=hide?"none":"";
+  root.style.display=hide?"none":"";var fb=document.getElementById("ac-fab");if(fb)fb.style.display=hide?"none":"";
   if(hide&&_acOpen)_acToggle();
 }
 (function(){

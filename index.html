@@ -287,7 +287,7 @@ window.emailjs={send:function(_svc,_tpl,p){
 .bk-share{width:40px;border:1.5px solid var(--border2);background:var(--card);border-radius:10px;font-size:16px;cursor:pointer}
 .bk-empty{grid-column:1/-1;text-align:center;padding:40px 12px;color:var(--text3);font-weight:700;font-size:14px}
 .bk-more{display:block;margin:18px auto 0;background:var(--card);border:1.5px solid var(--border2);color:var(--text);border-radius:12px;padding:10px 18px;font-family:inherit;font-weight:800;font-size:13px;cursor:pointer}
-@media(max-width:640px){.bk-grid{grid-template-columns:repeat(2,1fr);gap:10px}.bk-cover{height:150px}.bk-title{font-size:13px}.bk-hero h2{font-size:20px}}
+@media(max-width:640px){.bk-grid{grid-template-columns:repeat(2,1fr);gap:10px}.bk-cover{height:150px}.bk-title{font-size:13px}.bk-hero h2{font-size:20px}.bk-body{padding:9px 10px 10px}.bk-actions{flex-wrap:wrap}.bk-buy{flex:1 1 100%;padding:10px 6px}.bk-share{flex:1;width:auto;height:34px}}
 </style>
 
   <!-- ADSENSE_SCRIPT_2 — duplicate removed, enable only after approval -->
@@ -6750,6 +6750,7 @@ function _acBookCard(id){
 }
 function _acFmt(txt){
   var h=_acEsc(txt).replace(/\*\*(.+?)\*\*/g,"<b>$1</b>").replace(/\n/g,"<br>");
+  h=h.replace(/\{\{go:(books|exams|support)\}\}/g,function(m,k){return '<button class="ac-chip" onclick="_acGo(\''+k+'\')">'+({books:"📚 Books page చూడండి",exams:"📝 Exams చూడండి",support:"🛟 Support page"})[k]+'</button>'}).replace(/\{\{wa\}\}/g,'<a class="ac-chip" style="text-decoration:none;display:inline-block" href="https://wa.me/916309535287" target="_blank" rel="noopener">💬 WhatsApp</a>');
   return h.replace(/\{\{book:(\d+)\}\}/g,function(m,id){return _acBookCard(Number(id))});
 }
 function _acAdd(role,html){
@@ -6774,7 +6775,7 @@ function _acBuild(){
   var root=document.createElement("div");root.id="ac-root";
   root.innerHTML='<button id="ac-fab" aria-label="Chat assistant" title="Books / Site help" onclick="_acToggle()">💬</button>'+
    '<div id="ac-panel"><div id="ac-head"><span>📚 Anil EduTech Assistant</span><button onclick="_acToggle()" aria-label="Close">✕</button></div>'+
-   '<div id="ac-msgs"></div><div id="ac-note">Books suggestions &amp; site help మాత్రమే · chats quality కోసం save అవుతాయి</div>'+
+   '<div id="ac-msgs"></div><div id="ac-note">Books suggestions &amp; site help మాత్రమే</div>'+
    '<div id="ac-foot"><input id="ac-in" type="text" maxlength="500" placeholder="మీ ప్రశ్న రాయండి..." onkeydown="if(event.key===\'Enter\')_acSend()"><button id="ac-send" onclick="_acSend()">Send</button></div></div>';
   document.body.appendChild(root);
 }
@@ -6790,29 +6791,83 @@ function _acToggle(){
     var i=document.getElementById("ac-in");if(i)i.focus();
   }
 }
+var _AC_MAP={"తెలుగు":"telugu","గణిత":"maths","మ్యాథ్స్":"maths","రీజనింగ్":"reasoning","ఇంగ్లీష్":"english","ఆంగ్ల":"english","చరిత్ర":"history","భూగోళ":"geography","జాగ్రఫీ":"geography","ఆర్థిక":"economy","ఎకానమీ":"economy","పాలిటీ":"polity","రాజ్యాంగ":"polity","బ్యాంక్":"bank","బ్యాంకు":"bank","రైల్వే":"rrb","railway":"rrb","ntpc":"rrb","సైన్స్":"science","కరెంట్":"current","వ్యాకరణ":"grammar","పదజాలం":"vocabulary"};
+var _AC_STOP=["book","books","best","good","for","the","and","me","please","suggest","recommend","ki","కి","కోసం","బుక్","బుక్స్","బుక్కులు","పుస్తకం","పుస్తకాలు","ఏవి","ఏది","ఏ","చెప్పండి","చెప్పు","ఉన్నాయా","ఉందా","need","want","which","what","any","నాకు","కావాలి","తెలపండి","గురించి","about","tell","good","top","list","give","medium","study","material"];
+function _acLc(s){return String(s||"").toLowerCase()}
+function _acTokens(q){
+  var raw=_acLc(q).split(/[^\p{L}\p{M}\p{N}]+/u).filter(Boolean),out=[];
+  raw.forEach(function(t){
+    if(_AC_STOP.indexOf(t)>=0)return;
+    var mapped=!1;Object.keys(_AC_MAP).forEach(function(k){if(t.indexOf(k)===0){out.push(_AC_MAP[k]);mapped=!0}});
+    if(mapped)return;
+    if(t.length>=3||t==="gk"||t==="po")out.push(t);
+  });
+  return out.filter(function(v,i,a){return a.indexOf(v)===i});
+}
+function _acScore(b,toks){
+  var t=_acLc(b.title),e=_acLc(b.exam),c=_acLc(b.category),a=_acLc(b.author),n=_acLc(b.note),s=0;
+  toks.forEach(function(k){if(e.indexOf(k)>=0)s+=3;if(t.indexOf(k)>=0)s+=2;if(c.indexOf(k)>=0)s+=2;if(a.indexOf(k)>=0)s+=1;if(n.indexOf(k)>=0)s+=1});
+  return s;
+}
+var _AC_EXAMS=["ssc","cgl","chsl","mts","tspsc","appsc","rrb","bank","banking","ibps","sbi","upsc","group","polity","history","geography","economy","maths","reasoning","english","telugu","science","vocabulary","grammar","gk","current"];
+function _acAllBooks(){return(typeof _bkAll!=="undefined"?_bkAll:[]).filter(function(b){return b&&b.id&&sanitizeUrl(b.link)})}
+function _acMatch(toks){
+  return _acAllBooks().map(function(b){return{b:b,s:_acScore(b,toks)}}).filter(function(x){return x.s>0})
+    .sort(function(x,y){return y.s-x.s||(y.b.featured?1:0)-(x.b.featured?1:0)}).slice(0,3).map(function(x){return x.b});
+}
+function _acBooks(q){
+  var all=_acAllBooks();
+  var disc="\nℹ️ ఇవి Amazon affiliate links — మీకు extra cost ఉండదు. Price మారవచ్చు, Amazon లో latest చూడండి.";
+  if(!all.length)return"ఇప్పుడు books list load కాలేదు. కొంచెం సేపటి తర్వాత try చేయండి 🙏\n{{go:books}}";
+  var toks=_acTokens(q),list;
+  if(!toks.length){
+    list=all.slice().sort(function(a,b){return(b.featured?1:0)-(a.featured?1:0)}).slice(0,3);
+    return"⭐ Top books ఇవి:\n"+list.map(function(b){return"{{book:"+b.id+"}}"}).join("\n")+disc+"\nఏ exam కోసం కావాలో చెప్పండి (ఉదా: SSC, TSPSC, Banking).";
+  }
+  list=_acMatch(toks);
+  if(!list.length)return"ఆ topic కి ఇంకా book add చేయలేదు 😔 మిగతా books Books page లో చూడండి.\n{{go:books}}";
+  return"మీ కోసం ఈ books suggest చేస్తున్నా 👇\n"+list.map(function(b){return"{{book:"+b.id+"}}"}).join("\n")+disc+"\n{{go:books}}";
+}
+function _acAnswer(q){
+  var s=_acLc(q).trim();
+  if(/^(hi+|hello|hey|hai|namaste|నమస్తే|హాయ్|హలో)\s*[!.]*$/u.test(s))return"నమస్తే! 👋 Books suggest చేయగలను, site గురించి చెప్పగలను. ఏం కావాలి?";
+  var bookWord=/book|బుక్|పుస్తక/u.test(s);
+  if(!bookWord){
+    if(/premium|plan|subscri|trial|payment|₹|rs\.?\s?\d|price|cost|ధర|ఎంత|ప్లాన్|పేమెంట్/u.test(s))
+      return"🚀 Plans:\n• **Trial** — ₹1 (1 రోజు full access, 24 గంటల తర్వాత auto-lock)\n• **Monthly** — ₹99/month\n• **Yearly** — ₹499/year\nపైన menu లో **Premium** button నొక్కండి.";
+    if(/start|attempt|mock|exam|test|పరీక్ష|ఎలా రాయ/u.test(s)&&/start|attempt|ఎలా|how|where|ఎక్కడ|మొదలు/u.test(s))
+      return"Exam start చేయడానికి:\n1. పైన menu లో **Exams** నొక్కండి\n2. Category (TSPSC / SSC / Banking...) select చేయండి\n3. Exam ఎంచుకుని **Start** నొక్కండి\nFree mock tests చాలా ఉన్నాయి 💪\n{{go:exams}}";
+    if(/support|help|problem|issue|error|refund|contact|whatsapp|complaint|సమస్య|సహాయం|రిఫండ్|పని చేయ/u.test(s))
+      return"సహాయం కోసం WhatsApp లో మమ్మల్ని contact చేయండి 🙏 (6309535287) లేదా Support page చూడండి.\n{{wa}}\n{{go:support}}";
+    if(/refer|referral|invite|reward|coins?|రిఫర్/u.test(s))
+      return"పైన menu లో **Refer** నొక్కండి — అక్కడ మీ referral details ఉంటాయి. Friends కి share చేయండి 🎁";
+    if(/video|youtube|news|current|paper|previous|వీడియో|పేపర్|వార్త/u.test(s))
+      return"Site లో **Videos**, **Daily News Paper** మరియు **Previous Papers** ఉన్నాయి. పైన menu చూడండి 📰";
+    if(/login|sign ?in|register|account|లాగిన్|ఖాతా/u.test(s))
+      return"పైన కుడి వైపు **Login** button నొక్కి మీ Gmail తో login అవ్వండి.";
+  }
+  var toks=_acTokens(s);
+  if(bookWord)return _acBooks(s);
+  if(toks.some(function(t){return _AC_EXAMS.indexOf(t)>=0})||_acMatch(toks).length)return _acBooks(s);
+  return"క్షమించండి, అర్థం కాలేదు 🙏 నేను **books suggest** చేయగలను, **site help** ఇవ్వగలను. ఉదా: \"SSC కి best books\", \"Premium ధర\", \"Exam ఎలా start చేయాలి\".";
+}
+function _acGo(x){
+  if(_acOpen)_acToggle();
+  try{
+    if(x==="books")goBooks();else if(x==="exams")goExams();else if(x==="support")goSupport();
+  }catch(e){}
+}
 async function _acSend(pre){
   if(_acBusy)return;
   var inp=document.getElementById("ac-in"),q=String(pre||(inp&&inp.value)||"").trim();if(!q)return;
   if(inp)inp.value="";
   _acAdd("user",_acEsc(q));
-  var user=null;try{user=getCurrentUser()}catch(e){}
-  var token=null;try{token=await _aeUserToken()}catch(e){}
-  if(!user||!token)return _acAdd("bot","Chat వాడాలంటే ముందు <b>Login</b> అవ్వండి 🙏 (పైన Login button నొక్కండి).");
-  _acBusy=!0;var sb=document.getElementById("ac-send");if(sb)sb.disabled=!0;
-  var wait=_acAdd("bot","⏳ ఆలోచిస్తున్నా...");
+  _acBusy=!0;var wait=_acAdd("bot","⏳ ...");
   try{await loadBooks()}catch(e){}
-  try{
-    var r=await fetch(SB_URL+"/functions/v1/ae-chat",{method:"POST",headers:{"Content-Type":"application/json",apikey:SB_KEY,Authorization:"Bearer "+token},body:JSON.stringify({message:q,history:_acHist.slice(-6)})});
-    var d={};try{d=await r.json()}catch(e){}
-    if(r.ok&&d.reply){
-      wait.innerHTML=_acFmt(d.reply);_acHist.push({role:"user",content:q},{role:"assistant",content:d.reply.replace(/\{\{book:\d+\}\}/g,"")});
-      if(typeof d.left==="number"&&d.left<=3)_acAdd("bot","ℹ️ ఈ రోజు ఇంకా "+d.left+" ప్రశ్నలు అడగవచ్చు.");
-    }else if(r.status===401)wait.innerHTML="Session expire అయింది. మళ్ళీ <b>Login</b> అవ్వండి 🙏";
-    else if(r.status===429&&d.error==="limit")wait.innerHTML="ఈ రోజు మీ questions limit అయిపోయింది 🙏 రేపు మళ్ళీ అడగండి.";
-    else if(r.status===429)wait.innerHTML="ఇప్పుడు చాలా మంది వాడుతున్నారు. కొంచెం సేపటి తర్వాత try చేయండి 🙏";
-    else wait.innerHTML="ఇప్పుడు సమాధానం ఇవ్వలేకపోతున్నా 😔 కొంచెం సేపటి తర్వాత try చేయండి.";
-  }catch(e){wait.innerHTML="Network error. Internet check చేసి మళ్ళీ try చేయండి."}
-  _acBusy=!1;if(sb)sb.disabled=!1;
+  await new Promise(function(r){setTimeout(r,350)});
+  var ans="";try{ans=_acAnswer(q)}catch(e){ans="ఏదో తప్పు జరిగింది 😔 మళ్ళీ try చేయండి."}
+  if(wait)wait.innerHTML=_acFmt(ans);
+  _acBusy=!1;
   var box=document.getElementById("ac-msgs");if(box)box.scrollTop=box.scrollHeight;
 }
 function _acSync(){

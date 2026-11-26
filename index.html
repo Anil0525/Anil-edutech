@@ -497,6 +497,21 @@ window.emailjs={send:function(_svc,_tpl,p){
 @media(max-width:560px){.ae2-tiles{grid-template-columns:1fr 1fr}.ae2-tile{padding:9px 10px}}
 .ae2-box{background:var(--surface);color:var(--text);border-radius:16px;padding:18px;width:100%;max-width:420px}
 </style>
+<style id="ae2-sb-css">
+#tb-sidebar{background:#14171D;color:#CBD5E1;border-radius:0 0 14px 0;scrollbar-width:thin;scrollbar-color:#2a2f3a #14171D}
+#tb-sidebar .tb-sb-label{color:#6B7280;letter-spacing:1.6px;padding:16px 18px 6px;font-size:10px}
+#tb-sidebar .tb-sb-item{color:#CBD5E1;font-weight:600;font-size:13.5px;padding:9px 18px;gap:12px;border-radius:0}
+#tb-sidebar .tb-sb-item:hover{background:#1E232C;color:#fff}
+#tb-sidebar .tb-sb-item.active{background:#252B37;color:#fff}
+#tb-sidebar .tb-sb-item.active::before{background:#22D3EE}
+#tb-sidebar .tb-sb-icon{background:transparent!important;width:22px;height:22px;font-size:16px;border-radius:0}
+#tb-sidebar button[onclick="closeCatDrawer()"]{color:#9CA3AF!important}
+#tb-sidebar .tb-sb-item#sb-premium{color:#fff}
+#tb-sidebar .tb-sb-item{white-space:nowrap}
+@media(min-width:769px){#tb-sidebar{width:236px;min-width:236px}.tb-layout::before{width:236px}}
+.ae2-badge{margin-left:auto;font-size:9px;font-weight:800;border-radius:5px;padding:2px 6px;color:#fff;letter-spacing:.3px;line-height:1.3}
+.ae2-badge.new{background:#F97316}.ae2-badge.free{background:#22C55E}.ae2-badge.on{background:#334155;color:#CBD5E1;font-weight:700}
+</style>
 </head>
 
 <body>
@@ -1443,7 +1458,13 @@ window.emailjs={send:function(_svc,_tpl,p){
           <div class="cat-name">Syllabus</div>
           <div class="cat-count">SSC, RRB, Banking</div>
         </div>
-      </div>
+              <div class="cat-card" data-cat="newfeatures" onclick="ae2.openFeatures()"
+          style="--cat-grad:linear-gradient(135deg,#EC4899,#8B5CF6);--cat-soft:rgba(139,92,246,.06);--cat-shadow:rgba(139,92,246,.35);">
+          <div class="cat-icon-wrap"><span class="cat-icon">✨</span></div>
+          <div class="cat-name">New Features</div>
+          <div class="cat-count">Practice, Live Classes &amp; more</div>
+        </div>
+</div>
 
       <!-- Topics panel — shown when a category is selected -->
       <div id="topics-panel" style="display:none">
@@ -2573,12 +2594,15 @@ window.emailjs={send:function(_svc,_tpl,p){
           onclick="event.preventDefault();goExams('Previous Papers');_setSbActive('sb-pp');closeCatDrawer()">
           <span class="tb-sb-icon" style="background:linear-gradient(135deg,#8b5cf6,#7c3aed)">📄</span>Previous Papers
         </a>
-        <div class="tb-sb-label" style="padding:14px 16px 6px">LEARN</div>
+        <div class="tb-sb-label" style="padding:16px 18px 6px">LEARN</div>
+        <a href="/" class="tb-sb-item" id="sb-home" onclick="event.preventDefault();goHome();closeCatDrawer()">
+          <span class="tb-sb-icon" style="background:linear-gradient(135deg,#6366f1,#4f46e5)">🏠</span>Home
+        </a>
         <a href="/" class="tb-sb-item" id="sb-sc" onclick="event.preventDefault();ae2.goCourses();closeCatDrawer()">
           <span class="tb-sb-icon" style="background:linear-gradient(135deg,#ef4444,#b91c1c)">🎬</span>SuperCoaching
         </a>
         <a href="/" class="tb-sb-item" id="sb-livecls" onclick="event.preventDefault();ae2.goLive();closeCatDrawer()">
-          <span class="tb-sb-icon" style="background:linear-gradient(135deg,#22c55e,#15803d)">🔴</span>Live Classes <span style="background:#22C55E;color:#fff;border-radius:6px;padding:1px 6px;font-size:9px;font-weight:800;margin-left:4px">FREE</span>
+          <span class="tb-sb-icon" style="background:linear-gradient(135deg,#22c55e,#15803d)">🔴</span>Live Classes <span class="ae2-badge free">FREE</span>
         </a>
         <a href="/" class="tb-sb-item" id="sb-books" onclick="event.preventDefault();goBooks();closeCatDrawer()">
           <span class="tb-sb-icon" style="background:linear-gradient(135deg,#f59e0b,#b45309)">📚</span>Books
@@ -2586,48 +2610,47 @@ window.emailjs={send:function(_svc,_tpl,p){
         <a href="/" class="tb-sb-item" id="sb-videos" onclick="event.preventDefault();goVideos();closeCatDrawer()">
           <span class="tb-sb-icon" style="background:linear-gradient(135deg,#8b5cf6,#6d28d9)">🎥</span>Video Lessons
         </a>
-        <div class="tb-sb-label" style="padding:14px 16px 6px">LEARN &amp; PRACTICE</div>
+        <div class="tb-sb-label" style="padding:16px 18px 6px">TESTS</div>
+        <a href="/" class="tb-sb-item" id="sb-notes" onclick="event.preventDefault();ae2.goNotes();closeCatDrawer()">
+          <span class="tb-sb-icon" style="background:linear-gradient(135deg,#ec4899,#be185d)">📒</span>Study Notes <span class="ae2-badge new">NEW</span>
+        </a>
         <a href="/" class="tb-sb-item" id="sb-practice" onclick="event.preventDefault();ae2.goPractice('practice');closeCatDrawer()">
           <span class="tb-sb-icon" style="background:linear-gradient(135deg,#06b6d4,#0891b2)">🎯</span>Practice
         </a>
         <a href="/" class="tb-sb-item" id="sb-quiz" onclick="event.preventDefault();ae2.goPractice('quiz');closeCatDrawer()">
-          <span class="tb-sb-icon" style="background:linear-gradient(135deg,#eab308,#ca8a04)">⚡</span>Free Quizzes
+          <span class="tb-sb-icon" style="background:linear-gradient(135deg,#eab308,#ca8a04)">⚡</span>Free Quizzes <span class="ae2-badge new">NEW</span>
         </a>
-        <a href="/" class="tb-sb-item" id="sb-notes" onclick="event.preventDefault();ae2.goNotes();closeCatDrawer()">
-          <span class="tb-sb-icon" style="background:linear-gradient(135deg,#ec4899,#be185d)">📒</span>Study Notes
+        <a href="/" class="tb-sb-item" id="sb-prog" onclick="event.preventDefault();goProgress();closeCatDrawer()">
+          <span class="tb-sb-icon" style="background:linear-gradient(135deg,#0ea5e9,#0284c7)">📊</span>Attempted Tests
         </a>
-        <div class="tb-sb-label" style="padding:14px 16px 6px">MY SPACE</div>
+        <a href="/" class="tb-sb-item" id="sb-rank" onclick="event.preventDefault();goRank();closeCatDrawer()">
+          <span class="tb-sb-icon" style="background:linear-gradient(135deg,#f97316,#ea580c)">🏆</span>Rank Predictor <span class="ae2-badge new">NEW</span>
+        </a>
+        <a href="/" class="tb-sb-item" id="sb-pass" onclick="event.preventDefault();openPricing();closeCatDrawer()">
+          <span class="tb-sb-icon" style="background:linear-gradient(135deg,#eab308,#a16207)">👑</span>Pass <span class="ae2-badge on" id="ae2-pass-st" style="display:none"></span>
+        </a>
+        <div class="tb-sb-label" style="padding:16px 18px 6px">MISCELLANEOUS</div>
         <a href="/" class="tb-sb-item" id="sb-saved" onclick="event.preventDefault();ae2.goSaved();closeCatDrawer()">
           <span class="tb-sb-icon" style="background:linear-gradient(135deg,#f59e0b,#d97706)">⭐</span>Saved Questions
-        </a>
-        <a href="/" class="tb-sb-item" id="sb-doubts" onclick="event.preventDefault();ae2.goDoubts();closeCatDrawer()">
-          <span class="tb-sb-icon" style="background:linear-gradient(135deg,#6366f1,#4f46e5)">💬</span>Doubts
         </a>
         <a href="/" class="tb-sb-item" id="sb-reported" onclick="event.preventDefault();ae2.goReported();closeCatDrawer()">
           <span class="tb-sb-icon" style="background:linear-gradient(135deg,#ef4444,#b91c1c)">🚩</span>Reported Questions
         </a>
-        <div class="tb-sb-label" style="padding:14px 16px 6px">MORE</div>
-        <a href="/" class="tb-sb-item" id="sb-sel" onclick="event.preventDefault();ae2.goSelections();closeCatDrawer()">
-          <span class="tb-sb-icon" style="background:linear-gradient(135deg,#10b981,#047857)">🏆</span>Our Selections
+        <a href="/" class="tb-sb-item" id="sb-doubts" onclick="event.preventDefault();ae2.goDoubts();closeCatDrawer()">
+          <span class="tb-sb-icon" style="background:linear-gradient(135deg,#6366f1,#4f46e5)">💬</span>Doubts
         </a>
         <a href="/" class="tb-sb-item" id="sb-act" onclick="event.preventDefault();ae2.goActivate();closeCatDrawer()">
           <span class="tb-sb-icon" style="background:linear-gradient(135deg,#8b5cf6,#6d28d9)">🔑</span>Activate Products
         </a>
+        <div class="tb-sb-label" style="padding:16px 18px 6px">MORE</div>
         <a href="/" class="tb-sb-item" id="sb-teach" onclick="event.preventDefault();ae2.goTeacher();closeCatDrawer()">
           <span class="tb-sb-icon" style="background:linear-gradient(135deg,#0ea5e9,#0369a1)">🎓</span>Teacher Training Program
         </a>
-        <div class="tb-sb-label" style="padding:14px 16px 6px">SHORTCUTS</div>
-        <a href="/" class="tb-sb-item" id="sb-home" onclick="event.preventDefault();goHome();closeCatDrawer()">
-          <span class="tb-sb-icon" style="background:linear-gradient(135deg,#6366f1,#4f46e5)">🏠</span>Home
-        </a>
-        <a href="/" class="tb-sb-item" id="sb-prog" onclick="event.preventDefault();goProgress();closeCatDrawer()">
-          <span class="tb-sb-icon" style="background:linear-gradient(135deg,#0ea5e9,#0284c7)">📊</span>Attempted Tests / Progress
-        </a>
-        <a href="/" class="tb-sb-item" id="sb-rank" onclick="event.preventDefault();goRank();closeCatDrawer()">
-          <span class="tb-sb-icon" style="background:linear-gradient(135deg,#f97316,#ea580c)">🎯</span>Rank Predictor
-        </a>
         <a href="/" class="tb-sb-item" id="sb-ref" onclick="event.preventDefault();goReferral();closeCatDrawer()">
           <span class="tb-sb-icon" style="background:linear-gradient(135deg,#ec4899,#be185d)">🎁</span>Refer &amp; Earn
+        </a>
+        <a href="/" class="tb-sb-item" id="sb-sel" onclick="event.preventDefault();ae2.goSelections();closeCatDrawer()">
+          <span class="tb-sb-icon" style="background:linear-gradient(135deg,#10b981,#047857)">🏅</span>Our Selections
         </a>
       </div>
 
@@ -7219,12 +7242,44 @@ function user(){try{return getCurrentUser()}catch(e){return null}}
 function isAdmin(){try{return typeof _adminAuthenticated!=='undefined'&&!!_adminAuthenticated}catch(e){return false}}
 function ukey(){var u=user();return u?String(u.gmail||u.email||u.name||'u'):'guest'}
 function needLogin(cb){if(user())return false;toast('🔐 Login / Register చేయండి (Free!)','warn');try{openSubModal(cb)}catch(e){}return true}
+function normA(a){if(a==null||a==='')return '';if(typeof a==='number')return String.fromCharCode(65+a);a=String(a).trim();if(a!==''&&!isNaN(a))return String.fromCharCode(65+parseInt(a));return a.toUpperCase()}
 function shuffle(a){a=a.slice();for(var i=a.length-1;i>0;i--){var j=Math.floor(Math.random()*(i+1)),t=a[i];a[i]=a[j];a[j]=t}return a}
 function examById(id){return (DB.exams||[]).find(function(e){return e.id===id})}
 function examName(id){var e=examById(id);return e?e.name:''}
 function qk(q){return q.examId+'_'+q.id}
 function secLabel(k){try{return SECTION_META[k].label}catch(e){return k}}
 function ago(ts){var d=Math.floor((Date.now()-ts)/864e5);return d<=0?'Today':d===1?'Yesterday':d+' days ago'}
+
+
+/* ---------- cross-device sync (table: ae_user_lists) ---------- */
+var SYNC={kinds:{saved:'ae2_saved_',doubts:'ae2_doubts_',reports:'ae2_reports_',practice:'ae2_practice_'},timers:{}};
+function gm(){var u=user();return u&&u.gmail?String(u.gmail):null}
+function lsKey(kind){return SYNC.kinds[kind]+ukey()}
+function dirtyKey(kind){return 'ae2_dirty_'+kind+'_'+ukey()}
+function putList(kind,list){jset(lsKey(kind),list);jset(dirtyKey(kind),1);schedulePush(kind)}
+function schedulePush(kind){if(!gm())return;clearTimeout(SYNC.timers[kind]);SYNC.timers[kind]=setTimeout(function(){pushKind(kind)},1200)}
+async function pushKind(kind){
+  var g=gm();if(!g)return;
+  try{var hdr=await _aeWriteHdr(),r=await fetch(SB_URL+'/rest/v1/ae_user_lists?on_conflict=gmail,kind',{method:'POST',headers:Object.assign({},hdr,{Prefer:'resolution=merge-duplicates,return=minimal'}),body:JSON.stringify([{gmail:g,kind:kind,data:jget(lsKey(kind),[]),updated_at:new Date().toISOString()}])});
+    if(r.ok)LS.removeItem(dirtyKey(kind))}catch(e){}
+}
+function idOf(kind,x){return (kind==='saved'||kind==='reports')?String(x.k):kind==='doubts'?x.key+'|'+x.ts:String(x.ts)}
+function mergeList(kind,a,b){var m={},out=[];a.concat(b).forEach(function(x){var i=idOf(kind,x);if(!m[i]){m[i]=1;out.push(x)}});out.sort(function(p,q){return (q.ts||0)-(p.ts||0)});return out.slice(0,500)}
+async function pullAll(){
+  var g=gm();if(!g)return;
+  try{var hdr=await _aeWriteHdr(),r=await fetch(SB_URL+'/rest/v1/ae_user_lists?gmail=eq.'+encodeURIComponent(g)+'&select=kind,data',{headers:hdr});
+    if(!r.ok)return;var rows=await r.json(),seen={};
+    rows.forEach(function(x){if(!SYNC.kinds[x.kind]||!Array.isArray(x.data))return;seen[x.kind]=1;var loc=jget(lsKey(x.kind),[]);
+      if(LS.getItem(dirtyKey(x.kind))){jset(lsKey(x.kind),mergeList(x.kind,loc,x.data));schedulePush(x.kind)}else jset(lsKey(x.kind),x.data)});
+    Object.keys(SYNC.kinds).forEach(function(k){if(!seen[k]&&jget(lsKey(k),[]).length)schedulePush(k)});
+    var ap=document.querySelector('.page.active'),id=ap?ap.id:'';
+    if(id==='page-savedqs')renderSaved();else if(id==='page-mydoubts')renderDoubts();
+  }catch(e){}
+}
+function updPass(){var e=document.getElementById('ae2-pass-st');if(!e)return;var u=user();e.textContent=u&&u.isPremium?'Active':'';e.style.display=u&&u.isPremium?'inline-block':'none'}
+setInterval(updPass,2000);
+var lastG=null;
+setInterval(function(){var g=gm();if(g&&g!==lastG){lastG=g;pullAll()}},3000);
 
 /* ---------- navigation ---------- */
 var TOOLS=[['sc','🎬 SuperCoaching',"ae2.goCourses()"],['live','🔴 Live Classes',"ae2.goLive()"],['practice','🎯 Practice',"ae2.goPractice('practice')"],['quiz','⚡ Free Quizzes',"ae2.goPractice('quiz')"],['notes','📒 Study Notes',"ae2.goNotes()"],['saved','⭐ Saved',"ae2.goSaved()"],['doubts','💬 Doubts',"ae2.goDoubts()"],['reported','🚩 Reported',"ae2.goReported()"],['sel','🏆 Our Selections',"ae2.goSelections()"],['act','🔑 Activate Products',"ae2.goActivate()"],['teach','🎓 Teacher Program',"ae2.goTeacher()"]];
@@ -7270,7 +7325,7 @@ function toggleSave(q){
   if(ix>=0){l.splice(ix,1);toast('Saved list నుండి తీసేశాం','info')}
   else{l.unshift({k:k,examId:q.examId,id:q.id,q:q.q,opts:q.opts,ans:q.ans,explanation:q.explanation||'',image:q.image||null,section:q.section||'ga',examName:examName(q.examId),ts:Date.now()});
     if(l.length>500)l.length=500;toast('⭐ Saved!','success')}
-  jset(savedKey(),l);return ix<0;
+  putList('saved',l);return ix<0;
 }
 
 /* ---------- reports ---------- */
@@ -7295,7 +7350,7 @@ function sendReport(q,reason,text,modal){
   var row={doubt_key:'REPORT|'+qk(q),name:name,comment:'['+reason+'] '+text,created_at:new Date().toISOString()};
   fetch(SB_URL+'/rest/v1/ae_question_doubts',{method:'POST',headers:SB_HEADERS,body:JSON.stringify([row])}).then(function(r){
     if(!r.ok)throw new Error(r.status);
-    var l=getReports();l.unshift({k:qk(q),examId:q.examId,id:q.id,q:q.q,examName:examName(q.examId),reason:reason,text:text,ts:Date.now()});jset(repKey(),l);
+    var l=getReports();l.unshift({k:qk(q),examId:q.examId,id:q.id,q:q.q,examName:examName(q.examId),reason:reason,text:text,ts:Date.now()});putList('reports',l);
     toast('✅ Report పంపాం — thanks!','success');if(modal)modal.remove();
   }).catch(function(){toast('Report పంపడం కుదరలేదు, మళ్ళీ try చేయండి','error');if(btn)btn.disabled=false});
 }
@@ -7321,19 +7376,27 @@ function doubtsKey(){return 'ae2_doubts_'+ukey()}
     var r=await o.apply(this,arguments);
     try{if(txt&&key&&typeof _qDoubtCache!=='undefined'&&_qDoubtCache.length>before){
       var l=jget(doubtsKey(),[]);l.unshift({key:key,q:cq?cq.q:'',examName:(typeof exam!=='undefined'&&exam.current)?exam.current.name:'',text:txt,ts:Date.now()});
-      if(l.length>300)l.length=300;jset(doubtsKey(),l)}}catch(e){}
+      if(l.length>300)l.length=300;putList('doubts',l)}}catch(e){}
     return r;
   };
 })();
 
 /* ---------- Practice / Free Quiz engine ---------- */
-var S=null,MODE='practice';
+var S=null,MODE='practice',LAST=null;
 function body(){return $('ae2-practice-body')}
+function stopTick(){if(S&&S.tick){clearInterval(S.tick);S.tick=null}}
+function mmss(x){x=Math.max(0,Math.round(x));return Math.floor(x/60)+':'+('0'+(x%60)).slice(-2)}
+function getHist(){return jget(lsKey('practice'),[])}
+function histHtml(){
+  var h=getHist().slice(0,5);if(!h.length)return '';
+  return '<div class="ae2-lb" style="margin:16px 0 8px">🕘 Recent practice</div><div class="ae2-panel" style="padding:6px 14px">'+h.map(function(x){var att=x.c+x.w,pct=att?Math.round(x.c/att*100):0;
+    return '<div style="display:flex;justify-content:space-between;gap:8px;padding:9px 0;border-bottom:1px solid var(--border2);font-size:13px"><span><b>'+(x.mode==='quiz'?'⚡ Quiz':'🎯 Practice')+'</b> · '+H(x.cat||'All')+' <span class="ae2-mut">· '+ago(x.ts)+'</span></span><span><b>'+x.c+'/'+x.n+'</b> <span class="ae2-mut">· '+pct+'% · '+mmss(x.secs||0)+'</span></span></div>'}).join('')+'</div>';
+}
 function goPractice(mode){
-  MODE=mode==='quiz'?'quiz':'practice';S=null;
+  stopTick();MODE=mode==='quiz'?'quiz':'practice';S=null;
   openPage('practice','ae2-practice-tools',MODE);
   $('ae2-practice-title').textContent=MODE==='quiz'?'⚡ Free Quizzes':'🎯 Practice';
-  $('ae2-practice-sub').textContent=MODE==='quiz'?'ఒక్క tap తో 10 questions quick quiz — instant answers & explanations':'Category / Exam / Subject select చేసి topic-wise practice చేయండి';
+  $('ae2-practice-sub').textContent=MODE==='quiz'?'ఒక్క tap తో 10 questions quick quiz — timer, analysis & wrong-answer review':'Category / Exam / Subject select చేసి topic-wise practice చేయండి';
   MODE==='quiz'?renderQuizHome():renderPracticeSetup();
 }
 function renderQuizHome(){
@@ -7341,7 +7404,7 @@ function renderQuizHome(){
     return '<div class="ae2-card" onclick="ae2.startQuiz('+jsArg(c)+')"><div style="font-size:26px">⚡</div><div style="font-weight:800;margin:6px 0 2px">'+H(c)+'</div><div class="ae2-mut">10 Qs · '+n+' available</div></div>'}).join('');
   var all=pool().length;
   body().innerHTML='<div class="ae2-grid">'+(all>=5?'<div class="ae2-card" onclick="ae2.startQuiz(\'\')"><div style="font-size:26px">🎲</div><div style="font-weight:800;margin:6px 0 2px">Mixed Quiz</div><div class="ae2-mut">10 Qs · all categories</div></div>':'')+cards+'</div>'+
-   (all<5?'<div class="ae2-empty">📭 Free questions ఇంకా add కాలేదు.</div>':'');
+   (all<5?'<div class="ae2-empty">📭 Free questions ఇంకా add కాలేదు.</div>':'')+histHtml();
 }
 function renderPracticeSetup(){
   var cs=cats();
@@ -7351,7 +7414,7 @@ function renderPracticeSetup(){
    '<label class="ae2-lb">Subject / Section</label><select id="ae2-p-sec" class="ae2-in"><option value="">All subjects</option></select>'+
    '<label class="ae2-lb">Questions</label><select id="ae2-p-n" class="ae2-in"><option>10</option><option selected>20</option><option>30</option><option>50</option></select>'+
    '<div id="ae2-p-avail" class="ae2-mut" style="margin:8px 0"></div>'+
-   '<button class="ae2-btn" style="width:100%" onclick="ae2.startPractice()">▶ Start Practice</button></div>';
+   '<button class="ae2-btn" style="width:100%" onclick="ae2.startPractice()">▶ Start Practice</button></div>'+histHtml();
   fillExams();
 }
 function fillExams(){
@@ -7363,17 +7426,20 @@ function fillExams(){
 }
 function fillSecs(){
   var cat=$('ae2-p-cat').value,exm=$('ae2-p-exam').value,p=pool(cat,'',exm),m={};
-  p.forEach(function(q){var s=q.section||'ga';m[s]=(m[s]||0)+1});
-  $('ae2-p-sec').innerHTML='<option value="">All subjects</option>'+Object.keys(m).map(function(s){return '<option value="'+H(s)+'">'+H(secLabel(s))+' ('+m[s]+')</option>'}).join('');
+  p.forEach(function(q){var k=q.section||'ga';m[k]=(m[k]||0)+1});
+  $('ae2-p-sec').innerHTML='<option value="">All subjects</option>'+Object.keys(m).map(function(k){return '<option value="'+H(k)+'">'+H(secLabel(k))+' ('+m[k]+')</option>'}).join('');
   $('ae2-p-avail').textContent=p.length+' free questions available';
 }
 function startPractice(){start('practice',$('ae2-p-cat').value,$('ae2-p-sec').value,parseInt($('ae2-p-n').value)||20,$('ae2-p-exam').value)}
 function startQuiz(cat){start('quiz',cat,'',10,'')}
-function start(mode,cat,sec,n,exm){
-  if(needLogin(function(){start(mode,cat,sec,n,exm)}))return;
-  var p=shuffle(pool(cat,sec,exm)).slice(0,n);
+function start(mode,cat,sec,n,exm,custom){
+  if(needLogin(function(){start(mode,cat,sec,n,exm,custom)}))return;
+  stopTick();
+  var p=custom||shuffle(pool(cat,sec,exm)).slice(0,n);
   if(!p.length){toast('ఈ selection కి free questions లేవు','warn');return}
-  S={mode:mode,cat:cat,qs:p,i:0,c:0,w:0,ans:{}};renderQ2();
+  S={mode:mode,cat:cat,qs:p,i:0,c:0,w:0,ans:{},t0:Date.now(),tick:null};
+  var id=setInterval(function(){if(!S||S.tick!==id){clearInterval(id);return}var e=$('ae2-timer');if(e)e.textContent='⏱ '+mmss((Date.now()-S.t0)/1000)},1000);
+  S.tick=id;renderQ2();
 }
 function renderQ2(){
   if(!S)return;var q=S.qs[S.i],a=S.ans[S.i],n=S.qs.length,right=normA(q.ans);
@@ -7383,44 +7449,85 @@ function renderQ2(){
     return '<div class="'+cls+'" onclick="ae2.pick(\''+L+'\')"><b>'+L+'</b><span>'+H(o)+'</span></div>'}).join('');
   var fb='';if(a){fb='<div class="ae2-fb '+(a===right?'ok':'bad')+'">'+(a===right?'✅ Correct!':'❌ Wrong — సరైన answer: <b>'+right+'</b>')+(q.explanation?'<div style="margin-top:6px;font-weight:600">'+H(q.explanation)+'</div>':'')+'</div>'}
   var last=S.i===n-1;
-  body().innerHTML='<div class="ae2-panel"><div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:8px"><b>Q '+(S.i+1)+' / '+n+'</b><span class="ae2-mut">✅ '+S.c+' · ❌ '+S.w+'</span></div>'+
+  body().innerHTML='<div class="ae2-panel"><div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:8px;gap:8px"><b>Q '+(S.i+1)+' / '+n+'</b><span id="ae2-timer" class="ae2-mut">⏱ '+mmss((Date.now()-S.t0)/1000)+'</span><span class="ae2-mut">✅ '+S.c+' · ❌ '+S.w+'</span></div>'+
    '<div class="ae2-bar"><i style="width:'+Math.round((S.i+(a?1:0))/n*100)+'%"></i></div>'+
    '<div class="ae2-qt">'+H(q.q)+'</div>'+img+'<div>'+opts+'</div>'+fb+
    '<div style="display:flex;gap:8px;flex-wrap:wrap;margin-top:14px;align-items:center"><button class="ae2-btn ghost" onclick="ae2.saveIdx()">'+(isSaved(q)?'⭐ Saved':'☆ Save')+'</button><button class="ae2-btn ghost" onclick="ae2.reportIdx()">🚩 Report</button><span style="flex:1"></span>'+
-   '<button class="ae2-btn ghost" onclick="ae2.quit()">✕ End</button><button class="ae2-btn" onclick="ae2.next()">'+(last?'Finish':'Next →')+'</button></div></div>';
+   '<button class="ae2-btn ghost" onclick="ae2.quit()">✕ End</button><button class="ae2-btn" onclick="ae2.next()">'+(last?'Finish':(a?'Next →':'Skip →'))+'</button></div></div>';
 }
 function pick(L){if(!S||S.ans[S.i])return;var q=S.qs[S.i];S.ans[S.i]=L;if(L===normA(q.ans))S.c++;else S.w++;renderQ2()}
 function next(){if(!S)return;if(S.i>=S.qs.length-1)return summary();S.i++;renderQ2()}
 function quit(){if(S&&confirm('Quiz ముగించాలా?'))summary()}
 function summary(){
-  var n=S.qs.length,att=S.c+S.w,pct=att?Math.round(S.c/att*100):0,mode=S.mode,cat=S.cat;
-  body().innerHTML='<div class="ae2-panel" style="text-align:center"><div style="font-size:44px">'+(pct>=70?'🏆':pct>=40?'👍':'💪')+'</div>'+
-   '<div style="font-size:22px;font-weight:800;margin:6px 0">'+S.c+' / '+n+' correct</div><div class="ae2-mut">Attempted '+att+' · Wrong '+S.w+' · Accuracy '+pct+'%</div>'+
-   '<div style="display:flex;gap:8px;justify-content:center;margin-top:16px;flex-wrap:wrap"><button class="ae2-btn" onclick="ae2.'+(mode==='quiz'?'startQuiz('+jsArg(cat).replace(/"/g,'&quot;')+')':'goPractice(\'practice\')')+'">'+(mode==='quiz'?'🔁 Another Quiz':'🎯 New Practice')+'</button><button class="ae2-btn ghost" onclick="ae2.goSaved()">⭐ Saved Questions</button></div></div>';
+  stopTick();
+  var n=S.qs.length,att=S.c+S.w,skip=n-att,pct=att?Math.round(S.c/att*100):0,secs=Math.round((Date.now()-S.t0)/1000),mode=S.mode,cat=S.cat,sec={},wrong=[];
+  S.qs.forEach(function(q,i){var k=q.section||'ga',a=S.ans[i];sec[k]=sec[k]||{c:0,a:0,t:0};sec[k].t++;if(a){sec[k].a++;if(a===normA(q.ans))sec[k].c++;else wrong.push(q)}});
+  LAST={wrong:wrong,mode:mode,cat:cat};
+  var h=getHist();h.unshift({ts:Date.now(),mode:mode,cat:cat||'',n:n,c:S.c,w:S.w,secs:secs});if(h.length>30)h.length=30;putList('practice',h);
+  function stat(v,l){return '<div style="background:var(--bg);border-radius:12px;padding:10px 6px;text-align:center"><div style="font-size:18px;font-weight:800">'+v+'</div><div class="ae2-mut">'+l+'</div></div>'}
+  var rows=Object.keys(sec).map(function(k){var x=sec[k],p=x.a?Math.round(x.c/x.a*100):0;
+    return '<div style="margin:8px 0"><div style="display:flex;justify-content:space-between;font-size:13px;font-weight:700"><span>'+H(secLabel(k))+'</span><span>'+x.c+'/'+x.a+' <span class="ae2-mut">('+p+'%)</span></span></div><div class="ae2-bar" style="margin:4px 0 0"><i style="width:'+p+'%;background:'+(p>=70?'#10B981':p>=40?'#F59E0B':'#EF4444')+'"></i></div></div>'}).join('');
+  var rev=wrong.length?'<div class="ae2-lb" style="margin:16px 0 8px">❌ Wrong answers review</div>'+wrong.map(function(q){var r=normA(q.ans),ri=r.charCodeAt(0)-65;
+    return '<details class="ae2-panel" style="margin-bottom:8px;padding:10px 14px"><summary style="cursor:pointer;font-weight:700;font-size:13.5px">'+H(q.q)+'</summary><div style="margin-top:8px;font-size:13px"><div class="ae2-fb ok">✅ '+r+'. '+H((q.opts||[])[ri]||'')+(q.explanation?'<div style="margin-top:6px;font-weight:600">'+H(q.explanation)+'</div>':'')+'</div></div></details>'}).join(''):'';
+  body().innerHTML='<div class="ae2-panel" style="max-width:760px"><div style="text-align:center"><div style="font-size:44px">'+(pct>=70?'🏆':pct>=40?'👍':'💪')+'</div>'+
+   '<div style="font-size:22px;font-weight:800;margin:6px 0">'+S.c+' / '+n+' correct</div></div>'+
+   '<div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(88px,1fr));gap:8px;margin:12px 0">'+stat(pct+'%','Accuracy')+stat(S.w,'Wrong')+stat(skip,'Skipped')+stat(mmss(secs),'Time')+stat(att?Math.round(secs/Math.max(att,1))+'s':'-','Avg / Q')+'</div>'+
+   (Object.keys(sec).length>1||true?'<div class="ae2-lb" style="margin:14px 0 4px">📊 Subject-wise</div>'+rows:'')+
+   '<div style="display:flex;gap:8px;justify-content:center;margin-top:16px;flex-wrap:wrap">'+(wrong.length?'<button class="ae2-btn" onclick="ae2.retryWrong()">🔁 Retry wrong only ('+wrong.length+')</button><button class="ae2-btn ghost" onclick="ae2.saveWrong()">⭐ Save wrong ones</button>':'')+
+   '<button class="ae2-btn'+(wrong.length?' ghost':'')+'" onclick="ae2.'+(mode==='quiz'?'startQuiz('+jsArg(cat).replace(/"/g,'&quot;')+')':'goPractice(\'practice\')')+'">'+(mode==='quiz'?'⚡ Another Quiz':'🎯 New Practice')+'</button></div>'+rev+'</div>';
   S=null;
+}
+function retryWrong(){if(LAST&&LAST.wrong.length)start(LAST.mode,LAST.cat,'',LAST.wrong.length,'',shuffle(LAST.wrong))}
+function saveWrong(){
+  if(!LAST)return;var l=getSaved(),have={};l.forEach(function(x){have[x.k]=1});var add=0;
+  LAST.wrong.forEach(function(q){if(have[qk(q)])return;add++;l.unshift({k:qk(q),examId:q.examId,id:q.id,q:q.q,opts:q.opts,ans:q.ans,explanation:q.explanation||'',image:q.image||null,section:q.section||'ga',examName:examName(q.examId),ts:Date.now()})});
+  if(l.length>500)l.length=500;putList('saved',l);toast('⭐ '+add+' questions saved','success');
 }
 function saveIdx(){if(!S)return;toggleSave(S.qs[S.i]);renderQ2()}
 function reportIdx(){if(S)reportModal(S.qs[S.i])}
 
 /* ---------- Study Notes ---------- */
 var GUIDES=[['TSPSC Groups Guide','/tspsc-groups-guide.html','🏛️'],['APPSC Groups Guide','/appsc-groups-guide.html','🏛️'],['SSC CGL Guide','/ssc-cgl-guide.html','📋'],['RRB NTPC Guide','/rrb-ntpc-guide.html','🚂'],['Banking Exam Guide','/banking-exam-guide.html','🏦'],['GK Guide','/gk-guide.html','🌍'],['Current Affairs Strategy','/current-affairs-strategy.html','📰']];
+function L(a){return '<ul style="margin:6px 0 0 18px;padding:0;line-height:1.85;font-size:13.5px">'+a.map(function(x){return '<li>'+x+'</li>'}).join('')+'</ul>'}
+var NOTES=[
+ {c:'Polity',t:'Fundamental Rights (Articles 12–35)',b:L(['<b>Equality</b> — Arts 14–18 · <b>Freedom</b> — Arts 19–22 · <b>Against Exploitation</b> — Arts 23–24','<b>Freedom of Religion</b> — Arts 25–28 · <b>Cultural &amp; Educational</b> — Arts 29–30 · <b>Constitutional Remedies</b> — Art 32','Art 19(1) gives six freedoms: speech, assembly, association, movement, residence, profession','Right to Property is no longer a Fundamental Right — it is a legal right under Art 300A (44th Amendment, 1978)','Right to Education (6–14 years) — Art 21A (86th Amendment, 2002)','Art 32 was called the “heart and soul” of the Constitution by Dr B.R. Ambedkar','Five writs: Habeas Corpus, Mandamus, Prohibition, Certiorari, Quo Warranto'])},
+ {c:'Polity',t:'Constitution of India — Key Facts',b:L(['Constituent Assembly first met on 9 Dec 1946; President: Dr Rajendra Prasad','Drafting Committee Chairman: Dr B.R. Ambedkar','Adopted: 26 Nov 1949 · Came into force: 26 Jan 1950','Originally 395 Articles, 22 Parts, 8 Schedules; now about 448 Articles, 25 Parts, 12 Schedules','Directive Principles — Part IV (Arts 36–51) · Fundamental Duties — Part IVA, Art 51A (added by 42nd Amendment, 1976)','42nd Amendment added the words “Socialist”, “Secular” and “Integrity” to the Preamble','Longest written constitution of any sovereign country'])},
+ {c:'Telangana',t:'Telangana — Quick Facts (తెలంగాణ)',b:L(['Formed on <b>2 June 2014</b> as the 29th state of India (AP Reorganisation Act, 2014) · Capital: Hyderabad','Districts: 33 · Main rivers: Godavari and Krishna','Hyderabad State was merged into India on <b>17 Sept 1948</b> (Operation Polo)','State bird: Palapitta (Indian Roller) · State animal: Jinka (Spotted deer)','State tree: Jammi chettu · State flower: Tangedu (Avaram)','Official languages: Telugu (and Urdu as second official language)','Major festivals: Bathukamma, Bonalu, Batukamma, Sammakka–Saralamma Jatara (Medaram)'])},
+ {c:'Geography',t:'India Geography — Must-know Facts',b:L(['Longest river in India: <b>Ganga</b> · Longest peninsular river: <b>Godavari</b>','Highest peak in India: <b>Kangchenjunga</b> (8,586 m)','Largest state by area: Rajasthan · by population: Uttar Pradesh · Smallest by area: Goa','Longest coastline: Gujarat','Tropic of Cancer passes through 8 states: Gujarat, Rajasthan, Madhya Pradesh, Chhattisgarh, Jharkhand, West Bengal, Tripura, Mizoram','Standard Meridian of India: 82°30′ E (passes near Mirzapur, Uttar Pradesh)','India has 28 states and 8 Union Territories'])},
+ {c:'History',t:'Modern India — Important Dates',b:L(['<b>10 May 1857</b> — Revolt of 1857 begins at Meerut','<b>1885</b> — Indian National Congress founded (A.O. Hume); first session president: W.C. Bonnerjee','<b>1905</b> — Partition of Bengal (Lord Curzon)','<b>13 Apr 1919</b> — Jallianwala Bagh massacre','<b>1920</b> — Non-Cooperation Movement','<b>12 Mar 1930</b> — Dandi March (Salt Satyagraha)','<b>8 Aug 1942</b> — Quit India Movement resolution','<b>15 Aug 1947</b> — India gains independence'])},
+ {c:'Economy',t:'Indian Economy — Basics',b:L(['RBI established on <b>1 April 1935</b>; nationalised on 1 Jan 1949; headquarters: Mumbai','NITI Aayog replaced the Planning Commission on <b>1 Jan 2015</b>','GST came into effect on <b>1 July 2017</b>','Financial year: 1 April – 31 March · Budget is presented by the Union Finance Minister','Finance Commission is set up under Article 280 (every 5 years)','GDP = value of all final goods and services produced within a country in a year','Inflation is measured in India mainly by CPI (consumer) and WPI (wholesale)'])},
+ {c:'Banking',t:'Banking Awareness — Key Terms',b:L(['<b>Repo rate</b> — rate at which RBI lends short-term money to banks · <b>Reverse repo</b> — rate at which RBI borrows from banks','<b>CRR</b> — % of a bank’s NDTL kept as cash with RBI · <b>SLR</b> — % of NDTL a bank must hold in liquid assets (cash, gold, securities)','SBI formed on 1 July 1955 (took over Imperial Bank of India) · HQ: Mumbai','NABARD established on 12 July 1982 (agriculture &amp; rural development)','SEBI set up in 1988; got statutory powers in 1992 (regulates securities market)','IBPS conducts recruitment exams for public sector banks (PO, Clerk, SO, RRB)'])},
+ {c:'Maths',t:'Percentage &amp; Profit–Loss Shortcuts',b:L(['1/2 = 50% · 1/3 = 33.33% · 1/4 = 25% · 1/5 = 20% · 1/6 = 16.67% · 1/7 = 14.28% · 1/8 = 12.5% · 1/9 = 11.11% · 1/10 = 10%','Profit % = (Profit ÷ Cost Price) × 100 · Loss % = (Loss ÷ Cost Price) × 100','SP = CP × (100 + Profit%) ÷ 100 · SP = CP × (100 − Loss%) ÷ 100','Two successive discounts a% and b% = a + b − (ab ÷ 100) %','Discount is always calculated on Marked Price; profit/loss on Cost Price','Increase by x% then decrease by x% → net loss of x²/100 %'])},
+ {c:'Maths',t:'Speed, Time, Distance &amp; Work',b:L(['Speed = Distance ÷ Time · km/h → m/s: multiply by 5/18 · m/s → km/h: multiply by 18/5','Average speed for equal distances at speeds x and y = 2xy ÷ (x + y)','Relative speed: opposite directions → add speeds · same direction → subtract speeds','Time to cross a pole = Length of train ÷ Speed','If A finishes work in a days and B in b days, together they take <b>ab ÷ (a + b)</b> days','Work = Rate × Time · Efficiency is inversely proportional to time taken'])},
+ {c:'Reasoning',t:'Alphabet &amp; Coding Tricks',b:L(['Position of letters: A=1 … Z=26 · Remember <b>EJOTY</b> = 5, 10, 15, 20, 25','Opposite letter positions always add up to <b>27</b> (A–Z, B–Y, C–X …)','Vowels A, E, I, O, U are at positions 1, 5, 9, 15, 21','Direction sense: draw a rough diagram; North–East–South–West is clockwise','Blood relations: start from the person given, build the tree step by step','In number series check differences, squares, cubes and alternating patterns'])},
+ {c:'Computer',t:'Computer Basics &amp; Shortcuts',b:L(['1 Byte = 8 bits · 1 KB = 1024 Bytes · 1 MB = 1024 KB','Father of the computer: <b>Charles Babbage</b> · First programmer: <b>Ada Lovelace</b>','RAM is volatile (temporary) memory · ROM is non-volatile (permanent)','CPU = Control Unit + ALU (+ registers) — the “brain” of the computer','Ctrl+C copy · Ctrl+V paste · Ctrl+X cut · Ctrl+Z undo · Ctrl+Y redo · Ctrl+P print · Ctrl+S save','Mouse, keyboard, scanner = input devices · Monitor, printer = output devices'])},
+ {c:'English',t:'Grammar Quick Rules',b:L(['<b>A / An</b> depends on the sound, not the letter: <i>an hour, an MLA, a university, a one-rupee note</i>','Each, every, either, neither + <b>singular</b> verb','“One of the …” + plural noun + <b>singular</b> verb: <i>One of the boys is absent.</i>','News, mathematics, physics, economics are singular: <i>The news is good.</i>','Use “has/have” by subject: he, she, it → has · I, you, we, they → have','Prepositions: <i>on</i> a day/date, <i>in</i> a month/year, <i>at</i> a time/place point'])}
+];
+var NCAT='';
 async function goNotes(){
   openPage('notes','ae2-notes-tools','notes');
-  var el=$('ae2-notes-body');
+  var el=$('ae2-notes-body');NCAT='';
   el.innerHTML='<div class="ae2-empty">⏳ Loading...</div>';
   var items=[];try{items=(await _loadPdfItems()).filter(function(i){return i.cat==='Study Notes'||i.cat==='eBook'})}catch(e){}
   window.__ae2Notes=items;
-  var g='<div class="ae2-lb" style="margin:14px 0 8px">📖 Exam Study Guides</div><div class="ae2-grid">'+GUIDES.map(function(x){return '<a class="ae2-card" href="'+x[1]+'" style="text-decoration:none;color:inherit"><div style="font-size:24px">'+x[2]+'</div><div style="font-weight:800;margin-top:6px;font-size:13.5px">'+H(x[0])+'</div></a>'}).join('')+'</div>';
-  el.innerHTML='<input id="ae2-notes-q" class="ae2-in" placeholder="🔍 Search notes..." oninput="ae2.filterNotes()"><div id="ae2-notes-list" style="margin-top:12px"></div>'+g;
+  var cs={};NOTES.forEach(function(n){cs[n.c]=1});
+  var g='<div class="ae2-lb" style="margin:18px 0 8px">📖 Exam Study Guides</div><div class="ae2-grid">'+GUIDES.map(function(x){return '<a class="ae2-card" href="'+x[1]+'" style="text-decoration:none;color:inherit"><div style="font-size:24px">'+x[2]+'</div><div style="font-weight:800;margin-top:6px;font-size:13.5px">'+H(x[0])+'</div></a>'}).join('')+'</div>';
+  el.innerHTML='<input id="ae2-notes-q" class="ae2-in" placeholder="🔍 Search notes..." oninput="ae2.filterNotes()">'+
+    '<div class="ae2-tools" style="margin-top:10px" id="ae2-notes-cats"><button class="ae2-chip on" onclick="ae2.setNCat(\'\')">All</button>'+Object.keys(cs).map(function(c){return '<button class="ae2-chip" onclick="ae2.setNCat('+jsArg(c)+')">'+H(c)+'</button>'}).join('')+'</div>'+
+    '<div id="ae2-notes-list"></div><div id="ae2-notes-pdfs"></div>'+g;
   filterNotes();
 }
+function setNCat(c){NCAT=c;var bs=document.querySelectorAll('#ae2-notes-cats .ae2-chip');bs.forEach(function(b){b.classList.toggle('on',(b.textContent==='All'&&!c)||b.textContent===c)});filterNotes()}
 function filterNotes(){
-  var q=($('ae2-notes-q').value||'').toLowerCase(),items=(window.__ae2Notes||[]).filter(function(i){return !q||((i.title||'')+' '+(i.sub||'')).toLowerCase().indexOf(q)>=0});
-  $('ae2-notes-list').innerHTML=items.length?'<div class="exams-grid">'+items.map(_pdfCardHtml).join('')+'</div>':'<div class="ae2-empty">📒 '+(q?'Match అయ్యే notes లేవు.':'Study Notes త్వరలో add అవుతాయి.')+'</div>';
+  var q=($('ae2-notes-q').value||'').toLowerCase();
+  var list=NOTES.filter(function(n){return (!NCAT||n.c===NCAT)&&(!q||(n.t+' '+n.c+' '+n.b).toLowerCase().indexOf(q)>=0)});
+  $('ae2-notes-list').innerHTML=list.length?list.map(function(n){return '<details class="ae2-panel" style="max-width:none;margin-bottom:8px;padding:12px 16px"><summary style="cursor:pointer;font-weight:800;font-size:14.5px;list-style:none"><span class="ae2-mut" style="background:var(--bg);border-radius:8px;padding:2px 8px;margin-right:6px">'+n.c+'</span>'+n.t+'</summary>'+n.b+'</details>'}).join(''):'<div class="ae2-empty" style="padding:20px">Match అయ్యే notes లేవు.</div>';
+  var items=(window.__ae2Notes||[]).filter(function(i){return !NCAT&&(!q||((i.title||'')+' '+(i.sub||'')).toLowerCase().indexOf(q)>=0)});
+  $('ae2-notes-pdfs').innerHTML=items.length?'<div class="ae2-lb" style="margin:18px 0 8px">📎 PDFs &amp; eBooks</div><div class="exams-grid">'+items.map(_pdfCardHtml).join('')+'</div>':'';
 }
 
 /* ---------- Saved Questions ---------- */
-function goSaved(){openPage('savedqs','ae2-saved-tools','saved');renderSaved()}
+function goSaved(){openPage('savedqs','ae2-saved-tools','saved');renderSaved();pullAll()}
 function renderSaved(){
   var l=getSaved(),el=$('ae2-saved-body');
   if(!l.length){el.innerHTML='<div class="ae2-empty">⭐ Saved questions ఏమీ లేవు.<br><span class="ae2-mut">Exam / Practice లో ☆ Save నొక్కండి.</span></div>';return}
@@ -7433,10 +7540,10 @@ function renderSaved(){
      '<div style="display:flex;gap:8px;margin-top:10px"><button class="ae2-btn ghost" onclick="ae2.revealSaved('+i+')">👁 Show answer</button><button class="ae2-btn ghost" onclick="ae2.removeSaved('+i+')">🗑 Remove</button></div></div>'}).join('');
 }
 function revealSaved(i){var x=getSaved()[i];if(!x)return;var a=$('ae2-sa-'+i);if(a)a.style.display='block';var r=normA(x.ans),o=$('ae2-so-'+i+'-'+r);if(o)o.classList.add('ok')}
-function removeSaved(i){var l=getSaved();l.splice(i,1);jset(savedKey(),l);renderSaved()}
+function removeSaved(i){var l=getSaved();l.splice(i,1);putList('saved',l);renderSaved()}
 
 /* ---------- Doubts ---------- */
-function goDoubts(){openPage('mydoubts','ae2-doubts-tools','doubts');renderDoubts()}
+function goDoubts(){openPage('mydoubts','ae2-doubts-tools','doubts');renderDoubts();pullAll()}
 function renderDoubts(){
   var l=jget(doubtsKey(),[]),el=$('ae2-doubts-body');
   if(!l.length){el.innerHTML='<div class="ae2-empty">💬 మీరు ఇంకా doubts post చేయలేదు.<br><span class="ae2-mut">Exam లో ఏదైనా question కింద "Doubt Discussion" నుండి అడగండి.</span></div>';return}
@@ -7485,7 +7592,7 @@ function renderSel(){
   h+=SEL.length?'<div class="ae2-grid">'+SEL.map(function(s,i){var im=sanitizeUrl(s.img);
     return '<div class="ae2-card" style="cursor:default;text-align:center">'+(im?'<img src="'+H(im)+'" referrerpolicy="no-referrer" loading="lazy" style="width:72px;height:72px;border-radius:50%;object-fit:cover;margin:0 auto 8px;display:block" alt="">':'<div style="font-size:38px">🏆</div>')+
      '<div style="font-weight:800">'+H(s.name)+'</div><div style="font-size:12.5px;color:var(--primary);font-weight:700;margin-top:2px">'+H(s.post)+'</div>'+(s.year?'<div class="ae2-mut">'+H(s.year)+'</div>':'')+(s.note?'<div style="font-size:12px;margin-top:6px">“'+H(s.note)+'”</div>':'')+
-     (isAdmin()?'<button class="ae2-btn ghost" style="margin-top:8px;padding:4px 10px;font-size:11px" onclick="ae2.delSel('+i+')">🗑 Delete</button>':'')+'</div>'}).join('')+'</div>':'<div class="ae2-empty">🏆 Selections త్వరలో add అవుతాయి.</div>';
+     (isAdmin()?'<button class="ae2-btn ghost" style="margin-top:8px;padding:4px 10px;font-size:11px" onclick="ae2.delSel('+i+')">🗑 Delete</button>':'')+'</div>'}).join('')+'</div>':'<div class="ae2-empty">🏆 Selections త్వరలో add అవుతాయి.<br><span class="ae2-mut">మీ పేరు కూడా ఇక్కడ ఉండాలంటే ఈ రోజే practice start చేయండి!</span><br><br><button class="ae2-btn" onclick="ae2.goPractice(\'practice\')">🎯 Start Practice</button></div>';
   el.innerHTML=h;
 }
 async function saveSel(){
@@ -7637,8 +7744,8 @@ function openFeatures(){
 }
 renderHomeFeats();
 
-window.ae2={feat:feat,openFeatures:openFeatures,liveAlert:function(){waOpen('Anil EduTech live class alerts కావాలి')},goLive:goLive,addLive:addLive,delLive:delLive,goCourses:goCourses,setCCat:setCCat,enroll:enroll,addCourse:addCourse,delCourse:delCourse,goActivate:goActivate,goTeacher:goTeacher,goPractice:goPractice,startQuiz:startQuiz,startPractice:startPractice,fillExams:fillExams,fillSecs:fillSecs,pick:pick,next:next,quit:quit,saveIdx:saveIdx,reportIdx:reportIdx,
-  goNotes:goNotes,filterNotes:filterNotes,goSaved:goSaved,revealSaved:revealSaved,removeSaved:removeSaved,goDoubts:goDoubts,thread:thread,goReported:goReported,goSelections:goSelections,addSel:addSel,delSel:delSel,
+window.ae2={retryWrong:retryWrong,saveWrong:saveWrong,feat:feat,openFeatures:openFeatures,liveAlert:function(){waOpen('Anil EduTech live class alerts కావాలి')},goLive:goLive,addLive:addLive,delLive:delLive,goCourses:goCourses,setCCat:setCCat,enroll:enroll,addCourse:addCourse,delCourse:delCourse,goActivate:goActivate,goTeacher:goTeacher,goPractice:goPractice,startQuiz:startQuiz,startPractice:startPractice,fillExams:fillExams,fillSecs:fillSecs,pick:pick,next:next,quit:quit,saveIdx:saveIdx,reportIdx:reportIdx,
+  goNotes:goNotes,filterNotes:filterNotes,setNCat:setNCat,goSaved:goSaved,revealSaved:revealSaved,removeSaved:removeSaved,goDoubts:goDoubts,thread:thread,goReported:goReported,goSelections:goSelections,addSel:addSel,delSel:delSel,
   playerSave:function(){var q=curQ();if(q){toggleSave(q);refreshPlayerBtns()}},playerReport:function(){reportModal(curQ())}};
 })();
 
